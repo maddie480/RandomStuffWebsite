@@ -111,7 +111,7 @@
             </div>
         <% } %>
 
-        <!-- Developed by max480 - version 1.2 - last updated on Nov 13, 2020 -->
+        <!-- Developed by max480 - version 1.3 - last updated on Dec 12, 2020 -->
         <!-- What are you doing here? :thinkeline: -->
 	</div>
 </body>
