@@ -37,3 +37,5 @@ src/main/java/com/max480/randomstuff/gae/Constants.java
 
 # Those aren't open-source (private stuff running on the same site), sorry!
 src/main/java/com/max480/randomstuff/gae/privateservices/
+src/main/webapp/*.html
+src/main/webapp/img/*
