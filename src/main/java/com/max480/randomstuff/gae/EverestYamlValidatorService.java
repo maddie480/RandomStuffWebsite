@@ -152,7 +152,7 @@ public class EverestYamlValidatorService extends HttpServlet {
                     // check that the 1-click installer will find the right name.
                     String oneClickInstallerName = getModNameTheOneClickInstallerWay(fileContent);
                     if (!mod.Name.equals(oneClickInstallerName)) {
-                        problems.add("The mod name that will be detected by the 1-click installer, \"" + oneClickInstallerName + "\", doesn't match your actual mod's name, " +
+                        problems.add("The mod name that will be detected by the old 1-click installer, \"" + oneClickInstallerName + "\", doesn't match your actual mod's name, " +
                                 "\"" + mod.Name + "\". Be sure that your mod's name is the first \"Name:\" appearing in everest.yaml (and move it up if necessary)," +
                                 " and don't put the name in quotes.");
                     }

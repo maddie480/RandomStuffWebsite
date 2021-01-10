@@ -105,6 +105,12 @@
                 <% } %>
             </div>
         <% } else { %>
+            <div class="alert alert-success">
+                If your mod is a map with a single .bin file, the
+                <a href="https://gamebanana.com/tools/6908" target="_blank" rel="noopener">Dependency Generator</a>
+                will be able to generate everest.yaml for you.
+            </div>
+
             <div class="alert alert-info">
                 If you want to validate the syntax of other YAML files (like map meta.yamls), use online tools like
                 <a href="https://jsonformatter.org/yaml-validator/" target="_blank" rel="noopener">this one</a>.
