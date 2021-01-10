@@ -126,7 +126,7 @@ public class CelesteModSearchService extends HttpServlet {
             mods = loaded.stream().map(Mod::new).collect(Collectors.toList());
         }
         modDatabase = mods;
-        logger.info("There are " + mods.size() + " mods in the search database.");
+        logger.fine("There are " + mods.size() + " mods in the search database.");
     }
 
     private void executeSearchOn(List<ScoredMod> mods, String query, Function<Mod, String> field, int score) {
