@@ -34,22 +34,22 @@ Here the top 2 results are https://gamebanana.com/maps/211745 (The 2020 Celeste 
 ### How the search engine works
 
 This search engine works with a pretty simple scoring system:
-- if [something] matches the search exactly, it will get 4 points.
-- if the search is part of [something], it gets 3 points.
-- if [something] contains all the words in the search, it gets 1 point.
+- if [something] matches the search exactly, it will get **4 points**.
+- if the search is part of [something], it gets **3 points**.
+- if [something] contains all the words in the search, it gets **1 point**.
 
 [something] can be:
-- the mod name: in this case, the bonus is multiplied by 5
-- the mod authors: bonus multiplied by 3
-- the description: bonus multiplied by 2
-- the text: bonus not multiplied
+- the mod name: in this case, the bonus is **multiplied by 5**
+- the mod authors: bonus **multiplied by 3**
+- the description: bonus **multiplied by 2**
+- the text: bonus **not multiplied**
 
 Then the mods are sorted by score and the top 20 ones are returned.
 
-For example, searching "max480" will have in its results:
-- "max480's Helping Hand" with 24 points: title contains max480 (3 * 5 pts), authors contain max480 (3 * 3 pts)
-- "Safe Respawn Crumble & Crystal Bomb Detonator" with 12 points: authors contain max480 (3 * 3 pts), text contains max480 (3 pts)
+For example, searching "**max480**" will have in its results:
+- "**max480's Helping Hand**" with 24 points: title contains max480 (3 * 5 pts), authors contain max480 (3 * 3 pts)
+- "**Safe Respawn Crumble & Crystal Bomb Detonator**" with 12 points: authors contain max480 (3 * 3 pts), text contains max480 (3 pts)
 
-Searching "Spring Collab 2020" will bring up:
-- "The 2020 Celeste Spring Community Collab" with 17 points: title contains "Spring", "Collab" and "2020" (1 * 5 pts), authors contain "Spring Collab 2020" (3 * 3 pts), text contains "Spring Collab 2020" (3 pts)
-- "2020 Spring Collab Randomizer" with 15 points: title contains "Spring", "Collab" and "2020" (1 * 5 pts), authors contain "Spring Collab 2020" (3 * 3 pts), text contains "Spring", "Collab" and "2020" (1 pt)
+Searching "**Spring Collab 2020" will bring up**:
+- "**The 2020 Celeste Spring Community Collab**" with 17 points: title contains "Spring", "Collab" and "2020" (1 * 5 pts), authors contain "Spring Collab 2020" (3 * 3 pts), text contains "Spring Collab 2020" (3 pts)
+- "**2020 Spring Collab Randomizer**" with 15 points: title contains "Spring", "Collab" and "2020" (1 * 5 pts), authors contain "Spring Collab 2020" (3 * 3 pts), text contains "Spring", "Collab" and "2020" (1 pt)
