@@ -110,6 +110,7 @@ public class CelesteModSearchService extends HttpServlet {
                         Map<String, Object> result = new LinkedHashMap<>();
                         result.put("itemtype", mod.gameBananaType);
                         result.put("itemid", mod.gameBananaId);
+                        logger.fine("Result: " + mod.gameBananaType + " " + mod.gameBananaId + " (" + mod.name + ") with " + mod.score + " pt(s)");
                         return result;
                     })
                     .collect(Collectors.toList());
