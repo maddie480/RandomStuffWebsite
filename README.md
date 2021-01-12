@@ -39,7 +39,7 @@ The search engine is powered by [Apache Lucene](https://lucene.apache.org/). It 
 - searching for other fields in GameBanana submissions:
   - the **name** (default): `name: (Spring Collab 2020)`
   - one of the **authors**: `author: max480`
-  - the **summary** (line that appears first on the page): `summary: grab bag`
+  - the **summary** (line that appears first on the page): `summary: (grab bag)`
   - the **description**: `description: "flag touch switches"`
 
 For a full list of supported syntax, check [the Lucene documentation](https://lucene.apache.org/core/2_9_4/queryparsersyntax.html).
