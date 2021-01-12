@@ -141,16 +141,9 @@ public class CelesteModSearchService extends HttpServlet {
                 }
             }
 
-            Directory oldIndexDirectory = modIndexDirectory;
             modIndexDirectory = newDirectory;
-
             logger.fine("Virtual index directory contains " + modIndexDirectory.listAll().length + " files and uses "
                     + newDirectory.ramBytesUsed() + " bytes of RAM.");
-
-            if (oldIndexDirectory != null) {
-                oldIndexDirectory.close();
-                logger.fine("Previous index was discarded.");
-            }
         }
     }
 }
