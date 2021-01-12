@@ -1,5 +1,22 @@
 package com.max480.randomstuff.gae;
 
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
+import org.apache.lucene.document.StoredField;
+import org.apache.lucene.document.TextField;
+import org.apache.lucene.index.DirectoryReader;
+import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.RAMDirectory;
+import org.apache.lucene.util.QueryBuilder;
 import org.yaml.snakeyaml.Yaml;
 
 import javax.servlet.annotation.WebServlet;
@@ -10,7 +27,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.*;
-import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -20,7 +36,8 @@ public class CelesteModSearchService extends HttpServlet {
 
     private final Logger logger = Logger.getLogger("CelesteModSearchService");
 
-    private static List<Mod> modDatabase = null;
+    private final Analyzer analyzer = new StandardAnalyzer();
+    private Directory modIndexDirectory = null;
 
     @Override
     public void init() {
@@ -28,42 +45,6 @@ public class CelesteModSearchService extends HttpServlet {
             refreshModDatabase();
         } catch (Exception e) {
             logger.log(Level.WARNING, "Warming up failed: " + e.toString());
-        }
-    }
-
-    private static class Mod {
-        public String gameBananaType;
-        public int gameBananaId;
-        public String name;
-        public List<String> authors;
-        public String description;
-        public String text;
-
-        protected Mod() {
-        }
-
-        public Mod(HashMap<String, Object> map) {
-            gameBananaType = (String) map.get("GameBananaType");
-            gameBananaId = (Integer) map.get("GameBananaId");
-            name = (String) map.get("Name");
-            authors = ((List<Object>) map.get("Authors")).stream()
-                    .map(Object::toString).collect(Collectors.toList());
-            description = (String) map.get("Description");
-            text = (String) map.get("Text");
-        }
-    }
-
-    private static class ScoredMod extends Mod {
-        public int score;
-
-        public ScoredMod(Mod mod) {
-            gameBananaType = mod.gameBananaType;
-            gameBananaId = mod.gameBananaId;
-            name = mod.name;
-            authors = mod.authors;
-            description = mod.description;
-            text = mod.text;
-            score = 0;
         }
     }
 
@@ -79,72 +60,96 @@ public class CelesteModSearchService extends HttpServlet {
             return;
         }
 
-        if (request.getParameter("q") == null) {
+        if (request.getParameter("q") == null || request.getParameter("q").trim().isEmpty()) {
             // the user didn't give any search!
             response.setHeader("Content-Type", "text/plain");
             response.setStatus(400);
             response.getWriter().write("\"q\" query parameter expected");
         } else {
-            response.setHeader("Content-Type", "text/yaml");
+            // let's prepare a request through Lucene.
+            try (DirectoryReader reader = DirectoryReader.open(modIndexDirectory)) {
+                IndexSearcher searcher = new IndexSearcher(reader);
+                Query query;
+                try {
+                    // try parsing the query.
+                    query = new QueryParser("Name", analyzer).parse(request.getParameter("q"));
+                    logger.fine("Query we are going to run: " + query.toString());
+                } catch (ParseException e) {
+                    // query could not be parsed! aaaaa
+                    // we will give up on trying to parse it and just interpret everything as search terms.
+                    logger.info("Query could not be parsed!");
+                    query = new QueryBuilder(analyzer).createBooleanQuery("Name", request.getParameter("q"));
 
-            // remove double spaces and switch it to lowercase.
-            String query = request.getParameter("q").toLowerCase(Locale.ENGLISH);
-            while (query.contains("  ")) {
-                query = query.replace("  ", " ");
-            }
+                    if (query == null) {
+                        // invalid request is invalid! (for example "*")
+                        logger.warning("Could not generate fallback request!");
+                        response.setHeader("Content-Type", "text/yaml");
+                        response.getWriter().write(new Yaml().dump(Collections.emptyList()));
+                        return;
+                    }
 
-            List<ScoredMod> scoredMods = modDatabase.stream().map(ScoredMod::new).collect(Collectors.toList());
+                    logger.fine("Fallback query we are going to run: " + query.toString());
+                }
 
-            // now commit search!
-            executeSearchOn(scoredMods, query, mod -> mod.name, 5);
-            executeSearchOn(scoredMods, query, mod -> String.join(",", mod.authors), 3);
-            executeSearchOn(scoredMods, query, mod -> mod.description, 2);
-            executeSearchOn(scoredMods, query, mod -> mod.text, 1);
+                ScoreDoc[] hits = searcher.search(query, 20).scoreDocs;
 
-            // sort and aggregate the results.
-            List<Map<String, Object>> responseBody = scoredMods.stream()
-                    .filter(mod -> mod.score != 0)
-                    .sorted(Comparator.comparingInt(mod -> ((ScoredMod) mod).score).reversed())
-                    .limit(20)
-                    .map(mod -> {
+                // convert the results to yaml
+                List<Map<String, Object>> responseBody = Arrays.stream(hits).map(hit -> {
+                    try {
+                        Document doc = searcher.doc(hit.doc);
                         Map<String, Object> result = new LinkedHashMap<>();
-                        result.put("itemtype", mod.gameBananaType);
-                        result.put("itemid", mod.gameBananaId);
-                        logger.fine("Result: " + mod.gameBananaType + " " + mod.gameBananaId + " (" + mod.name + ") with " + mod.score + " pt(s)");
-                        return result;
-                    })
-                    .collect(Collectors.toList());
+                        result.put("itemtype", doc.get("GameBananaType"));
+                        result.put("itemid", Integer.parseInt(doc.get("GameBananaId")));
 
-            response.getWriter().write(new Yaml().dump(responseBody));
+                        logger.fine("Result: " + doc.get("GameBananaType") + " " + doc.get("GameBananaId")
+                                + " (" + doc.get("Name") + ") with " + hit.score + " pt(s)");
+                        return result;
+                    } catch (IOException e) {
+                        // how would we have an I/O exception on a memory stream?
+                        throw new RuntimeException(e);
+                    }
+                }).collect(Collectors.toList());
+
+                // send out the response
+                response.setHeader("Content-Type", "text/yaml");
+                response.getWriter().write(new Yaml().dump(responseBody));
+            }
         }
     }
 
     // mapping takes an awful amount of time on App Engine (~2 seconds) so we can't make it when the user calls the API.
     private void refreshModDatabase() throws IOException {
-        final List<Mod> mods;
         try (InputStream connectionToDatabase = new URL(Constants.MOD_SEARCH_DATABASE_URL).openStream()) {
-            List<HashMap<String, Object>> loaded = new Yaml().load(connectionToDatabase);
-            mods = loaded.stream().map(Mod::new).collect(Collectors.toList());
-        }
-        modDatabase = mods;
-        logger.fine("There are " + mods.size() + " mods in the search database.");
-    }
+            // download the mods
+            List<HashMap<String, Object>> mods = new Yaml().load(connectionToDatabase);
+            logger.fine("There are " + mods.size() + " mods in the search database.");
 
-    private void executeSearchOn(List<ScoredMod> mods, String query, Function<Mod, String> field, int score) {
-        for (ScoredMod mod : mods) {
-            String value = field.apply(mod).toLowerCase(Locale.ENGLISH);
-            if (value.equals(query)) {
-                // wow, exact match!
-                mod.score += 4 * score;
-            } else if (value.contains(query)) {
-                // search is part of the mod field, so this is a good match.
-                mod.score += 3 * score;
-            } else {
-                String[] words = query.split(" ");
-                if (Arrays.stream(words).allMatch(value::contains)) {
-                    // all words are found if searched separately... this is more of a dubious match.
-                    mod.score += score;
+            RAMDirectory newDirectory = new RAMDirectory(); // I know it's deprecated but creating a directory on App Engine is weird
+
+            // feed the mods to Lucene so that it indexes them
+            try (IndexWriter index = new IndexWriter(newDirectory, new IndexWriterConfig(analyzer))) {
+                for (HashMap<String, Object> mod : mods) {
+                    Document modDocument = new Document();
+                    modDocument.add(new StoredField("GameBananaType", mod.get("GameBananaType").toString()));
+                    modDocument.add(new StoredField("GameBananaId", mod.get("GameBananaId").toString()));
+                    modDocument.add(new TextField("Name", mod.get("Name").toString(), Field.Store.YES));
+                    modDocument.add(new TextField("Author", ((List<Object>) mod.get("Authors")).stream()
+                            .map(Object::toString).collect(Collectors.joining(", ")), Field.Store.NO));
+                    modDocument.add(new TextField("Summary", mod.get("Description").toString(), Field.Store.NO));
+                    modDocument.add(new TextField("Description", mod.get("Text").toString(), Field.Store.NO));
+                    index.addDocument(modDocument);
                 }
+            }
+
+            Directory oldIndexDirectory = modIndexDirectory;
+            modIndexDirectory = newDirectory;
+
+            logger.fine("Virtual index directory contains " + modIndexDirectory.listAll().length + " files and uses "
+                    + newDirectory.ramBytesUsed() + " bytes of RAM.");
+
+            if (oldIndexDirectory != null) {
+                oldIndexDirectory.close();
+                logger.fine("Previous index was discarded.");
             }
         }
     }
