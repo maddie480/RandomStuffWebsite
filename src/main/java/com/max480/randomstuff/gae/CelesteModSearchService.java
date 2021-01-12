@@ -72,13 +72,13 @@ public class CelesteModSearchService extends HttpServlet {
                 Query query;
                 try {
                     // try parsing the query.
-                    query = new QueryParser("Name", analyzer).parse(request.getParameter("q"));
+                    query = new QueryParser("name", analyzer).parse(request.getParameter("q"));
                     logger.fine("Query we are going to run: " + query.toString());
                 } catch (ParseException e) {
                     // query could not be parsed! aaaaa
                     // we will give up on trying to parse it and just interpret everything as search terms.
                     logger.info("Query could not be parsed!");
-                    query = new QueryBuilder(analyzer).createBooleanQuery("Name", request.getParameter("q"));
+                    query = new QueryBuilder(analyzer).createBooleanQuery("name", request.getParameter("q"));
 
                     if (query == null) {
                         // invalid request is invalid! (for example "*")
@@ -102,7 +102,7 @@ public class CelesteModSearchService extends HttpServlet {
                         result.put("itemid", Integer.parseInt(doc.get("GameBananaId")));
 
                         logger.fine("Result: " + doc.get("GameBananaType") + " " + doc.get("GameBananaId")
-                                + " (" + doc.get("Name") + ") with " + hit.score + " pt(s)");
+                                + " (" + doc.get("name") + ") with " + hit.score + " pt(s)");
                         return result;
                     } catch (IOException e) {
                         // how would we have an I/O exception on a memory stream?
@@ -132,11 +132,11 @@ public class CelesteModSearchService extends HttpServlet {
                     Document modDocument = new Document();
                     modDocument.add(new StoredField("GameBananaType", mod.get("GameBananaType").toString()));
                     modDocument.add(new StoredField("GameBananaId", mod.get("GameBananaId").toString()));
-                    modDocument.add(new TextField("Name", mod.get("Name").toString(), Field.Store.YES));
-                    modDocument.add(new TextField("Author", ((List<Object>) mod.get("Authors")).stream()
+                    modDocument.add(new TextField("name", mod.get("Name").toString(), Field.Store.YES));
+                    modDocument.add(new TextField("author", ((List<Object>) mod.get("Authors")).stream()
                             .map(Object::toString).collect(Collectors.joining(", ")), Field.Store.NO));
-                    modDocument.add(new TextField("Summary", mod.get("Description").toString(), Field.Store.NO));
-                    modDocument.add(new TextField("Description", mod.get("Text").toString(), Field.Store.NO));
+                    modDocument.add(new TextField("summary", mod.get("Description").toString(), Field.Store.NO));
+                    modDocument.add(new TextField("description", mod.get("Text").toString(), Field.Store.NO));
                     index.addDocument(modDocument);
                 }
             }

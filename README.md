@@ -37,7 +37,7 @@ The search engine is powered by [Apache Lucene](https://lucene.apache.org/). It 
 - searching for a **phrase**: `"Spring Collab"`
 - **OR** and **NOT** keywords: `Spring Collab NOT Randomizer`
 - searching for other fields in GameBanana submissions:
-  - the **name**: `Name: Spring Collab 2020`
-  - one of the **authors**: `Author: max480`
-  - the **summary** (line that appears first on the page): `Summary: grab bag`
-  - the **description**: `Description: "flag touch switches"`
+  - the **name** (default): `name: Spring Collab 2020`
+  - one of the **authors**: `author: max480`
+  - the **summary** (line that appears first on the page): `summary: grab bag`
+  - the **description**: `description: "flag touch switches"`
