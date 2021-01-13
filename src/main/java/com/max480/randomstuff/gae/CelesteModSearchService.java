@@ -98,10 +98,10 @@ public class CelesteModSearchService extends HttpServlet {
                     try {
                         Document doc = searcher.doc(hit.doc);
                         Map<String, Object> result = new LinkedHashMap<>();
-                        result.put("itemtype", doc.get("GameBananaType"));
-                        result.put("itemid", Integer.parseInt(doc.get("GameBananaId")));
+                        result.put("itemtype", doc.get("type"));
+                        result.put("itemid", Integer.parseInt(doc.get("id")));
 
-                        logger.fine("Result: " + doc.get("GameBananaType") + " " + doc.get("GameBananaId")
+                        logger.fine("Result: " + doc.get("type") + " " + doc.get("id")
                                 + " (" + doc.get("name") + ") with " + hit.score + " pt(s)");
                         return result;
                     } catch (IOException e) {
@@ -130,8 +130,8 @@ public class CelesteModSearchService extends HttpServlet {
             try (IndexWriter index = new IndexWriter(newDirectory, new IndexWriterConfig(analyzer))) {
                 for (HashMap<String, Object> mod : mods) {
                     Document modDocument = new Document();
-                    modDocument.add(new StoredField("GameBananaType", mod.get("GameBananaType").toString()));
-                    modDocument.add(new StoredField("GameBananaId", mod.get("GameBananaId").toString()));
+                    modDocument.add(new TextField("type", mod.get("GameBananaType").toString(), Field.Store.YES));
+                    modDocument.add(new StoredField("id", mod.get("GameBananaId").toString()));
                     modDocument.add(new TextField("name", mod.get("Name").toString(), Field.Store.YES));
                     modDocument.add(new TextField("author", ((List<Object>) mod.get("Authors")).stream()
                             .map(Object::toString).collect(Collectors.joining(", ")), Field.Store.NO));
