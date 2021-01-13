@@ -43,4 +43,4 @@ The search engine is powered by [Apache Lucene](https://lucene.apache.org/). It 
   - the **summary** (line that appears first on the page): `summary: (grab bag)`
   - the **description**: `description: "flag touch switches"`
 
-For a full list of supported syntax, check [the Lucene documentation](https://lucene.apache.org/core/2_9_4/queryparsersyntax.html).
+For a full list of supported syntax, check [the Lucene documentation](https://lucene.apache.org/core/8_7_0/queryparser/org/apache/lucene/queryparser/classic/package-summary.html#package.description).

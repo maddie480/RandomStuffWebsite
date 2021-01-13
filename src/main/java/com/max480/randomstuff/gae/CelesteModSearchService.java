@@ -129,12 +129,23 @@ public class CelesteModSearchService extends HttpServlet {
             // feed the mods to Lucene so that it indexes them
             try (IndexWriter index = new IndexWriter(newDirectory, new IndexWriterConfig(analyzer))) {
                 for (HashMap<String, Object> mod : mods) {
+                    // this is a hack to give more weight to authors when they are on top of the credits list.
+                    // first author has 20x weight, second has 10x, third has 5x and fourth has 2x.
+                    int authorWeight = 20;
+                    StringBuilder weightedAuthors = new StringBuilder();
+                    for (String author : ((List<Object>) mod.get("Authors")).stream().map(Object::toString).collect(Collectors.toList())) {
+                        for (int i = 0; i < authorWeight; i++) {
+                            weightedAuthors.append(author).append(", ");
+                        }
+                        if (authorWeight > 1) authorWeight /= 2;
+                    }
+                    logger.finest("Weighted authors: " + weightedAuthors);
+
                     Document modDocument = new Document();
                     modDocument.add(new TextField("type", mod.get("GameBananaType").toString(), Field.Store.YES));
                     modDocument.add(new StoredField("id", mod.get("GameBananaId").toString()));
                     modDocument.add(new TextField("name", mod.get("Name").toString(), Field.Store.YES));
-                    modDocument.add(new TextField("author", ((List<Object>) mod.get("Authors")).stream()
-                            .map(Object::toString).collect(Collectors.joining(", ")), Field.Store.NO));
+                    modDocument.add(new TextField("author", weightedAuthors.toString(), Field.Store.NO));
                     modDocument.add(new TextField("summary", mod.get("Description").toString(), Field.Store.NO));
                     modDocument.add(new TextField("description", mod.get("Text").toString(), Field.Store.NO));
                     index.addDocument(modDocument);
