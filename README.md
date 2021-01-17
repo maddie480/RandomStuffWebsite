@@ -44,3 +44,14 @@ The search engine is powered by [Apache Lucene](https://lucene.apache.org/). It 
   - the **description**: `description: "flag touch switches"`
 
 For a full list of supported syntax, check [the Lucene documentation](https://lucene.apache.org/core/8_7_0/queryparser/org/apache/lucene/queryparser/classic/package-summary.html#package.description).
+
+## The GameBanana sorted list API
+
+This API allows to get a sorted list of most downloaded, liked or viewed Celeste mods on GameBanana.
+
+Since the information used by this API can be late by up to 30 minutes, it does not allow to retrieve the _latest_ mods. For that, use [the real GameBanana API](https://api.gamebanana.com/docs/endpoints/Core/List/New) instead.
+
+The URL is `https://max480-random-stuff.appspot.com/celeste/gamebanana-list?sort=[sort]&type=[type]&page=[page]` where:
+- `sort` is the info to sort on (**mandatory**). It can be `likes`, `views` or `downloads`
+- `type` is the GameBanana type to filter on (optional and case-insensitive). For example `Map`, `Gamefile` or `Tool`
+- `page` is the page to get, first page being 1 (optional, default is 1). Each page contains 20 elements.

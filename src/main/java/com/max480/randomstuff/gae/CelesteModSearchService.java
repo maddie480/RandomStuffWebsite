@@ -27,17 +27,36 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-@WebServlet(name = "CelesteModSearchService", loadOnStartup = 1, urlPatterns = {"/celeste/gamebanana-search", "/celeste/gamebanana-search-reload"})
+@WebServlet(name = "CelesteModSearchService", loadOnStartup = 1, urlPatterns = {"/celeste/gamebanana-search",
+        "/celeste/gamebanana-search-reload", "/celeste/gamebanana-list"})
 public class CelesteModSearchService extends HttpServlet {
 
     private final Logger logger = Logger.getLogger("CelesteModSearchService");
 
     private final Analyzer analyzer = new StandardAnalyzer();
     private Directory modIndexDirectory = null;
+    private List<ModInfo> modDatabaseForSorting = Collections.emptyList();
+
+    private static class ModInfo {
+        public final String type;
+        public final int id;
+        public final int likes;
+        public final int views;
+        public final int downloads;
+
+        private ModInfo(String type, int id, int likes, int views, int downloads) {
+            this.type = type;
+            this.id = id;
+            this.likes = likes;
+            this.views = views;
+            this.downloads = downloads;
+        }
+    }
 
     @Override
     public void init() {
@@ -60,57 +79,124 @@ public class CelesteModSearchService extends HttpServlet {
             return;
         }
 
-        if (request.getParameter("q") == null || request.getParameter("q").trim().isEmpty()) {
-            // the user didn't give any search!
-            response.setHeader("Content-Type", "text/plain");
-            response.setStatus(400);
-            response.getWriter().write("\"q\" query parameter expected");
-        } else {
-            // let's prepare a request through Lucene.
-            try (DirectoryReader reader = DirectoryReader.open(modIndexDirectory)) {
-                IndexSearcher searcher = new IndexSearcher(reader);
-                Query query;
-                try {
-                    // try parsing the query.
-                    query = new QueryParser("name", analyzer).parse(request.getParameter("q"));
-                    logger.fine("Query we are going to run: " + query.toString());
-                } catch (ParseException e) {
-                    // query could not be parsed! aaaaa
-                    // we will give up on trying to parse it and just interpret everything as search terms.
-                    logger.info("Query could not be parsed!");
-                    query = new QueryBuilder(analyzer).createBooleanQuery("name", request.getParameter("q"));
+        if (request.getRequestURI().equals("/celeste/gamebanana-search")) {
+            String queryParam = request.getParameter("q");
 
-                    if (query == null) {
-                        // invalid request is invalid! (for example "*")
-                        logger.warning("Could not generate fallback request!");
-                        response.setHeader("Content-Type", "text/yaml");
-                        response.getWriter().write(new Yaml().dump(Collections.emptyList()));
-                        return;
+            if (queryParam == null || queryParam.trim().isEmpty()) {
+                // the user didn't give any search!
+                response.setHeader("Content-Type", "text/plain");
+                response.setStatus(400);
+                response.getWriter().write("\"q\" query parameter expected");
+            } else {
+                // let's prepare a request through Lucene.
+                try (DirectoryReader reader = DirectoryReader.open(modIndexDirectory)) {
+                    IndexSearcher searcher = new IndexSearcher(reader);
+                    Query query;
+                    try {
+                        // try parsing the query.
+                        query = new QueryParser("name", analyzer).parse(queryParam);
+                        logger.fine("Query we are going to run: " + query.toString());
+                    } catch (ParseException e) {
+                        // query could not be parsed! aaaaa
+                        // we will give up on trying to parse it and just interpret everything as search terms.
+                        logger.info("Query could not be parsed!");
+                        query = new QueryBuilder(analyzer).createBooleanQuery("name", queryParam);
+
+                        if (query == null) {
+                            // invalid request is invalid! (for example "*")
+                            logger.warning("Could not generate fallback request!");
+                            response.setHeader("Content-Type", "text/yaml");
+                            response.getWriter().write(new Yaml().dump(Collections.emptyList()));
+                            return;
+                        }
+
+                        logger.fine("Fallback query we are going to run: " + query.toString());
                     }
 
-                    logger.fine("Fallback query we are going to run: " + query.toString());
+                    ScoreDoc[] hits = searcher.search(query, 20).scoreDocs;
+
+                    // convert the results to yaml
+                    List<Map<String, Object>> responseBody = Arrays.stream(hits).map(hit -> {
+                        try {
+                            Document doc = searcher.doc(hit.doc);
+                            Map<String, Object> result = new LinkedHashMap<>();
+                            result.put("itemtype", doc.get("type"));
+                            result.put("itemid", Integer.parseInt(doc.get("id")));
+
+                            logger.fine("Result: " + doc.get("type") + " " + doc.get("id")
+                                    + " (" + doc.get("name") + ") with " + hit.score + " pt(s)");
+                            return result;
+                        } catch (IOException e) {
+                            // how would we have an I/O exception on a memory stream?
+                            throw new RuntimeException(e);
+                        }
+                    }).collect(Collectors.toList());
+
+                    // send out the response
+                    response.setHeader("Content-Type", "text/yaml");
+                    response.getWriter().write(new Yaml().dump(responseBody));
+                }
+            }
+        }
+
+
+        if (request.getRequestURI().equals("/celeste/gamebanana-list")) {
+            String sortParam = request.getParameter("sort");
+            String pageParam = request.getParameter("page");
+            String typeParam = request.getParameter("type");
+
+            if (!Arrays.asList("likes", "views", "downloads").contains(sortParam)) {
+                // invalid sort!
+                response.setHeader("Content-Type", "text/plain");
+                response.setStatus(400);
+                response.getWriter().write("expected \"sort\" parameter with value \"likes\", \"views\" or \"downloads\"");
+            } else {
+                // parse the page number: if page number is absent or invalid, assume 1
+                int page = 1;
+                if (pageParam != null) {
+                    try {
+                        page = Integer.parseInt(pageParam);
+                    } catch (NumberFormatException e) {
+                        logger.info("Invalid page number, assuming 1");
+                    }
                 }
 
-                ScoreDoc[] hits = searcher.search(query, 20).scoreDocs;
+                // is there a type filter?
+                Predicate<ModInfo> typeFilter = info -> true;
+                if (typeParam != null) {
+                    typeFilter = info -> typeParam.equalsIgnoreCase(info.type);
+                }
 
-                // convert the results to yaml
-                List<Map<String, Object>> responseBody = Arrays.stream(hits).map(hit -> {
-                    try {
-                        Document doc = searcher.doc(hit.doc);
-                        Map<String, Object> result = new LinkedHashMap<>();
-                        result.put("itemtype", doc.get("type"));
-                        result.put("itemid", Integer.parseInt(doc.get("id")));
+                // determine the field on which we want to sort. Sort by descending id to tell equal values apart.
+                Comparator<ModInfo> sort;
+                switch (sortParam) {
+                    case "views":
+                    default:
+                        sort = Comparator.<ModInfo>comparingInt(i -> -i.views).thenComparingInt(i -> -i.id);
+                        break;
+                    case "likes":
+                        sort = Comparator.<ModInfo>comparingInt(i -> -i.likes).thenComparingInt(i -> -i.id);
+                        break;
+                    case "downloads":
+                        sort = Comparator.<ModInfo>comparingInt(i -> -i.downloads).thenComparingInt(i -> -i.id);
+                        break;
+                }
 
-                        logger.fine("Result: " + doc.get("type") + " " + doc.get("id")
-                                + " (" + doc.get("name") + ") with " + hit.score + " pt(s)");
-                        return result;
-                    } catch (IOException e) {
-                        // how would we have an I/O exception on a memory stream?
-                        throw new RuntimeException(e);
-                    }
-                }).collect(Collectors.toList());
+                // then sort on it.
+                List<Map<String, Object>> responseBody = modDatabaseForSorting.stream()
+                        .filter(typeFilter)
+                        .sorted(sort)
+                        .skip((page - 1) * 20L)
+                        .limit(20)
+                        .map(modInfo -> {
+                            Map<String, Object> result = new LinkedHashMap<>();
+                            result.put("itemtype", modInfo.type);
+                            result.put("itemid", modInfo.id);
+                            return result;
+                        })
+                        .collect(Collectors.toList());
 
-                // send out the response
+                // send out the response.
                 response.setHeader("Content-Type", "text/yaml");
                 response.getWriter().write(new Yaml().dump(responseBody));
             }
@@ -125,6 +211,7 @@ public class CelesteModSearchService extends HttpServlet {
             logger.fine("There are " + mods.size() + " mods in the search database.");
 
             RAMDirectory newDirectory = new RAMDirectory(); // I know it's deprecated but creating a directory on App Engine is weird
+            List<ModInfo> newModDatabaseForSorting = new LinkedList<>();
 
             // feed the mods to Lucene so that it indexes them
             try (IndexWriter index = new IndexWriter(newDirectory, new IndexWriterConfig(analyzer))) {
@@ -149,10 +236,15 @@ public class CelesteModSearchService extends HttpServlet {
                     modDocument.add(new TextField("summary", mod.get("Description").toString(), Field.Store.NO));
                     modDocument.add(new TextField("description", mod.get("Text").toString(), Field.Store.NO));
                     index.addDocument(modDocument);
+
+                    newModDatabaseForSorting.add(new ModInfo(mod.get("GameBananaType").toString(), (int) mod.get("GameBananaId"),
+                            (int) mod.get("Likes"), (int) mod.get("Views"), (int) mod.get("Downloads")));
                 }
             }
 
             modIndexDirectory = newDirectory;
+            modDatabaseForSorting = newModDatabaseForSorting;
+
             logger.fine("Virtual index directory contains " + modIndexDirectory.listAll().length + " files and uses "
                     + newDirectory.ramBytesUsed() + " bytes of RAM.");
         }
