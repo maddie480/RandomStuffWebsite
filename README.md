@@ -7,6 +7,7 @@ It contains the full source for:
 - [the Celeste custom entity catalog](https://max480-random-stuff.appspot.com/celeste/custom-entity-catalog)
 - [the everest.yaml validator](https://max480-random-stuff.appspot.com/celeste/everest-yaml-validator)
 - [the GameBanana search API](https://max480-random-stuff.appspot.com/celeste/gamebanana-search)
+- [the GameBanana sorted list API](https://max480-random-stuff.appspot.com/celeste/gamebanana-list)
 
 If you want to check how the update checker's everest_update.yaml file is generated, check [the Everest Update Checker Server repo](https://github.com/max4805/EverestUpdateCheckerServer) instead.
 
