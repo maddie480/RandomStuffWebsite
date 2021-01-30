@@ -17,6 +17,7 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.QueryBuilder;
+import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
 import javax.servlet.annotation.WebServlet;
@@ -33,7 +34,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @WebServlet(name = "CelesteModSearchService", loadOnStartup = 1, urlPatterns = {"/celeste/gamebanana-search",
-        "/celeste/gamebanana-search-reload", "/celeste/gamebanana-list"})
+        "/celeste/gamebanana-search-reload", "/celeste/gamebanana-list", "/celeste/gamebanana-categories"})
 public class CelesteModSearchService extends HttpServlet {
 
     private final Logger logger = Logger.getLogger("CelesteModSearchService");
@@ -201,6 +202,83 @@ public class CelesteModSearchService extends HttpServlet {
                 response.getWriter().write(new Yaml().dump(responseBody));
             }
         }
+
+        if (request.getRequestURI().equals("/celeste/gamebanana-categories")) {
+            // go across all mods and aggregate stats per category.
+            TreeMap<String, Integer> categoriesAndCounts = new TreeMap<>();
+            for (ModInfo modInfo : modDatabaseForSorting) {
+                if (!categoriesAndCounts.containsKey(modInfo.type)) {
+                    // first mod encountered in this category
+                    categoriesAndCounts.put(modInfo.type, 1);
+                } else {
+                    // add 1 to the mod count in the category
+                    categoriesAndCounts.put(modInfo.type, categoriesAndCounts.get(modInfo.type) + 1);
+                }
+            }
+
+            // format the map for the response...
+            List<Map<String, Object>> categoriesList = categoriesAndCounts.entrySet().stream()
+                    .map(entry -> {
+                        Map<String, Object> result = new LinkedHashMap<>();
+                        result.put("itemtype", entry.getKey());
+                        result.put("formatted", formatGameBananaCategory(entry.getKey()));
+                        result.put("count", entry.getValue());
+                        return result;
+                    })
+                    .collect(Collectors.toList());
+
+            // also add an "All" option to pass the total number of mods.
+            Map<String, Object> all = new HashMap<>();
+            all.put("itemtype", "");
+            all.put("formatted", "All");
+            all.put("count", modDatabaseForSorting.size());
+
+            // the final list is "All" followed by all the categories.
+            List<Map<String, Object>> responseBody = new ArrayList<>();
+            responseBody.add(all);
+            responseBody.addAll(categoriesList);
+
+            // send out the response (the "block" flow style works better with Olympus).
+            response.setHeader("Content-Type", "text/yaml");
+            response.getWriter().write(new Yaml().dumpAs(responseBody, null, DumperOptions.FlowStyle.BLOCK));
+        }
+    }
+
+    public static String formatGameBananaCategory(String input) {
+        // specific formatting for a few categories
+        if (input.equals("Gamefile")) {
+            return "Game files";
+        } else if (input.equals("Wip")) {
+            return "WiPs";
+        } else if (input.equals("Gui")) {
+            return "GUIs";
+        } else if (input.equals("PositionAvailable")) {
+            return "Positions Available";
+        }
+
+        // apply the spaced pascal case from Everest
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < input.length(); i++) {
+            char c = input.charAt(i);
+            if (i > 0 && Character.isUpperCase(c) && Character.isLowerCase(input.charAt(i - 1)))
+                builder.append(' ');
+
+            if (i != 0 && builder.charAt(builder.length() - 1) == ' ') {
+                builder.append(Character.toUpperCase(c));
+            } else {
+                builder.append(c);
+            }
+        }
+
+        // capitalize the first letter
+        String result = builder.toString();
+        result = result.substring(0, 1).toUpperCase() + result.substring(1);
+
+        // pluralize
+        if (result.charAt(result.length() - 1) == 'y') {
+            return result.substring(0, result.length() - 1) + "ies";
+        }
+        return result + "s";
     }
 
     // mapping takes an awful amount of time on App Engine (~2 seconds) so we can't make it when the user calls the API.

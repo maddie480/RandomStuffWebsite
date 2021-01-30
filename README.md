@@ -56,3 +56,28 @@ The URL is `https://max480-random-stuff.appspot.com/celeste/gamebanana-list?sort
 - `sort` is the info to sort on (**mandatory**). It can be `likes`, `views` or `downloads`
 - `type` is the GameBanana type to filter on (optional and case-insensitive). For example `Map`, `Gamefile` or `Tool`
 - `page` is the page to get, first page being 1 (optional, default is 1). Each page contains 20 elements.
+
+The output format is the same as the GameBanana search API, [see the previous section](#the-gamebanana-search-api).
+
+## GameBanana categories list API
+
+This API allows getting a list of GameBanana item types _that have at least one Celeste mod in it_ (contrary to [the official GameBanana API for this](https://api.gamebanana.com/Core/Item/Data/AllowedItemTypes?&help)), along with how many mods there are for each category.
+
+The counts returned by this API might not match the numbers displayed on the GameBanana website; that's because GameBanana counts mods that do not show up in the list.
+
+The URL is `https://max480-random-stuff.appspot.com/celeste/gamebanana-categories` and the result looks like:
+```yaml
+- itemtype: ''
+  formatted: All
+  count: 541
+- itemtype: Effect
+  formatted: Effects
+  count: 2
+- itemtype: Gamefile
+  formatted: Game files
+  count: 114
+- itemtype: Gui
+  formatted: GUIs
+  count: 11
+...
+```
