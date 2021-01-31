@@ -1,5 +1,6 @@
 package com.max480.randomstuff.gae;
 
+import com.google.cloud.storage.*;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -35,6 +36,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.logging.Level;
@@ -53,7 +55,7 @@ public class CelesteModSearchService extends HttpServlet {
     private Directory modIndexDirectory = null;
     private List<ModInfo> modDatabaseForSorting = Collections.emptyList();
 
-    private Map<String, byte[]> webpToPngCache = new HashMap<>();
+    private final Storage storage = StorageOptions.newBuilder().setProjectId("max480-random-stuff").build().getService();
 
     private static class ModInfo {
         public final String type;
@@ -269,34 +271,40 @@ public class CelesteModSearchService extends HttpServlet {
                 response.setHeader("Content-Type", "text/plain");
                 response.setStatus(403);
                 response.getWriter().write("this API can only be used with GameBanana");
-            } else if (webpToPngCache.containsKey(imagePath)) {
-                response.setHeader("Content-Type", "image/png");
-                IOUtils.write(webpToPngCache.get(imagePath), response.getOutputStream());
             } else {
-                // go get the image!
-                try (CloseableHttpResponse gamebananaResponse = httpClient.execute(new HttpGet(imagePath))) {
-                    int status = gamebananaResponse.getStatusLine().getStatusCode();
-                    if (status >= 400) {
-                        // GameBanana responded with an error.
-                        logger.info("GameBanana returned an error");
-                        response.setHeader("Content-Type", "text/plain");
-                        response.setStatus(status);
-                        response.getWriter().write("GameBanana returned an error");
-                    } else {
-                        // read the image from GameBanana.
-                        BufferedImage image = ImageIO.read(gamebananaResponse.getEntity().getContent());
-                        try (ByteArrayOutputStream imageOutput = new ByteArrayOutputStream()) {
-                            // write it as a PNG and cache it.
-                            ImageIO.write(image, "png", imageOutput);
-                            byte[] output = imageOutput.toByteArray();
-                            webpToPngCache.put(imagePath, output);
+                BlobId blobId = BlobId.of("max480-webp-to-png-cache", URLEncoder.encode(imagePath, "UTF-8") + ".png");
+                Blob cachedImage = storage.get(blobId);
+                if (cachedImage != null) {
+                    // image was cached.
+                    response.setHeader("Content-Type", "image/png");
+                    IOUtils.write(cachedImage.getContent(), response.getOutputStream());
+                } else {
+                    // go get the image!
+                    try (CloseableHttpResponse gamebananaResponse = httpClient.execute(new HttpGet(imagePath))) {
+                        int status = gamebananaResponse.getStatusLine().getStatusCode();
+                        if (status >= 400) {
+                            // GameBanana responded with an error.
+                            logger.info("GameBanana returned an error");
+                            response.setHeader("Content-Type", "text/plain");
+                            response.setStatus(status);
+                            response.getWriter().write("GameBanana returned an error");
+                        } else {
+                            // read the image from GameBanana.
+                            BufferedImage image = ImageIO.read(gamebananaResponse.getEntity().getContent());
+                            try (ByteArrayOutputStream imageOutput = new ByteArrayOutputStream()) {
+                                // write it as a PNG and cache it.
+                                ImageIO.write(image, "png", imageOutput);
+                                byte[] output = imageOutput.toByteArray();
+                                BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType("image/png").build();
+                                storage.create(blobInfo, output);
 
-                            // send the response.
-                            response.setHeader("Content-Type", "image/png");
-                            IOUtils.write(output, response.getOutputStream());
+                                // send the response.
+                                response.setHeader("Content-Type", "image/png");
+                                IOUtils.write(output, response.getOutputStream());
+                            }
+
+                            logger.fine("Image was added to the cache.");
                         }
-
-                        logger.fine("Image was added to the cache. Cache now contains " + webpToPngCache.size() + " images.");
                     }
                 }
             }
