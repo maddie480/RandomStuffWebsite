@@ -272,11 +272,13 @@ public class CelesteModSearchService extends HttpServlet {
                 response.setStatus(403);
                 response.getWriter().write("this API can only be used with GameBanana");
             } else {
-                BlobId blobId = BlobId.of("max480-webp-to-png-cache", URLEncoder.encode(imagePath, "UTF-8") + ".png");
+                BlobId blobId = BlobId.of("max480-webp-to-png-cache", imagePath + ".png");
                 Blob cachedImage = storage.get(blobId);
                 if (cachedImage != null) {
                     // image was cached.
                     response.setHeader("Content-Type", "image/png");
+                    response.setStatus(302);
+                    response.setHeader("Location", "https://storage.googleapis.com/max480-webp-to-png-cache/" + URLEncoder.encode(blobId.getName(), "UTF-8"));
                     IOUtils.write(cachedImage.getContent(), response.getOutputStream());
                 } else {
                     // go get the image!
@@ -297,6 +299,7 @@ public class CelesteModSearchService extends HttpServlet {
                                 byte[] output = imageOutput.toByteArray();
                                 BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType("image/png").build();
                                 storage.create(blobInfo, output);
+                                storage.createAcl(blobId, Acl.of(Acl.User.ofAllUsers(), Acl.Role.READER));
 
                                 // send the response.
                                 response.setHeader("Content-Type", "image/png");
