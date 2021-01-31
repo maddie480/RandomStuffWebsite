@@ -88,4 +88,4 @@ This API simply downloads a WebP image from GameBanana, and converts it to PNG. 
 
 Usage example: https://max480-random-stuff.appspot.com/celeste/webp-to-png?src=https://screenshots.gamebanana.com/img/ss/gamefiles/5b05ac2b4b6da.webp
 
-This API may answer with a 302 (redirect) leading to the actual image on Google Cloud Storage.
+This API may answer with a 302 (redirect) leading to the actual image on Google Cloud Storage. Images are cached there for 30 days, to avoid having to convert it each time.
