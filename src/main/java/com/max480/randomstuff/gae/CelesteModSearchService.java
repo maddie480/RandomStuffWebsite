@@ -1,5 +1,10 @@
 package com.max480.randomstuff.gae;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
@@ -20,10 +25,13 @@ import org.apache.lucene.util.QueryBuilder;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
+import javax.imageio.ImageIO;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -34,14 +42,18 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @WebServlet(name = "CelesteModSearchService", loadOnStartup = 1, urlPatterns = {"/celeste/gamebanana-search",
-        "/celeste/gamebanana-search-reload", "/celeste/gamebanana-list", "/celeste/gamebanana-categories"})
+        "/celeste/gamebanana-search-reload", "/celeste/gamebanana-list", "/celeste/gamebanana-categories", "/celeste/webp-to-png"})
 public class CelesteModSearchService extends HttpServlet {
 
     private final Logger logger = Logger.getLogger("CelesteModSearchService");
 
+    private final CloseableHttpClient httpClient = HttpClients.createDefault();
+
     private final Analyzer analyzer = new StandardAnalyzer();
     private Directory modIndexDirectory = null;
     private List<ModInfo> modDatabaseForSorting = Collections.emptyList();
+
+    private Map<String, byte[]> webpToPngCache = new HashMap<>();
 
     private static class ModInfo {
         public final String type;
@@ -241,6 +253,53 @@ public class CelesteModSearchService extends HttpServlet {
             // send out the response (the "block" flow style works better with Olympus).
             response.setHeader("Content-Type", "text/yaml");
             response.getWriter().write(new Yaml().dumpAs(responseBody, null, DumperOptions.FlowStyle.BLOCK));
+        }
+
+
+        if (request.getRequestURI().equals("/celeste/webp-to-png")) {
+            String imagePath = request.getParameter("src");
+            if (imagePath == null) {
+                // no image path passed!
+                response.setHeader("Content-Type", "text/plain");
+                response.setStatus(400);
+                response.getWriter().write("expected \"src\" parameter");
+            } else if (!imagePath.startsWith("https://screenshots.gamebanana.com/") || !imagePath.endsWith(".webp")) {
+                // no image path passed!
+                logger.warning("Returned 403 after trying to use conversion with non-GB URL");
+                response.setHeader("Content-Type", "text/plain");
+                response.setStatus(403);
+                response.getWriter().write("this API can only be used with GameBanana");
+            } else if (webpToPngCache.containsKey(imagePath)) {
+                response.setHeader("Content-Type", "image/png");
+                IOUtils.write(webpToPngCache.get(imagePath), response.getOutputStream());
+            } else {
+                // go get the image!
+                try (CloseableHttpResponse gamebananaResponse = httpClient.execute(new HttpGet(imagePath))) {
+                    int status = gamebananaResponse.getStatusLine().getStatusCode();
+                    if (status >= 400) {
+                        // GameBanana responded with an error.
+                        logger.info("GameBanana returned an error");
+                        response.setHeader("Content-Type", "text/plain");
+                        response.setStatus(status);
+                        response.getWriter().write("GameBanana returned an error");
+                    } else {
+                        // read the image from GameBanana.
+                        BufferedImage image = ImageIO.read(gamebananaResponse.getEntity().getContent());
+                        try (ByteArrayOutputStream imageOutput = new ByteArrayOutputStream()) {
+                            // write it as a PNG and cache it.
+                            ImageIO.write(image, "png", imageOutput);
+                            byte[] output = imageOutput.toByteArray();
+                            webpToPngCache.put(imagePath, output);
+
+                            // send the response.
+                            response.setHeader("Content-Type", "image/png");
+                            IOUtils.write(output, response.getOutputStream());
+                        }
+
+                        logger.fine("Image was added to the cache. Cache now contains " + webpToPngCache.size() + " images.");
+                    }
+                }
+            }
         }
     }
 
