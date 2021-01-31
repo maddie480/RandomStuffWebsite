@@ -266,7 +266,7 @@ public class CelesteModSearchService extends HttpServlet {
                 response.setStatus(400);
                 response.getWriter().write("expected \"src\" parameter");
             } else if (!imagePath.startsWith("https://screenshots.gamebanana.com/") || !imagePath.endsWith(".webp")) {
-                // no image path passed!
+                // the URL passed is not a webp or it is not from GameBanana.
                 logger.warning("Returned 403 after trying to use conversion with non-GB URL");
                 response.setHeader("Content-Type", "text/plain");
                 response.setStatus(403);
@@ -275,11 +275,9 @@ public class CelesteModSearchService extends HttpServlet {
                 BlobId blobId = BlobId.of("max480-webp-to-png-cache", imagePath + ".png");
                 Blob cachedImage = storage.get(blobId);
                 if (cachedImage != null) {
-                    // image was cached.
-                    response.setHeader("Content-Type", "image/png");
+                    // image was cached. redirect to it
                     response.setStatus(302);
                     response.setHeader("Location", "https://storage.googleapis.com/max480-webp-to-png-cache/" + URLEncoder.encode(blobId.getName(), "UTF-8"));
-                    IOUtils.write(cachedImage.getContent(), response.getOutputStream());
                 } else {
                     // go get the image!
                     try (CloseableHttpResponse gamebananaResponse = httpClient.execute(new HttpGet(imagePath))) {

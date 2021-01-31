@@ -87,3 +87,5 @@ The URL is `https://max480-random-stuff.appspot.com/celeste/gamebanana-categorie
 This API simply downloads a WebP image from GameBanana, and converts it to PNG. **This can only be used with GameBanana screenshots.**
 
 Usage example: https://max480-random-stuff.appspot.com/celeste/webp-to-png?src=https://screenshots.gamebanana.com/img/ss/gamefiles/5b05ac2b4b6da.webp
+
+This API may answer with a 302 (redirect) leading to the actual image on Google Cloud Storage.
