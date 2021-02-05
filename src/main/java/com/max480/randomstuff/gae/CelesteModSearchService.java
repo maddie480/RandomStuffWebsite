@@ -37,6 +37,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.logging.Level;
@@ -56,6 +60,7 @@ public class CelesteModSearchService extends HttpServlet {
     private List<ModInfo> modDatabaseForSorting = Collections.emptyList();
 
     private final Storage storage = StorageOptions.newBuilder().setProjectId("max480-random-stuff").build().getService();
+    private final Map<String, Long> webpImagesInStorage = new HashMap<>();
 
     private static class ModInfo {
         public final String type;
@@ -271,13 +276,26 @@ public class CelesteModSearchService extends HttpServlet {
                 response.setHeader("Content-Type", "text/plain");
                 response.setStatus(403);
                 response.getWriter().write("this API can only be used with GameBanana");
+            } else if (webpImagesInStorage.containsKey(imagePath) && webpImagesInStorage.get(imagePath) > System.currentTimeMillis()) {
+                // we know the image is cached and didn't expire yet. redirect to it
+                response.setStatus(302);
+                response.setHeader("Location", "https://storage.googleapis.com/max480-webp-to-png-cache/" + URLEncoder.encode(imagePath + ".png", "UTF-8"));
             } else {
+                // remove image from cached image list if it was there, because it means it expired.
+                webpImagesInStorage.remove(imagePath);
+
                 BlobId blobId = BlobId.of("max480-webp-to-png-cache", imagePath + ".png");
                 Blob cachedImage = storage.get(blobId);
                 if (cachedImage != null) {
-                    // image was cached. redirect to it
+                    // we found the image in the Google Cloud Storage cache. redirect to it
                     response.setStatus(302);
                     response.setHeader("Location", "https://storage.googleapis.com/max480-webp-to-png-cache/" + URLEncoder.encode(blobId.getName(), "UTF-8"));
+
+                    // and cache the fact that the image is cached to avoid harrassing Cloud Storage about that. :theoreticalwoke:
+                    // this bucket is set up to delete files 30 days after their creation, so remember that as well.
+                    webpImagesInStorage.put(imagePath, Instant.ofEpochMilli(cachedImage.getCreateTime()).plus(30, ChronoUnit.DAYS).toEpochMilli());
+                    logger.fine("Image was found on Google Cloud Storage and will expire on " +
+                            Instant.ofEpochMilli(webpImagesInStorage.get(imagePath)).atZone(ZoneId.of("UTC")).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME) + ".");
                 } else {
                     // go get the image!
                     try (CloseableHttpResponse gamebananaResponse = httpClient.execute(new HttpGet(imagePath))) {
@@ -304,7 +322,7 @@ public class CelesteModSearchService extends HttpServlet {
                                 IOUtils.write(output, response.getOutputStream());
                             }
 
-                            logger.fine("Image was added to the cache.");
+                            logger.info("Image was added to the cache.");
                         }
                     }
                 }
