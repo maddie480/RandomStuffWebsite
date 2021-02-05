@@ -310,14 +310,18 @@ public class CelesteModSearchService extends HttpServlet {
                             // read the image from GameBanana.
                             BufferedImage image = ImageIO.read(gamebananaResponse.getEntity().getContent());
                             try (ByteArrayOutputStream imageOutput = new ByteArrayOutputStream()) {
-                                // write it as a PNG and cache it.
+                                // write it as a PNG in a byte array.
                                 ImageIO.write(image, "png", imageOutput);
                                 byte[] output = imageOutput.toByteArray();
-                                BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType("image/png").build();
-                                storage.create(blobInfo, output);
-                                storage.createAcl(blobId, Acl.of(Acl.User.ofAllUsers(), Acl.Role.READER));
 
-                                // send the response.
+                                // save it to Cloud Storage asynchronously.
+                                new Thread(() -> {
+                                    BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType("image/png").build();
+                                    storage.create(blobInfo, output);
+                                    storage.createAcl(blobId, Acl.of(Acl.User.ofAllUsers(), Acl.Role.READER));
+                                }).start();
+
+                                // also send it as a response.
                                 response.setHeader("Content-Type", "image/png");
                                 IOUtils.write(output, response.getOutputStream());
                             }
