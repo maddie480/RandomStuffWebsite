@@ -82,6 +82,27 @@ public class CelesteModSearchService extends HttpServlet {
     public void init() {
         try {
             refreshModDatabase();
+
+            // warm up webp to png conversion
+            long startTime = System.currentTimeMillis();
+            try (CloseableHttpResponse gamebananaResponse = httpClient.execute(new HttpGet(
+                    "https://screenshots.gamebanana.com/img/ss/gamefiles/5b05ac2b4b6da.webp"))) {
+
+                int status = gamebananaResponse.getStatusLine().getStatusCode();
+                if (status >= 400) {
+                    throw new Exception("Image conversion warmup failure: GameBanana returned " + status);
+                } else {
+                    // read the image from GameBanana.
+                    BufferedImage image = ImageIO.read(gamebananaResponse.getEntity().getContent());
+                    try (ByteArrayOutputStream imageOutput = new ByteArrayOutputStream()) {
+                        // write it as a PNG in a byte array.
+                        ImageIO.write(image, "png", imageOutput);
+                        byte[] output = imageOutput.toByteArray();
+                        logger.info("WebP conversion warmup took " + (System.currentTimeMillis() - startTime) + "ms, resulting image is "
+                                + output.length + " bytes.");
+                    }
+                }
+            }
         } catch (Exception e) {
             logger.log(Level.WARNING, "Warming up failed: " + e.toString());
         }
