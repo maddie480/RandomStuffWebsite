@@ -419,7 +419,7 @@ public class CelesteModSearchService extends HttpServlet {
 
                     Document modDocument = new Document();
                     modDocument.add(new TextField("type", mod.get("GameBananaType").toString(), Field.Store.YES));
-                    modDocument.add(new StoredField("id", mod.get("GameBananaId").toString()));
+                    modDocument.add(new TextField("id", mod.get("GameBananaId").toString(), Field.Store.YES));
                     modDocument.add(new TextField("name", mod.get("Name").toString(), Field.Store.YES));
                     modDocument.add(new TextField("author", weightedAuthors.toString(), Field.Store.NO));
                     modDocument.add(new TextField("summary", mod.get("Description").toString(), Field.Store.NO));
