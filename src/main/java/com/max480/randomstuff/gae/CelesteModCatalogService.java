@@ -162,7 +162,7 @@ public class CelesteModCatalogService extends HttpServlet {
         {
             Map<String, String> tempdic = new HashMap<>();
             try {
-                tempdic = Arrays.stream(IOUtils.toString(new URL(Constants.CUSTOM_ENTITY_CATALOG_DICTIONARY_URL), UTF_8).split("\n"))
+                tempdic = Arrays.stream(IOUtils.toString(new URL("https://raw.githubusercontent.com/max4805/RandomStuffWebsite/main/modcatalogdictionary.txt"), UTF_8).split("\n"))
                         .collect(Collectors.toMap(a -> a.split("=")[0], a -> a.split("=")[1]));
             } catch (Exception e) {
                 logger.warning("Could not fetch dictionary for entity names: " + e.toString());
