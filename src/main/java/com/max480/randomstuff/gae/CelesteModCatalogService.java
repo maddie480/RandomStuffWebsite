@@ -465,60 +465,24 @@ public class CelesteModCatalogService extends HttpServlet {
 
                             // check for "entities", "triggers" and "effects" as JSON arrays (no subfolders)
                             if (ahorn.has("entities") && ahorn.get("entities") instanceof JSONArray) {
-                                JSONArray entities = ahorn.getJSONArray("entities");
-                                for (Object entity : entities) {
-                                    String s = (String) entity;
-                                    if (s.endsWith(".jl")) {
-                                        thisModInfo.entityList.add(s);
-                                    }
-                                }
+                                addRecursively(thisModInfo.entityList, ahorn.getJSONArray("entities"));
                             }
                             if (ahorn.has("triggers") && ahorn.get("triggers") instanceof JSONArray) {
-                                JSONArray triggers = ahorn.getJSONArray("triggers");
-                                for (Object trigger : triggers) {
-                                    String s = (String) trigger;
-                                    if (s.endsWith(".jl")) {
-                                        thisModInfo.triggerList.add(s);
-                                    }
-                                }
+                                addRecursively(thisModInfo.triggerList, ahorn.getJSONArray("triggers"));
                             }
                             if (ahorn.has("effects") && ahorn.get("effects") instanceof JSONArray) {
-                                JSONArray effects = ahorn.getJSONArray("effects");
-                                for (Object effect : effects) {
-                                    String s = (String) effect;
-                                    if (s.endsWith(".jl")) {
-                                        thisModInfo.effectList.add(s);
-                                    }
-                                }
+                                addRecursively(thisModInfo.effectList, ahorn.getJSONArray("effects"));
                             }
 
                             // check for "entities", "triggers" and "effects" as JSON objects (with subfolders)
                             if (ahorn.has("entities") && ahorn.get("entities") instanceof JSONObject) {
-                                JSONObject entities = ahorn.getJSONObject("entities");
-                                for (String entity : entities.keySet()) {
-                                    Object o = entities.get(entity);
-                                    if (o instanceof String && ((String) o).endsWith(".jl")) {
-                                        thisModInfo.entityList.add((String) o);
-                                    }
-                                }
+                                addRecursively(thisModInfo.entityList, ahorn.getJSONObject("entities"));
                             }
                             if (ahorn.has("triggers") && ahorn.get("triggers") instanceof JSONObject) {
-                                JSONObject triggers = ahorn.getJSONObject("triggers");
-                                for (String trigger : triggers.keySet()) {
-                                    Object o = triggers.get(trigger);
-                                    if (o instanceof String && ((String) o).endsWith(".jl")) {
-                                        thisModInfo.triggerList.add((String) o);
-                                    }
-                                }
+                                addRecursively(thisModInfo.triggerList, ahorn.getJSONObject("triggers"));
                             }
                             if (ahorn.has("effects") && ahorn.get("effects") instanceof JSONObject) {
-                                JSONObject effects = ahorn.getJSONObject("effects");
-                                for (String effect : effects.keySet()) {
-                                    Object o = effects.get(effect);
-                                    if (o instanceof String && ((String) o).endsWith(".jl")) {
-                                        thisModInfo.effectList.add((String) o);
-                                    }
-                                }
+                                addRecursively(thisModInfo.effectList, ahorn.getJSONObject("effects"));
                             }
                         }
 
@@ -541,6 +505,47 @@ public class CelesteModCatalogService extends HttpServlet {
     }
 
     /**
+     * Adds Ahorn plugins recursively (crawling into subfolders).
+     *
+     * @param list   The list to add Ahorn plugins too
+     * @param source The source to add Ahorn plugins from
+     */
+    private static void addRecursively(Set<String> list, JSONArray source) {
+        for (Object object : source) {
+            if (object instanceof JSONArray) {
+                addRecursively(list, (JSONArray) object);
+            } else if (object instanceof JSONObject) {
+                addRecursively(list, (JSONObject) object);
+            } else if (object instanceof String) {
+                String s = (String) object;
+                if (s.endsWith(".jl")) {
+                    list.add(s);
+                }
+            }
+        }
+    }
+
+    /**
+     * Adds Ahorn plugins recursively (crawling into subfolders).
+     *
+     * @param list   The list to add Ahorn plugins too
+     * @param source The source to add Ahorn plugins from
+     */
+    private static void addRecursively(Set<String> list, JSONObject source) {
+        for (String key : source.keySet()) {
+            Object object = source.get(key);
+            if (object instanceof JSONArray) {
+                addRecursively(list, (JSONArray) object);
+            } else if (object instanceof String) {
+                String s = (String) object;
+                if (s.endsWith(".jl")) {
+                    list.add(s);
+                }
+            }
+        }
+    }
+
+    /**
      * Parses the given JSON with objects parsed as LinkedHashMaps <b>thus keeping the order</b>.
      * Order is not supposed to matter in JSON, but it does matter in the GameBanana file list, since this gives the
      * order the files appear in on GameBanana.
@@ -549,7 +554,7 @@ public class CelesteModCatalogService extends HttpServlet {
      * @return The JSON parsed as a List
      * @throws IOException In case a parse error occurs
      */
-    public List<Object> parseJSONObjectKeepingOrder(String json) throws IOException {
+    private static List<Object> parseJSONObjectKeepingOrder(String json) throws IOException {
         org.json.simple.parser.JSONParser parser = new org.json.simple.parser.JSONParser();
         org.json.simple.parser.ContainerFactory containerFactory = new org.json.simple.parser.ContainerFactory() {
             @Override
