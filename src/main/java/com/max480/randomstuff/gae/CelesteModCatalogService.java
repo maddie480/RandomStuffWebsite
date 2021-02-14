@@ -255,6 +255,14 @@ public class CelesteModCatalogService extends HttpServlet {
                 }
             }
 
+            if (info.itemtype.equals("Tool")) {
+                switch (info.itemid) {
+                    case 6970: // Ahorn Additives: blacklisted on request
+                        workingModInfo.remove(info);
+                        break;
+                }
+            }
+
             // sort the lists by ascending name.
             info.entityList = info.entityList.stream().map(a -> formatName(a, dictionary)).collect(Collectors.toCollection(TreeSet::new));
             info.triggerList = info.triggerList.stream().map(a -> formatName(a, dictionary)).collect(Collectors.toCollection(TreeSet::new));
