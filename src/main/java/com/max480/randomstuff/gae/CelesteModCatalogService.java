@@ -425,17 +425,24 @@ public class CelesteModCatalogService extends HttpServlet {
 
         logger.fine("Mod info URL: " + modInfoUrl);
 
-        JSONArray mods = runWithRetry(() -> {
+        String modsString = runWithRetry(() -> {
             try (InputStream is = new URL(modInfoUrl).openStream()) {
-                return new JSONArray(IOUtils.toString(is, UTF_8));
+                return IOUtils.toString(is, UTF_8);
             }
         });
+        JSONArray mods = new JSONArray(modsString);
+        List<Object> modsOrdered = parseJSONObjectKeepingOrder(modsString);
 
         Iterator<QueriedModInfo> queriedModInfoIterator = queriedModInfo.iterator();
 
-        for (Object modObject : mods) {
+        for (int i = 0; i < mods.length(); i++) {
+            Object modObject = mods.get(i);
+            List<Object> modObjectOrdered = (List<Object>) modsOrdered.get(i);
+
             // only "report" (call webhooks to warn about a mod having forbidden files) once.
             boolean modWasReported = false;
+            // only show files from the first version listed.
+            boolean filesWereAlreadyFound = false;
 
             JSONArray mod = (JSONArray) modObject;
             QueriedModInfo thisModInfo = queriedModInfoIterator.next();
@@ -445,13 +452,15 @@ public class CelesteModCatalogService extends HttpServlet {
             if (!(mod.get(1) instanceof JSONObject)) continue;
             JSONObject files = mod.getJSONObject(1);
 
-            for (String key : files.keySet()) {
+            Map<String, Object> filesOrdered = (Map<String, Object>) modObjectOrdered.get(1);
+
+            for (String key : filesOrdered.keySet()) {
                 JSONObject fileObject = files.getJSONObject(key);
                 if (fileObject.has("_aMetadata") && fileObject.get("_aMetadata") instanceof JSONObject) {
                     JSONObject metadata = fileObject.getJSONObject("_aMetadata");
                     if (metadata.has("_aArchiveFileTree") && metadata.get("_aArchiveFileTree") instanceof JSONObject) {
                         JSONObject fileTree = metadata.getJSONObject("_aArchiveFileTree");
-                        if (fileTree.has("Ahorn") && fileTree.get("Ahorn") instanceof JSONObject) {
+                        if (!filesWereAlreadyFound && fileTree.has("Ahorn") && fileTree.get("Ahorn") instanceof JSONObject) {
                             JSONObject ahorn = fileTree.getJSONObject("Ahorn");
 
                             // check for "entities", "triggers" and "effects" as JSON arrays (no subfolders)
@@ -519,11 +528,45 @@ public class CelesteModCatalogService extends HttpServlet {
                         }
                     }
                 }
+
+                if (!thisModInfo.entityList.isEmpty() || !thisModInfo.triggerList.isEmpty() || !thisModInfo.effectList.isEmpty()) {
+                    filesWereAlreadyFound = true;
+                }
             }
 
-            if (!thisModInfo.entityList.isEmpty() || !thisModInfo.triggerList.isEmpty() || !thisModInfo.effectList.isEmpty()) {
+            if (filesWereAlreadyFound) {
                 workingModInfo.add(thisModInfo);
             }
+        }
+    }
+
+    /**
+     * Parses the given JSON with objects parsed as LinkedHashMaps <b>thus keeping the order</b>.
+     * Order is not supposed to matter in JSON, but it does matter in the GameBanana file list, since this gives the
+     * order the files appear in on GameBanana.
+     *
+     * @param json The JSON to parse
+     * @return The JSON parsed as a List
+     * @throws IOException In case a parse error occurs
+     */
+    public List<Object> parseJSONObjectKeepingOrder(String json) throws IOException {
+        org.json.simple.parser.JSONParser parser = new org.json.simple.parser.JSONParser();
+        org.json.simple.parser.ContainerFactory containerFactory = new org.json.simple.parser.ContainerFactory() {
+            @Override
+            public Map createObjectContainer() {
+                return new LinkedHashMap();
+            }
+
+            @Override
+            public List creatArrayContainer() {
+                return null;
+            }
+        };
+
+        try {
+            return (List<Object>) parser.parse(json, containerFactory);
+        } catch (org.json.simple.parser.ParseException e) {
+            throw new IOException("Failed parsing JSON for authors list", e);
         }
     }
 
