@@ -335,11 +335,54 @@ public class CelesteModCatalogService extends HttpServlet {
 
         if (mods.isEmpty()) return false;
 
-        // map this list of arrays into a more Java-friendly object
+        /*
+            List of GameBanana types with whether or not they accept files:
+            App - NO
+            Article - NO
+            Blog - NO
+            Castaway - YES
+            Club - NO
+            Contest - NO
+            Concept - NO
+            Crafting - YES
+            Effect - YES
+            Event - NO
+            Gamefile - YES
+            Gui - YES
+            PositionAvailable - NO
+            Idea - NO
+            Map - YES
+            Model - YES
+            News - NO
+            Poll - NO
+            Prefab - YES
+            Project - NO
+            Question - NO
+            Review - NO
+            Request - NO
+            Script - NO
+            Skin - YES
+            Sound - YES
+            Spray - YES
+            Studio - NO
+            Thread - NO
+            Texture - YES
+            Tool - YES
+            Tutorial - NO
+            Wiki - NO
+            Wip - YES
+            Ware - NO
+         */
+
+        // map this list of arrays into a more Java-friendly object, and keep only item types that should have files attached to it.
         List<QueriedModInfo> queriedModInfo = new ArrayList<>(mods.length());
         mods.forEach(object -> {
             JSONArray json = (JSONArray) object;
-            queriedModInfo.add(new QueriedModInfo(json.getString(0), json.getInt(1)));
+            if (Arrays.asList("Castaway", "Crafting", "Effect", "Gamefile", "Gui", "Map", "Model", "Prefab", "Skin",
+                    "Sound", "Spray", "Texture", "Tool", "Wip").contains(json.getString(0))) {
+
+                queriedModInfo.add(new QueriedModInfo(json.getString(0), json.getInt(1)));
+            }
         });
 
         String urlModInfo = getModInfoCallUrl(queriedModInfo);
