@@ -123,7 +123,7 @@ public class EverestYamlValidatorService extends HttpServlet {
             if (metadatas != null) {
                 // load the mod database to check if dependencies exist there.
                 Map<String, Object> databaseUnparsed = new Yaml().load(new java.net.URL("https://max480-random-stuff.appspot.com/celeste/everest_update.yaml").openStream());
-                List<EverestModuleMetadata> database = databaseUnparsed
+                List<EverestModuleMetadata> databaseParsed = databaseUnparsed
                         .entrySet().stream()
                         .map(entry -> {
                             EverestModuleMetadata metadata = new EverestModuleMetadata();
@@ -132,6 +132,12 @@ public class EverestYamlValidatorService extends HttpServlet {
                             return metadata;
                         })
                         .collect(Collectors.toList());
+
+                List<EverestModuleMetadata> database = new ArrayList<>(databaseParsed);
+                EverestModuleMetadata strawberryJam = new EverestModuleMetadata();
+                strawberryJam.Name = "StrawberryJam2021";
+                strawberryJam.Version = "1.0.0";
+                database.add(strawberryJam);
 
                 List<String> problems = new ArrayList<>();
 
