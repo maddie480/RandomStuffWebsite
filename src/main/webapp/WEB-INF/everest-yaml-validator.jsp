@@ -106,9 +106,9 @@
             </div>
         <% } else { %>
             <div class="alert alert-success">
-                If your mod is a map with a single .bin file, the
+                If you have difficulties writing your everest.yaml, the
                 <a href="https://gamebanana.com/tools/6908" target="_blank" rel="noopener">Dependency Generator</a>
-                will be able to generate everest.yaml for you.
+                will be able to generate it for you.
             </div>
 
             <div class="alert alert-info">
