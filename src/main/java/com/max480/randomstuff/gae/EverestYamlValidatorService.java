@@ -155,14 +155,6 @@ public class EverestYamlValidatorService extends HttpServlet {
                                 " cause trouble with the 1-click installer. Make sure to remove those characters: / \\ * ? : \" < > |");
                     }
 
-                    // check that the 1-click installer will find the right name.
-                    String oneClickInstallerName = getModNameTheOneClickInstallerWay(fileContent);
-                    if (!mod.Name.equals(oneClickInstallerName)) {
-                        problems.add("The mod name that will be detected by the old 1-click installer, \"" + oneClickInstallerName + "\", doesn't match your actual mod's name, " +
-                                "\"" + mod.Name + "\". Be sure that your mod's name is the first \"Name:\" appearing in everest.yaml (and move it up if necessary)," +
-                                " and don't put the name in quotes.");
-                    }
-
                     // I don't want NullPointerExceptions
                     if (mod.Dependencies == null) {
                         mod.Dependencies = new ArrayList<>();
@@ -297,22 +289,5 @@ public class EverestYamlValidatorService extends HttpServlet {
             }
         }
         return latest;
-    }
-
-    /**
-     * Gets the mod name in the same way the 1-click installer (from Everest.Installer) does:
-     * with a substring, without a YAML parser.
-     * This way, we can warn the user if this gives unexpected results.
-     *
-     * @param yamlContents The contents of the everest.yaml
-     * @return The mod name, or null if there is none found
-     */
-    private static String getModNameTheOneClickInstallerWay(String yamlContents) {
-        for (String line : yamlContents.replace("\r\n", "\n").split("\n")) {
-            if (line.contains("Name:")) {
-                return line.substring(line.indexOf("Name:") + 5).trim();
-            }
-        }
-        return null;
     }
 }
