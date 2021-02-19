@@ -1,3 +1,4 @@
+activatecpptrigger=Activate CPP Trigger
 airbubbles=Air Bubbles
 alphalerplightsources=Alpha Lerp Light Sources
 angrykevin=Angry Kevin
@@ -100,6 +101,7 @@ plusonerefill=Plus One Refill
 propellerbox=Propeller Box
 raincloud=Rain Cloud
 randomsound=Random Sound
+rcsparticledecrease=RCS Particle Decrease
 santaarefill=Santa Refill
 screenwipe=Screen Wipe
 slowkevin=Slow Kevin
