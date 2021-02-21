@@ -337,7 +337,11 @@ public class CelesteModCatalogService extends HttpServlet {
 
         JSONArray mods = runWithRetry(() -> {
             try (InputStream is = new URL("https://api.gamebanana.com/Core/List/New?page=" + page + "&gameid=6460&format=json").openStream()) {
-                return new JSONArray(IOUtils.toString(is, UTF_8));
+                String result = IOUtils.toString(is, UTF_8);
+                if (result.isEmpty()) {
+                    throw new IOException("GameBanana gave an empty response when loading a mod page");
+                }
+                return new JSONArray(result);
             }
         });
 
@@ -435,7 +439,11 @@ public class CelesteModCatalogService extends HttpServlet {
 
         String modsString = runWithRetry(() -> {
             try (InputStream is = new URL(modInfoUrl).openStream()) {
-                return IOUtils.toString(is, UTF_8);
+                String result = IOUtils.toString(is, UTF_8);
+                if (result.isEmpty()) {
+                    throw new IOException("GameBanana gave an empty response when loading a mod page");
+                }
+                return result;
             }
         });
         JSONArray mods = new JSONArray(modsString);
@@ -647,8 +655,8 @@ public class CelesteModCatalogService extends HttpServlet {
 
                 // wait a bit before retrying
                 try {
-                    logger.fine("Waiting " + (i) + " seconds before next try.");
-                    Thread.sleep(i * 1000);
+                    logger.fine("Waiting " + (i * 5) + " seconds before next try.");
+                    Thread.sleep(i * 5000);
                 } catch (InterruptedException e2) {
                     logger.warning("Sleep interrupted: " + e2.toString());
                 }
