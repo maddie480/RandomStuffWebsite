@@ -1,8 +1,7 @@
 package com.max480.randomstuff.gae;
 
 import org.apache.commons.io.IOUtils;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import org.yaml.snakeyaml.Yaml;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -172,11 +171,7 @@ public class CelesteModCatalogService extends HttpServlet {
 
         workingModInfo = new ArrayList<>();
 
-        // load all the pages on GameBanana.
-        int page = 1;
-        while (loadPage(page)) {
-            page++;
-        }
+        refreshList();
 
         // deal with some mods that need special display treatment by hand
         for (QueriedModInfo info : new HashSet<>(workingModInfo)) {
@@ -325,299 +320,75 @@ public class CelesteModCatalogService extends HttpServlet {
         }
     }
 
-    /**
-     * Loads all the mods from a page in GameBanana.
-     *
-     * @param page The page to load (1-based)
-     * @return true if the page actually contains mods, false otherwise.
-     * @throws IOException In case of connection or IO issues.
-     */
-    private boolean loadPage(int page) throws IOException {
-        logger.fine("Loading page " + page + " of the list of mods from GameBanana");
-
-        JSONArray mods = runWithRetry(() -> {
-            try (InputStream is = new URL("https://api.gamebanana.com/Core/List/New?page=" + page + "&gameid=6460&format=json").openStream()) {
-                String result = IOUtils.toString(is, UTF_8);
-                if (result.isEmpty()) {
-                    throw new IOException("GameBanana gave an empty response when loading a mod page");
-                }
-                return new JSONArray(result);
-            }
-        });
-
-        if (mods.isEmpty()) return false;
-
-        /*
-            List of GameBanana types with whether or not they accept files:
-            App - NO
-            Article - NO
-            Blog - NO
-            Castaway - YES
-            Club - NO
-            Contest - NO
-            Concept - NO
-            Crafting - YES
-            Effect - YES
-            Event - NO
-            Gamefile - YES
-            Gui - YES
-            PositionAvailable - NO
-            Idea - NO
-            Map - YES
-            Model - YES
-            News - NO
-            Poll - NO
-            Prefab - YES
-            Project - NO
-            Question - NO
-            Review - NO
-            Request - NO
-            Script - NO
-            Skin - YES
-            Sound - YES
-            Spray - YES
-            Studio - NO
-            Thread - NO
-            Texture - YES
-            Tool - YES
-            Tutorial - NO
-            Wiki - NO
-            Wip - YES
-            Ware - NO
-         */
-
-        // map this list of arrays into a more Java-friendly object, and keep only item types that should have files attached to it.
-        List<QueriedModInfo> queriedModInfo = new ArrayList<>(mods.length());
-        mods.forEach(object -> {
-            JSONArray json = (JSONArray) object;
-            if (Arrays.asList("Castaway", "Crafting", "Effect", "Gamefile", "Gui", "Map", "Model", "Prefab", "Skin",
-                    "Sound", "Spray", "Texture", "Tool", "Wip").contains(json.getString(0))) {
-
-                queriedModInfo.add(new QueriedModInfo(json.getString(0), json.getInt(1)));
-            }
-        });
-
-        String urlModInfo = getModInfoCallUrl(queriedModInfo);
-        loadPageModInfo(urlModInfo, queriedModInfo);
-
-        return true;
-    }
-
-    /**
-     * Builds the URL used to retrieve details on the files for all mods given in parameter.
-     * (https://api.gamebanana.com/Core/Item/Data?itemtype[0]=Map&itemid[0]=204390&fields[0]=name,Files().aFiles() [...])
-     *
-     * @param mods The mods to get info for
-     * @return The URL to call to get info on those mods
-     */
-    private String getModInfoCallUrl(List<QueriedModInfo> mods) {
-        StringBuilder urlModInfo = new StringBuilder("https://api.gamebanana.com/Core/Item/Data?");
-        int index = 0;
-        for (QueriedModInfo mod : mods) {
-            urlModInfo
-                    .append("itemtype[").append(index).append("]=").append(mod.itemtype)
-                    .append("&itemid[").append(index).append("]=").append(mod.itemid)
-                    .append("&fields[").append(index).append("]=name,Files().aFiles()&");
-            index++;
+    private void refreshList() throws IOException {
+        // load the entire mod list
+        List<String> mods;
+        try (InputStream is = new URL(Constants.MOD_FILES_DATABASE_ROOT + "/list.yaml").openStream()) {
+            mods = new Yaml().load(is);
         }
 
-        urlModInfo.append("format=json");
-        return urlModInfo.toString();
-    }
-
-    /**
-     * Loads a page of mod info by calling the given url and downloading the updated files.
-     *
-     * @param modInfoUrl     The url to call to get the mod info
-     * @param queriedModInfo The list of mods the URL gets info for
-     * @throws IOException In case of connection or IO issues.
-     */
-    private void loadPageModInfo(String modInfoUrl, List<QueriedModInfo> queriedModInfo) throws IOException {
-        logger.fine("Loading mod details from GameBanana");
-
-        logger.fine("Mod info URL: " + modInfoUrl);
-
-        String modsString = runWithRetry(() -> {
-            try (InputStream is = new URL(modInfoUrl).openStream()) {
-                String result = IOUtils.toString(is, UTF_8);
-                if (result.isEmpty()) {
-                    throw new IOException("GameBanana gave an empty response when loading a mod page");
-                }
-                return result;
+        for (String mod : mods) {
+            // download this mod's info
+            Map<String, Object> fileInfo;
+            try (InputStream is = new URL(Constants.MOD_FILES_DATABASE_ROOT + "/" + mod + "/info.yaml").openStream()) {
+                fileInfo = new Yaml().load(is);
             }
-        });
-        JSONArray mods = new JSONArray(modsString);
-        List<Object> modsOrdered = parseJSONObjectKeepingOrder(modsString);
 
-        Iterator<QueriedModInfo> queriedModInfoIterator = queriedModInfo.iterator();
-
-        for (int i = 0; i < mods.length(); i++) {
-            Object modObject = mods.get(i);
-            List<Object> modObjectOrdered = (List<Object>) modsOrdered.get(i);
+            // create a QueriedModInfo for it
+            QueriedModInfo thisModInfo = new QueriedModInfo(mod.split("/")[0], Integer.parseInt(mod.split("/")[1]));
+            thisModInfo.modName = fileInfo.get("Name").toString();
+            List<String> files = (List<String>) fileInfo.get("Files");
 
             // only "report" (call webhooks to warn about a mod having forbidden files) once.
             boolean modWasReported = false;
             // only show files from the first version listed.
             boolean filesWereAlreadyFound = false;
 
-            JSONArray mod = (JSONArray) modObject;
-            QueriedModInfo thisModInfo = queriedModInfoIterator.next();
+            for (String file : files) {
+                // download the file list for this zip
+                List<String> fileList;
+                try (InputStream is = new URL(Constants.MOD_FILES_DATABASE_ROOT + "/" + mod + "/" + file + ".yaml").openStream()) {
+                    fileList = new Yaml().load(is);
+                }
 
-            // we asked for name,Files().aFiles()
-            thisModInfo.modName = mod.getString(0);
-            if (!(mod.get(1) instanceof JSONObject)) continue;
-            JSONObject files = mod.getJSONObject(1);
-
-            Map<String, Object> filesOrdered = (Map<String, Object>) modObjectOrdered.get(1);
-
-            for (String key : filesOrdered.keySet()) {
-                JSONObject fileObject = files.getJSONObject(key);
-                if (fileObject.has("_aMetadata") && fileObject.get("_aMetadata") instanceof JSONObject) {
-                    JSONObject metadata = fileObject.getJSONObject("_aMetadata");
-                    if (metadata.has("_aArchiveFileTree") && metadata.get("_aArchiveFileTree") instanceof JSONObject) {
-                        JSONObject fileTree = metadata.getJSONObject("_aArchiveFileTree");
-                        if (!filesWereAlreadyFound && fileTree.has("Ahorn") && fileTree.get("Ahorn") instanceof JSONObject) {
-                            JSONObject ahorn = fileTree.getJSONObject("Ahorn");
-
-                            // check for "entities", "triggers" and "effects" as JSON arrays (no subfolders)
-                            if (ahorn.has("entities") && ahorn.get("entities") instanceof JSONArray) {
-                                addRecursively(thisModInfo.entityList, ahorn.getJSONArray("entities"));
-                            }
-                            if (ahorn.has("triggers") && ahorn.get("triggers") instanceof JSONArray) {
-                                addRecursively(thisModInfo.triggerList, ahorn.getJSONArray("triggers"));
-                            }
-                            if (ahorn.has("effects") && ahorn.get("effects") instanceof JSONArray) {
-                                addRecursively(thisModInfo.effectList, ahorn.getJSONArray("effects"));
-                            }
-
-                            // check for "entities", "triggers" and "effects" as JSON objects (with subfolders)
-                            if (ahorn.has("entities") && ahorn.get("entities") instanceof JSONObject) {
-                                addRecursively(thisModInfo.entityList, ahorn.getJSONObject("entities"));
-                            }
-                            if (ahorn.has("triggers") && ahorn.get("triggers") instanceof JSONObject) {
-                                addRecursively(thisModInfo.triggerList, ahorn.getJSONObject("triggers"));
-                            }
-                            if (ahorn.has("effects") && ahorn.get("effects") instanceof JSONObject) {
-                                addRecursively(thisModInfo.effectList, ahorn.getJSONObject("effects"));
-                            }
+                // search for Ahorn plugins if we didn't already find them
+                if (!filesWereAlreadyFound) {
+                    for (String fileName : fileList) {
+                        if (fileName.startsWith("Ahorn/entities/") && fileName.endsWith(".jl")) {
+                            thisModInfo.entityList.add(fileName.substring(fileName.lastIndexOf("/") + 1));
                         }
-
-                        // the check for forbidden files is not retroactive and should only take new files into account.
-                        if (fileObject.has("_tsDateAdded") && fileObject.getLong("_tsDateAdded") > 1605394800L && !modWasReported) {
-                            modWasReported = checkForForbiddenFiles(thisModInfo, fileTree);
+                        if (fileName.startsWith("Ahorn/triggers/") && fileName.endsWith(".jl")) {
+                            thisModInfo.triggerList.add(fileName.substring(fileName.lastIndexOf("/") + 1));
+                        }
+                        if (fileName.startsWith("Ahorn/effects/") && fileName.endsWith(".jl")) {
+                            thisModInfo.effectList.add(fileName.substring(fileName.lastIndexOf("/") + 1));
                         }
                     }
                 }
 
+                // check for forbidden files if we didn't already find one
+                // and any file more recent that Crowd Control (502895)
+                if (Integer.parseInt(file) > 502895 && !modWasReported) {
+                    modWasReported = checkForForbiddenFiles(thisModInfo, fileList);
+                }
+
+                // check if we found plugins!
                 if (!thisModInfo.entityList.isEmpty() || !thisModInfo.triggerList.isEmpty() || !thisModInfo.effectList.isEmpty()) {
                     filesWereAlreadyFound = true;
                 }
             }
 
+            // add the mod to the custom entity catalog if it has any entity.
             if (filesWereAlreadyFound) {
                 workingModInfo.add(thisModInfo);
             }
         }
     }
 
-    /**
-     * Adds Ahorn plugins recursively (crawling into subfolders).
-     *
-     * @param list   The list to add Ahorn plugins too
-     * @param source The source to add Ahorn plugins from
-     */
-    private static void addRecursively(Set<String> list, JSONArray source) {
-        for (Object object : source) {
-            if (object instanceof JSONArray) {
-                addRecursively(list, (JSONArray) object);
-            } else if (object instanceof JSONObject) {
-                addRecursively(list, (JSONObject) object);
-            } else if (object instanceof String) {
-                String s = (String) object;
-                if (s.endsWith(".jl")) {
-                    list.add(s);
-                }
-            }
-        }
-    }
-
-    /**
-     * Adds Ahorn plugins recursively (crawling into subfolders).
-     *
-     * @param list   The list to add Ahorn plugins too
-     * @param source The source to add Ahorn plugins from
-     */
-    private static void addRecursively(Set<String> list, JSONObject source) {
-        for (String key : source.keySet()) {
-            Object object = source.get(key);
-            if (object instanceof JSONArray) {
-                addRecursively(list, (JSONArray) object);
-            } else if (object instanceof String) {
-                String s = (String) object;
-                if (s.endsWith(".jl")) {
-                    list.add(s);
-                }
-            }
-        }
-    }
-
-    /**
-     * Parses the given JSON with objects parsed as LinkedHashMaps <b>thus keeping the order</b>.
-     * Order is not supposed to matter in JSON, but it does matter in the GameBanana file list, since this gives the
-     * order the files appear in on GameBanana.
-     *
-     * @param json The JSON to parse
-     * @return The JSON parsed as a List
-     * @throws IOException In case a parse error occurs
-     */
-    private static List<Object> parseJSONObjectKeepingOrder(String json) throws IOException {
-        org.json.simple.parser.JSONParser parser = new org.json.simple.parser.JSONParser();
-        org.json.simple.parser.ContainerFactory containerFactory = new org.json.simple.parser.ContainerFactory() {
-            @Override
-            public Map createObjectContainer() {
-                return new LinkedHashMap();
-            }
-
-            @Override
-            public List creatArrayContainer() {
-                return null;
-            }
-        };
-
-        try {
-            return (List<Object>) parser.parse(json, containerFactory);
-        } catch (org.json.simple.parser.ParseException e) {
-            throw new IOException("Failed parsing JSON for authors list", e);
-        }
-    }
-
-    private boolean checkForForbiddenFiles(QueriedModInfo mod, JSONObject object) throws IOException {
-        for (String key : object.keySet()) {
-            if (checkEntry(mod, object.get(key))) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean checkForForbiddenFiles(QueriedModInfo mod, JSONArray array) throws IOException {
-        for (Object entry : array) {
-            if (checkEntry(mod, entry)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean checkEntry(QueriedModInfo mod, Object entry) throws IOException {
-        if (entry instanceof JSONObject) {
-            return checkForForbiddenFiles(mod, (JSONObject) entry);
-        } else if (entry instanceof JSONArray) {
-            return checkForForbiddenFiles(mod, (JSONArray) entry);
-        } else if (entry instanceof String) {
-            String entryString = (String) entry;
+    private boolean checkForForbiddenFiles(QueriedModInfo mod, List<String> fileList) throws IOException {
+        for (String entry : fileList) {
             for (String illegalFile : BAD_FILE_LIST) {
-                if (entryString.equalsIgnoreCase(illegalFile)) {
+                if (entry.equalsIgnoreCase(illegalFile) || entry.toLowerCase(Locale.ROOT).endsWith("/" + illegalFile.toLowerCase(Locale.ROOT))) {
                     try {
                         WebhookExecutor.executeWebhook(Constants.MAX480_WARNING_WEBHOOK,
                                 "<@354341658352943115> :warning: The mod called **" + mod.modName + "** contains a file named `" + illegalFile + "`!" +
@@ -633,37 +404,7 @@ public class CelesteModCatalogService extends HttpServlet {
                     return true;
                 }
             }
-            return false;
         }
         return false;
-    }
-
-    /**
-     * Runs a task (typically a network operation), retrying up to 3 times if it throws an IOException.
-     *
-     * @param task The task to run and retry
-     * @param <T>  The return type for the task
-     * @return What the task returned
-     * @throws IOException If the task failed 3 times
-     */
-    private <T> T runWithRetry(NetworkingOperation<T> task) throws IOException {
-        for (int i = 1; i < 3; i++) {
-            try {
-                return task.run();
-            } catch (IOException e) {
-                logger.warning("I/O exception while doing networking operation (try " + i + "/3): " + e.toString());
-
-                // wait a bit before retrying
-                try {
-                    logger.fine("Waiting " + (i * 5) + " seconds before next try.");
-                    Thread.sleep(i * 5000);
-                } catch (InterruptedException e2) {
-                    logger.warning("Sleep interrupted: " + e2.toString());
-                }
-            }
-        }
-
-        // 3rd try: this time, if it crashes, let it crash
-        return task.run();
     }
 }
