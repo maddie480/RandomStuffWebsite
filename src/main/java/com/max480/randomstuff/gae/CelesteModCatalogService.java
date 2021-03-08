@@ -142,20 +142,7 @@ public class CelesteModCatalogService extends HttpServlet {
         }
     }
 
-    private void reloadList() {
-        new Thread("Custom Entity List Reload") {
-            @Override
-            public void run() {
-                try {
-                    reloadListActual();
-                } catch (IOException e) {
-                    logger.severe("Error while updating database: " + e.toString());
-                }
-            }
-        }.start();
-    }
-
-    private void reloadListActual() throws IOException {
+    private void reloadList() throws IOException {
         // download the custom entity catalog dictionary.
         final Map<String, String> dictionary;
         {
