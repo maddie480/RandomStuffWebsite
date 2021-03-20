@@ -7,7 +7,7 @@ It contains the full source for:
 - [the Celeste custom entity catalog](https://max480-random-stuff.appspot.com/celeste/custom-entity-catalog)
 - [the everest.yaml validator](https://max480-random-stuff.appspot.com/celeste/everest-yaml-validator)
 - [the Everest Update Checker status page](https://max480-random-stuff.appspot.com/celeste/update-checker-status)
-- [the help page for the Mod Structure Verifier bot](src/main/webapp/WEB-INF/mod-structure-verifier.jsp)
+- [the help page for the Mod Structure Verifier bot](https://max480-random-stuff.appspot.com/celeste/mod-structure-verifier?collabName=CollabName&collabMapName=CollabMapName&assets&xmls&nomap&multiplemaps&badenglish&misplacedyaml&noyaml&yamlinvalid&missingassets&missingentities)
 - Some [GameBanana](https://gamebanana.com)-related APIs for the Celeste community described in the few next sections.
 
 If you want to check how the update checker's everest_update.yaml file is generated, check [the Everest Update Checker Server repo](https://github.com/max4805/EverestUpdateCheckerServer) instead.
