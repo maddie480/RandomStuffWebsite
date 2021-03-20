@@ -37,16 +37,21 @@ public class UpdateCheckerStatusService extends HttpServlet {
         // the service is down until proven otherwise.
         request.setAttribute("up", false);
 
-        // check logs for the last successful update
+        // check logs for the last successful update (limit 24 hours)
         final ApiFuture<AsyncPage<LogEntry>> lastCheck = logging.listLogEntriesAsync(
                 Logging.EntryListOption.sortOrder(Logging.SortingField.TIMESTAMP, Logging.SortingOrder.DESCENDING),
                 Logging.EntryListOption.filter("jsonPayload.message =~ \"^=== Ended searching for updates.\""),
                 Logging.EntryListOption.pageSize(1)
         );
-        // check logs for last update with updates found
+        // check logs for last update with updates found (limit 7 days)
         final ApiFuture<AsyncPage<LogEntry>> lastCheckWithUpdates = logging.listLogEntriesAsync(
                 Logging.EntryListOption.sortOrder(Logging.SortingField.TIMESTAMP, Logging.SortingOrder.DESCENDING),
-                Logging.EntryListOption.filter("jsonPayload.message =~ \"^=== Ended searching for updates. Downloaded [^0]\""),
+                Logging.EntryListOption.filter("(" +
+                        "jsonPayload.message =~ \"^=> Saved new information to database:\" " +
+                        "OR jsonPayload.message =~ \"was deleted from the database$\" " +
+                        "OR jsonPayload.message =~ \"Adding to the excluded files list.$\" " +
+                        "OR jsonPayload.message =~ \"Adding to the no yaml files list.$\")" +
+                        " AND timestamp >= \"" + ZonedDateTime.now().minusDays(7).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME) + "\""),
                 Logging.EntryListOption.pageSize(1)
         );
 
