@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -123,7 +124,7 @@ public class EverestYamlValidatorService extends HttpServlet {
             if (metadatas != null) {
                 // load the mod database to check if dependencies exist there.
                 Map<String, Object> databaseUnparsed = new Yaml().load(new java.net.URL("https://max480-random-stuff.appspot.com/celeste/everest_update.yaml").openStream());
-                List<EverestModuleMetadata> databaseParsed = databaseUnparsed
+                List<EverestModuleMetadata> database = databaseUnparsed
                         .entrySet().stream()
                         .map(entry -> {
                             EverestModuleMetadata metadata = new EverestModuleMetadata();
@@ -132,12 +133,6 @@ public class EverestYamlValidatorService extends HttpServlet {
                             return metadata;
                         })
                         .collect(Collectors.toList());
-
-                List<EverestModuleMetadata> database = new ArrayList<>(databaseParsed);
-                EverestModuleMetadata strawberryJam = new EverestModuleMetadata();
-                strawberryJam.Name = "StrawberryJam2021";
-                strawberryJam.Version = "1.0.0";
-                database.add(strawberryJam);
 
                 List<String> problems = new ArrayList<>();
 
@@ -175,6 +170,19 @@ public class EverestYamlValidatorService extends HttpServlet {
                         if (dependency.Name.equals("Everest")) {
                             databaseDependency = new EverestModuleMetadata();
                             databaseDependency.Version = "1." + getEverestVersion() + ".0";
+                        }
+
+                        // unreleased mods that have to be checked independently
+                        if (dependency.Name.equals("StrawberryJam2021")) {
+                            databaseDependency = new EverestModuleMetadata();
+                            databaseDependency.Version = "1.0.0";
+                        }
+                        if (dependency.Name.equals("GravityHelper")) {
+                            databaseDependency = new EverestModuleMetadata();
+                            try (InputStream is = new URL("https://api.github.com/repos/swoolcock/GravityHelper/tags").openStream()) {
+                                JSONArray tags = new JSONArray(IOUtils.toString(is, UTF_8));
+                                databaseDependency.Version = tags.getJSONObject(0).getString("name");
+                            }
                         }
 
                         if (databaseDependency == null) {
