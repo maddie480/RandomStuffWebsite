@@ -1,6 +1,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
-<%@ page import="java.util.List, com.max480.randomstuff.gae.CelesteModCatalogService, static org.apache.commons.text.StringEscapeUtils.escapeHtml4"%>
+<%@ page import="java.util.List, java.util.Map, com.max480.randomstuff.gae.CelesteModCatalogService, static org.apache.commons.text.StringEscapeUtils.escapeHtml4"%>
 
 <%@page session="false"%>
 
@@ -8,26 +8,26 @@
 
 <html lang="en">
 <head>
-	<title>Celeste Custom Entity and Trigger List</title>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<meta name="author" content="max480">
-	<meta name="description" content="A big list containing all custom entities and triggers from mods published on GameBanana.">
-	<meta property="og:title" content="Celeste Custom Entity and Trigger List">
-	<meta property="og:description" content="A big list containing all custom entities and triggers from mods published on GameBanana.">
+    <title>Celeste Custom Entity and Trigger List</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="max480">
+    <meta name="description" content="A big list containing all custom entities and triggers from mods published on GameBanana.">
+    <meta property="og:title" content="Celeste Custom Entity and Trigger List">
+    <meta property="og:description" content="A big list containing all custom entities and triggers from mods published on GameBanana.">
 
     <link rel="shortcut icon" href="/celeste/favicon.ico">
 
-	<link rel="stylesheet"
-		href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
-		integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
-		crossorigin="anonymous">
+    <link rel="stylesheet"
+        href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
+        integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
+        crossorigin="anonymous">
 </head>
 
 <body>
-	<div class="container">
-	    <a href="https://github.com/EverestAPI/Resources/wiki" class="btn btn-primary" style="margin-top: 20px; margin-bottom: 20px">
-	        &lt; Back to Wiki
+    <div class="container">
+        <a href="https://github.com/EverestAPI/Resources/wiki" class="btn btn-primary" style="margin-top: 20px; margin-bottom: 20px">
+            &lt; Back to Wiki
         </a>
 
         <% if((boolean) request.getAttribute("error")) { %>
@@ -70,11 +70,11 @@
 
             <br>
 
-		    <% for(CelesteModCatalogService.QueriedModInfo mod : (List<CelesteModCatalogService.QueriedModInfo>) request.getAttribute("mods")) { %>
-		        <hr>
+            <% for(CelesteModCatalogService.QueriedModInfo mod : (List<CelesteModCatalogService.QueriedModInfo>) request.getAttribute("mods")) { %>
+                <hr>
 
-		        <h3 id="<%= CelesteModCatalogService.dasherize(mod.modName) %>">
-		            <%= escapeHtml4(mod.modName) %>
+                <h3 id="<%= CelesteModCatalogService.dasherize(mod.modName) %>">
+                    <%= escapeHtml4(mod.modName) %>
                     <% if("Gamefile".equals(mod.itemtype)) { %>
                         <span class="badge badge-success">Helper</span>
                     <% } else if("Map".equals(mod.itemtype)) { %>
@@ -83,38 +83,43 @@
                         <span class="badge badge-warning">Other</span>
                     <% } %>
                 </h3>
-		        <p>
-		            <a href="https://gamebanana.com/<%= mod.itemtype.toLowerCase() %>s/<%= mod.itemid %>" rel="noopener" target="_blank">GameBanana page</a>
-		        </p>
-		        <% if(!mod.effectList.isEmpty()) { %>
+                <p>
+                    <a href="https://gamebanana.com/<%= mod.itemtype.toLowerCase() %>s/<%= mod.itemid %>" rel="noopener" target="_blank"
+                        class="btn btn-outline-primary">GameBanana page</a>
+                    <% for(Map.Entry<String, String> docLink : mod.documentationLinks.entrySet()) { %>
+                        <a href="<%= escapeHtml4(docLink.getValue()) %>" rel="noopener" target="_blank"
+                            class="btn btn-outline-secondary"><%= escapeHtml4(docLink.getKey()) %></a>
+                    <% } %>
+                </p>
+                <% if(!mod.effectList.isEmpty()) { %>
                     <h4>Effects</h4>
                     <ul>
-		                <% for(String effect : mod.effectList) { %>
-		                    <li><%= escapeHtml4(effect) %></li>
-		                <% } %>
+                        <% for(String effect : mod.effectList) { %>
+                            <li><%= escapeHtml4(effect) %></li>
+                        <% } %>
                     </ul>
-		        <% } %>
-		        <% if(!mod.entityList.isEmpty()) { %>
+                <% } %>
+                <% if(!mod.entityList.isEmpty()) { %>
                     <h4>Entities</h4>
                     <ul>
-		                <% for(String entity : mod.entityList) { %>
-		                    <li><%= escapeHtml4(entity) %></li>
-		                <% } %>
+                        <% for(String entity : mod.entityList) { %>
+                            <li><%= escapeHtml4(entity) %></li>
+                        <% } %>
                     </ul>
-		        <% } %>
-		        <% if(!mod.triggerList.isEmpty()) { %>
+                <% } %>
+                <% if(!mod.triggerList.isEmpty()) { %>
                     <h4>Triggers</h4>
                     <ul>
-		                <% for(String trigger : mod.triggerList) { %>
-		                    <li><%= escapeHtml4(trigger) %></li>
-		                <% } %>
+                        <% for(String trigger : mod.triggerList) { %>
+                            <li><%= escapeHtml4(trigger) %></li>
+                        <% } %>
                     </ul>
-		        <% } %>
+                <% } %>
             <% } %>
         <% } %>
 
-        <!-- Developed by max480 - version 1.3 - last updated on Oct 27, 2020 -->
+        <!-- Developed by max480 - version 1.4 - last updated on Apr 3, 2021 -->
         <!-- What are you doing here? :thinkeline: -->
-	</div>
+    </div>
 </body>
 </html>

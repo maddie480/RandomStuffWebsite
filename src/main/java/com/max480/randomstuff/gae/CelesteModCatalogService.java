@@ -8,14 +8,18 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -160,8 +164,58 @@ public class CelesteModCatalogService extends HttpServlet {
 
         refreshList();
 
-        // deal with some mods that need special display treatment by hand
+        // mod name -> (link name, link)
+        Map<String, Map<String, String>> documentationLinks = new HashMap<>();
+
+        // get the documentation links on the Everest wiki.
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(
+                new URL("https://raw.githubusercontent.com/wiki/EverestAPI/Resources/Mapping/Helper-Manuals.md").openStream()))) {
+
+            // we're expecting - [label](link)
+            Pattern linkPattern = Pattern.compile("^- \\[(.*)]\\((.*)\\)$");
+
+            String sectionName = null;
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (line.startsWith("## ")) {
+                    // we met a section name (mod name): ModName (alias), trim ## and the alias + trim extra spaces.
+                    sectionName = line.substring(3).trim();
+                    if (sectionName.contains("(")) {
+                        sectionName = sectionName.substring(0, sectionName.indexOf("(")).trim();
+                    }
+                } else if (sectionName != null) {
+                    Matcher match = linkPattern.matcher(line.trim());
+                    if (match.matches()) {
+                        // this is a documentation link, store it.
+                        Map<String, String> links = documentationLinks.getOrDefault(sectionName, new LinkedHashMap<>());
+                        links.put(match.group(1), match.group(2));
+                        documentationLinks.put(sectionName, links);
+                    } else {
+                        // we ran past the links!
+                        sectionName = null;
+                    }
+                }
+            }
+        }
+
+        // get the update checker database.
+        Map<String, Map<String, Object>> everestUpdateYaml;
+        try (InputStream is = new URL(Constants.UPDATE_CHECKER_SERVER_URL).openStream()) {
+            everestUpdateYaml = new Yaml().load(is);
+        }
+
         for (QueriedModInfo info : new HashSet<>(workingModInfo)) {
+            // find the mod name based on GameBanana itemtype/itemid.
+            Map.Entry<String, Map<String, Object>> updateCheckerDatabaseEntry = everestUpdateYaml.entrySet()
+                    .stream().filter(entry -> info.itemtype.equals(entry.getValue().get("GameBananaType").toString())
+                            && info.itemid == (int) entry.getValue().get("GameBananaId")).findFirst().orElse(null);
+
+            // if found, attach any docs to it.
+            if (updateCheckerDatabaseEntry != null && documentationLinks.containsKey(updateCheckerDatabaseEntry.getKey())) {
+                info.documentationLinks = documentationLinks.get(updateCheckerDatabaseEntry.getKey());
+            }
+
+            // deal with some mods that need special display treatment by hand
             if (info.itemtype.equals("Gamefile")) {
                 switch (info.itemid) {
                     case 10166: // Canyon Helper: one file containing all entities
@@ -300,6 +354,7 @@ public class CelesteModCatalogService extends HttpServlet {
         public Set<String> entityList = new TreeSet<>();
         public Set<String> triggerList = new TreeSet<>();
         public Set<String> effectList = new TreeSet<>();
+        public Map<String, String> documentationLinks = Collections.emptyMap();
 
         private QueriedModInfo(String itemtype, int itemid) {
             this.itemtype = itemtype;

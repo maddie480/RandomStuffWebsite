@@ -99,6 +99,14 @@
             </div>
         <% } %>
 
+        <% if (request.getParameter("badmappath") != null) { %>
+            <h2>Your map is not in the right folder</h2>
+
+            <div>
+                Make sure your map .bin file is placed in <pre>Maps/<%= escapeHtml4(request.getParameter("collabMapName")) %>/[subfolder]/mapname.bin</pre>.
+            </div>
+        <% } %>
+
         <% if (request.getParameter("badenglish") != null) { %>
             <h2>You have English.txt entries with invalid names</h2>
 
@@ -186,7 +194,7 @@
 
         <div style="height: 30px"/>
 
-        <!-- Developed by max480 - version 1.0 - last updated on Mar 17, 2021 -->
+        <!-- Developed by max480 - version 1.1 - last updated on Apr 03, 2021 -->
         <!-- What are you doing here? :thinkeline: -->
 	</div>
 </body>
