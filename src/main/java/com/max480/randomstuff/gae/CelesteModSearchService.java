@@ -362,8 +362,6 @@ public class CelesteModSearchService extends HttpServlet {
             return "WiPs";
         } else if (input.equals("Gui")) {
             return "GUIs";
-        } else if (input.equals("PositionAvailable")) {
-            return "Positions Available";
         }
 
         // apply the spaced pascal case from Everest
