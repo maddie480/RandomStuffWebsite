@@ -14,12 +14,10 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -179,7 +177,7 @@ public class EverestYamlValidatorService extends HttpServlet {
                         }
                         if (dependency.Name.equals("GravityHelper")) {
                             databaseDependency = new EverestModuleMetadata();
-                            try (InputStream is = new URL("https://api.github.com/repos/swoolcock/GravityHelper/tags").openStream()) {
+                            try (InputStream is = authenticatedGitHubRequest("https://api.github.com/repos/swoolcock/GravityHelper/tags")) {
                                 JSONArray tags = new JSONArray(IOUtils.toString(is, UTF_8));
                                 databaseDependency.Version = tags.getJSONObject(0).getString("name");
                             }
@@ -227,6 +225,13 @@ public class EverestYamlValidatorService extends HttpServlet {
         }
 
         request.getRequestDispatcher("/WEB-INF/everest-yaml-validator.jsp").forward(request, response);
+    }
+
+    private InputStream authenticatedGitHubRequest(String url) throws IOException {
+        HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+        connection.setRequestProperty("Authorization", "Basic " + Base64.getEncoder().encodeToString(
+                (Constants.GITHUB_USERNAME + ":" + Constants.GITHUB_PERSONAL_ACCESS_TOKEN).getBytes(UTF_8)));
+        return connection.getInputStream();
     }
 
     /**

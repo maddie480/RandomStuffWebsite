@@ -13,4 +13,7 @@ public final class ConstantsDummy {
     public static final String UPDATE_CHECKER_SERVER_URL = "";
     public static final String CLOUD_STORAGE_BACKUP_FILENAME = "";
     public static final String MOD_SEARCH_DATABASE_URL = "";
+
+    public static final String GITHUB_USERNAME = "";
+    public static final String GITHUB_PERSONAL_ACCESS_TOKEN = "";
 }
