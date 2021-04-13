@@ -433,7 +433,7 @@ public class CelesteModCatalogService extends HttpServlet {
                 if (entry.equalsIgnoreCase(illegalFile) || entry.toLowerCase(Locale.ROOT).endsWith("/" + illegalFile.toLowerCase(Locale.ROOT))) {
                     try {
                         WebhookExecutor.executeWebhook(Constants.MAX480_WARNING_WEBHOOK,
-                                "<@354341658352943115> :warning: The mod called **" + mod.modName + "** contains a file named `" + illegalFile + "`!" +
+                                ":warning: The mod called **" + mod.modName + "** contains a file named `" + illegalFile + "`!" +
                                         " This is illegal <:landeline:458158726558384149>\n:arrow_right: https://gamebanana.com/"
                                         + mod.itemtype.toLowerCase() + "s/" + mod.itemid);
                         WebhookExecutor.executeWebhook(Constants.COLOURSOFNOISE_WARNING_WEBHOOK,
