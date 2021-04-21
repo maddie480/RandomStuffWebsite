@@ -42,6 +42,7 @@ The search engine is powered by [Apache Lucene](https://lucene.apache.org/). It 
   - the **name** (default): `name: (Spring Collab 2020)`
   - the GameBanana **type**: `type: gamefile`, `type: map`, etc.
   - the GameBanana **ID**: `id: 9486` (those can be found at the end of links to mods)
+  - the GameBanana **category**: `category: Textures`
   - one of the **authors**: `author: max480`
   - the **summary** (line that appears first on the page): `summary: (grab bag)`
   - the **description**: `description: "flag touch switches"`
@@ -52,11 +53,12 @@ For a full list of supported syntax, check [the Lucene documentation](https://lu
 
 This API allows to get a sorted list of most downloaded, liked or viewed Celeste mods on GameBanana.
 
-Since the information used by this API can be late by up to 30 minutes, it does not allow to retrieve the _latest_ mods. For that, use [the real GameBanana API](https://api.gamebanana.com/docs/endpoints/Core/List/New) instead.
+If you want to retrieve the latest mod with no type filter, it is recommended to use [the real GameBanana API](https://api.gamebanana.com/docs/endpoints/Core/List/New) instead, for more up-to-date information.
 
-The URL is `https://max480-random-stuff.appspot.com/celeste/gamebanana-list?sort=[sort]&type=[type]&page=[page]` where:
-- `sort` is the info to sort on (**mandatory**). It can be `likes`, `views` or `downloads`
+The URL is `https://max480-random-stuff.appspot.com/celeste/gamebanana-list?sort=[sort]&type=[type]&category=[category]&page=[page]` where:
+- `sort` is the info to sort on (**mandatory**). It can be `latest`, `likes`, `views` or `downloads`
 - `type` is the GameBanana type to filter on (optional and case-insensitive). For example `Map`, `Gamefile` or `Tool`
+- `category` is the GameBanana mod category ID to filter on (optional), this is returned by [the GameBanana categories list API](#gamebanana-categories-list-api). For example `944`
 - `page` is the page to get, first page being 1 (optional, default is 1). Each page contains 20 elements.
 
 The output format is the same as the GameBanana search API, [see the previous section](#the-gamebanana-search-api).
@@ -67,7 +69,9 @@ This API allows getting a list of GameBanana item types _that have at least one 
 
 The counts returned by this API might not match the numbers displayed on the GameBanana website; that's because GameBanana counts mods that do not show up in the list.
 
-The URL is `https://max480-random-stuff.appspot.com/celeste/gamebanana-categories` and the result looks like:
+Each entry has either an `itemtype` or a `categoryid` (for mods that have `itemtype` = `Mod`, so that they can be filtered by category instead). The "All" entry is special and has an empty `itemtype`, and carries the total number of mods.
+
+The URL is `https://max480-random-stuff.appspot.com/celeste/gamebanana-categories?version=2` and the result looks like:
 ```yaml
 - itemtype: ''
   formatted: All
@@ -81,8 +85,13 @@ The URL is `https://max480-random-stuff.appspot.com/celeste/gamebanana-categorie
 - itemtype: Gui
   formatted: GUIs
   count: 11
+- categoryid: 944
+  formatted: Textures
+  count: 2
 ...
 ```
+
+Not passing `?version=2` will result in only `itemtype`s getting returned, with one of them being `Mod`. This is here for backwards compatibility.
 
 ## GameBanana WebP to PNG API
 

@@ -45,6 +45,7 @@ import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @WebServlet(name = "CelesteModSearchService", loadOnStartup = 1, urlPatterns = {"/celeste/gamebanana-search",
         "/celeste/gamebanana-search-reload", "/celeste/gamebanana-list", "/celeste/gamebanana-categories", "/celeste/webp-to-png"})
@@ -57,6 +58,7 @@ public class CelesteModSearchService extends HttpServlet {
     private final Analyzer analyzer = new StandardAnalyzer();
     private Directory modIndexDirectory = null;
     private List<ModInfo> modDatabaseForSorting = Collections.emptyList();
+    private Map<Integer, String> modCategories;
 
     private final Storage storage = StorageOptions.newBuilder().setProjectId("max480-random-stuff").build().getService();
     private final Map<String, Long> webpImagesInStorage = new HashMap<>();
@@ -67,13 +69,15 @@ public class CelesteModSearchService extends HttpServlet {
         public final int likes;
         public final int views;
         public final int downloads;
+        public final int categoryId;
 
-        private ModInfo(String type, int id, int likes, int views, int downloads) {
+        private ModInfo(String type, int id, int likes, int views, int downloads, int categoryId) {
             this.type = type;
             this.id = id;
             this.likes = likes;
             this.views = views;
             this.downloads = downloads;
+            this.categoryId = categoryId;
         }
     }
 
@@ -184,12 +188,13 @@ public class CelesteModSearchService extends HttpServlet {
             String sortParam = request.getParameter("sort");
             String pageParam = request.getParameter("page");
             String typeParam = request.getParameter("type");
+            String categoryParam = request.getParameter("category");
 
-            if (!Arrays.asList("likes", "views", "downloads").contains(sortParam)) {
+            if (!Arrays.asList("latest", "likes", "views", "downloads").contains(sortParam)) {
                 // invalid sort!
                 response.setHeader("Content-Type", "text/plain");
                 response.setStatus(400);
-                response.getWriter().write("expected \"sort\" parameter with value \"likes\", \"views\" or \"downloads\"");
+                response.getWriter().write("expected \"sort\" parameter with value \"latest\", \"likes\", \"views\" or \"downloads\"");
             } else {
                 // parse the page number: if page number is absent or invalid, assume 1
                 int page = 1;
@@ -201,17 +206,22 @@ public class CelesteModSearchService extends HttpServlet {
                     }
                 }
 
-                // is there a type filter?
+                // is there a type and/or a category filter?
                 Predicate<ModInfo> typeFilter = info -> true;
                 if (typeParam != null) {
-                    typeFilter = info -> typeParam.equalsIgnoreCase(info.type);
+                    if (categoryParam != null) {
+                        typeFilter = info -> typeParam.equalsIgnoreCase(info.type) && Integer.toString(info.categoryId).equals(categoryParam);
+                    } else {
+                        typeFilter = info -> typeParam.equalsIgnoreCase(info.type);
+                    }
+                } else if (categoryParam != null) {
+                    typeFilter = info -> Integer.toString(info.categoryId).equals(categoryParam);
                 }
 
                 // determine the field on which we want to sort. Sort by descending id to tell equal values apart.
                 Comparator<ModInfo> sort;
                 switch (sortParam) {
                     case "views":
-                    default:
                         sort = Comparator.<ModInfo>comparingInt(i -> -i.views).thenComparingInt(i -> -i.id);
                         break;
                     case "likes":
@@ -220,12 +230,20 @@ public class CelesteModSearchService extends HttpServlet {
                     case "downloads":
                         sort = Comparator.<ModInfo>comparingInt(i -> -i.downloads).thenComparingInt(i -> -i.id);
                         break;
+                    default:
+                        sort = null;
+                        break;
                 }
 
                 // then sort on it.
-                List<Map<String, Object>> responseBody = modDatabaseForSorting.stream()
-                        .filter(typeFilter)
-                        .sorted(sort)
+                Stream<ModInfo> responseBodyStream = modDatabaseForSorting.stream()
+                        .filter(typeFilter);
+
+                if (sort != null) {
+                    responseBodyStream = responseBodyStream.sorted(sort);
+                }
+
+                final List<Map<String, Object>> responseBody = responseBodyStream
                         .skip((page - 1) * 20L)
                         .limit(20)
                         .map(modInfo -> {
@@ -243,15 +261,21 @@ public class CelesteModSearchService extends HttpServlet {
         }
 
         if (request.getRequestURI().equals("/celeste/gamebanana-categories")) {
+            boolean v2 = "2".equals(request.getParameter("version"));
+
             // go across all mods and aggregate stats per category.
-            TreeMap<String, Integer> categoriesAndCounts = new TreeMap<>();
+            HashMap<Object, Integer> categoriesAndCounts = new HashMap<>();
             for (ModInfo modInfo : modDatabaseForSorting) {
-                if (!categoriesAndCounts.containsKey(modInfo.type)) {
+                Object category = modInfo.type;
+                if (v2 && category.equals("Mod")) {
+                    category = modInfo.categoryId;
+                }
+                if (!categoriesAndCounts.containsKey(category)) {
                     // first mod encountered in this category
-                    categoriesAndCounts.put(modInfo.type, 1);
+                    categoriesAndCounts.put(category, 1);
                 } else {
                     // add 1 to the mod count in the category
-                    categoriesAndCounts.put(modInfo.type, categoriesAndCounts.get(modInfo.type) + 1);
+                    categoriesAndCounts.put(category, categoriesAndCounts.get(category) + 1);
                 }
             }
 
@@ -259,11 +283,19 @@ public class CelesteModSearchService extends HttpServlet {
             List<Map<String, Object>> categoriesList = categoriesAndCounts.entrySet().stream()
                     .map(entry -> {
                         Map<String, Object> result = new LinkedHashMap<>();
-                        result.put("itemtype", entry.getKey());
-                        result.put("formatted", formatGameBananaCategory(entry.getKey()));
+                        if (entry.getKey() instanceof String) {
+                            // itemtype
+                            result.put("itemtype", entry.getKey());
+                            result.put("formatted", formatGameBananaItemtype(entry.getKey().toString()));
+                        } else {
+                            // mod category
+                            result.put("categoryid", entry.getKey());
+                            result.put("formatted", modCategories.get(entry.getKey()));
+                        }
                         result.put("count", entry.getValue());
                         return result;
                     })
+                    .sorted(Comparator.comparing(result -> result.get("formatted").toString()))
                     .collect(Collectors.toList());
 
             // also add an "All" option to pass the total number of mods.
@@ -354,7 +386,7 @@ public class CelesteModSearchService extends HttpServlet {
         }
     }
 
-    public static String formatGameBananaCategory(String input) {
+    public static String formatGameBananaItemtype(String input) {
         // specific formatting for a few categories
         if (input.equals("Gamefile")) {
             return "Game files";
@@ -398,6 +430,7 @@ public class CelesteModSearchService extends HttpServlet {
 
             RAMDirectory newDirectory = new RAMDirectory(); // I know it's deprecated but creating a directory on App Engine is weird
             List<ModInfo> newModDatabaseForSorting = new LinkedList<>();
+            Map<Integer, String> newModCategories = new HashMap<>();
 
             // feed the mods to Lucene so that it indexes them
             try (IndexWriter index = new IndexWriter(newDirectory, new IndexWriterConfig(analyzer))) {
@@ -414,6 +447,8 @@ public class CelesteModSearchService extends HttpServlet {
                     }
                     logger.finest("Weighted authors: " + weightedAuthors);
 
+                    int categoryId = -1;
+
                     Document modDocument = new Document();
                     modDocument.add(new TextField("type", mod.get("GameBananaType").toString(), Field.Store.YES));
                     modDocument.add(new TextField("id", mod.get("GameBananaId").toString(), Field.Store.YES));
@@ -421,15 +456,22 @@ public class CelesteModSearchService extends HttpServlet {
                     modDocument.add(new TextField("author", weightedAuthors.toString(), Field.Store.NO));
                     modDocument.add(new TextField("summary", mod.get("Description").toString(), Field.Store.NO));
                     modDocument.add(new TextField("description", mod.get("Text").toString(), Field.Store.NO));
+                    if (mod.get("CategoryName") != null) {
+                        modDocument.add(new TextField("category", mod.get("CategoryName").toString(), Field.Store.NO));
+
+                        categoryId = (int) mod.get("CategoryId");
+                        newModCategories.put(categoryId, mod.get("CategoryName").toString());
+                    }
                     index.addDocument(modDocument);
 
                     newModDatabaseForSorting.add(new ModInfo(mod.get("GameBananaType").toString(), (int) mod.get("GameBananaId"),
-                            (int) mod.get("Likes"), (int) mod.get("Views"), (int) mod.get("Downloads")));
+                            (int) mod.get("Likes"), (int) mod.get("Views"), (int) mod.get("Downloads"), categoryId));
                 }
             }
 
             modIndexDirectory = newDirectory;
             modDatabaseForSorting = newModDatabaseForSorting;
+            modCategories = newModCategories;
 
             logger.fine("Virtual index directory contains " + modIndexDirectory.listAll().length + " files and uses "
                     + newDirectory.ramBytesUsed() + " bytes of RAM.");
