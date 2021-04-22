@@ -308,6 +308,22 @@ public class CelesteModCatalogService extends HttpServlet {
         // sort the list by ascending name.
         workingModInfo.sort(Comparator.comparing(a -> a.modName));
 
+        // fill out the category IDs for all mods.
+        List<Map<String, Object>> modSearchDatabase;
+        try (InputStream is = new URL(Constants.MOD_SEARCH_DATABASE_URL).openStream()) {
+            modSearchDatabase = new Yaml().load(is);
+        }
+
+        for (QueriedModInfo modInfo : workingModInfo) {
+            for (Map<String, Object> mod : modSearchDatabase) {
+                if (mod.containsKey("CategoryId") && modInfo.itemtype.equals(mod.get("GameBananaType").toString())
+                        && Integer.toString(modInfo.itemid).equals(mod.get("GameBananaId").toString())) {
+
+                    modInfo.categoryid = (int) mod.get("CategoryId");
+                }
+            }
+        }
+
         logger.info("Found " + workingModInfo.size() + " mods.");
         modInfo = workingModInfo;
         workingModInfo = null;
@@ -350,6 +366,7 @@ public class CelesteModCatalogService extends HttpServlet {
     public static class QueriedModInfo {
         public String itemtype;
         public int itemid;
+        public int categoryid;
         public String modName;
         public Set<String> entityList = new TreeSet<>();
         public Set<String> triggerList = new TreeSet<>();

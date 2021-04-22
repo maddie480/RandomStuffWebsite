@@ -63,7 +63,7 @@
                 <% for(CelesteModCatalogService.QueriedModInfo mod : (List<CelesteModCatalogService.QueriedModInfo>) request.getAttribute("mods")) { %>
                     <li>
                         <a href="#<%= CelesteModCatalogService.dasherize(mod.modName) %>"><%= escapeHtml4(mod.modName) %></a>
-                        <% if("Gamefile".equals(mod.itemtype)) { %>
+                        <% if(mod.categoryid == 4631) { %>
                             <span class="badge badge-success">Helper</span>
                         <% } else if("Map".equals(mod.itemtype)) { %>
                             <span class="badge badge-danger">Map</span>
@@ -81,7 +81,7 @@
 
                 <h3 id="<%= CelesteModCatalogService.dasherize(mod.modName) %>">
                     <%= escapeHtml4(mod.modName) %>
-                    <% if("Gamefile".equals(mod.itemtype)) { %>
+                    <% if(mod.categoryid == 4631) { %>
                         <span class="badge badge-success">Helper</span>
                     <% } else if("Map".equals(mod.itemtype)) { %>
                         <span class="badge badge-danger">Map</span>
