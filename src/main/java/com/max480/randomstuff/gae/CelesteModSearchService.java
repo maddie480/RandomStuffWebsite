@@ -89,7 +89,7 @@ public class CelesteModSearchService extends HttpServlet {
             // warm up webp to png conversion
             long startTime = System.currentTimeMillis();
             try (CloseableHttpResponse gamebananaResponse = httpClient.execute(new HttpGet(
-                    "https://screenshots.gamebanana.com/img/ss/gamefiles/5b05ac2b4b6da.webp"))) {
+                    "https://images.gamebanana.com/img/ss/mods/530-90_5b05ac2b4b6da.webp"))) {
 
                 int status = gamebananaResponse.getStatusLine().getStatusCode();
                 if (status >= 400) {
@@ -286,7 +286,7 @@ public class CelesteModSearchService extends HttpServlet {
                         if (entry.getKey() instanceof String) {
                             // itemtype
                             result.put("itemtype", entry.getKey());
-                            result.put("formatted", formatGameBananaItemtype(entry.getKey().toString()));
+                            result.put("formatted", formatGameBananaItemtype(entry.getKey().toString(), true));
                         } else {
                             // mod category
                             result.put("categoryid", entry.getKey());
@@ -386,14 +386,14 @@ public class CelesteModSearchService extends HttpServlet {
         }
     }
 
-    public static String formatGameBananaItemtype(String input) {
+    public static String formatGameBananaItemtype(String input, boolean pluralize) {
         // specific formatting for a few categories
         if (input.equals("Gamefile")) {
-            return "Game files";
+            return pluralize ? "Game files" : "Game file";
         } else if (input.equals("Wip")) {
-            return "WiPs";
+            return pluralize ? "WiPs" : "WiP";
         } else if (input.equals("Gui")) {
-            return "GUIs";
+            return pluralize ? "GUIs" : "GUI";
         }
 
         // apply the spaced pascal case from Everest
@@ -413,6 +413,10 @@ public class CelesteModSearchService extends HttpServlet {
         // capitalize the first letter
         String result = builder.toString();
         result = result.substring(0, 1).toUpperCase() + result.substring(1);
+
+        if (!pluralize) {
+            return result;
+        }
 
         // pluralize
         if (result.charAt(result.length() - 1) == 'y') {

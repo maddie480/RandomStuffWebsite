@@ -63,12 +63,12 @@
                 <% for(CelesteModCatalogService.QueriedModInfo mod : (List<CelesteModCatalogService.QueriedModInfo>) request.getAttribute("mods")) { %>
                     <li>
                         <a href="#<%= CelesteModCatalogService.dasherize(mod.modName) %>"><%= escapeHtml4(mod.modName) %></a>
-                        <% if(mod.categoryid == 4631) { %>
+                        <% if(mod.categoryId == 5081) { %>
                             <span class="badge badge-success">Helper</span>
                         <% } else if("Map".equals(mod.itemtype)) { %>
                             <span class="badge badge-danger">Map</span>
                         <% } else { %>
-                            <span class="badge badge-warning">Other</span>
+                            <span class="badge badge-warning"><%= escapeHtml4(mod.categoryName) %></span>
                         <% } %>
                     </li>
                 <% } %>
@@ -81,12 +81,12 @@
 
                 <h3 id="<%= CelesteModCatalogService.dasherize(mod.modName) %>">
                     <%= escapeHtml4(mod.modName) %>
-                    <% if(mod.categoryid == 4631) { %>
+                    <% if(mod.categoryId == 5081) { %>
                         <span class="badge badge-success">Helper</span>
                     <% } else if("Map".equals(mod.itemtype)) { %>
                         <span class="badge badge-danger">Map</span>
                     <% } else { %>
-                        <span class="badge badge-warning">Other</span>
+                        <span class="badge badge-warning"><%= escapeHtml4(mod.categoryName) %></span>
                     <% } %>
                 </h3>
                 <p>

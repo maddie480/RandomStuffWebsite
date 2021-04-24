@@ -315,11 +315,16 @@ public class CelesteModCatalogService extends HttpServlet {
         }
 
         for (QueriedModInfo modInfo : workingModInfo) {
+            // by default, the category name will just be the item type.
+            modInfo.categoryName = CelesteModSearchService.formatGameBananaItemtype(modInfo.itemtype, false);
+
             for (Map<String, Object> mod : modSearchDatabase) {
                 if (mod.containsKey("CategoryId") && modInfo.itemtype.equals(mod.get("GameBananaType").toString())
                         && Integer.toString(modInfo.itemid).equals(mod.get("GameBananaId").toString())) {
 
-                    modInfo.categoryid = (int) mod.get("CategoryId");
+                    // we found the mod in the mod files database and it has a category: fill it in mod info.
+                    modInfo.categoryId = (int) mod.get("CategoryId");
+                    modInfo.categoryName = unpluralize(mod.get("CategoryName").toString());
                 }
             }
         }
@@ -328,6 +333,13 @@ public class CelesteModCatalogService extends HttpServlet {
         modInfo = workingModInfo;
         workingModInfo = null;
         lastUpdated = ZonedDateTime.now();
+    }
+
+    private static String unpluralize(String s) {
+        if (s.endsWith("s")) {
+            return s.substring(0, s.length() - 1);
+        }
+        return s;
     }
 
     /**
@@ -366,7 +378,8 @@ public class CelesteModCatalogService extends HttpServlet {
     public static class QueriedModInfo {
         public String itemtype;
         public int itemid;
-        public int categoryid;
+        public int categoryId;
+        public String categoryName;
         public String modName;
         public Set<String> entityList = new TreeSet<>();
         public Set<String> triggerList = new TreeSet<>();
