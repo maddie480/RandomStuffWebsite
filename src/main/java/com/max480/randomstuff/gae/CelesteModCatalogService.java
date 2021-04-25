@@ -246,14 +246,18 @@ public class CelesteModCatalogService extends HttpServlet {
 
                     case 53645: // Isa's Grab Bag: one file containing all entities
                         info.entityList.remove("isaentities.jl");
+                        info.entityList.add("BadelineFriend.jl");
                         info.entityList.add("DreamSpinner.jl");
+                        info.entityList.add("DreamSpinnerFake.jl");
                         info.entityList.add("ColorBlock.jl");
                         info.entityList.add("ColorSwitch.jl");
-                        info.entityList.add("IsaNPC.jl");
+                        info.entityList.add("WaterBoost.jl");
+                        info.entityList.add("Zipline.jl");
 
                         info.triggerList.remove("isatriggers.jl");
                         info.triggerList.add("CoreWindTrigger.jl");
                         info.triggerList.add("VariantTrigger.jl");
+                        info.triggerList.add("ColorSwitchTrigger.jl");
 
                         break;
 
