@@ -216,9 +216,9 @@ public class CelesteModCatalogService extends HttpServlet {
             }
 
             // deal with some mods that need special display treatment by hand
-            if (info.itemtype.equals("Gamefile")) {
+            if (info.itemtype.equals("Mod")) {
                 switch (info.itemid) {
-                    case 10166: // Canyon Helper: one file containing all entities
+                    case 53664: // Canyon Helper: one file containing all entities
                         info.entityList.remove("canyon.jl");
                         info.entityList.add("SpinOrb.jl");
                         info.entityList.add("PushBlock.jl");
@@ -234,7 +234,7 @@ public class CelesteModCatalogService extends HttpServlet {
 
                         break;
 
-                    case 8210: // Cavern Helper: one file containing all entities
+                    case 53641: // Cavern Helper: one file containing all entities
                         info.entityList.remove("cavern.jl");
                         info.entityList.add("CrystalBomb.jl");
                         info.entityList.add("IcyFloor.jl");
@@ -244,7 +244,7 @@ public class CelesteModCatalogService extends HttpServlet {
 
                         break;
 
-                    case 8283: // Isa's Grab Bag: one file containing all entities
+                    case 53645: // Isa's Grab Bag: one file containing all entities
                         info.entityList.remove("isaentities.jl");
                         info.entityList.add("DreamSpinner.jl");
                         info.entityList.add("ColorBlock.jl");
@@ -257,7 +257,7 @@ public class CelesteModCatalogService extends HttpServlet {
 
                         break;
 
-                    case 7555: // Outback Helper: one file containing all entities
+                    case 53632: // Outback Helper: one file containing all entities
                         info.entityList.remove("outback.jl");
                         info.entityList.add("MovingTouchSwitch.jl");
                         info.entityList.add("Portal.jl");
@@ -265,16 +265,16 @@ public class CelesteModCatalogService extends HttpServlet {
 
                         break;
 
-                    case 11423: // max480's Helping Hand: common prefix to remove
+                    case 53687: // max480's Helping Hand: common prefix to remove
                         replacePrefix(info, "maxHelpingHand");
                         break;
 
-                    case 9486: // Extended Variant Mode: common prefix to remove
+                    case 53650: // Extended Variant Mode: common prefix to remove
                         replacePrefix(info, "extendedVariants");
                         break;
 
-                    case 7891: // Dialog Textbox Trigger: obsolete
-                    case 10004: // Simple Cutscenes: obsolete
+                    case 53636: // Dialog Textbox Trigger: obsolete
+                    case 53659: // Simple Cutscenes: obsolete
                         workingModInfo.remove(info);
                         break;
                 }
