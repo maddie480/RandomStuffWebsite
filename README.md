@@ -57,7 +57,7 @@ If you want to retrieve the latest mod with no type filter, it is recommended to
 
 The URL is `https://max480-random-stuff.appspot.com/celeste/gamebanana-list?sort=[sort]&type=[type]&category=[category]&page=[page]` where:
 - `sort` is the info to sort on (**mandatory**). It can be `latest`, `likes`, `views` or `downloads`
-- `type` is the GameBanana type to filter on (optional and case-insensitive). For example `Map`, `Gamefile` or `Tool`
+- `type` (or `itemtype`) is the GameBanana type to filter on (optional and case-insensitive). For example `Map`, `Gamefile` or `Tool`
 - `category` is the GameBanana mod category ID to filter on (optional), this is returned by [the GameBanana categories list API](#gamebanana-categories-list-api). For example `944`
 - `page` is the page to get, first page being 1 (optional, default is 1). Each page contains 20 elements.
 
@@ -113,5 +113,7 @@ The response will look like this, returning the file info on all requested mods 
 ```
 
 With the example request, this means `['532232', '531562', '530584', '527697']` is the file list for Mod 53749, and `['545472', '484937', '539975']` is the one for Map 211745.
+
+If you request a mod that does not exist, you will get an empty array as a result.
 
 This was done since the GameBanana API gives this information through the order of the entries in the `Files().aFiles()` dictionary. Order shouldn't matter in JSON dictionaries though, so libraries often mess it up.

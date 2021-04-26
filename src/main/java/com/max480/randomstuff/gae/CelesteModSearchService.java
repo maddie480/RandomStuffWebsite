@@ -422,11 +422,8 @@ public class CelesteModSearchService extends HttpServlet {
                             Map<String, Object> yaml = new Yaml().load(is);
                             allFileOrders.add((List<String>) yaml.get("Files"));
                         } catch (FileNotFoundException e) {
-                            // the file was not found, probably due to an invalid itemtype/itemid
-                            response.setHeader("Content-Type", "text/plain");
-                            response.setStatus(404);
-                            response.getWriter().write("one of the mods was not found");
-                            return;
+                            logger.info("Mod was not found in mod search database: " + itemtypes[i] + " " + itemids[i]);
+                            allFileOrders.add(Collections.emptyList());
                         }
                     }
 
