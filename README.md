@@ -100,20 +100,3 @@ This API simply downloads a WebP image from GameBanana, and converts it to PNG. 
 Usage example: https://max480-random-stuff.appspot.com/celeste/webp-to-png?src=https://screenshots.gamebanana.com/img/ss/gamefiles/5b05ac2b4b6da.webp
 
 This API may answer with a 302 (redirect) leading to the actual image on Google Cloud Storage. Images are cached there for 30 days, to avoid having to convert it each time.
-
-## GameBanana file order API
-
-This API just gives the IDs of the files present on a few GameBanana submissions. You can get multiple mods at a time (up to 20), like this:
-`https://max480-random-stuff.appspot.com/celeste/gamebanana-fileorders?itemtypes=Mod,Map&itemids=53749,211745`
-
-The response will look like this, returning the file info on all requested mods in the same order as they were passed:
-```yaml
-- ['532232', '531562', '530584', '527697']
-- ['545472', '484937', '539975']
-```
-
-With the example request, this means `['532232', '531562', '530584', '527697']` is the file list for Mod 53749, and `['545472', '484937', '539975']` is the one for Map 211745.
-
-If you request a mod that does not exist, you will get an empty array as a result.
-
-This was done since the GameBanana API gives this information through the order of the entries in the `Files().aFiles()` dictionary. Order shouldn't matter in JSON dictionaries though, so libraries often mess it up.

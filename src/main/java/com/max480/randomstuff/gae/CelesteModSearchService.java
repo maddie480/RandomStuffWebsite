@@ -32,7 +32,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -49,8 +48,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @WebServlet(name = "CelesteModSearchService", loadOnStartup = 1, urlPatterns = {"/celeste/gamebanana-search",
-        "/celeste/gamebanana-search-reload", "/celeste/gamebanana-list", "/celeste/gamebanana-categories", "/celeste/webp-to-png",
-        "/celeste/gamebanana-fileorders"})
+        "/celeste/gamebanana-search-reload", "/celeste/gamebanana-list", "/celeste/gamebanana-categories", "/celeste/webp-to-png"})
 public class CelesteModSearchService extends HttpServlet {
 
     private final Logger logger = Logger.getLogger("CelesteModSearchService");
@@ -383,53 +381,6 @@ public class CelesteModSearchService extends HttpServlet {
                             logger.info("Image was added to the cache.");
                         }
                     }
-                }
-            }
-        }
-
-        if (request.getRequestURI().equals("/celeste/gamebanana-fileorders")) {
-            if (request.getParameter("itemtypes") == null || request.getParameter("itemids") == null) {
-                // missing parameters
-                response.setHeader("Content-Type", "text/plain");
-                response.setStatus(400);
-                response.getWriter().write("expected \"itemtypes\" and \"itemids\" parameters");
-            } else if (!request.getParameter("itemtypes").matches("[A-Za-z,]+") || !request.getParameter("itemids").matches("[0-9,]+")) {
-                // parameters don't match regex
-                response.setHeader("Content-Type", "text/plain");
-                response.setStatus(400);
-                response.getWriter().write("invalid format for parameters");
-            } else {
-                // parse the parameters
-                String[] itemtypes = request.getParameter("itemtypes").split(",");
-                String[] itemids = request.getParameter("itemids").split(",");
-
-                if (itemtypes.length != itemids.length) {
-                    // both lists don't have the same size
-                    response.setHeader("Content-Type", "text/plain");
-                    response.setStatus(400);
-                    response.getWriter().write("itemtypes and itemids have different lengths");
-                } else if (itemtypes.length > 20) {
-                    // safe guard: the list is too long
-                    response.setHeader("Content-Type", "text/plain");
-                    response.setStatus(403);
-                    response.getWriter().write("API can not be called with more than 20 IDs at a time");
-                } else {
-                    List<List<String>> allFileOrders = new ArrayList<>();
-
-                    for (int i = 0; i < itemtypes.length; i++) {
-                        // request files list in the mod files database for each file
-                        try (InputStream is = new URL(Constants.MOD_FILES_DATABASE_ROOT + "/" + itemtypes[i] + "/" + itemids[i] + "/info.yaml").openStream()) {
-                            Map<String, Object> yaml = new Yaml().load(is);
-                            allFileOrders.add((List<String>) yaml.get("Files"));
-                        } catch (FileNotFoundException e) {
-                            logger.info("Mod was not found in mod search database: " + itemtypes[i] + " " + itemids[i]);
-                            allFileOrders.add(Collections.emptyList());
-                        }
-                    }
-
-                    // send out the list
-                    response.setHeader("Content-Type", "text/yaml");
-                    new Yaml().dump(allFileOrders, response.getWriter());
                 }
             }
         }
