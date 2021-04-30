@@ -23,6 +23,8 @@
         integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
         crossorigin="anonymous">
 
+    <link rel="stylesheet" href="/css/navbar.css">
+
     <style>
         .btn {
             margin: 3px 1px;
@@ -32,7 +34,14 @@
 
 <body>
     <div class="container">
-        <a href="https://github.com/EverestAPI/Resources/wiki" class="btn btn-primary" style="margin-top: 20px; margin-bottom: 20px">
+        <div id="nav">
+            <a href="/celeste/custom-entity-catalog" class="active">Custom Entity Catalog</a> |
+            <a href="/celeste/everest-yaml-validator">everest.yaml validator</a> |
+            <a href="/celeste/update-checker-status">Update Checker status</a> |
+            <a href="https://max480-random-stuff.herokuapp.com/banana-mirror-browser">Banana Mirror Browser</a>
+        </div>
+
+        <a href="https://github.com/EverestAPI/Resources/wiki" class="btn btn-primary" style="margin-bottom: 20px">
             &lt; Back to Wiki
         </a>
 
@@ -65,7 +74,7 @@
                         <a href="#<%= CelesteModCatalogService.dasherize(mod.modName) %>"><%= escapeHtml4(mod.modName) %></a>
                         <% if(mod.categoryId == 5081) { %>
                             <span class="badge badge-success">Helper</span>
-                        <% } else if("Map".equals(mod.itemtype)) { %>
+                        <% } else if(mod.categoryId == 6800) { %>
                             <span class="badge badge-danger">Map</span>
                         <% } else { %>
                             <span class="badge badge-warning"><%= escapeHtml4(mod.categoryName) %></span>
@@ -83,7 +92,7 @@
                     <%= escapeHtml4(mod.modName) %>
                     <% if(mod.categoryId == 5081) { %>
                         <span class="badge badge-success">Helper</span>
-                    <% } else if("Map".equals(mod.itemtype)) { %>
+                    <% } else if(mod.categoryId == 6800) { %>
                         <span class="badge badge-danger">Map</span>
                     <% } else { %>
                         <span class="badge badge-warning"><%= escapeHtml4(mod.categoryName) %></span>

@@ -22,10 +22,19 @@
 		href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
 		integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
 		crossorigin="anonymous">
+
+    <link rel="stylesheet" href="/css/navbar.css">
 </head>
 
 <body>
 	<div class="container">
+        <div id="nav">
+            <a href="/celeste/custom-entity-catalog">Custom Entity Catalog</a> |
+            <a href="/celeste/everest-yaml-validator">everest.yaml validator</a> |
+            <a href="/celeste/update-checker-status" class="active">Update Checker status</a> |
+            <a href="https://max480-random-stuff.herokuapp.com/banana-mirror-browser">Banana Mirror Browser</a>
+        </div>
+
         <h1 class="mt-4">Everest Update Checker status page</h1>
 
         <% if ((boolean) request.getAttribute("up")) { %>
