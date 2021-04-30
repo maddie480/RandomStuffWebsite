@@ -281,12 +281,8 @@ public class CelesteModCatalogService extends HttpServlet {
                     case 53659: // Simple Cutscenes: obsolete
                         workingModInfo.remove(info);
                         break;
-                }
-            }
 
-            if (info.itemtype.equals("Map")) {
-                switch (info.itemid) {
-                    case 204418: // Early Core: obsolete Dialog Cutscene Trigger
+                    case 150413: // Early Core: obsolete Dialog Cutscene Trigger
                         info.triggerList.remove("dialogcutscene.jl");
                         if (info.entityList.isEmpty() && info.triggerList.isEmpty() && info.effectList.isEmpty()) {
                             workingModInfo.remove(info);
