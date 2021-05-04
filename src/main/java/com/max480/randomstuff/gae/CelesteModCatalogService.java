@@ -277,6 +277,10 @@ public class CelesteModCatalogService extends HttpServlet {
                         replacePrefix(info, "extendedVariants");
                         break;
 
+                    case 53699: // Honly Helper: common prefix to remove
+                        replacePrefix(info, "Honly");
+                        break;
+
                     case 53636: // Dialog Textbox Trigger: obsolete
                     case 53659: // Simple Cutscenes: obsolete
                         workingModInfo.remove(info);
