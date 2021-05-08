@@ -16,12 +16,12 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.*;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.QueryBuilder;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
@@ -46,6 +46,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 @WebServlet(name = "CelesteModSearchService", loadOnStartup = 1, urlPatterns = {"/celeste/gamebanana-search",
         "/celeste/gamebanana-search-reload", "/celeste/gamebanana-list", "/celeste/gamebanana-categories", "/celeste/webp-to-png"})
@@ -132,6 +134,8 @@ public class CelesteModSearchService extends HttpServlet {
                 response.setStatus(400);
                 response.getWriter().write("\"q\" query parameter expected");
             } else {
+                boolean version2 = "2".equals(request.getParameter("version"));
+
                 // let's prepare a request through Lucene.
                 try (DirectoryReader reader = DirectoryReader.open(modIndexDirectory)) {
                     IndexSearcher searcher = new IndexSearcher(reader);
@@ -144,6 +148,7 @@ public class CelesteModSearchService extends HttpServlet {
                         // query could not be parsed! aaaaa
                         // we will give up on trying to parse it and just interpret everything as search terms.
                         logger.info("Query could not be parsed!");
+
                         query = new QueryBuilder(analyzer).createBooleanQuery("name", queryParam);
 
                         if (query == null) {
@@ -157,28 +162,64 @@ public class CelesteModSearchService extends HttpServlet {
                         logger.fine("Fallback query we are going to run: " + query.toString());
                     }
 
+                    if (version2) {
+                        // rewrite the query to include "type:mod" as a filter.
+                        query = new BooleanQuery.Builder()
+                                .add(query, BooleanClause.Occur.MUST)
+                                .add(new QueryBuilder(analyzer).createBooleanQuery("type", "mod"), BooleanClause.Occur.FILTER)
+                                .build();
+
+                        logger.fine("Version 2 query we are going to run: " + query.toString());
+                    }
+
                     ScoreDoc[] hits = searcher.search(query, 20).scoreDocs;
 
-                    // convert the results to yaml
-                    List<Map<String, Object>> responseBody = Arrays.stream(hits).map(hit -> {
-                        try {
-                            Document doc = searcher.doc(hit.doc);
-                            Map<String, Object> result = new LinkedHashMap<>();
-                            result.put("itemtype", doc.get("type"));
-                            result.put("itemid", Integer.parseInt(doc.get("id")));
+                    if (version2) {
+                        // invoke GameBanana with each result to return the mod info exactly like it does.
+                        List<JSONObject> modInfo = Arrays.stream(hits).parallel()
+                                .map(hit -> {
+                                    try (InputStream is = new URL("https://gamebanana.com/apiv3/Mod/Index?_aArgs[]=_idRow%20=%20" +
+                                            searcher.doc(hit.doc).get("id") + "&_sRecordSchema=Olympus").openStream()) {
 
-                            logger.fine("Result: " + doc.get("type") + " " + doc.get("id")
-                                    + " (" + doc.get("name") + ") with " + hit.score + " pt(s)");
-                            return result;
-                        } catch (IOException e) {
-                            // how would we have an I/O exception on a memory stream?
-                            throw new RuntimeException(e);
+                                        JSONArray results = new JSONArray(IOUtils.toString(is, UTF_8));
+                                        return results.getJSONObject(0);
+                                    } catch (IOException e) {
+                                        logger.severe("Could not retrieve mod by ID!" + e.toString());
+                                        e.printStackTrace();
+                                        return null;
+                                    }
+                                })
+                                .collect(Collectors.toList());
+
+                        if (modInfo.stream().anyMatch(Objects::isNull)) {
+                            response.setStatus(500);
+                        } else {
+                            response.setHeader("Content-Type", "application/json");
+                            response.getWriter().write(new JSONArray(modInfo).toString());
                         }
-                    }).collect(Collectors.toList());
+                    } else {
+                        // convert the results to yaml
+                        List<Map<String, Object>> responseBody;
+                        responseBody = Arrays.stream(hits).map(hit -> {
+                            try {
+                                Document doc = searcher.doc(hit.doc);
+                                Map<String, Object> result = new LinkedHashMap<>();
+                                result.put("itemtype", doc.get("type"));
+                                result.put("itemid", Integer.parseInt(doc.get("id")));
 
-                    // send out the response
-                    response.setHeader("Content-Type", "text/yaml");
-                    response.getWriter().write(new Yaml().dump(responseBody));
+                                logger.fine("Result: " + doc.get("type") + " " + doc.get("id")
+                                        + " (" + doc.get("name") + ") with " + hit.score + " pt(s)");
+                                return result;
+                            } catch (IOException e) {
+                                // how would we have an I/O exception on a memory stream?
+                                throw new RuntimeException(e);
+                            }
+                        }).collect(Collectors.toList());
+
+                        // send out the response
+                        response.setHeader("Content-Type", "text/yaml");
+                        response.getWriter().write(new Yaml().dump(responseBody));
+                    }
                 }
             }
         }
