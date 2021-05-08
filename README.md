@@ -35,7 +35,7 @@ $ curl https://max480-random-stuff.appspot.com/celeste/gamebanana-search?q=sprin
 
 Here the top 2 results are https://gamebanana.com/maps/211745 (The 2020 Celeste Spring Community Collab) and https://gamebanana.com/gamefiles/13452 (2020 Spring Collab Randomizer).
 
-Pass `version=2` (for example `https://max480-random-stuff.appspot.com/celeste/gamebanana-search?q=extended+variant+mode&version=2`) to get only `Mod` submissions and get the same JSON output as the GameBanana v3 API (`https://gamebanana.com/apiv3/Mod/Index?_aArgs[]=_idRow%20=%2053650&_sRecordSchema=Olympus`) directly for all search results.
+**Pass `version=2`** (for example `https://max480-random-stuff.appspot.com/celeste/gamebanana-search?q=extended+variant+mode&version=2`) to get only `Mod` submissions and get **the same JSON output as the GameBanana v3 API** (`https://gamebanana.com/apiv3/Mod/Index?_aArgs[]=_idRow%20=%2053650&_sRecordSchema=Olympus`) directly for all search results.
 
 The search engine is powered by [Apache Lucene](https://lucene.apache.org/). It supports, among other things:
 - searching for a **phrase**: `"Spring Collab"`
