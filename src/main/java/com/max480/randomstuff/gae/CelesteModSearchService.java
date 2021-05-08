@@ -322,7 +322,8 @@ public class CelesteModSearchService extends HttpServlet {
                 response.setHeader("Content-Type", "text/plain");
                 response.setStatus(400);
                 response.getWriter().write("expected \"src\" parameter");
-            } else if (!imagePath.startsWith("https://screenshots.gamebanana.com/") || !imagePath.endsWith(".webp")) {
+            } else if ((!imagePath.startsWith("https://screenshots.gamebanana.com/") && !imagePath.startsWith("https://images.gamebanana.com/"))
+                    || !imagePath.endsWith(".webp")) {
                 // the URL passed is not a webp or it is not from GameBanana.
                 logger.warning("Returned 403 after trying to use conversion with non-GB URL");
                 response.setHeader("Content-Type", "text/plain");
