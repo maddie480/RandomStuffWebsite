@@ -181,6 +181,10 @@ public class CelesteModSearchService extends HttpServlet {
                                     try (InputStream is = new URL("https://gamebanana.com/apiv3/Mod/Index?_aArgs[]=_idRow%20=%20" +
                                             searcher.doc(hit.doc).get("id") + "&_sRecordSchema=Olympus").openStream()) {
 
+                                        Document doc = searcher.doc(hit.doc);
+                                        logger.fine("Result: " + doc.get("type") + " " + doc.get("id")
+                                                + " (" + doc.get("name") + ") with " + hit.score + " pt(s)");
+
                                         JSONArray results = new JSONArray(IOUtils.toString(is, UTF_8));
                                         return results.getJSONObject(0);
                                     } catch (IOException e) {
