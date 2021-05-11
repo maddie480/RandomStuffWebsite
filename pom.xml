@@ -129,6 +129,12 @@
             <artifactId>httpclient</artifactId>
             <version>4.5.13</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.github.palindromicity</groupId>
+            <artifactId>simple-syslog</artifactId>
+            <version>0.0.6</version>
+        </dependency>
     </dependencies>
 
     <build>

@@ -16,4 +16,6 @@ public final class ConstantsDummy {
 
     public static final String GITHUB_USERNAME = "";
     public static final String GITHUB_PERSONAL_ACCESS_TOKEN = "";
+
+    public static final String LOGGING_EXPECTED_AUTH_HEADER = "";
 }
