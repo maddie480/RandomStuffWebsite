@@ -8,13 +8,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.time.ZonedDateTime;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-@WebServlet(name = "CelesteModUpdateService", loadOnStartup = 1, urlPatterns = {"/celeste/everest_update.yaml"})
+@WebServlet(name = "CelesteModUpdateService", loadOnStartup = 1, urlPatterns = {"/celeste/everest_update.yaml", "/celeste/file_ids.yaml"})
 public class CelesteModUpdateService extends HttpServlet {
 
     private final Logger logger = Logger.getLogger("CelesteModUpdateService");
@@ -30,6 +31,8 @@ public class CelesteModUpdateService extends HttpServlet {
                     IOUtils.toByteArray(getConnectionWithTimeouts(Constants.UPDATE_CHECKER_SERVER_URL)).length + " bytes long");
             logger.log(Level.INFO, "Warmup: Backed up everest_update.yaml is " +
                     IOUtils.toByteArray(getConnectionWithTimeouts("https://storage.googleapis.com/max480-random-stuff.appspot.com/" + Constants.CLOUD_STORAGE_BACKUP_FILENAME)).length + " bytes long");
+            logger.log(Level.INFO, "Warmup: file_ids.yaml is " +
+                    IOUtils.toByteArray(getConnectionWithTimeouts(Constants.MOD_FILES_DATABASE_ROOT + "/file_ids.yaml")).length + " bytes long");
         } catch (Exception e) {
             logger.log(Level.WARNING, "Warming up failed: " + e.toString());
         }
@@ -38,6 +41,13 @@ public class CelesteModUpdateService extends HttpServlet {
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setHeader("Content-Type", "text/yaml");
+
+        if ("/celeste/file_ids.yaml".equals(request.getRequestURI())) {
+            try (InputStream is = getConnectionWithTimeouts(Constants.MOD_FILES_DATABASE_ROOT + "/file_ids.yaml").getInputStream()) {
+                IOUtils.copy(is, response.getOutputStream());
+            }
+            return;
+        }
 
         if (cachedYamlValidUntil.isAfter(ZonedDateTime.now())) {
             // last request to server was < 5 minutes ago, just return the same response.
