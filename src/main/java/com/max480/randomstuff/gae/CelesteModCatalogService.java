@@ -292,6 +292,18 @@ public class CelesteModCatalogService extends HttpServlet {
                             workingModInfo.remove(info);
                         }
                         break;
+
+                    case 150396: // Crystalized: one file containing all entities
+                        info.entityList.remove("featherBarrier.jl");
+                        info.entityList.add("CutsceneHelper.jl");
+                        info.entityList.add("CraneLift.jl");
+
+                        info.triggerList.remove("trigger.jl");
+                        info.triggerList.add("CrystalDialog.jl");
+                        info.triggerList.add("RevertCore.jl");
+                        info.triggerList.add("SaveCore.jl");
+                        info.triggerList.add("HideTheo.jl");
+                        break;
                 }
             }
 
