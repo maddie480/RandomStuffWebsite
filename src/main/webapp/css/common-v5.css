@@ -30,32 +30,29 @@
     .alert-success {
         color: #fff;
         border-color: #00b74a;
-        background-color: #00913b;
+        background-color: #007b32;
     }
     .alert-info {
         color: #fff;
-        border-color: #39c0ed;
-        background-color: #16b5ea;
+        border-color: #2c9fc6;
+        background-color: #0e7497;
     }
     .alert-warning {
         color: #fff;
-        border-color: #ffa900;
-        background-color: #d99000;
+        border-color: #c18000;
+        background-color: #9f6a00;
     }
     .alert-danger {
         color: #fff;
         border-color: #f93154;
         background-color: #be0626;
     }
-    .alert.alert-danger a {
-        color: #d7d7d7;
-    }
     .alert a {
-        color: black;
+        color: #ddd;
         text-decoration: underline;
     }
     .alert a:hover {
-        color: black;
+        color: #ccc;
     }
 
     .alert-danger pre {

@@ -23,7 +23,7 @@
         integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
         crossorigin="anonymous">
 
-    <link rel="stylesheet" href="/css/common-v2.css">
+    <link rel="stylesheet" href="/css/common-v5.css">
 
     <style>
         .btn {
