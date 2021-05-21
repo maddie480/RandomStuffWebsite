@@ -23,7 +23,7 @@
         integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
         crossorigin="anonymous">
 
-    <link rel="stylesheet" href="/css/navbar.css">
+    <link rel="stylesheet" href="/css/common-v2.css">
 
     <style>
         .btn {
@@ -47,7 +47,7 @@
 
         <% if((boolean) request.getAttribute("error")) { %>
             <div class="alert alert-danger">
-                An error occurred while refreshing the entity and trigger list. Please try again tomorrow.<br>
+                An error occurred while refreshing the entity and trigger list. Please try again in an hour.<br>
                 If this keeps happening, get in touch with max480#4596 on <a href="https://discord.gg/6qjaePQ" target="_blank">Discord</a>.
             </div>
         <% } else { %>
