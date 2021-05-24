@@ -34,15 +34,6 @@ public class CelesteModCatalogService extends HttpServlet {
     private static List<QueriedModInfo> workingModInfo = null;
     private static ZonedDateTime lastUpdated = null;
 
-    // files that should trigger a warning when present in a mod (files that ship with Celeste or Everest)
-    private final List<String> BAD_FILE_LIST = Arrays.asList("Celeste.exe",
-            "CSteamworks.dll", "Celeste.Mod.mm.dll", "DotNetZip.dll", "FNA.dll", "I18N.CJK.dll", "I18N.MidEast.dll",
-            "I18N.Other.dll", "I18N.Rare.dll", "I18N.West.dll", "I18N.dll", "Jdenticon.dll", "KeraLua.dll", "MMHOOK_Celeste.dll", "MojoShader.dll",
-            "Mono.Cecil.Mdb.dll", "Mono.Cecil.Pdb.dll", "Mono.Cecil.Rocks.dll", "Mono.Cecil.dll", "MonoMod.RuntimeDetour.dll", "MonoMod.Utils.dll", "NLua.dll",
-            "Newtonsoft.Json.dll", "SDL2.dll", "SDL2_image.dll", "Steamworks.NET.dll", "YamlDotNet.dll", "discord-rpc.dll", "fmod.dll", "fmodstudio.dll",
-            "libEGL.dll", "libGLESv2.dll", "libjpeg-9.dll", "libpng16-16.dll", "lua53.dll", "steam_api.dll", "zlib1.dll", "Microsoft.Xna.Framework.dll",
-            "Microsoft.Xna.Framework.Game.dll", "Microsoft.Xna.Framework.Graphics.dll");
-
     @Override
     public void init() {
         try {
@@ -427,8 +418,6 @@ public class CelesteModCatalogService extends HttpServlet {
             thisModInfo.modName = fileInfo.get("Name").toString();
             List<String> files = (List<String>) fileInfo.get("Files");
 
-            // only "report" (call webhooks to warn about a mod having forbidden files) once.
-            boolean modWasReported = false;
             // only show files from the first version listed.
             boolean filesWereAlreadyFound = false;
 
@@ -454,12 +443,6 @@ public class CelesteModCatalogService extends HttpServlet {
                     }
                 }
 
-                // check for forbidden files if we didn't already find one
-                // and any file more recent that Crowd Control (502895)
-                if (Integer.parseInt(file) > 502895 && !modWasReported) {
-                    modWasReported = checkForForbiddenFiles(thisModInfo, fileList);
-                }
-
                 // check if we found plugins!
                 if (!thisModInfo.entityList.isEmpty() || !thisModInfo.triggerList.isEmpty() || !thisModInfo.effectList.isEmpty()) {
                     filesWereAlreadyFound = true;
@@ -471,28 +454,5 @@ public class CelesteModCatalogService extends HttpServlet {
                 workingModInfo.add(thisModInfo);
             }
         }
-    }
-
-    private boolean checkForForbiddenFiles(QueriedModInfo mod, List<String> fileList) throws IOException {
-        for (String entry : fileList) {
-            for (String illegalFile : BAD_FILE_LIST) {
-                if (entry.equalsIgnoreCase(illegalFile) || entry.toLowerCase(Locale.ROOT).endsWith("/" + illegalFile.toLowerCase(Locale.ROOT))) {
-                    try {
-                        WebhookExecutor.executeWebhook(Constants.MAX480_WARNING_WEBHOOK,
-                                ":warning: The mod called **" + mod.modName + "** contains a file named `" + illegalFile + "`!" +
-                                        " This is illegal <:landeline:458158726558384149>\n:arrow_right: https://gamebanana.com/"
-                                        + mod.itemtype.toLowerCase() + "s/" + mod.itemid);
-                        WebhookExecutor.executeWebhook(Constants.COLOURSOFNOISE_WARNING_WEBHOOK,
-                                ":warning: The mod called **" + mod.modName + "** contains a file named `" + illegalFile + "`!" +
-                                        " This is illegal <:landeline:458158726558384149>\n:arrow_right: https://gamebanana.com/"
-                                        + mod.itemtype.toLowerCase() + "s/" + mod.itemid);
-                    } catch (InterruptedException e) {
-                        throw new IOException("Sleep interrupted", e);
-                    }
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 }
