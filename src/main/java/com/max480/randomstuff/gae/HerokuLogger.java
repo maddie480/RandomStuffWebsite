@@ -3,6 +3,7 @@ package com.max480.randomstuff.gae;
 import com.github.palindromicity.syslog.SyslogParser;
 import com.github.palindromicity.syslog.SyslogParserBuilder;
 import com.github.palindromicity.syslog.SyslogSpecification;
+import com.github.palindromicity.syslog.dsl.SyslogFieldKeys;
 import com.google.cloud.MonitoredResource;
 import com.google.cloud.logging.*;
 
@@ -34,8 +35,24 @@ public class HerokuLogger extends HttpServlet {
             try (Reader reader = new BufferedReader(new InputStreamReader(request.getInputStream(), StandardCharsets.UTF_8))) {
                 List<LogEntry> logs = new ArrayList<>();
                 parser.parseLines(reader, (map) -> {
+                    // guess log level depending on message (for HTTP requests only, other log lines are at DEFAULT level)
+                    Severity logLevel = Severity.DEFAULT;
+                    Object message = map.getOrDefault(SyslogFieldKeys.MESSAGE.getField(), null);
+                    if (message != null && message.toString().contains("method=")) {
+                        if (message.toString().contains("status=5")) {
+                            // 5xx error => ERROR
+                            logLevel = Severity.ERROR;
+                        } else if (message.toString().contains("status=4")) {
+                            // 4xx error => WARNING
+                            logLevel = Severity.WARNING;
+                        } else {
+                            // probably a 2xx or 3xx => INFO
+                            logLevel = Severity.INFO;
+                        }
+                    }
+
                     logs.add(LogEntry.newBuilder(Payload.JsonPayload.of(map))
-                            .setSeverity(Severity.DEFAULT)
+                            .setSeverity(logLevel)
                             .setLogName("heroku-logs")
                             .setResource(MonitoredResource.newBuilder("global").build())
                             .build());
