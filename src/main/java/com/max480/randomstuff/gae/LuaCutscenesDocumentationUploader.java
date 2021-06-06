@@ -33,7 +33,7 @@ public class LuaCutscenesDocumentationUploader extends HttpServlet {
             String luaCutscenesDownloadUrl;
             try (InputStream is = new URL("https://max480-random-stuff.appspot.com/celeste/everest_update.yaml").openStream()) {
                 Map<String, Map<String, Object>> db = new Yaml().load(is);
-                luaCutscenesDownloadUrl = db.get("LuaCutscenes").get("MirrorURL").toString();
+                luaCutscenesDownloadUrl = db.get("LuaCutscenes").get("URL").toString();
             }
 
             // delete everything from the Cloud Storage bucket
