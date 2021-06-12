@@ -485,9 +485,6 @@ public class CelesteModSearchService extends HttpServlet {
             // feed the mods to Lucene so that it indexes them
             try (IndexWriter index = new IndexWriter(newDirectory, new IndexWriterConfig(analyzer))) {
                 for (HashMap<String, Object> mod : mods) {
-                    if ("Mod".equals(mod.get("GameBananaType").toString()) && "53674".equals(mod.get("GameBananaId").toString()))
-                        continue;
-
                     // this is a hack to give more weight to authors when they are on top of the credits list.
                     // first author has 20x weight, second has 10x, third has 5x and fourth has 2x.
                     int authorWeight = 20;
