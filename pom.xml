@@ -116,13 +116,6 @@
             <version>8.9.0</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.sejda.imageio/webp-imageio -->
-        <dependency>
-            <groupId>org.sejda.imageio</groupId>
-            <artifactId>webp-imageio</artifactId>
-            <version>0.1.6</version>
-        </dependency>
-
         <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>

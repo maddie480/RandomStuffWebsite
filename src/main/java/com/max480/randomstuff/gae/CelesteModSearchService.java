@@ -1,9 +1,6 @@
 package com.max480.randomstuff.gae;
 
-import com.google.cloud.storage.*;
 import org.apache.commons.io.IOUtils;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.lucene.analysis.Analyzer;
@@ -25,21 +22,13 @@ import org.json.JSONObject;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
-import javax.imageio.ImageIO;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.net.URLEncoder;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.logging.Level;
@@ -50,7 +39,8 @@ import java.util.stream.Stream;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 @WebServlet(name = "CelesteModSearchService", loadOnStartup = 1, urlPatterns = {"/celeste/gamebanana-search",
-        "/celeste/gamebanana-search-reload", "/celeste/gamebanana-list", "/celeste/gamebanana-categories", "/celeste/webp-to-png"})
+        "/celeste/gamebanana-search-reload", "/celeste/gamebanana-list", "/celeste/gamebanana-categories", "/celeste/webp-to-png",
+        "/celeste/banana-mirror-image"})
 public class CelesteModSearchService extends HttpServlet {
 
     private final Logger logger = Logger.getLogger("CelesteModSearchService");
@@ -61,9 +51,6 @@ public class CelesteModSearchService extends HttpServlet {
     private Directory modIndexDirectory = null;
     private List<ModInfo> modDatabaseForSorting = Collections.emptyList();
     private Map<Integer, String> modCategories;
-
-    private final Storage storage = StorageOptions.newBuilder().setProjectId("max480-random-stuff").build().getService();
-    private final Map<String, Long> webpImagesInStorage = new HashMap<>();
 
     private static class ModInfo {
         public final String type;
@@ -87,27 +74,6 @@ public class CelesteModSearchService extends HttpServlet {
     public void init() {
         try {
             refreshModDatabase();
-
-            // warm up webp to png conversion
-            long startTime = System.currentTimeMillis();
-            try (CloseableHttpResponse gamebananaResponse = httpClient.execute(new HttpGet(
-                    "https://images.gamebanana.com/img/ss/mods/530-90_5b05ac2b4b6da.webp"))) {
-
-                int status = gamebananaResponse.getStatusLine().getStatusCode();
-                if (status >= 400) {
-                    throw new Exception("Image conversion warmup failure: GameBanana returned " + status);
-                } else {
-                    // read the image from GameBanana.
-                    BufferedImage image = ImageIO.read(gamebananaResponse.getEntity().getContent());
-                    try (ByteArrayOutputStream imageOutput = new ByteArrayOutputStream()) {
-                        // write it as a PNG in a byte array.
-                        ImageIO.write(image, "png", imageOutput);
-                        byte[] output = imageOutput.toByteArray();
-                        logger.info("WebP conversion warmup took " + (System.currentTimeMillis() - startTime) + "ms, resulting image is "
-                                + output.length + " bytes.");
-                    }
-                }
-            }
         } catch (Exception e) {
             logger.log(Level.WARNING, "Warming up failed: " + e.toString());
         }
@@ -359,75 +325,37 @@ public class CelesteModSearchService extends HttpServlet {
             response.getWriter().write(new Yaml().dumpAs(responseBody, null, DumperOptions.FlowStyle.BLOCK));
         }
 
-
-        if (request.getRequestURI().equals("/celeste/webp-to-png")) {
+        // "redirect to matching image on Banana Mirror" service, that also responds to /celeste/webp-to-png for backwards compatibility
+        if (request.getRequestURI().equals("/celeste/webp-to-png") || request.getRequestURI().equals("/celeste/banana-mirror-image")) {
             String imagePath = request.getParameter("src");
             if (imagePath == null) {
                 // no image path passed!
                 response.setHeader("Content-Type", "text/plain");
                 response.setStatus(400);
                 response.getWriter().write("expected \"src\" parameter");
-            } else if ((!imagePath.startsWith("https://screenshots.gamebanana.com/") && !imagePath.startsWith("https://images.gamebanana.com/"))
-                    || !imagePath.endsWith(".webp")) {
-                // the URL passed is not a webp or it is not from GameBanana.
+            } else if ((!imagePath.startsWith("https://screenshots.gamebanana.com/") && !imagePath.startsWith("https://images.gamebanana.com/"))) {
+                // the URL passed is not from GameBanana.
                 logger.warning("Returned 403 after trying to use conversion with non-GB URL");
                 response.setHeader("Content-Type", "text/plain");
                 response.setStatus(403);
                 response.getWriter().write("this API can only be used with GameBanana");
-            } else if (webpImagesInStorage.containsKey(imagePath) && webpImagesInStorage.get(imagePath) > System.currentTimeMillis()) {
-                // we know the image is cached and didn't expire yet. redirect to it
-                response.setStatus(302);
-                response.setHeader("Location", "https://storage.googleapis.com/max480-webp-to-png-cache/" + URLEncoder.encode(imagePath + ".png", "UTF-8"));
             } else {
-                // remove image from cached image list if it was there, because it means it expired.
-                webpImagesInStorage.remove(imagePath);
-
-                BlobId blobId = BlobId.of("max480-webp-to-png-cache", imagePath + ".png");
-                Blob cachedImage = storage.get(blobId);
-                if (cachedImage != null) {
-                    // we found the image in the Google Cloud Storage cache. redirect to it
-                    response.setStatus(302);
-                    response.setHeader("Location", "https://storage.googleapis.com/max480-webp-to-png-cache/" + URLEncoder.encode(blobId.getName(), "UTF-8"));
-
-                    // and cache the fact that the image is cached to avoid harrassing Cloud Storage about that. :theoreticalwoke:
-                    // this bucket is set up to delete files 30 days after their creation, so remember that as well.
-                    webpImagesInStorage.put(imagePath, Instant.ofEpochMilli(cachedImage.getCreateTime()).plus(30, ChronoUnit.DAYS).toEpochMilli());
-                    logger.fine("Image was found on Google Cloud Storage and will expire on " +
-                            Instant.ofEpochMilli(webpImagesInStorage.get(imagePath)).atZone(ZoneId.of("UTC")).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME) + ".");
+                // find out what the ID on the mirror is going to be, and redirect to it.
+                String screenshotId;
+                if (imagePath.startsWith("https://screenshots.gamebanana.com/")) {
+                    screenshotId = imagePath.substring("https://screenshots.gamebanana.com/".length());
                 } else {
-                    // go get the image!
-                    try (CloseableHttpResponse gamebananaResponse = httpClient.execute(new HttpGet(imagePath))) {
-                        int status = gamebananaResponse.getStatusLine().getStatusCode();
-                        if (status >= 400) {
-                            // GameBanana responded with an error.
-                            logger.info("GameBanana returned an error");
-                            response.setHeader("Content-Type", "text/plain");
-                            response.setStatus(status);
-                            response.getWriter().write("GameBanana returned an error");
-                        } else {
-                            // read the image from GameBanana.
-                            BufferedImage image = ImageIO.read(gamebananaResponse.getEntity().getContent());
-                            try (ByteArrayOutputStream imageOutput = new ByteArrayOutputStream()) {
-                                // write it as a PNG in a byte array.
-                                ImageIO.write(image, "png", imageOutput);
-                                byte[] output = imageOutput.toByteArray();
-
-                                // save it to Cloud Storage asynchronously.
-                                new Thread(() -> {
-                                    BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType("image/png").build();
-                                    storage.create(blobInfo, output);
-                                    storage.createAcl(blobId, Acl.of(Acl.User.ofAllUsers(), Acl.Role.READER));
-                                }).start();
-
-                                // also send it as a response.
-                                response.setHeader("Content-Type", "image/png");
-                                IOUtils.write(output, response.getOutputStream());
-                            }
-
-                            logger.info("Image was added to the cache.");
-                        }
-                    }
+                    screenshotId = imagePath.substring("https://images.gamebanana.com/".length());
                 }
+                screenshotId = screenshotId.substring(0, screenshotId.lastIndexOf(".")).replace("/", "_") + ".png";
+
+                if (request.getRequestURI().equals("/celeste/webp-to-png")) {
+                    // for compatibility, remove the 220-90 prefix.
+                    screenshotId = screenshotId.replace("220-90_", "");
+                }
+
+                response.setStatus(302);
+                response.setHeader("Location", "https://celestemodupdater.0x0a.de/banana-mirror-images/" + screenshotId);
             }
         }
     }
@@ -485,25 +413,13 @@ public class CelesteModSearchService extends HttpServlet {
             // feed the mods to Lucene so that it indexes them
             try (IndexWriter index = new IndexWriter(newDirectory, new IndexWriterConfig(analyzer))) {
                 for (HashMap<String, Object> mod : mods) {
-                    // this is a hack to give more weight to authors when they are on top of the credits list.
-                    // first author has 20x weight, second has 10x, third has 5x and fourth has 2x.
-                    int authorWeight = 20;
-                    StringBuilder weightedAuthors = new StringBuilder();
-                    for (String author : ((List<Object>) mod.get("Authors")).stream().map(Object::toString).collect(Collectors.toList())) {
-                        for (int i = 0; i < authorWeight; i++) {
-                            weightedAuthors.append(author).append(", ");
-                        }
-                        if (authorWeight > 1) authorWeight /= 2;
-                    }
-                    logger.finest("Weighted authors: " + weightedAuthors);
-
                     int categoryId = -1;
 
                     Document modDocument = new Document();
                     modDocument.add(new TextField("type", mod.get("GameBananaType").toString(), Field.Store.YES));
                     modDocument.add(new TextField("id", mod.get("GameBananaId").toString(), Field.Store.YES));
                     modDocument.add(new TextField("name", mod.get("Name").toString(), Field.Store.YES));
-                    modDocument.add(new TextField("author", weightedAuthors.toString(), Field.Store.NO));
+                    modDocument.add(new TextField("author", mod.get("Author").toString(), Field.Store.NO));
                     modDocument.add(new TextField("summary", mod.get("Description").toString(), Field.Store.NO));
                     modDocument.add(new TextField("description", mod.get("Text").toString(), Field.Store.NO));
                     if (mod.get("CategoryName") != null) {

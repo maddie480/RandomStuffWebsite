@@ -115,10 +115,12 @@ The URL is `https://max480-random-stuff.appspot.com/celeste/gamebanana-categorie
 
 Not passing `?version=2` will result in only `itemtype`s getting returned, with one of them being `Mod`. This is here for backwards compatibility.
 
-## GameBanana WebP to PNG API
+## GameBanana Image Mirror API
 
-This API simply downloads a WebP image from GameBanana, and converts it to PNG. **This can only be used with GameBanana screenshots.**
+This API redirects to a mirror of a GameBanana image on [Banana Mirror](https://celestemodupdater.0x0a.de/banana-mirror-images), hosted by 0x0ade.
 
-Usage example: https://max480-random-stuff.appspot.com/celeste/webp-to-png?src=https://screenshots.gamebanana.com/img/ss/gamefiles/5b05ac2b4b6da.webp
+This contains every 1st and 2nd screenshot of Celeste submissions on GameBanana, downscaled to 220x220, and converted to PNG.
 
-This API may answer with a 302 (redirect) leading to the actual image on Google Cloud Storage. Images are cached there for 30 days, to avoid having to convert it each time.
+Usage example: `https://max480-random-stuff.appspot.com/celeste/banana-mirror-image?src=https://images.gamebanana.com/img/ss/mods/5b05ac2b4b6da.webp`
+
+_For compatibility reasons, you can also use `webp-to-png` instead of `banana-mirror-image`._
