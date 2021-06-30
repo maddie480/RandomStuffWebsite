@@ -19,6 +19,7 @@ import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.QueryBuilder;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.jsoup.Jsoup;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
@@ -421,7 +422,7 @@ public class CelesteModSearchService extends HttpServlet {
                     modDocument.add(new TextField("name", mod.get("Name").toString(), Field.Store.YES));
                     modDocument.add(new TextField("author", mod.get("Author").toString(), Field.Store.NO));
                     modDocument.add(new TextField("summary", mod.get("Description").toString(), Field.Store.NO));
-                    modDocument.add(new TextField("description", mod.get("Text").toString(), Field.Store.NO));
+                    modDocument.add(new TextField("description", Jsoup.parseBodyFragment(mod.get("Text").toString()).text(), Field.Store.NO));
                     if (mod.get("CategoryName") != null) {
                         modDocument.add(new TextField("category", mod.get("CategoryName").toString(), Field.Store.NO));
 
