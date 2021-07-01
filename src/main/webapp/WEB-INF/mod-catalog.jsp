@@ -29,6 +29,11 @@
         .btn {
             margin: 3px 1px;
         }
+
+        .alert p {
+            margin-top: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
     </style>
 </head>
 
@@ -60,7 +65,14 @@
             </p>
 
             <div class="alert alert-info">
-                This list is mostly generated automatically from Ahorn plugin file names. It was last updated on <b><%= request.getAttribute("lastUpdated") %></b>.
+                <p>
+                    This list is mostly generated automatically from Ahorn plugin file names. It was last updated on <b><%= request.getAttribute("lastUpdated") %></b>.
+                </p>
+                <p>
+                    If you are a mod maker and want to <b>rename</b> an entity appearing here, rename its Ahorn plugin file.
+                    If you want to <b>add a button that links to your documentation</b>,
+                    <a href="https://github.com/EverestAPI/Resources/wiki/Helper-Manuals" rel="noopener" target="_blank">update this GitHub wiki page</a>!
+                </p>
             </div>
 
             <p style="margin-bottom: 0.5rem">
