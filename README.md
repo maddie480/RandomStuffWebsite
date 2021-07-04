@@ -1,6 +1,6 @@
 # max480-random-stuff website
 
-This is (part of) the source code for the max480-random-stuff.appspot.com website, a [Google App Engine](https://cloud.google.com/appengine/) app.
+This is (part of) the source code for the max480-random-stuff.**appspot**.com website, a [Google App Engine](https://cloud.google.com/appengine/) app written in Java, with backend-rendered pages. If you're looking for max480-random-stuff.**herokuapp**.com, [check this repository](https://github.com/max4805/RandomStuffWebsiteJS).
 
 It contains the full source for:
 - [the Everest Update Checker frontend service](https://max480-random-stuff.appspot.com/celeste/everest_update.yaml)
