@@ -36,6 +36,9 @@ target/
 src/main/java/com/max480/randomstuff/gae/Constants.java
 
 # Those aren't open-source (private stuff running on the same site), sorry!
+# None of this is related to Celeste, though.
 src/main/java/com/max480/randomstuff/gae/privateservices/
 src/main/webapp/*.html
 src/main/webapp/img/*
+src/main/webapp/js/*
+src/main/webapp/WEB-INF/private/*
