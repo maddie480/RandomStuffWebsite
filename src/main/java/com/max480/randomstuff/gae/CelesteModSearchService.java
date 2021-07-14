@@ -1,8 +1,6 @@
 package com.max480.randomstuff.gae;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
@@ -45,8 +43,6 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 public class CelesteModSearchService extends HttpServlet {
 
     private final Logger logger = Logger.getLogger("CelesteModSearchService");
-
-    private final CloseableHttpClient httpClient = HttpClients.createDefault();
 
     private final Analyzer analyzer = new StandardAnalyzer();
     private Directory modIndexDirectory = null;
