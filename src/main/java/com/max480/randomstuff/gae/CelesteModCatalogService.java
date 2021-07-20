@@ -1,37 +1,34 @@
 package com.max480.randomstuff.gae;
 
 import org.apache.commons.io.IOUtils;
-import org.yaml.snakeyaml.Yaml;
+import org.json.JSONObject;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URL;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static com.max480.randomstuff.gae.CelesteModUpdateService.getConnectionWithTimeouts;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 @WebServlet(name = "CelesteModCatalogService", loadOnStartup = 2, urlPatterns = {
-        "/celeste/custom-entity-catalog", "/celeste/custom-entity-catalog-reload"})
+        "/celeste/custom-entity-catalog", "/celeste/custom-entity-catalog.json", "/celeste/custom-entity-catalog-reload"})
 public class CelesteModCatalogService extends HttpServlet {
 
     private final Logger logger = Logger.getLogger("CelesteModCatalogService");
 
     private static List<QueriedModInfo> modInfo = null;
-    private static List<QueriedModInfo> workingModInfo = null;
     private static ZonedDateTime lastUpdated = null;
 
     @Override
@@ -40,69 +37,7 @@ public class CelesteModCatalogService extends HttpServlet {
             reloadList();
         } catch (Exception e) {
             logger.log(Level.WARNING, "Loading mod catalog failed: " + e.toString());
-            workingModInfo = null;
         }
-    }
-
-    /**
-     * Formats the name of a Ahorn plugin: dummyAhornName.jl => Dummy Ahorn Name
-     *
-     * @param input      The Ahorn file name
-     * @param dictionary A list of all name overrides
-     * @return The name from dictionary if present, or an automatically formatted name
-     */
-    public static String formatName(String input, Map<String, String> dictionary) {
-        // trim the .jl
-        input = input.substring(0, input.length() - 3);
-
-        if (dictionary.containsKey(input.toLowerCase())) {
-            // the plugin name is in the dictionary
-            return dictionary.get(input.toLowerCase());
-        }
-
-        // replace - and _ with spaces
-        input = input.replace('-', ' ').replace('_', ' ');
-
-        // apply the spaced pascal case from Everest
-        StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < input.length(); i++) {
-            char c = input.charAt(i);
-            if (i > 0 && Character.isUpperCase(c) && Character.isLowerCase(input.charAt(i - 1)))
-                builder.append(' ');
-
-            if (i != 0 && builder.charAt(builder.length() - 1) == ' ') {
-                builder.append(Character.toUpperCase(c));
-            } else {
-                builder.append(c);
-            }
-        }
-
-        String result = builder.toString();
-        result = result.substring(0, 1).toUpperCase() + result.substring(1);
-
-        return result;
-    }
-
-    /**
-     * Replaces everything that's not a letter or number with '-' in the input.
-     */
-    public static String dasherize(String input) {
-        StringBuilder builder = new StringBuilder();
-
-        boolean lastIsDash = true;
-        for (int i = 0; i < input.length(); i++) {
-            char c = input.charAt(i);
-
-            if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9')) {
-                lastIsDash = false;
-                builder.append(Character.toLowerCase(c));
-            } else if (!lastIsDash) {
-                lastIsDash = true;
-                builder.append('-');
-            }
-        }
-
-        return builder.toString();
     }
 
     @Override
@@ -111,6 +46,10 @@ public class CelesteModCatalogService extends HttpServlet {
                 && ("key=" + Constants.CATALOG_RELOAD_SHARED_SECRET).equals(request.getQueryString())) {
 
             reloadList();
+        } else if (request.getRequestURI().equals("/celeste/custom-entity-catalog.json")) {
+            try (InputStream is = getConnectionWithTimeouts(Constants.CUSTOM_ENTITY_CATALOG_URL).getInputStream()) {
+                IOUtils.copy(is, response.getOutputStream());
+            }
         } else if (request.getRequestURI().equals("/celeste/custom-entity-catalog")) {
             if (modInfo == null) {
                 request.setAttribute("error", true);
@@ -138,244 +77,16 @@ public class CelesteModCatalogService extends HttpServlet {
     }
 
     private void reloadList() throws IOException {
-        // download the custom entity catalog dictionary.
-        final Map<String, String> dictionary;
-        {
-            Map<String, String> tempdic = new HashMap<>();
-            try {
-                tempdic = Arrays.stream(IOUtils.toString(new URL("https://raw.githubusercontent.com/max4805/RandomStuffWebsite/main/modcatalogdictionary.txt"), UTF_8).split("\n"))
-                        .collect(Collectors.toMap(a -> a.split("=")[0], a -> a.split("=")[1]));
-            } catch (Exception e) {
-                logger.warning("Could not fetch dictionary for entity names: " + e.toString());
-            }
-            dictionary = tempdic;
-        }
+        // just load and parse the custom entity catalog JSON.
+        try (InputStream is = new URL(Constants.CUSTOM_ENTITY_CATALOG_URL).openStream()) {
+            JSONObject obj = new JSONObject(IOUtils.toString(is, UTF_8));
+            lastUpdated = ZonedDateTime.parse(obj.getString("lastUpdated")).withZoneSameInstant(ZoneId.of("UTC"));
+            modInfo = obj.getJSONArray("modInfo").toList().stream()
+                    .map(item -> (HashMap<String, Object>) item)
+                    .map(QueriedModInfo::new)
+                    .collect(Collectors.toList());
 
-        workingModInfo = new ArrayList<>();
-
-        refreshList();
-
-        // mod name -> (link name, link)
-        Map<String, Map<String, String>> documentationLinks = new HashMap<>();
-
-        // get the documentation links on the Everest wiki.
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(
-                new URL("https://raw.githubusercontent.com/wiki/EverestAPI/Resources/Mapping/Helper-Manuals.md").openStream()))) {
-
-            // we're expecting - [label](link)
-            Pattern linkPattern = Pattern.compile("^- \\[(.*)]\\((.*)\\)$");
-
-            String sectionName = null;
-            String line;
-            while ((line = reader.readLine()) != null) {
-                if (line.startsWith("## ")) {
-                    // we met a section name (mod name): ModName (alias), trim ## and the alias + trim extra spaces.
-                    sectionName = line.substring(3).trim();
-                    if (sectionName.contains("(")) {
-                        sectionName = sectionName.substring(0, sectionName.indexOf("(")).trim();
-                    }
-                } else if (sectionName != null) {
-                    Matcher match = linkPattern.matcher(line.trim());
-                    if (match.matches()) {
-                        // this is a documentation link, store it.
-                        Map<String, String> links = documentationLinks.getOrDefault(sectionName, new LinkedHashMap<>());
-                        links.put(match.group(1), match.group(2));
-                        documentationLinks.put(sectionName, links);
-                    } else {
-                        // we ran past the links!
-                        sectionName = null;
-                    }
-                }
-            }
-        }
-
-        // get the update checker database.
-        Map<String, Map<String, Object>> everestUpdateYaml;
-        try (InputStream is = new URL(Constants.UPDATE_CHECKER_SERVER_URL).openStream()) {
-            everestUpdateYaml = new Yaml().load(is);
-        }
-
-        for (QueriedModInfo info : new HashSet<>(workingModInfo)) {
-            // find the mod name based on GameBanana itemtype/itemid.
-            Map.Entry<String, Map<String, Object>> updateCheckerDatabaseEntry = everestUpdateYaml.entrySet()
-                    .stream().filter(entry -> info.itemtype.equals(entry.getValue().get("GameBananaType").toString())
-                            && info.itemid == (int) entry.getValue().get("GameBananaId")).findFirst().orElse(null);
-
-            // if found, attach any docs to it.
-            if (updateCheckerDatabaseEntry != null && documentationLinks.containsKey(updateCheckerDatabaseEntry.getKey())) {
-                info.documentationLinks = documentationLinks.get(updateCheckerDatabaseEntry.getKey());
-            }
-
-            // deal with some mods that need special display treatment by hand
-            if (info.itemtype.equals("Mod")) {
-                switch (info.itemid) {
-                    case 53664: // Canyon Helper: one file containing all entities
-                        info.entityList.remove("canyon.jl");
-                        info.entityList.add("SpinOrb.jl");
-                        info.entityList.add("PushBlock.jl");
-                        info.entityList.add("ToggleBlock.jl");
-                        info.entityList.add("GrannyTemple.jl");
-                        info.entityList.add("GrannyMonster.jl");
-                        info.entityList.add("GrannyStart.jl");
-                        info.entityList.add("UnbreakableStone.jl");
-
-                        info.triggerList.remove("canyon.jl");
-                        info.triggerList.add("MonsterTrigger.jl");
-                        info.triggerList.add("TempleFallTrigger.jl");
-
-                        break;
-
-                    case 53641: // Cavern Helper: one file containing all entities
-                        info.entityList.remove("cavern.jl");
-                        info.entityList.add("CrystalBomb.jl");
-                        info.entityList.add("IcyFloor.jl");
-                        info.entityList.add("FakeCavernHeart.jl");
-
-                        info.triggerList.remove("dialogcutscene.jl");
-
-                        break;
-
-                    case 53645: // Isa's Grab Bag: one file containing all entities
-                        info.entityList.remove("isaentities.jl");
-                        info.entityList.add("BadelineFriend.jl");
-                        info.entityList.add("DreamSpinner.jl");
-                        info.entityList.add("DreamSpinnerFake.jl");
-                        info.entityList.add("ColorBlock.jl");
-                        info.entityList.add("ColorSwitch.jl");
-                        info.entityList.add("WaterBoost.jl");
-                        info.entityList.add("Zipline.jl");
-
-                        info.triggerList.remove("isatriggers.jl");
-                        info.triggerList.add("CoreWindTrigger.jl");
-                        info.triggerList.add("VariantTrigger.jl");
-                        info.triggerList.add("ColorSwitchTrigger.jl");
-
-                        break;
-
-                    case 53632: // Outback Helper: one file containing all entities
-                        info.entityList.remove("outback.jl");
-                        info.entityList.add("MovingTouchSwitch.jl");
-                        info.entityList.add("Portal.jl");
-                        info.entityList.add("TimedTouchSwitch.jl");
-
-                        break;
-
-                    case 53687: // max480's Helping Hand: common prefix to remove
-                        replacePrefix(info, "maxHelpingHand");
-                        break;
-
-                    case 53650: // Extended Variant Mode: common prefix to remove
-                        replacePrefix(info, "extendedVariants");
-                        break;
-
-                    case 53699: // Honly Helper: common prefix to remove
-                        replacePrefix(info, "Honly");
-                        break;
-
-                    case 53636: // Dialog Textbox Trigger: obsolete
-                    case 53659: // Simple Cutscenes: obsolete
-                        workingModInfo.remove(info);
-                        break;
-
-                    case 150413: // Early Core: obsolete Dialog Cutscene Trigger
-                        info.triggerList.remove("dialogcutscene.jl");
-                        if (info.entityList.isEmpty() && info.triggerList.isEmpty() && info.effectList.isEmpty()) {
-                            workingModInfo.remove(info);
-                        }
-                        break;
-
-                    case 150396: // Crystalized: one file containing all entities
-                        info.entityList.remove("featherBarrier.jl");
-                        info.entityList.add("CutsceneHelper.jl");
-                        info.entityList.add("CraneLift.jl");
-
-                        info.triggerList.remove("trigger.jl");
-                        info.triggerList.add("CrystalDialog.jl");
-                        info.triggerList.add("RevertCore.jl");
-                        info.triggerList.add("SaveCore.jl");
-                        info.triggerList.add("HideTheo.jl");
-                        break;
-                }
-            }
-
-            if (info.itemtype.equals("Tool")) {
-                switch (info.itemid) {
-                    case 6970: // Ahorn Additives: blacklisted on request
-                        workingModInfo.remove(info);
-                        break;
-                }
-            }
-
-            // sort the lists by ascending name.
-            info.entityList = info.entityList.stream().map(a -> formatName(a, dictionary)).collect(Collectors.toCollection(TreeSet::new));
-            info.triggerList = info.triggerList.stream().map(a -> formatName(a, dictionary)).collect(Collectors.toCollection(TreeSet::new));
-            info.effectList = info.effectList.stream().map(a -> formatName(a, dictionary)).collect(Collectors.toCollection(TreeSet::new));
-        }
-
-        // sort the list by ascending name.
-        workingModInfo.sort(Comparator.comparing(a -> a.modName));
-
-        // fill out the category IDs for all mods.
-        List<Map<String, Object>> modSearchDatabase;
-        try (InputStream is = new URL(Constants.MOD_SEARCH_DATABASE_URL).openStream()) {
-            modSearchDatabase = new Yaml().load(is);
-        }
-
-        for (QueriedModInfo modInfo : workingModInfo) {
-            // by default, the category name will just be the item type.
-            modInfo.categoryName = CelesteModSearchService.formatGameBananaItemtype(modInfo.itemtype, false);
-
-            for (Map<String, Object> mod : modSearchDatabase) {
-                if (mod.containsKey("CategoryId") && modInfo.itemtype.equals(mod.get("GameBananaType").toString())
-                        && Integer.toString(modInfo.itemid).equals(mod.get("GameBananaId").toString())) {
-
-                    // we found the mod in the mod files database and it has a category: fill it in mod info.
-                    modInfo.categoryId = (int) mod.get("CategoryId");
-                    modInfo.categoryName = unpluralize(mod.get("CategoryName").toString());
-                }
-            }
-        }
-
-        logger.info("Found " + workingModInfo.size() + " mods.");
-        modInfo = workingModInfo;
-        workingModInfo = null;
-        lastUpdated = ZonedDateTime.now();
-    }
-
-    private static String unpluralize(String s) {
-        if (s.endsWith("s")) {
-            return s.substring(0, s.length() - 1);
-        }
-        return s;
-    }
-
-    /**
-     * Removes a prefix in all the entities/triggers/effects in a given mod.
-     *
-     * @param info   The mod to remove the prefix from
-     * @param prefix The prefix to remove
-     */
-    private void replacePrefix(QueriedModInfo info, String prefix) {
-        for (String s : new HashSet<>(info.entityList)) {
-            if (s.startsWith(prefix)) {
-                info.entityList.remove(s);
-                s = s.substring(prefix.length());
-                info.entityList.add(s);
-            }
-        }
-        for (String s : new HashSet<>(info.triggerList)) {
-            if (s.startsWith(prefix)) {
-                info.triggerList.remove(s);
-                s = s.substring(prefix.length());
-                info.triggerList.add(s);
-            }
-        }
-        for (String s : new HashSet<>(info.effectList)) {
-            if (s.startsWith(prefix)) {
-                info.effectList.remove(s);
-                s = s.substring(prefix.length());
-                info.effectList.add(s);
-            }
+            logger.info("Loaded " + modInfo.size() + " mods.");
         }
     }
 
@@ -388,71 +99,47 @@ public class CelesteModCatalogService extends HttpServlet {
         public int categoryId;
         public String categoryName;
         public String modName;
-        public Set<String> entityList = new TreeSet<>();
-        public Set<String> triggerList = new TreeSet<>();
-        public Set<String> effectList = new TreeSet<>();
-        public Map<String, String> documentationLinks = Collections.emptyMap();
+        public Set<String> entityList;
+        public Set<String> triggerList;
+        public Set<String> effectList;
+        public Map<String, String> documentationLinks;
 
-        private QueriedModInfo(String itemtype, int itemid) {
-            this.itemtype = itemtype;
-            this.itemid = itemid;
+        public QueriedModInfo(HashMap<String, Object> object) {
+            itemtype = (String) object.get("itemtype");
+            itemid = (int) object.get("itemid");
+            categoryId = (int) object.get("categoryId");
+            categoryName = (String) object.get("categoryName");
+            modName = (String) object.get("modName");
+            entityList = ((ArrayList<Object>) object.get("entityList")).stream().map(Object::toString).collect(Collectors.toCollection(TreeSet::new));
+            triggerList = ((ArrayList<Object>) object.get("triggerList")).stream().map(Object::toString).collect(Collectors.toCollection(TreeSet::new));
+            effectList = ((ArrayList<Object>) object.get("effectList")).stream().map(Object::toString).collect(Collectors.toCollection(TreeSet::new));
+            documentationLinks = new LinkedHashMap<>();
+
+            ((ArrayList<Object>) object.get("documentationLinks")).stream()
+                    .map(item -> (Map<String, Object>) item)
+                    .forEach(item -> documentationLinks.put((String) item.get("key"), (String) item.get("value")));
         }
     }
 
-    private void refreshList() throws IOException {
-        // load the entire mod list
-        List<String> mods;
-        try (InputStream is = new URL(Constants.MOD_FILES_DATABASE_ROOT + "/list.yaml").openStream()) {
-            mods = new Yaml().load(is);
-        }
+    /**
+     * Replaces everything that's not a letter or number with '-' in the input.
+     */
+    public static String dasherize(String input) {
+        StringBuilder builder = new StringBuilder();
 
-        for (String mod : mods) {
-            // download this mod's info
-            Map<String, Object> fileInfo;
-            try (InputStream is = new URL(Constants.MOD_FILES_DATABASE_ROOT + "/" + mod + "/info.yaml").openStream()) {
-                fileInfo = new Yaml().load(is);
-            }
+        boolean lastIsDash = true;
+        for (int i = 0; i < input.length(); i++) {
+            char c = input.charAt(i);
 
-            // create a QueriedModInfo for it
-            QueriedModInfo thisModInfo = new QueriedModInfo(mod.split("/")[0], Integer.parseInt(mod.split("/")[1]));
-            thisModInfo.modName = fileInfo.get("Name").toString();
-            List<String> files = (List<String>) fileInfo.get("Files");
-
-            // only show files from the first version listed.
-            boolean filesWereAlreadyFound = false;
-
-            for (String file : files) {
-                // download the file list for this zip
-                List<String> fileList;
-                try (InputStream is = new URL(Constants.MOD_FILES_DATABASE_ROOT + "/" + mod + "/" + file + ".yaml").openStream()) {
-                    fileList = new Yaml().load(is);
-                }
-
-                // search for Ahorn plugins if we didn't already find them
-                if (!filesWereAlreadyFound) {
-                    for (String fileName : fileList) {
-                        if (fileName.startsWith("Ahorn/entities/") && fileName.endsWith(".jl")) {
-                            thisModInfo.entityList.add(fileName.substring(fileName.lastIndexOf("/") + 1));
-                        }
-                        if (fileName.startsWith("Ahorn/triggers/") && fileName.endsWith(".jl")) {
-                            thisModInfo.triggerList.add(fileName.substring(fileName.lastIndexOf("/") + 1));
-                        }
-                        if (fileName.startsWith("Ahorn/effects/") && fileName.endsWith(".jl")) {
-                            thisModInfo.effectList.add(fileName.substring(fileName.lastIndexOf("/") + 1));
-                        }
-                    }
-                }
-
-                // check if we found plugins!
-                if (!thisModInfo.entityList.isEmpty() || !thisModInfo.triggerList.isEmpty() || !thisModInfo.effectList.isEmpty()) {
-                    filesWereAlreadyFound = true;
-                }
-            }
-
-            // add the mod to the custom entity catalog if it has any entity.
-            if (filesWereAlreadyFound) {
-                workingModInfo.add(thisModInfo);
+            if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9')) {
+                lastIsDash = false;
+                builder.append(Character.toLowerCase(c));
+            } else if (!lastIsDash) {
+                lastIsDash = true;
+                builder.append('-');
             }
         }
+
+        return builder.toString();
     }
 }

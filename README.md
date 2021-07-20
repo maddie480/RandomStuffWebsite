@@ -4,7 +4,7 @@ This is (part of) the source code for the max480-random-stuff.**appspot**.com we
 
 It contains the full source for:
 - [the Everest Update Checker frontend service](https://max480-random-stuff.appspot.com/celeste/everest_update.yaml)
-- [the Celeste custom entity catalog](https://max480-random-stuff.appspot.com/celeste/custom-entity-catalog)
+- [the Celeste custom entity catalog](https://max480-random-stuff.appspot.com/celeste/custom-entity-catalog), and [its API version](https://max480-random-stuff.appspot.com/celeste/custom-entity-catalog.json)
 - [the everest.yaml validator](https://max480-random-stuff.appspot.com/celeste/everest-yaml-validator)
 - [the Everest Update Checker status page](https://max480-random-stuff.appspot.com/celeste/update-checker-status)
 - [the help page for the Mod Structure Verifier bot](https://max480-random-stuff.appspot.com/celeste/mod-structure-verifier?collabName=CollabName&collabMapName=CollabMapName&assets&xmls&nomap&multiplemaps&badmappath&badenglish&misplacedyaml&noyaml&yamlinvalid&missingassets&missingentities)

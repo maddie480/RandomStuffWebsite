@@ -32,7 +32,7 @@ public class CelesteModUpdateService extends HttpServlet {
             logger.log(Level.INFO, "Warmup: Backed up everest_update.yaml is " +
                     IOUtils.toByteArray(getConnectionWithTimeouts("https://storage.googleapis.com/max480-random-stuff.appspot.com/" + Constants.CLOUD_STORAGE_BACKUP_FILENAME)).length + " bytes long");
             logger.log(Level.INFO, "Warmup: file_ids.yaml is " +
-                    IOUtils.toByteArray(getConnectionWithTimeouts(Constants.MOD_FILES_DATABASE_ROOT + "/file_ids.yaml")).length + " bytes long");
+                    IOUtils.toByteArray(getConnectionWithTimeouts(Constants.FILE_IDS_URL)).length + " bytes long");
         } catch (Exception e) {
             logger.log(Level.WARNING, "Warming up failed: " + e.toString());
         }
@@ -43,7 +43,7 @@ public class CelesteModUpdateService extends HttpServlet {
         response.setHeader("Content-Type", "text/yaml");
 
         if ("/celeste/file_ids.yaml".equals(request.getRequestURI())) {
-            try (InputStream is = getConnectionWithTimeouts(Constants.MOD_FILES_DATABASE_ROOT + "/file_ids.yaml").getInputStream()) {
+            try (InputStream is = getConnectionWithTimeouts(Constants.FILE_IDS_URL).getInputStream()) {
                 IOUtils.copy(is, response.getOutputStream());
             }
             return;
