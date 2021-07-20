@@ -15,7 +15,7 @@ import java.time.ZonedDateTime;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-@WebServlet(name = "CelesteModUpdateService", loadOnStartup = 1, urlPatterns = {"/celeste/everest_update.yaml", "/celeste/file_ids.yaml"})
+@WebServlet(name = "CelesteModUpdateService", urlPatterns = {"/celeste/everest_update.yaml", "/celeste/file_ids.yaml"})
 public class CelesteModUpdateService extends HttpServlet {
 
     private final Logger logger = Logger.getLogger("CelesteModUpdateService");
@@ -23,20 +23,6 @@ public class CelesteModUpdateService extends HttpServlet {
     private byte[] cachedYaml;
     private ZonedDateTime cachedYamlValidUntil = ZonedDateTime.now().minusMonths(1);
     private ZonedDateTime lastBackupValidUntil = ZonedDateTime.now().minusMonths(1);
-
-    @Override
-    public void init() {
-        try {
-            logger.log(Level.INFO, "Warmup: everest_update.yaml from server is " +
-                    IOUtils.toByteArray(getConnectionWithTimeouts(Constants.UPDATE_CHECKER_SERVER_URL)).length + " bytes long");
-            logger.log(Level.INFO, "Warmup: Backed up everest_update.yaml is " +
-                    IOUtils.toByteArray(getConnectionWithTimeouts("https://storage.googleapis.com/max480-random-stuff.appspot.com/" + Constants.CLOUD_STORAGE_BACKUP_FILENAME)).length + " bytes long");
-            logger.log(Level.INFO, "Warmup: file_ids.yaml is " +
-                    IOUtils.toByteArray(getConnectionWithTimeouts(Constants.FILE_IDS_URL)).length + " bytes long");
-        } catch (Exception e) {
-            logger.log(Level.WARNING, "Warming up failed: " + e.toString());
-        }
-    }
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {

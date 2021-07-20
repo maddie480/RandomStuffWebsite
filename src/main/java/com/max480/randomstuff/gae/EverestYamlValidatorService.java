@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-@WebServlet(name = "EverestYamlValidatorService", loadOnStartup = 5, urlPatterns = {"/celeste/everest-yaml-validator"})
+@WebServlet(name = "EverestYamlValidatorService", urlPatterns = {"/celeste/everest-yaml-validator"})
 @MultipartConfig
 public class EverestYamlValidatorService extends HttpServlet {
     private final Logger logger = Logger.getLogger("EverestYamlValidatorService");

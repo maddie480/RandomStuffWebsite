@@ -27,7 +27,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-@WebServlet(name = "UpdateCheckerStatus", loadOnStartup = 7, urlPatterns = {"/celeste/update-checker-status"})
+@WebServlet(name = "UpdateCheckerStatus", urlPatterns = {"/celeste/update-checker-status"})
 @MultipartConfig
 public class UpdateCheckerStatusService extends HttpServlet {
     private static Logging logging = LoggingOptions.getDefaultInstance().getService();
