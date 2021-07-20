@@ -47,6 +47,7 @@ public class CelesteModCatalogService extends HttpServlet {
 
             reloadList();
         } else if (request.getRequestURI().equals("/celeste/custom-entity-catalog.json")) {
+            response.setHeader("Content-Type", "application/json");
             try (InputStream is = getConnectionWithTimeouts(Constants.CUSTOM_ENTITY_CATALOG_URL).getInputStream()) {
                 IOUtils.copy(is, response.getOutputStream());
             }
