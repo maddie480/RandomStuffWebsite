@@ -102,6 +102,11 @@
             <groupId>com.google.cloud</groupId>
             <artifactId>google-cloud-logging</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.google.cloud</groupId>
+            <artifactId>google-cloud-monitoring</artifactId>
+        </dependency>
+
 
         <!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-core -->
         <dependency>
