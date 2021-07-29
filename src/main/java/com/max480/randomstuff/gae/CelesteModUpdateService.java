@@ -1,6 +1,9 @@
 package com.max480.randomstuff.gae;
 
-import com.google.cloud.storage.*;
+import com.google.cloud.storage.BlobId;
+import com.google.cloud.storage.BlobInfo;
+import com.google.cloud.storage.Storage;
+import com.google.cloud.storage.StorageOptions;
 import org.apache.commons.io.IOUtils;
 
 import javax.servlet.annotation.WebServlet;
@@ -17,7 +20,6 @@ import java.util.logging.Logger;
 @WebServlet(name = "CelesteModUpdateService", loadOnStartup = 3, urlPatterns = {"/celeste/everest_update.yaml",
         "/celeste/file_ids.yaml", "/celeste/everest-update-reload"})
 public class CelesteModUpdateService extends HttpServlet {
-
     private final Logger logger = Logger.getLogger("CelesteModUpdateService");
 
     private byte[] everestYaml;
@@ -26,7 +28,10 @@ public class CelesteModUpdateService extends HttpServlet {
     public void init() {
         try {
             logger.fine("Downloading everest_update.yaml from Cloud Storage");
-            everestYaml = IOUtils.toByteArray(getConnectionWithTimeouts("https://storage.googleapis.com/max480-random-stuff.appspot.com/" + Constants.CLOUD_STORAGE_BACKUP_FILENAME));
+
+            Storage storage = StorageOptions.newBuilder().setProjectId("max480-random-stuff").build().getService();
+            BlobId blobId = BlobId.of("max480-random-stuff.appspot.com", "everest_update_backup.yaml");
+            everestYaml = storage.get(blobId).getContent();
         } catch (Exception e) {
             logger.log(Level.WARNING, "Warming up failed: " + e.toString());
         }
@@ -61,10 +66,9 @@ public class CelesteModUpdateService extends HttpServlet {
 
         // back up on Cloud Storage.
         Storage storage = StorageOptions.newBuilder().setProjectId("max480-random-stuff").build().getService();
-        BlobId blobId = BlobId.of("max480-random-stuff.appspot.com", Constants.CLOUD_STORAGE_BACKUP_FILENAME);
+        BlobId blobId = BlobId.of("max480-random-stuff.appspot.com", "everest_update_backup.yaml");
         BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType("text/yaml").build();
         storage.create(blobInfo, yaml);
-        storage.createAcl(blobId, Acl.of(Acl.User.ofAllUsers(), Acl.Role.READER));
 
         everestYaml = yaml;
     }
