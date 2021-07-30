@@ -23,6 +23,10 @@ import java.util.stream.Collectors;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
+/**
+ * This servlet handles the everest.yaml validation service, and validates everest.yaml files that are sent by the user.
+ * It is also used by the Mod Structure Verifier bot (that calls it like an API).
+ */
 @WebServlet(name = "EverestYamlValidatorService", urlPatterns = {"/celeste/everest-yaml-validator"})
 @MultipartConfig
 public class EverestYamlValidatorService extends HttpServlet {

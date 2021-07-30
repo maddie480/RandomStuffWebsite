@@ -27,6 +27,10 @@ import java.time.temporal.ChronoUnit;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
+/**
+ * A status page for the Update Checker, that determines the status by reading the Google Cloud Logging logs
+ * of the backend server.
+ */
 @WebServlet(name = "UpdateCheckerStatus", urlPatterns = {"/celeste/update-checker-status"})
 @MultipartConfig
 public class UpdateCheckerStatusService extends HttpServlet {

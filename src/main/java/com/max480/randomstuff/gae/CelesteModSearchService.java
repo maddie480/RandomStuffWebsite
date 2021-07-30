@@ -37,6 +37,9 @@ import java.util.stream.Stream;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
+/**
+ * This servlet provides the GameBanana search API, and other APIs that are used by Olympus or the Banana Mirror Browser.
+ */
 @WebServlet(name = "CelesteModSearchService", loadOnStartup = 2, urlPatterns = {"/celeste/gamebanana-search",
         "/celeste/gamebanana-search-reload", "/celeste/gamebanana-list", "/celeste/gamebanana-categories", "/celeste/webp-to-png",
         "/celeste/banana-mirror-image"})

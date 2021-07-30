@@ -8,6 +8,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+/**
+ * When the Mod Structure Verifier finds issues with a mod zip, it sends a link to this page with parameters
+ * corresponding to the bot settings and to the issues it found, to give more help to the user.
+ */
 @WebServlet(name = "ModStructureVerifier", urlPatterns = {"/celeste/mod-structure-verifier"})
 @MultipartConfig
 public class ModStructureVerifierService extends HttpServlet {

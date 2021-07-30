@@ -21,6 +21,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
+/**
+ * An API that allows to merge Heroku logs (from max480-random-stuff.herokuapp.com) with the rest of logs
+ * in Google Cloud Logging.
+ */
 @WebServlet(name = "HerokuLogger", urlPatterns = {"/heroku-logs"})
 public class HerokuLogger extends HttpServlet {
     private final Logger logger = Logger.getLogger("HerokuLogger");

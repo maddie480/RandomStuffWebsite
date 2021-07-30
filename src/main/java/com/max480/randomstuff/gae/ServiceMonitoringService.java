@@ -18,6 +18,10 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.TreeMap;
 
+/**
+ * An internal API that gives the backend ("bot") and frontend ("website") uptimes, and the number of requests
+ * by HTTP code for the last 24 hours, based on Google Cloud Monitoring.
+ */
 @WebServlet(name = "ServiceMonitoring", urlPatterns = {"/service-monitoring"})
 public class ServiceMonitoringService extends HttpServlet {
     @Override

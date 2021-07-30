@@ -22,6 +22,9 @@ import java.util.stream.Collectors;
 import static com.max480.randomstuff.gae.CelesteModUpdateService.getConnectionWithTimeouts;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
+/**
+ * This is the servlet generating the Custom Entity Catalog page.
+ */
 @WebServlet(name = "CelesteModCatalogService", loadOnStartup = 1, urlPatterns = {
         "/celeste/custom-entity-catalog", "/celeste/custom-entity-catalog.json", "/celeste/custom-entity-catalog-reload"})
 public class CelesteModCatalogService extends HttpServlet {

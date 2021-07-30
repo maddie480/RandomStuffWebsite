@@ -6,6 +6,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+/**
+ * The default servlet catching all pages that didn't match any other route
+ * (because yes, that's what "/" does... it isn't just the server root.)
+ */
 @WebServlet(name = "RouteNotFound", urlPatterns = {"/"})
 public class RouteNotFoundServlet extends HttpServlet {
     @Override

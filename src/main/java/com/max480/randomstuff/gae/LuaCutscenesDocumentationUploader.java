@@ -20,6 +20,10 @@ import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+/**
+ * This service is called when Lua Cutscenes got updated, and mirrors the docs included in the mod zip
+ * at https://storage.googleapis.com/lua-cutscenes-documentation/index.html.
+ */
 @WebServlet(name = "LuaCutscenesDocumentationUploader", urlPatterns = {"/celeste/lua-cutscenes-documentation-upload"})
 public class LuaCutscenesDocumentationUploader extends HttpServlet {
     private final Logger logger = Logger.getLogger("LuaCutscenesDocumentationUploader");
