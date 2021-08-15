@@ -59,14 +59,16 @@ public class CelesteModSearchService extends HttpServlet {
         public final int views;
         public final int downloads;
         public final int categoryId;
+        public final int createdDate;
 
-        private ModInfo(String type, int id, int likes, int views, int downloads, int categoryId) {
+        private ModInfo(String type, int id, int likes, int views, int downloads, int categoryId, int createdDate) {
             this.type = type;
             this.id = id;
             this.likes = likes;
             this.views = views;
             this.downloads = downloads;
             this.categoryId = categoryId;
+            this.createdDate = createdDate;
         }
     }
 
@@ -240,6 +242,9 @@ public class CelesteModSearchService extends HttpServlet {
                         break;
                     case "downloads":
                         sort = Comparator.<ModInfo>comparingInt(i -> -i.downloads).thenComparingInt(i -> -i.id);
+                        break;
+                    case "latest":
+                        sort = Comparator.<ModInfo>comparingInt(i -> -i.createdDate).thenComparingInt(i -> -i.id);
                         break;
                     default:
                         sort = null;
@@ -431,7 +436,7 @@ public class CelesteModSearchService extends HttpServlet {
                     index.addDocument(modDocument);
 
                     newModDatabaseForSorting.add(new ModInfo(mod.get("GameBananaType").toString(), (int) mod.get("GameBananaId"),
-                            (int) mod.get("Likes"), (int) mod.get("Views"), (int) mod.get("Downloads"), categoryId));
+                            (int) mod.get("Likes"), (int) mod.get("Views"), (int) mod.get("Downloads"), categoryId, (int) mod.get("CreatedDate")));
                 }
             }
 
