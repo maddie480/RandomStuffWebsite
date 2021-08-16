@@ -124,3 +124,23 @@ This contains every 1st and 2nd screenshot of Celeste submissions on GameBanana,
 Usage example: `https://max480-random-stuff.appspot.com/celeste/banana-mirror-image?src=https://images.gamebanana.com/img/ss/mods/5b05ac2b4b6da.webp`
 
 _For compatibility reasons, you can also use `webp-to-png` instead of `banana-mirror-image`._
+
+## GameBanana category RSS feed API
+
+_Note that this API works for all GameBanana categories, not only Celeste ones._
+
+This API uses the "get mods for a category" API from GameBanana, then turns the result in an RSS format.
+
+Usage is very similar to the "vanilla" GameBanana API, since it calls it directly behind the scenes: for example, getting the latest Celeste helpers (https://gamebanana.com/mods/cats/5081 :arrow_right: ID is 5081) is done with
+```
+https://gamebanana.com/apiv5/Mod/ByCategory?_csvProperties=@gbprofile&_aCategoryRowIds[]=5081&_sOrderBy=_tsDateAdded,DESC&_nPerpage=10
+```
+
+You can get them in the RSS format by just replacing the URL and carrying over all query params except `_csvProperties`:
+```
+https://max480-random-stuff.appspot.com/gamebanana/rss-feed?_aCategoryRowIds[]=5081&_sOrderBy=_tsDateAdded,DESC&_nPerpage=10
+```
+
+(Note that you can copy this URL replacing `5081` with the category of your choice to get the latest mods in this category.)
+
+If the GameBanana API returns an error (for example if you pass an invalid parameter), this API will return it as is.
