@@ -42,7 +42,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  */
 @WebServlet(name = "CelesteModSearchService", loadOnStartup = 2, urlPatterns = {"/celeste/gamebanana-search",
         "/celeste/gamebanana-search-reload", "/celeste/gamebanana-list", "/celeste/gamebanana-categories", "/celeste/webp-to-png",
-        "/celeste/banana-mirror-image"})
+        "/celeste/banana-mirror-image", "/celeste/mod_search_database.yaml"})
 public class CelesteModSearchService extends HttpServlet {
 
     private final Logger logger = Logger.getLogger("CelesteModSearchService");
@@ -196,6 +196,12 @@ public class CelesteModSearchService extends HttpServlet {
             }
         }
 
+        if (request.getRequestURI().equals("/celeste/mod_search_database.yaml")) {
+            response.setHeader("Content-Type", "text/yaml");
+            try (InputStream is = CelesteModUpdateService.getCloudStorageInputStream("mod_search_database.yaml")) {
+                IOUtils.copy(is, response.getOutputStream());
+            }
+        }
 
         if (request.getRequestURI().equals("/celeste/gamebanana-list")) {
             String sortParam = request.getParameter("sort");
@@ -406,7 +412,7 @@ public class CelesteModSearchService extends HttpServlet {
 
     // mapping takes an awful amount of time on App Engine (~2 seconds) so we can't make it when the user calls the API.
     private void refreshModDatabase() throws IOException {
-        try (InputStream connectionToDatabase = new URL(Constants.MOD_SEARCH_DATABASE_URL).openStream()) {
+        try (InputStream connectionToDatabase = CelesteModUpdateService.getCloudStorageInputStream("mod_search_database.yaml")) {
             // download the mods
             List<HashMap<String, Object>> mods = new Yaml().load(connectionToDatabase);
             logger.fine("There are " + mods.size() + " mods in the search database.");

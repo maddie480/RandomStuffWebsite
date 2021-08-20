@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -19,7 +18,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import static com.max480.randomstuff.gae.CelesteModUpdateService.getConnectionWithTimeouts;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
@@ -51,7 +49,7 @@ public class CelesteModCatalogService extends HttpServlet {
             reloadList();
         } else if (request.getRequestURI().equals("/celeste/custom-entity-catalog.json")) {
             response.setHeader("Content-Type", "application/json");
-            try (InputStream is = getConnectionWithTimeouts(Constants.CUSTOM_ENTITY_CATALOG_URL).getInputStream()) {
+            try (InputStream is = CelesteModUpdateService.getCloudStorageInputStream("custom_entity_catalog.json")) {
                 IOUtils.copy(is, response.getOutputStream());
             }
         } else if (request.getRequestURI().equals("/celeste/custom-entity-catalog")) {
@@ -82,7 +80,7 @@ public class CelesteModCatalogService extends HttpServlet {
 
     private void reloadList() throws IOException {
         // just load and parse the custom entity catalog JSON.
-        try (InputStream is = new URL(Constants.CUSTOM_ENTITY_CATALOG_URL).openStream()) {
+        try (InputStream is = CelesteModUpdateService.getCloudStorageInputStream("custom_entity_catalog.json")) {
             JSONObject obj = new JSONObject(IOUtils.toString(is, UTF_8));
             lastUpdated = ZonedDateTime.parse(obj.getString("lastUpdated")).withZoneSameInstant(ZoneId.of("UTC"));
             modInfo = obj.getJSONArray("modInfo").toList().stream()
