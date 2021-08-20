@@ -88,7 +88,8 @@ public class ServiceMonitoringService extends HttpServlet {
 
         for (TimeSeries series : timeSeries.iterateAll()) {
             boolean isWebsite;
-            if (series.getMetric().getLabelsOrThrow("check_id").equals("bot-healthcheck")) {
+            if (series.getMetric().getLabelsOrThrow("check_id").equals("bot-healthcheck-F_-kI5b144Q")
+                    || series.getMetric().getLabelsOrThrow("check_id").equals("bot-healthcheck")) {
                 isWebsite = false;
             } else if (series.getMetric().getLabelsOrThrow("check_id").equals("website-healthcheck")) {
                 isWebsite = true;
