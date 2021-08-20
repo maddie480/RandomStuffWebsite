@@ -1,17 +1,26 @@
 package com.max480.randomstuff.gae;
 
+import com.google.api.gax.paging.Page;
+import com.google.cloud.logging.LogEntry;
+import com.google.cloud.logging.Logging;
+import com.google.cloud.logging.LoggingOptions;
+
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.logging.Logger;
 
 /**
  * A simple service that just responds with "yes the app exists", for use with availability checks.
  */
-@WebServlet(name = "HealthCheckService", urlPatterns = {"/healthcheck", "/bot-healthcheck", "/bot-says-hi"})
+@WebServlet(name = "HealthCheckService", urlPatterns = {"/healthcheck", "/bot-healthcheck"})
 public class HealthCheckService extends HttpServlet {
-    private long lastBotSign = System.currentTimeMillis();
+    private final Logger logger = Logger.getLogger("HealthCheckService");
+    private static Logging logging = LoggingOptions.getDefaultInstance().getService();
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -19,20 +28,23 @@ public class HealthCheckService extends HttpServlet {
             // server healthcheck
             response.setHeader("Content-Type", "text/plain");
             response.getWriter().write("The service is up and running!");
-        } else if (request.getRequestURI().equals("/bot-says-hi")
-                && ("key=" + Constants.CATALOG_RELOAD_SHARED_SECRET).equals(request.getQueryString())) {
-
-            // bot said hi!
-            lastBotSign = System.currentTimeMillis();
-
         } else if (request.getRequestURI().equals("/bot-healthcheck")) {
             response.setHeader("Content-Type", "text/plain");
-            if (System.currentTimeMillis() - lastBotSign > 600_000) {
-                // bot last said hi more than 10 minutes ago, this is fishy.
-                response.getWriter().write("KO");
-            } else {
-                // all good!
+
+            // was the bot CONNECTED less than 3 minutes ago?
+            final Page<LogEntry> logEntry = logging.listLogEntries(
+                    Logging.EntryListOption.sortOrder(Logging.SortingField.TIMESTAMP, Logging.SortingOrder.DESCENDING),
+                    Logging.EntryListOption.filter(
+                            "jsonPayload.message =\"Bot status is CONNECTED\" " +
+                                    " AND timestamp >= \"" + ZonedDateTime.now().minusMinutes(3).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME) + "\""),
+                    Logging.EntryListOption.pageSize(1)
+            );
+
+            if (logEntry.getValues().iterator().hasNext()) {
+                logger.fine("Last OK log is from " + logEntry.getValues().iterator().next().getTimestamp());
                 response.getWriter().write("OK");
+            } else {
+                response.getWriter().write("KO");
             }
         } else {
             response.setStatus(404);
