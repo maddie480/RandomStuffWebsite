@@ -141,6 +141,7 @@ You can get them in the RSS format by just replacing the URL and carrying over a
 https://max480-random-stuff.appspot.com/gamebanana/rss-feed?_aCategoryRowIds[]=5081&_sOrderBy=_tsDateAdded,DESC&_nPerpage=10
 ```
 
-(Note that you can copy this URL replacing `5081` with the category of your choice to get the latest mods in this category.)
+You can copy this URL replacing `5081` with the category of your choice to get a feed for the latest mods in this category.
+To include mod updates (and not only new mods), replace `_tsDateAdded` with `_tsDateUpdated`.
 
 If the GameBanana API returns an error (for example if you pass an invalid parameter), this API will return it as is.

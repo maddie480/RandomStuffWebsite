@@ -26,7 +26,13 @@ import java.time.format.DateTimeFormatter;
 public class GameBananaAPIExtensions extends HttpServlet {
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        HttpURLConnection connection = (HttpURLConnection) new URL("https://gamebanana.com/apiv5/Mod/ByCategory?_csvProperties=_sName,_sProfileUrl,_aPreviewMedia,_tsDateAdded&"
+        // if sorting by "last updated", <pubDate> should be the last updated date rather than the created date.
+        String pubDateField = "_tsDateAdded";
+        if (request.getQueryString().contains("_sOrderBy=_tsDateUpdated,")) {
+            pubDateField = "_tsDateUpdated";
+        }
+
+        HttpURLConnection connection = (HttpURLConnection) new URL("https://gamebanana.com/apiv5/Mod/ByCategory?_csvProperties=_sName,_sProfileUrl,_aPreviewMedia," + pubDateField + "&"
                 + request.getQueryString()).openConnection();
 
         if (connection.getResponseCode() != 200) {
@@ -56,7 +62,7 @@ public class GameBananaAPIExtensions extends HttpServlet {
                     .append("</image>\n");
 
             rss.append("\t\t\t<pubDate>")
-                    .append(Instant.ofEpochSecond(mod.getLong("_tsDateAdded")).atZone(ZoneId.of("UTC")).format(DateTimeFormatter.RFC_1123_DATE_TIME))
+                    .append(Instant.ofEpochSecond(mod.getLong(pubDateField)).atZone(ZoneId.of("UTC")).format(DateTimeFormatter.RFC_1123_DATE_TIME))
                     .append("</pubDate>\n");
             rss.append("\t\t</item>\n");
         }
