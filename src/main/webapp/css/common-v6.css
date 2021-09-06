@@ -1,0 +1,96 @@
+#nav a {
+    font-weight: 700;
+    color: #2c3e50;
+}
+
+#nav a.active {
+     color: #42b983;
+}
+
+#nav {
+    display: block;
+    text-align: center;
+    padding: 30px;
+    font-family: Avenir, Helvetica, Arial, sans-serif;
+}
+
+@media(max-width: 450px) {
+    .sep {
+        display: none;
+    }
+
+    #nav a {
+        display: block;
+    }
+}
+
+@media(prefers-color-scheme: dark) {
+    body {
+        background-color: black;
+        color: #DEDAD6;
+    }
+
+    #nav a {
+        color: #A5A5A5;
+    }
+    #nav a.active {
+        color: #4ED898;
+    }
+
+    .alert-success {
+        color: #fff;
+        border-color: #00b74a;
+        background-color: #007b32;
+    }
+    .alert-info {
+        color: #fff;
+        border-color: #2c9fc6;
+        background-color: #0e7497;
+    }
+    .alert-warning {
+        color: #fff;
+        border-color: #c18000;
+        background-color: #9f6a00;
+    }
+    .alert-danger {
+        color: #fff;
+        border-color: #f93154;
+        background-color: #be0626;
+    }
+    .alert a {
+        color: #ddd;
+        text-decoration: underline;
+    }
+    .alert a:hover {
+        color: #ccc;
+    }
+
+    .alert-danger pre {
+        background-color: black;
+        color: #DEDAD6;
+    }
+
+    a {
+        color: #47a0ff;
+    }
+
+    .btn-outline-primary {
+        color: #47a0ff;
+        border-color: #47a0ff;
+    }
+    .btn-outline-secondary {
+        color: #909ca6;
+        border-color: #909ca6;
+    }
+
+    .form-control {
+        background-color: black;
+        border-color: #83888c;
+        color: #dedad6;
+    }
+    .form-control:focus {
+        background-color: black;
+        color: #dedad6;
+        border-color: #125cc8;
+    }
+}

@@ -23,16 +23,17 @@
 		integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
 		crossorigin="anonymous">
 
-    <link rel="stylesheet" href="/css/common-v5.css">
+    <link rel="stylesheet" href="/css/common-v6.css">
 </head>
 
 <body>
 	<div class="container">
         <div id="nav">
-            <a href="/celeste/custom-entity-catalog">Custom Entity Catalog</a> |
-            <a href="/celeste/everest-yaml-validator">everest.yaml validator</a> |
-            <a href="/celeste/update-checker-status" class="active">Update Checker status</a> |
-            <a href="https://max480-random-stuff.herokuapp.com/banana-mirror-browser">Banana Mirror Browser</a>
+            <a href="/celeste/custom-entity-catalog">Custom Entity Catalog</a> <span class="sep">|</span>
+            <a href="/celeste/everest-yaml-validator">everest.yaml validator</a> <span class="sep">|</span>
+            <a href="/celeste/update-checker-status" class="active">Update Checker status</a> <span class="sep">|</span>
+            <a href="https://max480-random-stuff.herokuapp.com/banana-mirror-browser">Banana Mirror Browser</a> <span class="sep">|</span>
+            <a href="/celeste/font-generator">Font Generator</a>
         </div>
 
         <h1 class="mt-4">Everest Update Checker status page</h1>
