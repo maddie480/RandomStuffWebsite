@@ -66,7 +66,7 @@
         <p>
             This page allows you to generate files to import missing characters in the Celeste font for your mod,
             or to convert a completely custom font.
-            In order to do this, send your dialog file here, then unzip the contents of the zip you're given to <code>Mods/yourmod/Dialog/Fonts</code>!
+            In order to do this, send your dialog file here, then unzip the contents of the zip you're given to <code>Mods/yourmod/Dialog/Fonts</code>.
         </p>
 
         <form method="POST" enctype="multipart/form-data">
