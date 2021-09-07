@@ -44,7 +44,8 @@
             <a href="/celeste/everest-yaml-validator">everest.yaml validator</a> <span class="sep">|</span>
             <a href="/celeste/update-checker-status">Update Checker status</a> <span class="sep">|</span>
             <a href="https://max480-random-stuff.herokuapp.com/banana-mirror-browser">Banana Mirror Browser</a> <span class="sep">|</span>
-            <a href="/celeste/font-generator" class="active">Font Generator</a>
+            <a href="/celeste/font-generator" class="active">Font Generator</a> <span class="sep">|</span>
+            <a href="https://max480-random-stuff.herokuapp.com/wipe-converter">Wipe Converter</a>
         </div>
 
         <h1>Celeste Font Generator</h1>
