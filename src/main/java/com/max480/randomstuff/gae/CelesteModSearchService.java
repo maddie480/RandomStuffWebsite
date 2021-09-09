@@ -17,8 +17,6 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.QueryBuilder;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
@@ -29,15 +27,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * This servlet provides the GameBanana search API, and other APIs that are used by Olympus or the Banana Mirror Browser.
@@ -104,8 +99,6 @@ public class CelesteModSearchService extends HttpServlet {
                 response.setStatus(400);
                 response.getWriter().write("\"q\" query parameter expected");
             } else {
-                boolean version2 = "2".equals(request.getParameter("version"));
-
                 // let's prepare a request through Lucene.
                 try (DirectoryReader reader = DirectoryReader.open(modIndexDirectory)) {
                     IndexSearcher searcher = new IndexSearcher(reader);
@@ -134,56 +127,27 @@ public class CelesteModSearchService extends HttpServlet {
 
                     ScoreDoc[] hits = searcher.search(query, 20).scoreDocs;
 
-                    if (version2) {
-                        // invoke GameBanana with each result to return the mod info exactly like it does.
-                        List<JSONObject> modInfo = Arrays.stream(hits).parallel()
-                                .map(hit -> {
-                                    try (InputStream is = new URL("https://gamebanana.com/apiv5/" + searcher.doc(hit.doc).get("type") + "/" + searcher.doc(hit.doc).get("id") +
-                                            "?_csvProperties=_sName,_sProfileUrl,_aSubmitter,_tsDateAdded,_aPreviewMedia,_sDescription,_sText,_nViewCount,_nLikeCount,_nDownloadCount,_aFiles,_aModManagerIntegrations").openStream()) {
+                    // convert the results to yaml
+                    List<Map<String, Object>> responseBody;
+                    responseBody = Arrays.stream(hits).map(hit -> {
+                        try {
+                            Document doc = searcher.doc(hit.doc);
+                            Map<String, Object> result = new LinkedHashMap<>();
+                            result.put("itemtype", doc.get("type"));
+                            result.put("itemid", Integer.parseInt(doc.get("id")));
 
-                                        Document doc = searcher.doc(hit.doc);
-                                        logger.fine("Result: " + doc.get("type") + " " + doc.get("id")
-                                                + " (" + doc.get("name") + ") with " + hit.score + " pt(s)");
-
-                                        JSONArray results = new JSONArray(IOUtils.toString(is, UTF_8));
-                                        return results.getJSONObject(0);
-                                    } catch (IOException e) {
-                                        logger.severe("Could not retrieve mod by ID!" + e.toString());
-                                        e.printStackTrace();
-                                        return null;
-                                    }
-                                })
-                                .collect(Collectors.toList());
-
-                        if (modInfo.stream().anyMatch(Objects::isNull)) {
-                            response.setStatus(500);
-                        } else {
-                            response.setHeader("Content-Type", "application/json");
-                            response.getWriter().write(new JSONArray(modInfo).toString());
+                            logger.fine("Result: " + doc.get("type") + " " + doc.get("id")
+                                    + " (" + doc.get("name") + ") with " + hit.score + " pt(s)");
+                            return result;
+                        } catch (IOException e) {
+                            // how would we have an I/O exception on a memory stream?
+                            throw new RuntimeException(e);
                         }
-                    } else {
-                        // convert the results to yaml
-                        List<Map<String, Object>> responseBody;
-                        responseBody = Arrays.stream(hits).map(hit -> {
-                            try {
-                                Document doc = searcher.doc(hit.doc);
-                                Map<String, Object> result = new LinkedHashMap<>();
-                                result.put("itemtype", doc.get("type"));
-                                result.put("itemid", Integer.parseInt(doc.get("id")));
+                    }).collect(Collectors.toList());
 
-                                logger.fine("Result: " + doc.get("type") + " " + doc.get("id")
-                                        + " (" + doc.get("name") + ") with " + hit.score + " pt(s)");
-                                return result;
-                            } catch (IOException e) {
-                                // how would we have an I/O exception on a memory stream?
-                                throw new RuntimeException(e);
-                            }
-                        }).collect(Collectors.toList());
-
-                        // send out the response
-                        response.setHeader("Content-Type", "text/yaml");
-                        response.getWriter().write(new Yaml().dump(responseBody));
-                    }
+                    // send out the response
+                    response.setHeader("Content-Type", "text/yaml");
+                    response.getWriter().write(new Yaml().dump(responseBody));
                 }
             }
         }
@@ -200,8 +164,6 @@ public class CelesteModSearchService extends HttpServlet {
             String pageParam = request.getParameter("page");
             String typeParam = request.getParameter("type") == null ? request.getParameter("itemtype") : request.getParameter("type");
             String categoryParam = request.getParameter("category");
-
-            boolean version2 = "2".equals(request.getParameter("version"));
 
             if (!Arrays.asList("latest", "likes", "views", "downloads").contains(sortParam)) {
                 // invalid sort!
@@ -259,45 +221,20 @@ public class CelesteModSearchService extends HttpServlet {
                     responseBodyStream = responseBodyStream.sorted(sort);
                 }
 
-                if (version2) {
-                    // invoke GameBanana with each result to return the mod info exactly like it does.
-                    List<JSONObject> modList = responseBodyStream
-                            .skip((page - 1) * 20L)
-                            .limit(20).parallel()
-                            .map(modInfo -> {
-                                try (InputStream is = new URL("https://gamebanana.com/apiv5/" + modInfo.type + "/" + modInfo.id +
-                                        "?_csvProperties=_sName,_sProfileUrl,_aSubmitter,_tsDateAdded,_aPreviewMedia,_sDescription,_sText,_nViewCount,_nLikeCount,_nDownloadCount,_aFiles,_aModManagerIntegrations").openStream()) {
-                                    return new JSONObject(IOUtils.toString(is, UTF_8));
-                                } catch (IOException e) {
-                                    logger.severe("Could not retrieve mod by ID!" + e.toString());
-                                    e.printStackTrace();
-                                    return null;
-                                }
-                            })
-                            .collect(Collectors.toList());
+                final List<Map<String, Object>> responseBody = responseBodyStream
+                        .skip((page - 1) * 20L)
+                        .limit(20)
+                        .map(modInfo -> {
+                            Map<String, Object> result = new LinkedHashMap<>();
+                            result.put("itemtype", modInfo.type);
+                            result.put("itemid", modInfo.id);
+                            return result;
+                        })
+                        .collect(Collectors.toList());
 
-                    if (modList.stream().anyMatch(Objects::isNull)) {
-                        response.setStatus(500);
-                    } else {
-                        response.setHeader("Content-Type", "application/json");
-                        response.getWriter().write(new JSONArray(modList).toString());
-                    }
-                } else {
-                    final List<Map<String, Object>> responseBody = responseBodyStream
-                            .skip((page - 1) * 20L)
-                            .limit(20)
-                            .map(modInfo -> {
-                                Map<String, Object> result = new LinkedHashMap<>();
-                                result.put("itemtype", modInfo.type);
-                                result.put("itemid", modInfo.id);
-                                return result;
-                            })
-                            .collect(Collectors.toList());
-
-                    // send out the response.
-                    response.setHeader("Content-Type", "text/yaml");
-                    response.getWriter().write(new Yaml().dump(responseBody));
-                }
+                // send out the response.
+                response.setHeader("Content-Type", "text/yaml");
+                response.getWriter().write(new Yaml().dump(responseBody));
             }
         }
 
