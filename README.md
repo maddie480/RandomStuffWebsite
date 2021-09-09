@@ -7,6 +7,7 @@ It contains the full source for:
 - [the Celeste custom entity catalog](https://max480-random-stuff.appspot.com/celeste/custom-entity-catalog), and [its API version](https://max480-random-stuff.appspot.com/celeste/custom-entity-catalog.json)
 - [the everest.yaml validator](https://max480-random-stuff.appspot.com/celeste/everest-yaml-validator)
 - [the Everest Update Checker status page](https://max480-random-stuff.appspot.com/celeste/update-checker-status)
+- [the Celeste font generator](https://max480-random-stuff.appspot.com/celeste/font-generator)
 - [the help page for the Mod Structure Verifier bot](https://max480-random-stuff.appspot.com/celeste/mod-structure-verifier?collabName=CollabName&collabMapName=CollabMapName&assets&xmls&nomap&multiplemaps&badmappath&badenglish&misplacedyaml&noyaml&yamlinvalid&missingassets&missingentities)
 - Some [GameBanana](https://gamebanana.com)-related APIs for the Celeste community described in the few next sections. **A number of those APIs are deprecated since the GameBanana v3 API was published.**
 
@@ -35,7 +36,7 @@ $ curl https://max480-random-stuff.appspot.com/celeste/gamebanana-search?q=sprin
 
 Here the top 2 results are https://gamebanana.com/maps/211745 (The 2020 Celeste Spring Community Collab) and https://gamebanana.com/gamefiles/13452 (2020 Spring Collab Randomizer).
 
-**Pass `version=2`** (for example `https://max480-random-stuff.appspot.com/celeste/gamebanana-search?q=extended+variant+mode&version=2`) to get only `Mod` submissions and get **the same JSON output as the GameBanana v3 API** (`https://gamebanana.com/apiv3/Mod/Index?_aArgs[]=_idRow%20=%2053650&_sRecordSchema=Olympus`) directly for all search results.
+**Pass `version=2`** (for example `https://max480-random-stuff.appspot.com/celeste/gamebanana-search?q=extended+variant+mode&version=2`) to get **the same JSON output as the GameBanana v3 API** (`https://gamebanana.com/apiv3/Mod/Index?_aArgs[]=_idRow%20=%2053650&_sRecordSchema=Olympus`) directly for all search results.
 
 The search engine is powered by [Apache Lucene](https://lucene.apache.org/). It supports, among other things:
 - searching for a **phrase**: `"Spring Collab"`
@@ -64,6 +65,8 @@ _sOrderBy can be, among others:
 - `_nDownloadCount,DESC` for most downloaded
 
 For a sorted list of mods in a category: https://gamebanana.com/apiv3/Mod/ByCategory?_sRecordSchema=Olympus&_aCategoryRowIds[]=6800&_sOrderBy=_tsDateUpdated,DESC&_nPage=1&_nPerpage=20
+
+**Pass `version=2`** (for example `https://max480-random-stuff.appspot.com/celeste/gamebanana-list?sort=latest&version=2`) to get **the same JSON output as the GameBanana v3 API** (`https://gamebanana.com/apiv3/Mod/ByGame?_aGameRowIds[]=6460&_sRecordSchema=Olympus`) for all itemtypes.
 
 -----
 
