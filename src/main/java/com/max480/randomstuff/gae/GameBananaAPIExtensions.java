@@ -17,6 +17,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.logging.Logger;
 
 /**
  * Here are... APIs that somehow extend GameBanana's APIs.
@@ -24,6 +25,8 @@ import java.time.format.DateTimeFormatter;
  */
 @WebServlet(name = "GameBananaAPIExtensions", urlPatterns = {"/gamebanana/rss-feed"})
 public class GameBananaAPIExtensions extends HttpServlet {
+    private static final Logger logger = Logger.getLogger("GameBananaAPIExtensions");
+
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         // if sorting by "last updated", <pubDate> should be the last updated date rather than the created date.
@@ -40,6 +43,7 @@ public class GameBananaAPIExtensions extends HttpServlet {
             response.setStatus(connection.getResponseCode());
             response.setHeader("Content-Type", connection.getContentType());
             IOUtils.copy(connection.getErrorStream(), response.getOutputStream());
+            logger.warning("Non-200 status code returned!");
             return;
         }
 
