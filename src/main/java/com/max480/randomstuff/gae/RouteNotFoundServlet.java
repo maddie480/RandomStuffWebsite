@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.logging.Logger;
 
 /**
  * The default servlet catching all pages that didn't match any other route
@@ -12,6 +13,8 @@ import java.io.IOException;
  */
 @WebServlet(name = "RouteNotFound", urlPatterns = {"/"})
 public class RouteNotFoundServlet extends HttpServlet {
+    private static final Logger logger = Logger.getLogger("RouteNotFoundServlet");
+
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         if (request.getRequestURI().equals("/") || request.getRequestURI().equals("/celeste")) {
@@ -24,6 +27,7 @@ public class RouteNotFoundServlet extends HttpServlet {
             response.setHeader("Content-Type", "text/html; charset=UTF-8");
             response.getWriter().write("<html><style>body { font-family: sans-serif; text-align: center; }</style>" +
                     "<h1>\u274C Not Found</h1><a href=\"/\">\u2B05 Back to Home Page</a></html>");
+            logger.warning("Route not found!");
         }
     }
 }
