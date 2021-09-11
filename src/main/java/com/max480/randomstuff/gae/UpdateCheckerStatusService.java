@@ -82,7 +82,9 @@ public class UpdateCheckerStatusService extends HttpServlet {
                     int timeMs = Integer.parseInt(logContent);
 
                     // pass it to the webpage
-                    request.setAttribute("lastUpdated", formatDate(timeUtc));
+                    String date = formatDate(timeUtc);
+                    request.setAttribute("lastUpdated", date);
+                    request.setAttribute("lastUpdatedAgo", date.substring(date.indexOf("(") + 1, date.indexOf(")")));
                     request.setAttribute("duration", new DecimalFormat("0.0").format(timeMs / 1000.0));
                 }
             }
@@ -92,7 +94,8 @@ public class UpdateCheckerStatusService extends HttpServlet {
                 request.setAttribute("lastUpdateFound", formatDate(timeUtc));
             }
 
-            request.getRequestDispatcher("/WEB-INF/update-checker-status.jsp").forward(request, response);
+            request.getRequestDispatcher("true".equals(request.getParameter("widget")) ?
+                    "/WEB-INF/update-checker-status-widget.jsp" : "/WEB-INF/update-checker-status.jsp").forward(request, response);
         } catch (InterruptedException | ExecutionException e) {
             throw new IOException(e);
         }

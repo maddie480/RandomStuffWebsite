@@ -21,8 +21,15 @@ import java.io.InputStream;
 public class SecurityHeadersFilter extends HttpFilter {
     @Override
     protected void doFilter(HttpServletRequest req, HttpServletResponse res, FilterChain chain) throws IOException, ServletException {
-        // allow only self as an origin, except for styles, and prevent the site from being iframed.
-        res.setHeader("Content-Security-Policy", "default-src 'self'; style-src 'self' 'unsafe-inline' https://stackpath.bootstrapcdn.com; frame-ancestors 'none'; object-src 'none';");
+        // allow only self as an origin, except for styles, and prevent the site from being iframed (except for the arbitrary mod app settings).
+        if (req.getRequestURI().equals("/gamebanana/arbitrary-mod-app-settings")) {
+            res.setHeader("Content-Security-Policy", "default-src 'self'; style-src 'self' 'unsafe-inline' https://stackpath.bootstrapcdn.com; frame-ancestors https://gamebanana.com; object-src 'none';");
+        } else {
+            res.setHeader("Content-Security-Policy", "default-src 'self'; style-src 'self' 'unsafe-inline' https://stackpath.bootstrapcdn.com; frame-ancestors 'none'; object-src 'none';");
+        }
+        if (req.getRequestURI().equals("/celeste/update-checker-status") && "widget=true".equals(req.getQueryString())) {
+            res.setHeader("Access-Control-Allow-Origin", "https://gamebanana.com");
+        }
         chain.doFilter(req, res);
     }
 
