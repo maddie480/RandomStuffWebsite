@@ -3,12 +3,13 @@
 This is the source code for the max480-random-stuff.**appspot**.com website, a [Google App Engine](https://cloud.google.com/appengine/) app written in Java, with backend-rendered pages. If you're looking for max480-random-stuff.**herokuapp**.com, [check this repository](https://github.com/max4805/RandomStuffWebsiteJS).
 
 It contains the full source for:
-- [the Everest Update Checker frontend service](https://max480-random-stuff.appspot.com/celeste/everest_update.yaml)
+- [the Everest Update Checker frontend service](https://max480-random-stuff.appspot.com/celeste/everest_update.yaml), exposing files produced by the Update Checker
 - [the Celeste custom entity catalog](https://max480-random-stuff.appspot.com/celeste/custom-entity-catalog), and [its API version](https://max480-random-stuff.appspot.com/celeste/custom-entity-catalog.json)
 - [the everest.yaml validator](https://max480-random-stuff.appspot.com/celeste/everest-yaml-validator)
 - [the Everest Update Checker status page](https://max480-random-stuff.appspot.com/celeste/update-checker-status)
 - [the Celeste font generator](https://max480-random-stuff.appspot.com/celeste/font-generator)
 - [the help page for the Mod Structure Verifier bot](https://max480-random-stuff.appspot.com/celeste/mod-structure-verifier?collabName=CollabName&collabMapName=CollabMapName&assets&xmls&nomap&multiplemaps&badmappath&badenglish&misplacedyaml&noyaml&yamlinvalid&missingassets&missingentities)
+- [the "Show Arbitrary Mods on Profile" GameBanana app](https://gamebanana.com/apps/752)
 - Some [GameBanana](https://gamebanana.com)-related APIs for the Celeste community described in the few next sections. **A number of those APIs are deprecated since the GameBanana v3 API was published.**
 
 If you want to check how the update checker's everest_update.yaml file is generated, check [the Everest Update Checker Server repo](https://github.com/max4805/EverestUpdateCheckerServer) instead.
