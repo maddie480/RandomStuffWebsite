@@ -6,6 +6,7 @@ import com.google.cloud.logging.LogEntry;
 import com.google.cloud.logging.Logging;
 import com.google.cloud.logging.LoggingOptions;
 import com.google.cloud.logging.Payload;
+import org.apache.commons.lang3.tuple.Pair;
 import org.yaml.snakeyaml.Yaml;
 
 import javax.servlet.ServletException;
@@ -82,16 +83,17 @@ public class UpdateCheckerStatusService extends HttpServlet {
                     int timeMs = Integer.parseInt(logContent);
 
                     // pass it to the webpage
-                    String date = formatDate(timeUtc);
-                    request.setAttribute("lastUpdated", date);
-                    request.setAttribute("lastUpdatedAgo", date.substring(date.indexOf("(") + 1, date.indexOf(")")));
+                    Pair<String, String> date = formatDate(timeUtc);
+                    request.setAttribute("lastUpdated", date.getLeft() + " (" + date.getRight() + ")");
+                    request.setAttribute("lastUpdatedAgo", date.getRight());
                     request.setAttribute("duration", new DecimalFormat("0.0").format(timeMs / 1000.0));
                 }
             }
 
             for (LogEntry entry : lastCheckWithUpdates.get().getValues()) {
                 ZonedDateTime timeUtc = Instant.ofEpochMilli(entry.getTimestamp()).atZone(ZoneId.of("UTC"));
-                request.setAttribute("lastUpdateFound", formatDate(timeUtc));
+                Pair<String, String> date = formatDate(timeUtc);
+                request.setAttribute("lastUpdateFound", date.getLeft() + " (" + date.getRight() + ")");
             }
 
             request.getRequestDispatcher("true".equals(request.getParameter("widget")) ?
@@ -101,23 +103,23 @@ public class UpdateCheckerStatusService extends HttpServlet {
         }
     }
 
-    private String formatDate(ZonedDateTime date) {
+    private Pair<String, String> formatDate(ZonedDateTime date) {
         String formattedDate = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG).format(date);
         long minutes = date.until(ZonedDateTime.now(), ChronoUnit.MINUTES);
         if (minutes == 0) {
-            return formattedDate + " (less than a minute ago)";
+            return Pair.of(formattedDate, "less than a minute ago");
         } else if (minutes == 1) {
-            return formattedDate + " (1 minute ago)";
+            return Pair.of(formattedDate, "1 minute ago");
         } else if (minutes < 60) {
-            return formattedDate + " (" + minutes + " minutes ago)";
+            return Pair.of(formattedDate, minutes + " minutes ago");
         } else if (minutes < 120) {
-            return formattedDate + " (1 hour ago)";
+            return Pair.of(formattedDate, "1 hour ago");
         } else if (minutes < 24 * 60) {
-            return formattedDate + " (" + (minutes / 60) + " hours ago)";
+            return Pair.of(formattedDate, (minutes / 60) + " hours ago");
         } else if (minutes < 24 * 60 * 2) {
-            return formattedDate + " (1 day ago)";
+            return Pair.of(formattedDate, "1 day ago");
         } else {
-            return formattedDate + " (" + (minutes / (60 * 24)) + " days ago)";
+            return Pair.of(formattedDate, (minutes / (60 * 24)) + " days ago");
         }
     }
 }
