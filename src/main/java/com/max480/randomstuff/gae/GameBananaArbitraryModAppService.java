@@ -290,9 +290,9 @@ public class GameBananaArbitraryModAppService extends HttpServlet {
             datastore.put(dbEntity);
             request.setAttribute("saved", true);
             request.setAttribute("isInDatabase", true);
-            logger.warning("Save successful");
+            logger.info("Save successful");
             if (newKey != null) {
-                logger.warning("Key newly generated");
+                logger.info("Key newly generated");
                 request.setAttribute("initialKey", newKey);
             }
         }
