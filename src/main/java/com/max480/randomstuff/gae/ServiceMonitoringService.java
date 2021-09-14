@@ -81,39 +81,33 @@ public class ServiceMonitoringService extends HttpServlet {
                         .build())
                 .build());
 
-        long upForWebsite = 0;
-        long totalForWebsite = 0;
-        long upForBot = 0;
-        long totalForBot = 0;
+        long[] up = new long[]{0, 0, 0};
+        long[] total = new long[]{0, 0, 0};
 
         for (TimeSeries series : timeSeries.iterateAll()) {
-            boolean isWebsite;
+            int index;
             if (series.getMetric().getLabelsOrThrow("check_id").equals("bot-healthcheck-F_-kI5b144Q")
                     || series.getMetric().getLabelsOrThrow("check_id").equals("bot-healthcheck")) {
-                isWebsite = false;
+                index = 0;
             } else if (series.getMetric().getLabelsOrThrow("check_id").equals("website-healthcheck")) {
-                isWebsite = true;
+                index = 1;
+            } else if (series.getMetric().getLabelsOrThrow("check_id").equals("celestemodupdater-0x0a-de")) {
+                index = 2;
             } else {
                 throw new RuntimeException("Encountered bad check_id!" + series.getMetric().getLabelsOrThrow("check_id"));
             }
 
             for (Point p : series.getPointsList()) {
-                if (isWebsite) {
-                    totalForWebsite++;
-                    if (p.getValue().getBoolValue()) {
-                        upForWebsite++;
-                    }
-                } else {
-                    totalForBot++;
-                    if (p.getValue().getBoolValue()) {
-                        upForBot++;
-                    }
+                total[index]++;
+                if (p.getValue().getBoolValue()) {
+                    up[index]++;
                 }
             }
         }
         return ImmutableMap.of(
-                "website", (double) upForWebsite / totalForWebsite * 100.0,
-                "bot", (double) upForBot / totalForBot * 100.0
+                "bot", (double) up[0] / total[0] * 100.0,
+                "website", (double) up[1] / total[1] * 100.0,
+                "mirror", (double) up[2] / total[2] * 100.0
         );
     }
 }
