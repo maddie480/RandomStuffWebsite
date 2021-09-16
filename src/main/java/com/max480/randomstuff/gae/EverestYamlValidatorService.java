@@ -173,6 +173,11 @@ public class EverestYamlValidatorService extends HttpServlet {
                             databaseDependency = new EverestModuleMetadata();
                             databaseDependency.Version = "1." + getEverestVersion() + ".0";
                         }
+                        // and Celeste exists, obviously
+                        if (dependency.Name.equals("Celeste")) {
+                            databaseDependency = new EverestModuleMetadata();
+                            databaseDependency.Version = "1.4.0.0";
+                        }
 
                         // unreleased mods that have to be checked independently
                         if (dependency.Name.equals("StrawberryJam2021")) {
