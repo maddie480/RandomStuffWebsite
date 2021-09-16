@@ -10,7 +10,7 @@ It contains the full source for:
 - [the Celeste font generator](https://max480-random-stuff.appspot.com/celeste/font-generator)
 - [the help page for the Mod Structure Verifier bot](https://max480-random-stuff.appspot.com/celeste/mod-structure-verifier?collabName=CollabName&collabMapName=CollabMapName&assets&xmls&nomap&multiplemaps&badmappath&badenglish&misplacedyaml&noyaml&yamlinvalid&missingassets&missingentities)
 - [the "Show Arbitrary Mods on Profile" GameBanana app](https://gamebanana.com/apps/752)
-- Some [GameBanana](https://gamebanana.com)-related APIs for the Celeste community described in the few next sections. **A number of those APIs are deprecated since the GameBanana v3 API was published.**
+- Some [GameBanana](https://gamebanana.com)-related APIs, extending the official API.
 
 If you want to check how the update checker's everest_update.yaml file is generated, check [the Everest Update Checker Server repo](https://github.com/max4805/EverestUpdateCheckerServer) instead.
 
@@ -51,21 +51,7 @@ The search engine is powered by [Apache Lucene](https://lucene.apache.org/). It 
 
 For a full list of supported syntax, check [the Lucene documentation](https://lucene.apache.org/core/8_7_0/queryparser/org/apache/lucene/queryparser/classic/package-summary.html#package.description).
 
-## GameBanana sorted list API [deprecated]
-
-**Use the GameBanana v3 API instead**.
-
-For a sorted list of all mods: https://gamebanana.com/apiv3/Mod/ByGame?_aGameRowIds[]=6460&_sRecordSchema=Olympus&_sOrderBy=_tsDateUpdated,DESC&_nPage=1&_nPerpage=20
-
-_sOrderBy can be, among others:
-- `_tsDateUpdated,DESC` for most recently updated
-- `_nLikeCount,DESC` for most liked
-- `_nViewCount,DESC` for most viewed
-- `_nDownloadCount,DESC` for most downloaded
-
-For a sorted list of mods in a category: https://gamebanana.com/apiv3/Mod/ByCategory?_sRecordSchema=Olympus&_aCategoryRowIds[]=6800&_sOrderBy=_tsDateUpdated,DESC&_nPage=1&_nPerpage=20
-
------
+## GameBanana sorted list API
 
 This API allows to get a sorted list of most downloaded, liked or viewed Celeste mods on GameBanana.
 
@@ -79,13 +65,7 @@ The URL is `https://max480-random-stuff.appspot.com/celeste/gamebanana-list?sort
 
 The output format is the same as the GameBanana search API, [see the previous section](#the-gamebanana-search-api).
 
-## GameBanana categories list API [deprecated]
-
-**Use the GameBanana v3 API instead**: https://gamebanana.com/apiv3/ModCategory/ByGame?_aGameRowIds[]=6460&_sRecordSchema=Custom&_csvProperties=_idRow,_sName,_idParentCategoryRow&_nPerpage=50
-
-Root categories can be found by keeping everything that has `_idParentCategoryRow = 0`. This API only lacks submission counts per category.
-
------
+## GameBanana categories list API
 
 This API allows getting a list of GameBanana item types _that have at least one Celeste mod in it_ (contrary to [the official GameBanana v2 API for this](https://api.gamebanana.com/Core/Item/Data/AllowedItemTypes?&help)), along with how many mods there are for each category.
 
