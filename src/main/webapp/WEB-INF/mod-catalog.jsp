@@ -48,10 +48,6 @@
             <a href="https://max480-random-stuff.herokuapp.com/wipe-converter">Wipe Converter</a>
         </div>
 
-        <a href="https://github.com/EverestAPI/Resources/wiki" class="btn btn-primary" style="margin-bottom: 20px">
-            &lt; Back to Wiki
-        </a>
-
         <% if((boolean) request.getAttribute("error")) { %>
             <div class="alert alert-danger">
                 An error occurred while refreshing the entity and trigger list. Please try again in an hour.<br>
