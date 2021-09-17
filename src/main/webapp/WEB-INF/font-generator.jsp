@@ -23,7 +23,7 @@
         integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
         crossorigin="anonymous">
 
-    <link rel="stylesheet" href="/css/common-v6.css">
+    <link rel="stylesheet" href="/css/common-v7.css">
 
     <style>
         .btn {
@@ -40,12 +40,13 @@
 <body>
     <div class="container">
         <div id="nav">
-            <a href="/celeste/custom-entity-catalog">Custom Entity Catalog</a> <span class="sep">|</span>
-            <a href="/celeste/everest-yaml-validator">everest.yaml validator</a> <span class="sep">|</span>
-            <a href="/celeste/update-checker-status">Update Checker status</a> <span class="sep">|</span>
-            <a href="https://max480-random-stuff.herokuapp.com/banana-mirror-browser">Banana Mirror Browser</a> <span class="sep">|</span>
-            <a href="/celeste/font-generator" class="active">Font Generator</a> <span class="sep">|</span>
-            <a href="https://max480-random-stuff.herokuapp.com/wipe-converter">Wipe Converter</a>
+            <a href="/celeste/custom-entity-catalog">Custom&nbsp;Entity&nbsp;Catalog</a> <span class="sep">|</span>
+            <a href="/celeste/everest-yaml-validator">everest.yaml&nbsp;validator</a> <span class="sep">|</span>
+            <a href="/celeste/update-checker-status">Update&nbsp;Checker&nbsp;status</a> <span class="sep">|</span>
+            <a href="https://max480-random-stuff.herokuapp.com/banana-mirror-browser">Banana&nbsp;Mirror&nbsp;Browser</a> <span class="sep break">|</span>
+            <a href="/celeste/font-generator" class="active">Font&nbsp;Generator</a> <span class="sep">|</span>
+            <a href="https://max480-random-stuff.herokuapp.com/wipe-converter">Wipe&nbsp;Converter</a> <span class="sep">|</span>
+            <a href="/discord-bots/">Discord&nbsp;Bots</a>
         </div>
 
         <h1>Celeste Font Generator</h1>

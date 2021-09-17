@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <title>Discord Bots</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="max480">
+    <meta name="description" content="Read more about the Mod Structure Verifier and the Timezone Bot here.">
+    <meta property="og:title" content="Discord Bots">
+    <meta property="og:description" content="Read more about the Mod Structure Verifier and the Timezone Bot here.">
+
+    <link rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
+          integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
+          crossorigin="anonymous">
+
+    <link rel="stylesheet" href="/css/common-v7.css">
+
+    <style>
+        h2 {
+            margin-top: 20px;
+        }
+
+        img {
+            max-width: 100%;
+        }
+
+        .end {
+            margin-bottom: 30px;
+        }
+
+        .darktheme {
+            display: none;
+        }
+
+        @media(prefers-color-scheme: dark) {
+            .lighttheme {
+                display: none;
+            }
+
+            .darktheme {
+                display: block;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+    <div id="nav">
+        <a href="/celeste/custom-entity-catalog">Custom&nbsp;Entity&nbsp;Catalog</a> <span class="sep">|</span>
+        <a href="/celeste/everest-yaml-validator">everest.yaml&nbsp;validator</a> <span class="sep">|</span>
+        <a href="/celeste/update-checker-status">Update&nbsp;Checker&nbsp;status</a> <span class="sep">|</span>
+        <a href="https://max480-random-stuff.herokuapp.com/banana-mirror-browser">Banana&nbsp;Mirror&nbsp;Browser</a> <span class="sep break">|</span>
+        <a href="/celeste/font-generator">Font&nbsp;Generator</a> <span class="sep">|</span>
+        <a href="https://max480-random-stuff.herokuapp.com/wipe-converter">Wipe&nbsp;Converter</a> <span class="sep">|</span>
+        <a href="/discord-bots" class="active">Discord&nbsp;Bots</a>
+    </div>
+
+    <h1>Discord Bots</h1>
+
+    <h2>Timezone Bot</h2>
+
+    <p>
+        This bot allows people to assign <b>timezone roles</b> to themselves.
+        Those roles get created and assigned automatically by the bot, and update accordingly to daylight saving
+        (using <a href="https://en.wikipedia.org/wiki/List_of_tz_database_time_zones" target="_blank">tz database</a> time zones).
+    </p>
+
+    <p>
+        You can figure out your timezone using <a href="/detect-timezone.html">this page.</a>
+        The bot links to this page when people use the <code>!timezone</code> command to set their timezone.
+    </p>
+
+    <p>Example usage:</p>
+    <p class="lighttheme"><img src="/img/example_timezone_bot_lighttheme.png"></p>
+    <p class="darktheme"><img src="/img/example_timezone_bot.png"></p>
+
+    <p>The timezone role will look like this if showing times in timezone roles is disabled:</p>
+    <p class="lighttheme"><img src="/img/timezone_role_no_time_lighttheme.png"></p>
+    <p class="darktheme"><img src="/img/timezone_role_no_time.png"></p>
+
+    <p>and it will look like this if it is enabled:</p>
+    <p class="lighttheme"><img src="/img/timezone_role_with_times_lighttheme.png"></p>
+    <p class="darktheme"><img src="/img/timezone_role_with_times.png"></p>
+
+    <p>
+        <b>Showing the time it is in the timezone is disabled by default</b> because it floods server logs with "role update" events.
+        You can enable it if you have the Administrator or Manage Server permission, by running <code>!toggle_times</code>.
+    </p>
+
+    <a class="btn btn-primary" href="https://discord.com/oauth2/authorize?client_id=806514800045064213&scope=bot&permissions=268438528" target="_blank">Invite</a>
+
+    <h2>Mod Structure Verifier</h2>
+
+    <p>
+        This is a bot that downloads zips from Discord attachments or Google Drive links posted in a specific channel,
+        and check if they are properly structured Celeste mods for <a href="https://github.com/EverestAPI/Everest" target="_blank">Everest</a>.
+        This is useful to enforce a structure for collabs/contests, or just to check for some stuff like missing dependencies.
+    </p>
+
+    <p>
+        Server admins and moderators with the "Manage Server" permission can set up channels where other users can verify mods.
+        The bot will ignore messages in other channels. 3 setups are available:
+    </p>
+    <ul>
+        <li>
+            <code>--setup-fixed-names</code>: the admin setting up the bot chooses what the assets folder should be called, and all zips posted in the channel
+            are checked with those settings. This setup is useful for servers dedicated to a collab/contest in particular.
+        </li>
+        <li>
+            <code>--setup-free-names</code>: the user can pick the assets folder name themselves by running the <code>--verify</code> command in the dedicated channel
+            with the folder name as a parameter, and the zip / Google Drive link attached. This is useful on servers where people organize their
+            own collabs/contests, since they can tell participants the command to run, without needing an admin to set up the bot.
+        </li>
+        <li>
+            <code>--setup-no-name</code>: the bot won't check folder names at all, and will only check if the everest.yaml is valid and missing entities,
+            triggers, effects, stylegrounds and decals. This is useful to allow people to check their own mods.
+        </li>
+    </ul>
+
+    <p>
+        You can combine <code>--setup-free-names</code> with one of the 2 other setups in the same channel: the bot will pick depending on whether the user
+        uses <code>--verify</code> or not.
+    </p>
+
+    <p>
+        After setting the bot up, the users will be able to have their zips checked by just dropping the zip or the Google Drive link in the channel you designated
+        (they will have to use the <code>--verify</code> command if you set up the bot with <code>--setup-free-names</code>).
+    </p>
+
+    <a class="btn btn-primary end" href="https://discord.com/oauth2/authorize?client_id=809572233953542154&scope=bot&permissions=19520" target="_blank">Invite</a>
+</div>
+</body>
+</html>
