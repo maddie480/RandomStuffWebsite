@@ -18,20 +18,34 @@
     <link rel="stylesheet" href="/css/common-v7.css">
 
     <style>
-        h2 {
-            margin-top: 20px;
+        h1 {
+            margin-top: 30px;
         }
 
         img {
             max-width: 100%;
+            margin-top: -10px;
         }
 
         .end {
+            margin-top: 20px;
             margin-bottom: 30px;
         }
 
         .darktheme {
             display: none;
+        }
+
+        @media(max-width: 600px) {
+            h1.botname {
+                font-size: 20pt;
+            }
+
+            h1 .botlogo {
+                width: 50px;
+                height: 50px;
+                margin-top: -7px;
+            }
         }
 
         @media(prefers-color-scheme: dark) {
@@ -42,6 +56,11 @@
             .darktheme {
                 display: block;
             }
+        }
+
+        .botlogo {
+            width: 100px;
+            height: 100px;
         }
     </style>
 </head>
@@ -60,7 +79,7 @@
 
     <h1>Discord Bots</h1>
 
-    <h2>Timezone Bot</h2>
+    <h1 class="botname"><img src="/img/timezone-bot-logo.png" class="botlogo"> Timezone Bot</h1>
 
     <p>
         This bot allows people to assign <b>timezone roles</b> to themselves.
@@ -92,7 +111,7 @@
 
     <a class="btn btn-primary" href="https://discord.com/oauth2/authorize?client_id=806514800045064213&scope=bot%20applications.commands&permissions=268438528" target="_blank">Invite</a>
 
-    <h2>Mod Structure Verifier</h2>
+    <h1 class="botname"><img src="/img/mod-structure-verifier-logo.png" class="botlogo"> Mod Structure Verifier</h1>
 
     <p>
         This is a bot that downloads zips from Discord attachments or Google Drive links posted in a specific channel,
@@ -130,7 +149,9 @@
         (they will have to use the <code>--verify</code> command if you set up the bot with <code>--setup-free-names</code>).
     </p>
 
-    <a class="btn btn-primary end" href="https://discord.com/oauth2/authorize?client_id=809572233953542154&scope=bot&permissions=19520" target="_blank">Invite</a>
+    <a class="btn btn-primary" href="https://discord.com/oauth2/authorize?client_id=809572233953542154&scope=bot&permissions=19520" target="_blank">Invite</a>
+
+    <p class="end"><i>Bot logos by phant</i></p>
 </div>
 </body>
 </html>
