@@ -313,6 +313,13 @@ public class GameBananaArbitraryModAppService extends HttpServlet {
             if (members.size() == 0) {
                 // we reached the end of the pages!
                 logger.info("User list: [" + String.join(", ", result) + "]");
+
+                if (result.isEmpty()) {
+                    // if we got no user, it's probably a bug (maybe the page changed and the selector does not work anymore)
+                    // since I (max480) will be using the app regardless.
+                    throw new RuntimeException("The user list is empty!");
+                }
+
                 return result;
             }
 
