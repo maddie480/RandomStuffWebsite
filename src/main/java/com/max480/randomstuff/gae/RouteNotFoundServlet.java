@@ -17,10 +17,10 @@ public class RouteNotFoundServlet extends HttpServlet {
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        if (request.getRequestURI().equals("/") || request.getRequestURI().equals("/celeste")) {
-            // redirect / and /celeste to /celeste/ because there is nothing but Celeste stuff right now anyway.
+        if (request.getRequestURI().equals("/celeste") || request.getRequestURI().equals("/celeste/")) {
+            // redirect /celeste and /celeste/ to / (/ used to redirect to /celeste, but now there is non-Celeste stuff in here)
             response.setStatus(302);
-            response.setHeader("Location", "/celeste/");
+            response.setHeader("Location", "/");
         } else {
             // display a simple 404 page
             response.setStatus(404);
