@@ -51,6 +51,11 @@ public class EverestYamlValidatorService extends HttpServlet {
         public Version(String versionString) {
             this.versionString = versionString;
 
+            // Everest ignores everything after the - if present.
+            if (versionString.contains("-")) {
+                versionString = versionString.substring(0, versionString.indexOf("-"));
+            }
+
             String[] split = versionString.split("\\.");
 
             if (split.length < 2 || split.length > 4) {
@@ -63,6 +68,9 @@ public class EverestYamlValidatorService extends HttpServlet {
             for (int i = 0; i < split.length; i++) {
                 try {
                     parts[i] = Integer.parseInt(split[i]);
+                    if (parts[i] < 0) {
+                        throw new IllegalArgumentException("Part " + (i + 1) + " of version number \"" + versionString + "\" is negative!");
+                    }
                 } catch (NumberFormatException e) {
                     throw new IllegalArgumentException("Part " + (i + 1) + " of version number \"" + versionString + "\" isn't an integer.");
                 }
@@ -150,6 +158,13 @@ public class EverestYamlValidatorService extends HttpServlet {
 
                         problems.add("Your mod name, \"" + mod.Name + "\", contains characters that aren't allowed in file names. That will" +
                                 " cause trouble with the 1-click installer. Make sure to remove those characters: / \\ * ? : \" < > |");
+                    }
+
+                    try {
+                        new Version(mod.Version);
+                    } catch (IllegalArgumentException e) {
+                        problems.add("The version of your mod, \"" + mod.Version + "\", does not have a valid format." +
+                                " Valid formats are x.x, x.x.x or x.x.x.x, each x being a number.");
                     }
 
                     // I don't want NullPointerExceptions
