@@ -95,7 +95,7 @@ public class InteractionManager extends HttpServlet {
                     boolean isAgainstBot = !data.getJSONObject("data").has("options") || data.getJSONObject("data").getJSONArray("options").isEmpty();
                     if (isAgainstBot) {
                         // user wants to play against AI
-                        pickLevelAgainstBot(resp, gameName);
+                        pickLevelAgainstBot(resp, gameName, selfId);
                     } else {
                         // user pinged another user in the command.
                         String userid = data.getJSONObject("data").getJSONArray("options").getJSONObject(0).getString("value");
@@ -124,13 +124,21 @@ public class InteractionManager extends HttpServlet {
             } else if (data.getInt("type") == 3) {
                 // clicked a button or used a combo box
                 String interactionToken = data.getString("token");
-                Long selfId = Long.parseLong(data.getJSONObject("member").getJSONObject("user").getString("id"));
+                long selfId = Long.parseLong(data.getJSONObject("member").getJSONObject("user").getString("id"));
 
                 if (data.getJSONObject("data").getInt("component_type") == 3) {
                     // this is a combo box! the only one we have is difficulty select.
-                    String game = data.getJSONObject("data").getString("custom_id");
-                    String valueSelected = data.getJSONObject("data").getJSONArray("values").getString(0);
-                    onGameStartAgainstCPU(game, selfId, Integer.parseInt(valueSelected), interactionToken, resp);
+                    String[] dataCombo = data.getJSONObject("data").getString("custom_id").split("\\|");
+                    String game = dataCombo[0];
+                    long userId = Long.parseLong(dataCombo[1]);
+
+                    if (selfId != userId) {
+                        // a user ran the slash command, and another tried to pick a difficulty!
+                        sendError(":x: You are not the one that asked to play! Use `/" + game + "` to start a game for yourself.", resp);
+                    } else {
+                        String valueSelected = data.getJSONObject("data").getJSONArray("values").getString(0);
+                        onGameStartAgainstCPU(game, selfId, Integer.parseInt(valueSelected), interactionToken, resp);
+                    }
 
                 } else if (data.getJSONObject("data").getInt("component_type") == 2) {
                     // this is a button.
@@ -162,9 +170,10 @@ public class InteractionManager extends HttpServlet {
      *
      * @param resp     The stream to respond to Discord's request
      * @param gameName The name of the game
+     * @param userId   The ID of the user that wants to play
      * @throws IOException In case the answer could not be sent
      */
-    private void pickLevelAgainstBot(HttpServletResponse resp, String gameName) throws IOException {
+    private void pickLevelAgainstBot(HttpServletResponse resp, String gameName, String userId) throws IOException {
         JSONObject response = new JSONObject();
         response.put("type", 4); // channel message with source
 
@@ -182,7 +191,7 @@ public class InteractionManager extends HttpServlet {
         // create the combo box
         JSONObject comboBox = new JSONObject();
         comboBox.put("type", 3);
-        comboBox.put("custom_id", gameName);
+        comboBox.put("custom_id", gameName + "|" + userId);
 
         // fill it with the options
         JSONArray options = new JSONArray();
