@@ -103,7 +103,7 @@ public class Connect4 extends GameState {
 
     @Override
     public String displayStatus() {
-        StringBuilder stringBuilder = new StringBuilder("|");
+        StringBuilder stringBuilder = new StringBuilder("```\n|");
         for (int i = 1; i <= 7; i++) {
             stringBuilder.append(" ").append(i);
         }
@@ -117,7 +117,7 @@ public class Connect4 extends GameState {
             }
             stringBuilder.append(" |\n");
         }
-        return stringBuilder.toString();
+        return stringBuilder.append("```").toString();
     }
 
     @Override
@@ -139,5 +139,20 @@ public class Connect4 extends GameState {
         } else {
             return somme;
         }
+    }
+
+    public static Connect4 generateRandom() {
+        Connect4 rng = new Connect4(Math.random() > 0.5);
+        for (int i = 0; i < rng.columns.length; i++) {
+            for (int j = 0; j < rng.columns[0].length; j++) {
+                double random = Math.random() * 3;
+                if (random > 2) {
+                    rng.columns[i][j] = true;
+                } else if (random > 1) {
+                    rng.columns[i][j] = false;
+                }
+            }
+        }
+        return rng;
     }
 }

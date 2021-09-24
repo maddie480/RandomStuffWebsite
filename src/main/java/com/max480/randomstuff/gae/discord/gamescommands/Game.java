@@ -139,10 +139,13 @@ public class Game {
      * Refreshes the status displayed on Discord.
      *
      * @param line           The status line to display below the game state
+     *                       (in case of one-player games, getInstructions() will be taken instead)
      * @param partialCommand The start of the command, in case we went in a submenu
      */
     private void refreshStatus(String line, String partialCommand) {
-        String message = "```\n" + currentGameState.displayStatus() + "\n```\n" + line;
+        String message = currentGameState.displayStatus() + "\n" +
+                (player1Id == player2Id ? currentGameState.getInstructions() : line);
+
         if (currentGameState.getLatestCommand() != null) {
             message = "Last move: " + currentGameState.getLatestCommand() + "\n" + message;
         }
@@ -321,17 +324,23 @@ public class Game {
      *
      * @return A base64 string with all game data in it
      */
-    protected String serializeToString() {
+    public String serializeToString() {
         byte[] serializedResult;
 
         try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
             try (ObjectOutputStream oos = new ObjectOutputStream(os)) {
-                oos.writeBoolean(player1IsPC);
-                oos.writeBoolean(player2IsPC);
-                oos.writeLong(player1Id);
-                oos.writeLong(player2Id);
-                oos.writeByte((byte) cpuLevel);
-                oos.writeLong(waitingInputFrom);
+                oos.writeBoolean(player1Id == player2Id);
+                if (player1Id == player2Id) {
+                    // optimize storage!
+                    oos.writeLong(player1Id);
+                } else {
+                    oos.writeBoolean(player1IsPC);
+                    oos.writeBoolean(player2IsPC);
+                    oos.writeLong(player1Id);
+                    oos.writeLong(player2Id);
+                    oos.writeLong(waitingInputFrom);
+                    oos.writeByte((byte) cpuLevel);
+                }
                 currentGameState.serialize(oos);
             }
             serializedResult = os.toByteArray();
@@ -351,21 +360,27 @@ public class Game {
      * @param actionCallback The action to call to update the game status
      * @return The deserialized game
      */
-    protected static Game deserializeFromString(String s, HttpServletResponse httpResponse,
+    public static Game deserializeFromString(String s, HttpServletResponse httpResponse,
                                                 MultiConsumer<Game, String, List<String>, HttpServletResponse> actionCallback) {
         byte[] serializedResult = Base64.getDecoder().decode(s);
         try (ByteArrayInputStream is = new ByteArrayInputStream(serializedResult);
              ObjectInputStream ois = new ObjectInputStream(is)) {
 
-            boolean player1IsPC = ois.readBoolean();
-            boolean player2IsPC = ois.readBoolean();
-            long player1Id = ois.readLong();
-            long player2Id = ois.readLong();
-            int cpuLevel = ois.readByte();
-            long waitingInputFrom = ois.readLong();
+            if (ois.readBoolean()) {
+                // one-player game!
+                long playerId = ois.readLong();
+                return new OnePlayerGame(GameState.deserialize(ois), playerId, httpResponse, actionCallback);
+            } else {
+                boolean player1IsPC = ois.readBoolean();
+                boolean player2IsPC = ois.readBoolean();
+                long player1Id = ois.readLong();
+                long player2Id = ois.readLong();
+                long waitingInputFrom = ois.readLong();
+                int cpuLevel = ois.readByte();
 
-            return new Game(GameState.deserialize(ois), player1IsPC, player2IsPC, player1Id, player2Id, cpuLevel,
-                    waitingInputFrom, httpResponse, actionCallback);
+                return new Game(GameState.deserialize(ois), player1IsPC, player2IsPC, player1Id, player2Id, cpuLevel,
+                        waitingInputFrom, httpResponse, actionCallback);
+            }
         } catch (IOException e) {
             // this should turn into a server error.
             throw new RuntimeException(e);

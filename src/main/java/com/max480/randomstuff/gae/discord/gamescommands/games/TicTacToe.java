@@ -13,6 +13,7 @@ import java.util.List;
 public class TicTacToe extends GameState {
     private Boolean[][] board;
 
+    // size should be 3 or 4 (4 already doesn't work as a game so don't even try 5)
     public TicTacToe(boolean player1Starts, int size) {
         super(player1Starts);
 
@@ -88,7 +89,7 @@ public class TicTacToe extends GameState {
 
     @Override
     public String displayStatus() {
-        StringBuilder stringBuilder = new StringBuilder();
+        StringBuilder stringBuilder = new StringBuilder("```\n");
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board.length; j++) {
                 stringBuilder.append(".---");
@@ -109,7 +110,7 @@ public class TicTacToe extends GameState {
         for (int j = 0; j < board.length; j++) {
             stringBuilder.append(".---");
         }
-        stringBuilder.append(".");
+        stringBuilder.append(".\n```");
         return stringBuilder.toString();
     }
 
@@ -215,5 +216,20 @@ public class TicTacToe extends GameState {
         }
 
         return score;
+    }
+
+    public static TicTacToe generateRandom() {
+        TicTacToe rng = new TicTacToe(Math.random() > 0.5, (int) (Math.random() * 2) + 3);
+        for (int i = 0; i < rng.board.length; i++) {
+            for (int j = 0; j < rng.board[0].length; j++) {
+                double random = Math.random() * 3;
+                if (random > 2) {
+                    rng.board[i][j] = true;
+                } else if (random > 1) {
+                    rng.board[i][j] = false;
+                }
+            }
+        }
+        return rng;
     }
 }

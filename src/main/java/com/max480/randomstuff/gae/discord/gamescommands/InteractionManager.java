@@ -4,6 +4,7 @@ import com.goterl.lazysodium.LazySodiumJava;
 import com.goterl.lazysodium.SodiumJava;
 import com.max480.randomstuff.gae.Constants;
 import com.max480.randomstuff.gae.discord.gamescommands.games.Connect4;
+import com.max480.randomstuff.gae.discord.gamescommands.games.Minesweeper;
 import com.max480.randomstuff.gae.discord.gamescommands.games.Reversi;
 import com.max480.randomstuff.gae.discord.gamescommands.games.TicTacToe;
 import com.max480.randomstuff.gae.discord.gamescommands.status.GameState;
@@ -73,32 +74,49 @@ public class InteractionManager extends HttpServlet {
             } else if (data.getInt("type") == 2) {
                 // slash command
                 String gameName = data.getJSONObject("data").getString("name");
-                boolean isAgainstBot = !data.getJSONObject("data").has("options") || data.getJSONObject("data").getJSONArray("options").isEmpty();
-                if (isAgainstBot) {
-                    // user wants to play against AI
-                    pickLevelAgainstBot(resp, gameName);
-                } else {
-                    // user pinged another user in the command.
-                    String userid = data.getJSONObject("data").getJSONArray("options").getJSONObject(0).getString("value");
+                String selfId = data.getJSONObject("member").getJSONObject("user").getString("id");
+                String interactionToken = data.getString("token");
 
-                    JSONObject resolvedUser = data.getJSONObject("data").getJSONObject("resolved").getJSONObject("users").getJSONObject(userid);
-                    if (resolvedUser.has("bot") && resolvedUser.getBoolean("bot")) {
-                        // the pinged user... is a bot!
-                        sendError(":x: You can't play against a bot! To play against CPU, do not mention anyone.", resp);
+                if (gameName.equals("minesweeper")) {
+                    // user wants to start a Minesweeper game, this needs special handling since it has a parameter.
+                    int bombCount = data.getJSONObject("data").getJSONArray("options").getJSONObject(0).getInt("value");
+                    if (bombCount <= 0 || bombCount > 81) {
+                        // generating no bomb, negative bombs or more bombs than there are spots to put bombs = trouble
+                        sendError(":x: Please specify a bomb count between 1 and 81!", resp);
                     } else {
-                        String selfId = data.getJSONObject("member").getJSONObject("user").getString("id");
-                        if (userid.equals(selfId)) {
-                            // the user pinged themselves, what?
-                            sendError(":x: You cannot play against yourself. :thinking:", resp);
+                        // start a new game
+                        Minesweeper minesweeper = new Minesweeper(bombCount);
+                        Game newGame = new OnePlayerGame(minesweeper, Long.parseLong(selfId), resp,
+                                (thisGame, message, possibleActions, response) -> onAnswer(thisGame, message, possibleActions, interactionToken, response, true, false));
+                        newGame.startGame();
+                    }
+                } else {
+                    // 2-player game (for now Minesweeper is the only 1-player game)
+                    boolean isAgainstBot = !data.getJSONObject("data").has("options") || data.getJSONObject("data").getJSONArray("options").isEmpty();
+                    if (isAgainstBot) {
+                        // user wants to play against AI
+                        pickLevelAgainstBot(resp, gameName);
+                    } else {
+                        // user pinged another user in the command.
+                        String userid = data.getJSONObject("data").getJSONArray("options").getJSONObject(0).getString("value");
+
+                        JSONObject resolvedUser = data.getJSONObject("data").getJSONObject("resolved").getJSONObject("users").getJSONObject(userid);
+                        if (resolvedUser.has("bot") && resolvedUser.getBoolean("bot")) {
+                            // the pinged user... is a bot!
+                            sendError(":x: You can't play against a bot! To play against CPU, do not mention anyone.", resp);
                         } else {
-                            // start a game between two humans.
-                            String interactionToken = data.getString("token");
-                            onGameStartAgainstHuman(
-                                    gameName,
-                                    Long.parseLong(selfId),
-                                    Long.parseLong(userid),
-                                    interactionToken,
-                                    resp);
+                            if (userid.equals(selfId)) {
+                                // the user pinged themselves, what?
+                                sendError(":x: You cannot play against yourself. :thinking:", resp);
+                            } else {
+                                // start a game between two humans.
+                                onGameStartAgainstHuman(
+                                        gameName,
+                                        Long.parseLong(selfId),
+                                        Long.parseLong(userid),
+                                        interactionToken,
+                                        resp);
+                            }
                         }
                     }
                 }
@@ -414,7 +432,7 @@ public class InteractionManager extends HttpServlet {
                         + '|' + gameState // ... then the entire game state. This way Discord stores it, so we don't have to.
                 );
                 button.put("style", 2); // secondary (gray)
-                button.put("label", isMultiButton ? buttonData.getKey() + "..." : buttonData.getValue().get(0));
+                setupButtonLabel(button, isMultiButton ? buttonData.getKey() + "..." : buttonData.getValue().get(0));
                 buttons.add(button);
             }
             if (hasBackButton) {
@@ -474,5 +492,35 @@ public class InteractionManager extends HttpServlet {
             logger.severe("Error while communicating with Discord!");
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * Sets up a button label, which is most of the time just... putting the label, but can sometimes involve some formatting.
+     *
+     * @param button The button
+     * @param label  The label
+     */
+    private void setupButtonLabel(JSONObject button, String label) {
+        // "dig", "mark" and "unmark" in Minesweeper can be replaced with emoji.
+        String emoji = null;
+        if (label.startsWith("Dig   ")) {
+            emoji = "⛏";
+            label = label.substring(6);
+        } else if (label.startsWith("Mark  ")) {
+            emoji = "❕";
+            label = label.substring(6);
+        } else if (label.startsWith("Unmark")) {
+            emoji = "❌";
+            label = label.substring(6).trim();
+        }
+
+        if (emoji != null) {
+            JSONObject emojiObject = new JSONObject();
+            emojiObject.put("id", (String) null);
+            emojiObject.put("name", emoji);
+            button.put("emoji", emojiObject);
+        }
+
+        button.put("label", label);
     }
 }

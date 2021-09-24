@@ -176,7 +176,7 @@ public class Reversi extends GameState {
         int countWhite = 0;
         int countBlack = 0;
 
-        StringBuilder string = new StringBuilder(".| 1 2 3 4 5 6 7 8 |\n |-----------------|\n");
+        StringBuilder string = new StringBuilder("```\n.| 1 2 3 4 5 6 7 8 |\n |-----------------|\n");
         for (int y = 0; y < 8; y++) {
             string.append((char) ('A' + y)).append('|');
             for (int x = 0; x < 8; x++) {
@@ -205,7 +205,7 @@ public class Reversi extends GameState {
             string.append(" |\n");
         }
 
-        string.append(" |-----------------|\n● = ").append(countWhite).append(", ○ = ").append(countBlack);
+        string.append(" |-----------------|\n● = ").append(countWhite).append(", ○ = ").append(countBlack).append("\n```");
         return string.toString();
     }
 
@@ -263,5 +263,16 @@ public class Reversi extends GameState {
         }
 
         return (int) ((coinParity + mobility + corners) * 1_000_000);
+    }
+
+    public static Reversi generateRandom() {
+        Reversi rng = new Reversi(Math.random() > 0.5);
+        rng.invertedColors = Math.random() > 0.5;
+        for (int i = 0; i < rng.board.length; i++) {
+            for (int j = 0; j < rng.board[0].length; j++) {
+                rng.board[i][j] = (int) (Math.random() * 3) - 1;
+            }
+        }
+        return rng;
     }
 }

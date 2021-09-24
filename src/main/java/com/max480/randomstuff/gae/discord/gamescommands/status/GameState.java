@@ -1,9 +1,10 @@
 package com.max480.randomstuff.gae.discord.gamescommands.status;
 
 
-import com.max480.randomstuff.gae.discord.gamescommands.games.TicTacToe;
-import com.max480.randomstuff.gae.discord.gamescommands.games.Reversi;
 import com.max480.randomstuff.gae.discord.gamescommands.games.Connect4;
+import com.max480.randomstuff.gae.discord.gamescommands.games.Minesweeper;
+import com.max480.randomstuff.gae.discord.gamescommands.games.Reversi;
+import com.max480.randomstuff.gae.discord.gamescommands.games.TicTacToe;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -64,7 +65,9 @@ public abstract class GameState {
      * Gives a score to the situation for player 1:
      * the more the situation is good for player 1, the higher the score is.
      * <p>
-     * Should be Integer.MAX_VALUE ou MIN_VALUE if a player won, or null in case of a draw.
+     * Should be Integer.MAX_VALUE or MIN_VALUE if a player won, or null in case of a draw.
+     * <p>
+     * For one-player games, return MAX_VALUE if the player won, MIN_VALUE if they lost, 0 if the game is ongoing.
      *
      * @return Le score de la situation
      */
@@ -107,12 +110,12 @@ public abstract class GameState {
         this.player1Turn = player1Turn;
     }
 
-    void setLatestCommand(String latestCommand) {
+    public void setLatestCommand(String latestCommand) {
         this.latestCommand = latestCommand;
     }
 
-    protected GameState(boolean joueur1Commence) {
-        this.player1Turn = joueur1Commence;
+    protected GameState(boolean player1Begins) {
+        this.player1Turn = player1Begins;
     }
 
     /**
@@ -142,6 +145,8 @@ public abstract class GameState {
             os.writeByte((byte) 1);
         } else if (this instanceof Reversi) {
             os.writeByte((byte) 2);
+        } else if (this instanceof Minesweeper) {
+            os.writeByte((byte) 3);
         } else {
             throw new IOException("What is this game?");
         }
@@ -186,6 +191,8 @@ public abstract class GameState {
                 return new Connect4(is);
             case 2:
                 return new Reversi(is);
+            case 3:
+                return new Minesweeper(is);
             default:
                 throw new IOException("Tried to deserialize unknown game (id: " + game + ")");
         }
