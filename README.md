@@ -10,6 +10,7 @@ It contains the full source for:
 - [the Celeste font generator](https://max480-random-stuff.appspot.com/celeste/font-generator)
 - [the help page for the Mod Structure Verifier bot](https://max480-random-stuff.appspot.com/celeste/mod-structure-verifier?collabName=CollabName&collabMapName=CollabMapName&assets&xmls&nomap&multiplemaps&badmappath&badenglish&misplacedyaml&noyaml&yamlinvalid&missingassets&missingentities)
 - [the "Show Arbitrary Mods on Profile" GameBanana app](https://gamebanana.com/apps/752)
+- [the Discord Games Bot](https://max480-random-stuff.appspot.com/discord-bots/#games-bot) - the "bot" is actually a webhook that gets called by Discord
 - Some [GameBanana](https://gamebanana.com)-related APIs extending the official API, described below
 
 If you want to check how the update checker's everest_update.yaml file is generated, check [the Everest Update Checker Server repo](https://github.com/max4805/EverestUpdateCheckerServer) instead.
