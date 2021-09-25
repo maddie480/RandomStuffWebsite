@@ -74,7 +74,7 @@ public class InteractionManager extends HttpServlet {
             } else if (data.getInt("type") == 2) {
                 // slash command
                 String gameName = data.getJSONObject("data").getString("name");
-                String selfId = data.getJSONObject("member").getJSONObject("user").getString("id");
+                String selfId = getUserObject(data).getString("id");
                 String interactionToken = data.getString("token");
 
                 if (gameName.equals("minesweeper")) {
@@ -124,7 +124,7 @@ public class InteractionManager extends HttpServlet {
             } else if (data.getInt("type") == 3) {
                 // clicked a button or used a combo box
                 String interactionToken = data.getString("token");
-                long selfId = Long.parseLong(data.getJSONObject("member").getJSONObject("user").getString("id"));
+                long selfId = Long.parseLong(getUserObject(data).getString("id"));
 
                 if (data.getJSONObject("data").getInt("component_type") == 3) {
                     // this is a combo box! the only one we have is difficulty select.
@@ -147,6 +147,20 @@ public class InteractionManager extends HttpServlet {
                 }
             }
         }
+    }
+
+    /**
+     * Gets the user object from the incoming JSON data.
+     * This can be user (in case of a DM) or member.user (in case of a guild message).
+     *
+     * @param data The incoming data
+     * @return The user JSON object
+     */
+    private JSONObject getUserObject(JSONObject data) {
+        if (data.has("member")) {
+            return data.getJSONObject("member").getJSONObject("user");
+        }
+        return data.getJSONObject("user");
     }
 
     /**
