@@ -92,21 +92,40 @@ public class InteractionManager extends HttpServlet {
                     }
                 } else {
                     // 2-player game (for now Minesweeper is the only 1-player game)
+                    boolean isUserCommand = data.getJSONObject("data").getInt("type") == 2; // 1 = slash command, 2 = user command, 3 = message command
                     boolean isAgainstBot = !data.getJSONObject("data").has("options") || data.getJSONObject("data").getJSONArray("options").isEmpty();
-                    if (isAgainstBot) {
-                        // user wants to play against AI
+
+                    if (isUserCommand) {
+                        // for example turn "Play Connect 4" into "connect4".
+                        gameName = userCommandToSlashCommand(gameName);
+                    }
+
+                    if (!isUserCommand && isAgainstBot) {
+                        // player used a slash command with no parameter: they want to play against AI
                         pickLevelAgainstBot(resp, gameName, selfId);
                     } else {
-                        // user pinged another user in the command.
-                        String userid = data.getJSONObject("data").getJSONArray("options").getJSONObject(0).getString("value");
+                        // user pinged another user in the command, or used a user command.
+                        String userid;
+                        if (isUserCommand) {
+                            // grab the user that was clicked on.
+                            userid = data.getJSONObject("data").getString("target_id");
+                        } else {
+                            // grab the option for the slash command.
+                            userid = data.getJSONObject("data").getJSONArray("options").getJSONObject(0).getString("value");
+                        }
 
                         JSONObject resolvedUser = data.getJSONObject("data").getJSONObject("resolved").getJSONObject("users").getJSONObject(userid);
-                        if (resolvedUser.has("bot") && resolvedUser.getBoolean("bot")) {
-                            // the pinged user... is a bot!
-                            sendError(":x: You can't play against a bot! To play against CPU, do not mention anyone.", resp);
+                        if (userid.equals(Constants.GAMES_BOT_CLIENT_ID)) {
+                            // the user picked Games Bot. :thinking: So they definitely want to play against CPU.
+                            pickLevelAgainstBot(resp, gameName, selfId);
+                        } else if (resolvedUser.has("bot") && resolvedUser.getBoolean("bot")) {
+                            // the picked user... is a bot!
+                            sendError(":x: You cannot play against a bot other than Games Bot!\nTo play against CPU, "
+                                    + (isUserCommand ? "use the slash command and " : "")
+                                    + "do not mention anyone.", resp);
                         } else {
                             if (userid.equals(selfId)) {
-                                // the user pinged themselves, what?
+                                // the user picked themselves, what?
                                 sendError(":x: You cannot play against yourself. :thinking:", resp);
                             } else {
                                 // start a game between two humans.
@@ -146,6 +165,22 @@ public class InteractionManager extends HttpServlet {
                     onGameAction(action, selfId, interactionToken, resp);
                 }
             }
+        }
+    }
+
+    /**
+     * Converts a user command name to a slash command name.
+     */
+    private String userCommandToSlashCommand(String name) {
+        switch (name) {
+            case "Play Connect 4":
+                return "connect4";
+            case "Play Reversi":
+                return "reversi";
+            case "Play Tic-Tac-Toe":
+                return "tictactoe";
+            default:
+                throw new RuntimeException("Unknown game in user command: " + name);
         }
     }
 
