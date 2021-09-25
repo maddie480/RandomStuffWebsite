@@ -22,7 +22,9 @@
             margin-top: 20px;
         }
         h1.botname.margin {
-            margin-top: 50px;
+            margin-top: 30px;
+            border-top: solid lightgray 1px;
+            padding-top: 30px;
         }
 
         img {
@@ -59,11 +61,20 @@
             .darktheme {
                 display: block;
             }
+
+            h1.botname.margin {
+                border-top: solid #444 1px;
+            }
         }
 
         .botlogo {
             width: 100px;
             height: 100px;
+        }
+
+        .gametitle {
+            display: block;
+            margin-bottom: 15px;
         }
     </style>
 </head>
@@ -164,29 +175,51 @@
         You can play the 2-player games against a friend by pinging them in the command, or against the CPU.
     </p>
 
-    <p>
-        <b>Connect 4:</b>
-        <div class="lighttheme"><img src="/img/games_connect4_light.png"></div>
-        <div class="darktheme"><img src="/img/games_connect4_dark.png"></div>
-    </p>
+    <div class="row">
+        <div class="col-md-6 col-xs-12">
+            <p>
+                <b class="gametitle">Connect 4:</b>
+                <span class="lighttheme"><img src="/img/games_connect4_light.png"></span>
+                <span class="darktheme"><img src="/img/games_connect4_dark.png"></span>
+            </p>
+        </div>
+        <div class="col-md-6 col-xs-12">
+            <p>
+                <b class="gametitle">Minesweeper:</b>
+                <span class="lighttheme"><img src="/img/games_minesweeper_light.png"></span>
+                <span class="darktheme"><img src="/img/games_minesweeper_dark.png"></span>
+            </p>
+        </div>
+        <div class="col-md-6 col-xs-12">
+            <p>
+                <b class="gametitle">Reversi:</b>
+                <span class="lighttheme"><img src="/img/games_reversi_light.png"></span>
+                <span class="darktheme"><img src="/img/games_reversi_dark.png"></span>
+            </p>
+        </div>
+        <div class="col-md-6 col-xs-12">
+            <p>
+                <b class="gametitle">Tic-Tac-Toe:</b>
+                <span class="lighttheme"><img src="/img/games_tictactoe_light.png"></span>
+                <span class="darktheme"><img src="/img/games_tictactoe_dark.png"></span>
+            </p>
+        </div>
+    </div>
 
     <p>
-        <b>Minesweeper:</b>
-        <div class="lighttheme"><img src="/img/games_minesweeper_light.png"></div>
-        <div class="darktheme"><img src="/img/games_minesweeper_dark.png"></div>
+        To start playing, <b>use a slash command</b> or <b>right-click on another server member</b>:
     </p>
 
-    <p>
-        <b>Reversi:</b>
-        <div class="lighttheme"><img src="/img/games_reversi_light.png"></div>
-        <div class="darktheme"><img src="/img/games_reversi_dark.png"></div>
-    </p>
-
-    <p>
-        <b>Tic-Tac-Toe:</b>
-        <div class="lighttheme"><img src="/img/games_tictactoe_light.png"></div>
-        <div class="darktheme"><img src="/img/games_tictactoe_dark.png"></div>
-    </p>
+    <div class="row">
+        <div class="col-md-6 col-xs-12 mb-4">
+            <span class="lighttheme"><img src="/img/slash_command_light.png"></span>
+            <span class="darktheme"><img src="/img/slash_command_dark.png"></span>
+        </div>
+        <div class="col-md-6 col-xs-12 mb-4">
+            <span class="lighttheme"><img src="/img/user_command_light.png"></span>
+            <span class="darktheme"><img src="/img/user_command_dark.png"></span>
+        </div>
+    </div>
 
     <a class="btn btn-primary" href="https://discord.com/api/oauth2/authorize?client_id=890556635091697665&scope=applications.commands" target="_blank">Invite</a>
 
