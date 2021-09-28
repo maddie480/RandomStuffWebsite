@@ -57,8 +57,9 @@ public class CelesteModSearchService extends HttpServlet {
         public final int downloads;
         public final int categoryId;
         public final int createdDate;
+        public final Map<String, Object> fullInfo;
 
-        private ModInfo(String type, int id, int likes, int views, int downloads, int categoryId, int createdDate) {
+        private ModInfo(String type, int id, int likes, int views, int downloads, int categoryId, int createdDate, Map<String, Object> fullInfo) {
             this.type = type;
             this.id = id;
             this.likes = likes;
@@ -66,6 +67,7 @@ public class CelesteModSearchService extends HttpServlet {
             this.downloads = downloads;
             this.categoryId = categoryId;
             this.createdDate = createdDate;
+            this.fullInfo = fullInfo;
         }
     }
 
@@ -92,6 +94,7 @@ public class CelesteModSearchService extends HttpServlet {
 
         if (request.getRequestURI().equals("/celeste/gamebanana-search")) {
             String queryParam = request.getParameter("q");
+            boolean fullInfo = "true".equals(request.getParameter("full"));
 
             if (queryParam == null || queryParam.trim().isEmpty()) {
                 // the user didn't give any search!
@@ -132,13 +135,20 @@ public class CelesteModSearchService extends HttpServlet {
                     responseBody = Arrays.stream(hits).map(hit -> {
                         try {
                             Document doc = searcher.doc(hit.doc);
-                            Map<String, Object> result = new LinkedHashMap<>();
-                            result.put("itemtype", doc.get("type"));
-                            result.put("itemid", Integer.parseInt(doc.get("id")));
+                            if (fullInfo) {
+                                return modDatabaseForSorting.stream()
+                                        .filter(m -> m.type.equals(doc.get("type")) && m.id == Integer.parseInt(doc.get("id")))
+                                        .findFirst().map(m -> m.fullInfo)
+                                        .orElseThrow(() -> new RuntimeException("Found mod that's not in the database!"));
+                            } else {
+                                Map<String, Object> result = new LinkedHashMap<>();
+                                result.put("itemtype", doc.get("type"));
+                                result.put("itemid", Integer.parseInt(doc.get("id")));
 
-                            logger.fine("Result: " + doc.get("type") + " " + doc.get("id")
-                                    + " (" + doc.get("name") + ") with " + hit.score + " pt(s)");
-                            return result;
+                                logger.fine("Result: " + doc.get("type") + " " + doc.get("id")
+                                        + " (" + doc.get("name") + ") with " + hit.score + " pt(s)");
+                                return result;
+                            }
                         } catch (IOException e) {
                             // how would we have an I/O exception on a memory stream?
                             throw new RuntimeException(e);
@@ -160,6 +170,7 @@ public class CelesteModSearchService extends HttpServlet {
         }
 
         if (request.getRequestURI().equals("/celeste/gamebanana-list")) {
+            boolean fullInfo = "true".equals(request.getParameter("full"));
             String sortParam = request.getParameter("sort");
             String pageParam = request.getParameter("page");
             String typeParam = request.getParameter("type") == null ? request.getParameter("itemtype") : request.getParameter("type");
@@ -225,10 +236,14 @@ public class CelesteModSearchService extends HttpServlet {
                         .skip((page - 1) * 20L)
                         .limit(20)
                         .map(modInfo -> {
-                            Map<String, Object> result = new LinkedHashMap<>();
-                            result.put("itemtype", modInfo.type);
-                            result.put("itemid", modInfo.id);
-                            return result;
+                            if (fullInfo) {
+                                return modInfo.fullInfo;
+                            } else {
+                                Map<String, Object> result = new LinkedHashMap<>();
+                                result.put("itemtype", modInfo.type);
+                                result.put("itemid", modInfo.id);
+                                return result;
+                            }
                         })
                         .collect(Collectors.toList());
 
@@ -398,7 +413,7 @@ public class CelesteModSearchService extends HttpServlet {
                     index.addDocument(modDocument);
 
                     newModDatabaseForSorting.add(new ModInfo(mod.get("GameBananaType").toString(), (int) mod.get("GameBananaId"),
-                            (int) mod.get("Likes"), (int) mod.get("Views"), (int) mod.get("Downloads"), categoryId, (int) mod.get("CreatedDate")));
+                            (int) mod.get("Likes"), (int) mod.get("Views"), (int) mod.get("Downloads"), categoryId, (int) mod.get("CreatedDate"), mod));
                 }
             }
 
