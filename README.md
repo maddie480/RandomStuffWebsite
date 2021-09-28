@@ -52,40 +52,37 @@ The search engine is powered by [Apache Lucene](https://lucene.apache.org/). It 
 
 For a full list of supported syntax, check [the Lucene documentation](https://lucene.apache.org/core/8_7_0/queryparser/org/apache/lucene/queryparser/classic/package-summary.html#package.description).
 
-You can pass `full=true` to the API to get the full info on mods instead of just their IDs:
+You can pass `full=true` to the API to get the full info on mods instead of just their IDs, **in JSON instead of YAML**:
 
 ```yaml
 $ curl "localhost:8080/celeste/gamebanana-search?q=spring+collab+2020&full=true"
-- GameBananaType: Mod
-  GameBananaId: 53717
-  Name: 2020 Spring Collab Randomizer (v0.1)
-  Author: KawaiiDawn
-  Description: Made by KawaiiDawn
-  Likes: 1
-  Views: 3377
-  Downloads: 204
-  Text: 'NOTE: THIS RANDOMIZER WILL SOON BE OBSOLETED BY ANOTHER COLLAB RANDOMIZER
-    THAT IS FARTHER IN PROGRESS THAN THIS ONE, BE SURE TO DISABLE THIS MOD WHEN THAT
-    MOD COMES OUT (You can still enjoy this until that comes out, think of this as
-    a preview ;D)<br>Bigkahuna is making the updated one btw<br><br>This mod adds
-    in randomizer options for maps from the 2020 Celeste Community Spring Collab.
-    Currently, only beginner maps are available, but I am still actively working to
-    add in every map.&nbsp;If you have any questions feel free to post here or message
-    me on discord:&nbsp;?KawaiiDawn?#2795<br>FINISHED:<br>Beginner Maps<br>PLANNED:<br>Intermediate
-    Maps, Advanced Maps, Expert Maps, Grandmaster Maps<br>KNOWN ISSUES:<br>Crystal
-    Enigma causes the game to crash at the randomizer menu, so that map is currently
-    absent from the list of available maps.<br>Screens from certain maps may appear
-    much less often, I don''t know why this happens.<br>The game randomizes the custom
-    tileset slots, but I plan to keep this as I think randomized tilesets is a neat
-    feature.<br>Some rooms may be impossible. I went through every room, but there
-    still may be issues in some. Contact me if you find an impossible room.'
-  CreatedDate: 1607137213
-  Screenshots: ['https://images.gamebanana.com/img/ss/mods/5fcaf5f6990f6.jpg', 'https://images.gamebanana.com/img/ss/mods/5fcaf5ffe2893.jpg']
-  Files:
-  - {HasEverestYaml: true, Size: 8859, Downloads: 204, URL: 'https://gamebanana.com/dl/499384',
-    Name: sc2020rando.zip}
-  CategoryId: 4632
-  CategoryName: Other/Misc
+        [
+          {
+            "CategoryId": 4632,
+            "Screenshots": [
+                "https://images.gamebanana.com/img/ss/mods/5fcaf5f6990f6.jpg",
+                "https://images.gamebanana.com/img/ss/mods/5fcaf5ffe2893.jpg"
+            ],
+            "Description": "Made by KawaiiDawn",
+            "Views": 3377,
+            "GameBananaType": "Mod",
+            "GameBananaId": 53717,
+            "Text": "NOTE: THIS RANDOMIZER WILL SOON BE OBSOLETED BY ANOTHER COLLAB RANDOMIZER THAT IS FARTHER IN PROGRESS THAN THIS ONE, BE SURE TO DISABLE THIS MOD WHEN THAT MOD COMES OUT (You can still enjoy this until that comes out, think of this as a preview ;D)<br>Bigkahuna is making the updated one btw<br><br>This mod adds in randomizer options for maps from the 2020 Celeste Community Spring Collab. Currently, only beginner maps are available, but I am still actively working to add in every map.&nbsp;If you have any questions feel free to post here or message me on discord:&nbsp;?KawaiiDawn?#2795<br>FINISHED:<br>Beginner Maps<br>PLANNED:<br>Intermediate Maps, Advanced Maps, Expert Maps, Grandmaster Maps<br>KNOWN ISSUES:<br>Crystal Enigma causes the game to crash at the randomizer menu, so that map is currently absent from the list of available maps.<br>Screens from certain maps may appear much less often, I don't know why this happens.<br>The game randomizes the custom tileset slots, but I plan to keep this as I think randomized tilesets is a neat feature.<br>Some rooms may be impossible. I went through every room, but there still may be issues in some. Contact me if you find an impossible room.",
+            "Name": "2020 Spring Collab Randomizer (v0.1)",
+            "CreatedDate": 1607137213,
+            "Author": "KawaiiDawn",
+            "CategoryName": "Other/Misc",
+            "Downloads": 204,
+            "Likes": 1,
+            "Files": [{
+              "CreatedDate": 1607136797,
+              "HasEverestYaml": true,
+              "Downloads": 204,
+              "Size": 8859,
+              "URL": "https://gamebanana.com/dl/499384",
+              "Name": "sc2020rando.zip"
+            }]
+          },
 [...]
 ```
 
@@ -103,7 +100,7 @@ The URL is `https://max480-random-stuff.appspot.com/celeste/gamebanana-list?sort
 
 The output format is the same as the GameBanana search API, [see the previous section](#the-gamebanana-search-api).
 
-You can pass `full=true` to the API to get the full info on mods instead of just their IDs. The format is also the same as the GameBanana search API with `full=true`.
+You can pass `full=true` to the API to get the full info on mods instead of just their IDs, **in JSON**. The format is also the same as the GameBanana search API with `full=true`.
 
 ## GameBanana categories list API
 

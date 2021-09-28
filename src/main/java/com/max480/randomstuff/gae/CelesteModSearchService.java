@@ -17,6 +17,7 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.QueryBuilder;
+import org.json.JSONArray;
 import org.jsoup.Jsoup;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
@@ -156,8 +157,13 @@ public class CelesteModSearchService extends HttpServlet {
                     }).collect(Collectors.toList());
 
                     // send out the response
-                    response.setHeader("Content-Type", "text/yaml");
-                    response.getWriter().write(new Yaml().dump(responseBody));
+                    if (fullInfo) {
+                        response.setHeader("Content-Type", "application/json");
+                        response.getWriter().write(new JSONArray(responseBody).toString());
+                    } else {
+                        response.setHeader("Content-Type", "text/yaml");
+                        response.getWriter().write(new Yaml().dump(responseBody));
+                    }
                 }
             }
         }
@@ -248,8 +254,13 @@ public class CelesteModSearchService extends HttpServlet {
                         .collect(Collectors.toList());
 
                 // send out the response.
-                response.setHeader("Content-Type", "text/yaml");
-                response.getWriter().write(new Yaml().dump(responseBody));
+                if (fullInfo) {
+                    response.setHeader("Content-Type", "application/json");
+                    response.getWriter().write(new JSONArray(responseBody).toString());
+                } else {
+                    response.setHeader("Content-Type", "text/yaml");
+                    response.getWriter().write(new Yaml().dump(responseBody));
+                }
             }
         }
 
