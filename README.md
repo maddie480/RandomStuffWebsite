@@ -162,3 +162,7 @@ You can copy this URL replacing `5081` with the category of your choice to get a
 To include mod updates (and not only new mods), replace `_tsDateAdded` with `_tsDateUpdated`.
 
 If the GameBanana API returns an error (for example if you pass an invalid parameter), this API will return it as is.
+
+## Random Celeste map button
+
+Click [here](https://max480-random-stuff.appspot.com/celeste/random-map) to get redirected to a random Celeste map.

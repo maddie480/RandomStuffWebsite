@@ -40,7 +40,7 @@ import java.util.stream.Stream;
  */
 @WebServlet(name = "CelesteModSearchService", loadOnStartup = 2, urlPatterns = {"/celeste/gamebanana-search",
         "/celeste/gamebanana-search-reload", "/celeste/gamebanana-list", "/celeste/gamebanana-categories", "/celeste/webp-to-png",
-        "/celeste/banana-mirror-image", "/celeste/mod_search_database.yaml"})
+        "/celeste/banana-mirror-image", "/celeste/mod_search_database.yaml", "/celeste/random-map"})
 public class CelesteModSearchService extends HttpServlet {
 
     private final Logger logger = Logger.getLogger("CelesteModSearchService");
@@ -90,6 +90,18 @@ public class CelesteModSearchService extends HttpServlet {
                 // invalid secret
                 response.setStatus(403);
             }
+            return;
+        }
+
+        if (request.getRequestURI().equals("/celeste/random-map")) {
+            List<ModInfo> maps = modDatabaseForSorting.stream()
+                    .filter(i -> i.categoryId == 6800) // Map
+                    .collect(Collectors.toList());
+
+            // pick a map and redirect to it. that's it.
+            ModInfo drawnMod = maps.get((int) (Math.random() * maps.size()));
+            response.setStatus(302);
+            response.setHeader("Location", "https://gamebanana.com/mods/" + drawnMod.id);
             return;
         }
 
