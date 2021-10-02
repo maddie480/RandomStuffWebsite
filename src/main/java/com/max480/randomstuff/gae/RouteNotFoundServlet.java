@@ -25,7 +25,7 @@ public class RouteNotFoundServlet extends HttpServlet {
             // display a simple 404 page
             response.setStatus(404);
             response.setHeader("Content-Type", "text/html; charset=UTF-8");
-            response.getWriter().write("<html><style>body { font-family: sans-serif; text-align: center; }</style>" +
+            response.getWriter().write("<html><link rel=\"stylesheet\" href=\"/css/common-v7.css\"><style>body { font-family: sans-serif; text-align: center; }</style>" +
                     "<h1>\u274C Not Found</h1><a href=\"/\">\u2B05 Back to Home Page</a></html>");
             logger.warning("Route not found!");
         }
