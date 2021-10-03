@@ -108,8 +108,9 @@
 
     <ul>
         <li><code>/detect_timezone</code> - gives a link to a page to figure out your timezone</li>
-        <li><code>/timezone [tz]</code> (for example <code>/timezone Europe/London</code>) - sets your timezone role. This specific format allows to update the role according to daylight saving, but "UTC+1" also works.</li>
+        <li><code>/timezone [tz_name]</code> (for example <code>/timezone Europe/London</code>) - sets your timezone role. This specific format allows to update the role according to daylight saving, but "UTC+1" also works.</li>
         <li><code>/remove_timezone</code> - removes your timezone role</li>
+        <li><code>/discord_timestamp [date_time]</code> - gives a <a href="https://discord.com/developers/docs/reference#message-formatting-timestamp-styles" target="_blank">Discord timestamp</a>, to tell a date/time to other people regardless of their timezone</li>
         <li><code>/toggle_times</code> - sets whether timezone roles should show the time it is in the timezone (for example <code>Timezone UTC+01:00 (2pm)</code>) or not (for example <code>Timezone UTC+01:00</code>). Enabling this causes "role update" events to be logged hourly. This is disabled by default, and only members with the Manage Server or Admin permission can enable it.</li>
     </ul>
 
@@ -121,17 +122,27 @@
         This bot <b>requires the Manage Roles permission</b> as it creates, deletes and updates timezone roles itself as needed. No other permission is required.
     </p>
 
-    <p>Example usage:</p>
-    <p class="lighttheme"><img src="/img/example_timezone_bot_lighttheme.png"></p>
-    <p class="darktheme"><img src="/img/example_timezone_bot.png"></p>
+    <div class="row">
+        <div class="col-md-6 col-xs-12">
+            <b class="gametitle">/timezone usage:</b>
+            <p class="lighttheme"><img src="/img/example_timezone_bot_lighttheme.png"></p>
+            <p class="darktheme"><img src="/img/example_timezone_bot.png"></p>
 
-    <p>The timezone role will look like this if showing the time it is in the timezone is enabled:</p>
-    <p class="lighttheme"><img src="/img/timezone_role_with_times_lighttheme.png"></p>
-    <p class="darktheme"><img src="/img/timezone_role_with_times.png"></p>
+            <p>If /toggle_times is enabled:</p>
+            <p class="lighttheme"><img src="/img/timezone_role_with_times_lighttheme.png"></p>
+            <p class="darktheme"><img src="/img/timezone_role_with_times.png"></p>
 
-    <p>and it will look like this if it is disabled:</p>
-    <p class="lighttheme"><img src="/img/timezone_role_no_time_lighttheme.png"></p>
-    <p class="darktheme"><img src="/img/timezone_role_no_time.png"></p>
+            <p>If /toggle_times is disabled:</p>
+            <p class="lighttheme"><img src="/img/timezone_role_no_time_lighttheme.png"></p>
+            <p class="darktheme"><img src="/img/timezone_role_no_time.png"></p>
+        </div>
+
+        <div class="col-md-6 col-xs-12">
+            <b class="gametitle">/discord_timestamp usage:</b>
+            <p class="lighttheme"><img src="/img/discord_timestamp_light.png"></p>
+            <p class="darktheme"><img src="/img/discord_timestamp_dark.png"></p>
+        </div>
+    </div>
 
     <a class="btn btn-primary" href="https://discord.com/oauth2/authorize?client_id=806514800045064213&scope=bot%20applications.commands&permissions=268435456" target="_blank">Invite</a>
 
