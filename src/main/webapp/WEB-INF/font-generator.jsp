@@ -59,9 +59,13 @@
             <div class="alert alert-warning">
                 Your request was invalid, please try again.
             </div>
+        <% } else if((boolean) request.getAttribute("allmissing")) { %>
+            <div class="alert alert-danger">
+                <b>All characters are missing from the font!</b> Make sure you picked the right language.
+            </div>
         <% } else if((boolean) request.getAttribute("nothingToDo")) { %>
-            <div class="alert alert-info">
-                All the characters in your dialog file are already present in the vanilla font! You have nothing to do.
+            <div class="alert alert-success">
+                <b>All the characters in your dialog file are already present in the vanilla font!</b> You have nothing to do.
             </div>
         <% } %>
 
@@ -70,6 +74,10 @@
             or to convert a completely custom font.
             In order to do this, send your dialog file here, then unzip the contents of the zip you're given to <code>Mods/yourmod/Dialog/Fonts</code>.
         </p>
+
+        <div class="alert alert-info">
+            If characters are missing from the font, you will find a <code>missing-characters.txt</code> file in the generated zip.
+        </div>
 
         <form method="POST" enctype="multipart/form-data">
             <div class="form-group">

@@ -36,7 +36,9 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -53,10 +55,14 @@ import java.util.zip.ZipOutputStream;
 public class CelesteFontGeneratorService extends HttpServlet {
     private static final Logger logger = Logger.getLogger("CelesteFontGeneratorService");
 
+    private static class AllCharactersMissingException extends Exception {
+    }
+
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         request.setAttribute("error", false);
         request.setAttribute("badrequest", false);
+        request.setAttribute("allmissing", false);
         request.setAttribute("nothingToDo", false);
         request.getRequestDispatcher("/WEB-INF/font-generator.jsp").forward(request, response);
     }
@@ -65,6 +71,7 @@ public class CelesteFontGeneratorService extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setAttribute("error", false);
         request.setAttribute("badrequest", false);
+        request.setAttribute("allmissing", false);
         request.setAttribute("nothingToDo", false);
         boolean sentZip = false;
 
@@ -143,6 +150,10 @@ public class CelesteFontGeneratorService extends HttpServlet {
                         IOUtils.write(result, response.getOutputStream());
                         sentZip = true;
                     }
+                } catch (AllCharactersMissingException e) {
+                    // all characters are missing from the font!
+                    request.setAttribute("allmissing", true);
+
                 } catch (ParserConfigurationException | SAXException | IOException e) {
                     // something blew up along the way!
                     logger.severe("Could not generate font!");
@@ -177,8 +188,11 @@ public class CelesteFontGeneratorService extends HttpServlet {
      * @param uploadedFontFileName The name of the font that is provided as an input stream
      * @param dialogFile           The dialog file to take characters from
      * @return The zip containing all the files, as a byte array. Can be empty if no charater was exported
+     * @throws AllCharactersMissingException If all characters that are not in existingCodes are not in the font either.
      */
-    private static byte[] generateFont(String fontFileName, InputStream font, String uploadedFontFileName, String dialogFile) throws IOException {
+    private static byte[] generateFont(String fontFileName, InputStream font, String uploadedFontFileName, String dialogFile)
+            throws IOException, AllCharactersMissingException {
+
         // create a temp dir to dump stuff to.
         final Path tempDirectory = Files.createTempDirectory("celeste-font-generator-");
 
@@ -188,20 +202,7 @@ public class CelesteFontGeneratorService extends HttpServlet {
             IOUtils.copy(font, os);
         }
 
-        // generate the bitmap font!
-        boolean hasContent = generateFont(fontFileName + "_image", fontFileName + ".fnt", fontFile, dialogFile, new HashSet<>());
-
-        // if we generated no font, then return now.
-        if (!hasContent) {
-            FileUtils.deleteDirectory(tempDirectory.toFile());
-            return new byte[0];
-        }
-
-        // delete the font
-        Files.delete(fontFile.toPath());
-
-        // and zip the whole thing.
-        return zipAndDeleteTempDirectory(tempDirectory);
+        return generateFontAndBuildZip(fontFileName + "_image", fontFileName + ".fnt", fontFile, dialogFile, new HashSet<>(), tempDirectory);
     }
 
     /**
@@ -212,9 +213,10 @@ public class CelesteFontGeneratorService extends HttpServlet {
      * @param language     One of "russian", "japanese", "korean", "chinese" or "renogare" to pick the font to use and the name for the fnt file
      * @param dialogFile   The dialog file to take characters from
      * @return The zip containing all the files, as a byte array. Can be empty if no charater was exported
+     * @throws AllCharactersMissingException If all characters that are not in existingCodes are not in the font either.
      */
     private static byte[] generateFont(String fontFileName, String language, String dialogFile)
-            throws IOException, ParserConfigurationException, SAXException {
+            throws IOException, ParserConfigurationException, SAXException, AllCharactersMissingException {
 
         String fontName;
         String vanillaFntName;
@@ -274,17 +276,44 @@ public class CelesteFontGeneratorService extends HttpServlet {
             existingCodes.add(Integer.parseInt(charItem.getAttributes().getNamedItem("id").getNodeValue()));
         }
 
-        // generate the bitmap font!
-        boolean hasContent = generateFont(fontFileName, vanillaFntName, fontFile, dialogFile, existingCodes);
+        return generateFontAndBuildZip(fontFileName, vanillaFntName, fontFile, dialogFile, existingCodes, tempDirectory);
+    }
 
-        // if we generated no font, then return now.
-        if (!hasContent) {
+    /**
+     * Generates a font from a font file on disk, builds a zip, deletes the temp directory, and returns it as a byte array.
+     *
+     * @param fontFileName  The base name for the png files
+     * @param fntName       The name for the fnt file
+     * @param font          The font file
+     * @param dialogFile    The dialog file to take characters from
+     * @param existingCodes Code points for the characters to exclude from the export
+     * @param tempDirectory The working directory where files should be written.
+     * @return The zip containing all the files, as a byte array. Can be empty if no charater was exported
+     * @throws AllCharactersMissingException If all characters that are not in existingCodes are not in the font either.
+     */
+    private static byte[] generateFontAndBuildZip(String fontFileName, String fntName, File font, String dialogFile,
+                                                  Set<Integer> existingCodes, Path tempDirectory) throws IOException, AllCharactersMissingException {
+        // generate the bitmap font!
+        try {
+            String missingCharacters = generateFont(fontFileName, fntName, font, dialogFile, existingCodes);
+
+            if (missingCharacters == null) {
+                // all characters are already in the vanilla font!
+                FileUtils.deleteDirectory(tempDirectory.toFile());
+                return new byte[0];
+            } else if (!missingCharacters.isEmpty()) {
+                // write the missing characters to missing-characters.txt
+                FileUtils.writeStringToFile(tempDirectory.resolve("missing-characters.txt").toFile(),
+                        missingCharacters, StandardCharsets.UTF_8);
+            }
+        } catch (AllCharactersMissingException e) {
+            // all characters are missing from the font!
             FileUtils.deleteDirectory(tempDirectory.toFile());
-            return new byte[0];
+            throw e;
         }
 
         // delete the font
-        Files.delete(fontFile.toPath());
+        Files.delete(font.toPath());
 
         // and zip the whole thing.
         return zipAndDeleteTempDirectory(tempDirectory);
@@ -298,16 +327,23 @@ public class CelesteFontGeneratorService extends HttpServlet {
      * @param font          The font file
      * @param dialogFile    The dialog file to take characters from
      * @param existingCodes Code points for the characters to exclude from the export
-     * @return true if characters were exported, false otherwise.
+     * @return the list of characters missing from the font, or null if all characters already were in existingCodes.
+     * @throws AllCharactersMissingException If all characters that are not in existingCodes are not in the font either.
      */
-    private static boolean generateFont(String fontFileName, String fntName, File font, String dialogFile, Set<Integer> existingCodes) throws IOException {
+    private static String generateFont(String fontFileName, String fntName, File font, String dialogFile, Set<Integer> existingCodes)
+            throws IOException, AllCharactersMissingException {
         // take all characters that do not exist and jam them all into a single string
         final String missingCharacters = dialogFile.codePoints()
                 .filter(c -> !existingCodes.contains(c))
                 .mapToObj(c -> new String(new int[]{c}, 0, 1))
                 .distinct()
-                .filter(s -> !"\n".equals(s) && !"\r".equals(s))
+                .filter(s -> s.matches("\\P{C}")) // not control characters!
                 .collect(Collectors.joining());
+
+        if (missingCharacters.isEmpty()) {
+            // nothing to do! all characters are already in the font.
+            return null;
+        }
 
         final Path directory = font.toPath().getParent().toAbsolutePath();
 
@@ -315,6 +351,7 @@ public class CelesteFontGeneratorService extends HttpServlet {
         Semaphore waitUntilFinished = new Semaphore(0);
         AtomicBoolean failure = new AtomicBoolean(false);
         AtomicBoolean empty = new AtomicBoolean(false);
+        List<String> missingCharactersInFont = new ArrayList<>();
 
         final HeadlessApplication app = new HeadlessApplication(new ApplicationAdapter() {
             public void create() {
@@ -356,6 +393,19 @@ public class CelesteFontGeneratorService extends HttpServlet {
                     data.dispose();
                     param.packer.dispose();
 
+                    // find out characters that were missing from the font.
+                    List<Character> missingChars = new ArrayList<>();
+                    for (char c : missingCharacters.toCharArray()) {
+                        if (data.getGlyph(c) == null) {
+                            missingChars.add(c);
+                        }
+                    }
+                    char[] missingCharsArray = new char[missingChars.size()];
+                    for (int i = 0; i < missingCharsArray.length; i++) {
+                        missingCharsArray[i] = missingChars.get(i);
+                    }
+                    missingCharactersInFont.add(new String(missingCharsArray));
+
                     waitUntilFinished.release();
                 } catch (Exception e) {
                     logger.severe("Could not generate font");
@@ -369,7 +419,7 @@ public class CelesteFontGeneratorService extends HttpServlet {
         waitUntilFinished.acquireUninterruptibly();
         app.exit();
         if (empty.get()) {
-            return false;
+            throw new AllCharactersMissingException();
         }
         if (failure.get()) {
             throw new IOException("Generating font failed!");
@@ -379,7 +429,7 @@ public class CelesteFontGeneratorService extends HttpServlet {
         Files.move(directory.resolve(fontFileName + ".fnt"), directory.resolve(fntName));
 
         // and... done!
-        return true;
+        return missingCharactersInFont.get(0);
     }
 
     /**
