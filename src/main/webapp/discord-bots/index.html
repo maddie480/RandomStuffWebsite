@@ -107,12 +107,16 @@
     </p>
 
     <ul>
-        <li><code>/detect_timezone</code> - gives a link to a page to figure out your timezone</li>
+        <li><code>/detect_timezone</code> - gives a link to <a href="/detect-timezone.html" target="_blank">a page</a> to figure out your timezone</li>
         <li><code>/timezone [tz_name]</code> (for example <code>/timezone Europe/London</code>) - sets your timezone role. This specific format allows to update the role according to daylight saving, but "UTC+1" also works.</li>
         <li><code>/remove_timezone</code> - removes your timezone role</li>
         <li><code>/discord_timestamp [date_time]</code> - gives a <a href="https://discord.com/developers/docs/reference#message-formatting-timestamp-styles" target="_blank">Discord timestamp</a>, to tell a date/time to other people regardless of their timezone</li>
         <li><code>/toggle_times</code> - sets whether timezone roles should show the time it is in the timezone (for example <code>Timezone UTC+01:00 (2pm)</code>) or not (for example <code>Timezone UTC+01:00</code>). Enabling this causes "role update" events to be logged hourly. This is disabled by default, and only members with the Manage Server or Admin permission can enable it.</li>
     </ul>
+
+    <p>
+        <b>TL;DR:</b> to grab a timezone role, use <code>/detect_timezone</code>, then copy-paste the result and give it to the <code>/timezone</code> command!
+    </p>
 
     <p>
         These slash commands issue private responses, so they can be used from anywhere without cluttering a channel with commands.
