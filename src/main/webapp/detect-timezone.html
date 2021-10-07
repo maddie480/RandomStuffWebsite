@@ -7,7 +7,8 @@
 	<div id="text" style="text-align: center; font-family: sans-serif; font-size: 24pt; margin-top: 30px;">Your timezone couldn't be detected.</div>
 	
 	<script>
-		document.getElementById('text').innerHTML = 'Your timezone is: <pre>' + Intl.DateTimeFormat().resolvedOptions().timeZone + '</pre>'
+		let timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+		document.getElementById('text').innerHTML = 'Your timezone is: <pre>' + timezone + '</pre><div style="font-size: 20px;">Run <code style="color: #dd0000; border: solid gray 1px; padding: 3px">/timezone ' + timezone + '</code> to get your timezone role!</div>'
 	</script>
 </body>
 </html>
