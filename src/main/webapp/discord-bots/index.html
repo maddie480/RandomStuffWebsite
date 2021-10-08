@@ -79,6 +79,11 @@
             display: block;
             margin-bottom: 15px;
         }
+
+        .footnote {
+            font-size: 9pt;
+            color: gray;
+        }
     </style>
 </head>
 
@@ -108,7 +113,7 @@
 
     <ul>
         <li><code>/detect_timezone</code> - gives a link to <a href="/detect-timezone.html" target="_blank">a page</a> to figure out your timezone</li>
-        <li><code>/timezone [tz_name]</code> (for example <code>/timezone Europe/London</code>) - sets your timezone role. This specific format allows to update the role according to daylight saving, but "UTC+1" also works.</li>
+        <li><code>/timezone [tz_name]</code> (for example <code>/timezone Europe/London</code>) - sets your timezone role. Use the specific format <code>/detect_timezone</code> gives you here, so that the bot can change your role when you switch to summer/winter time. Timezone names like "EST" do not work* but UTC offsets like "UTC+1" do.</li>
         <li><code>/remove_timezone</code> - removes your timezone role</li>
         <li><code>/discord_timestamp [date_time]</code> - gives a <a href="https://discord.com/developers/docs/reference#message-formatting-timestamp-styles" target="_blank">Discord timestamp</a>, to tell a date/time to other people regardless of their timezone</li>
         <li><code>/time_for [member]</code> - gives the time it is now for another member of the server, if they have a timezone role</li>
@@ -125,6 +130,10 @@
 
     <p>
         This bot <b>requires the Manage Roles permission</b> as it creates, deletes and updates timezone roles itself as needed. No other permission is required.
+    </p>
+
+    <p class="footnote">
+        * Most people in the EST (UTC-5) time zone actually switch to EDT (UTC-4) during summer. With <a href="https://en.wikipedia.org/wiki/Tz_database" target="_blank">tz database time zones</a> (such as <code>America/New_York</code>), the bot can know about this and give you the right timezone role, and change it when switching between summer time and winter time. Don't panic though, <code>/detect_timezone</code> tells you what to type here!
     </p>
 
     <div class="row">
