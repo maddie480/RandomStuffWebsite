@@ -38,6 +38,7 @@ import java.util.stream.Collectors;
 @WebServlet(name = "DiscordGamesInteractionManager", urlPatterns = {"/discord/games-bot"})
 public class InteractionManager extends HttpServlet {
     private static final Logger logger = Logger.getLogger("InteractionManager");
+    private static final LazySodiumJava sodium = new LazySodiumJava(new SodiumJava());
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -52,7 +53,7 @@ public class InteractionManager extends HttpServlet {
         System.arraycopy(body, 0, signedStuff, timestampBytes.length, body.length);
 
         if (signature == null || timestamp == null ||
-                !new LazySodiumJava(new SodiumJava()).cryptoSignVerifyDetached(
+                !sodium.cryptoSignVerifyDetached(
                         hexStringToByteArray(signature),
                         signedStuff, signedStuff.length,
                         hexStringToByteArray(Constants.GAMES_BOT_PUBLIC_KEY))) {
