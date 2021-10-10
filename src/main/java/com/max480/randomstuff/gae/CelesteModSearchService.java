@@ -1,24 +1,23 @@
 package com.max480.randomstuff.gae;
 
+import com.google.cloud.storage.Blob;
+import com.google.cloud.storage.Storage;
+import com.google.cloud.storage.StorageOptions;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.DirectoryReader;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.RAMDirectory;
+import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.QueryBuilder;
 import org.json.JSONArray;
-import org.jsoup.Jsoup;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
@@ -26,14 +25,19 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static com.max480.discord.randombots.UpdateCheckerTracker.ModInfo;
 
 /**
  * This servlet provides the GameBanana search API, and other APIs that are used by Olympus or the Banana Mirror Browser.
@@ -44,33 +48,12 @@ import java.util.stream.Stream;
 public class CelesteModSearchService extends HttpServlet {
 
     private final Logger logger = Logger.getLogger("CelesteModSearchService");
+    private static final Storage storage = StorageOptions.newBuilder().setProjectId("max480-random-stuff").build().getService();
 
     private final Analyzer analyzer = new StandardAnalyzer();
     private Directory modIndexDirectory = null;
     private List<ModInfo> modDatabaseForSorting = Collections.emptyList();
     private Map<Integer, String> modCategories;
-
-    private static class ModInfo {
-        public final String type;
-        public final int id;
-        public final int likes;
-        public final int views;
-        public final int downloads;
-        public final int categoryId;
-        public final int createdDate;
-        public final Map<String, Object> fullInfo;
-
-        private ModInfo(String type, int id, int likes, int views, int downloads, int categoryId, int createdDate, Map<String, Object> fullInfo) {
-            this.type = type;
-            this.id = id;
-            this.likes = likes;
-            this.views = views;
-            this.downloads = downloads;
-            this.categoryId = categoryId;
-            this.createdDate = createdDate;
-            this.fullInfo = fullInfo;
-        }
-    }
 
     @Override
     public void init() {
@@ -406,46 +389,35 @@ public class CelesteModSearchService extends HttpServlet {
 
     // mapping takes an awful amount of time on App Engine (~2 seconds) so we can't make it when the user calls the API.
     private void refreshModDatabase() throws IOException {
-        try (InputStream connectionToDatabase = CelesteModUpdateService.getCloudStorageInputStream("mod_search_database.yaml")) {
-            // download the mods
-            List<HashMap<String, Object>> mods = new Yaml().load(connectionToDatabase);
-            logger.fine("There are " + mods.size() + " mods in the search database.");
 
-            RAMDirectory newDirectory = new RAMDirectory(); // I know it's deprecated but creating a directory on App Engine is weird
-            List<ModInfo> newModDatabaseForSorting = new LinkedList<>();
-            Map<Integer, String> newModCategories = new HashMap<>();
-
-            // feed the mods to Lucene so that it indexes them
-            try (IndexWriter index = new IndexWriter(newDirectory, new IndexWriterConfig(analyzer))) {
-                for (HashMap<String, Object> mod : mods) {
-                    int categoryId = -1;
-
-                    Document modDocument = new Document();
-                    modDocument.add(new TextField("type", mod.get("GameBananaType").toString(), Field.Store.YES));
-                    modDocument.add(new TextField("id", mod.get("GameBananaId").toString(), Field.Store.YES));
-                    modDocument.add(new TextField("name", mod.get("Name").toString(), Field.Store.YES));
-                    modDocument.add(new TextField("author", mod.get("Author").toString(), Field.Store.NO));
-                    modDocument.add(new TextField("summary", mod.get("Description").toString(), Field.Store.NO));
-                    modDocument.add(new TextField("description", Jsoup.parseBodyFragment(mod.get("Text").toString()).text(), Field.Store.NO));
-                    if (mod.get("CategoryName") != null) {
-                        modDocument.add(new TextField("category", mod.get("CategoryName").toString(), Field.Store.NO));
-
-                        categoryId = (int) mod.get("CategoryId");
-                        newModCategories.put(categoryId, mod.get("CategoryName").toString());
-                    }
-                    index.addDocument(modDocument);
-
-                    newModDatabaseForSorting.add(new ModInfo(mod.get("GameBananaType").toString(), (int) mod.get("GameBananaId"),
-                            (int) mod.get("Likes"), (int) mod.get("Views"), (int) mod.get("Downloads"), categoryId, (int) mod.get("CreatedDate"), mod));
-                }
-            }
-
-            modIndexDirectory = newDirectory;
-            modDatabaseForSorting = newModDatabaseForSorting;
-            modCategories = newModCategories;
-
-            logger.fine("Virtual index directory contains " + modIndexDirectory.listAll().length + " files and uses "
-                    + newDirectory.ramBytesUsed() + " bytes of RAM.");
+        // get and deserialize the mod list from Cloud Storage.
+        try (ObjectInputStream is = new ObjectInputStream(CelesteModUpdateService.getCloudStorageInputStream("mod_search_database.ser"))) {
+            modDatabaseForSorting = (List<ModInfo>) is.readObject();
+            modCategories = (Map<Integer, String>) is.readObject();
+            logger.fine("There are " + modDatabaseForSorting.size() + " mods in the search database.");
+        } catch (ClassNotFoundException e) {
+            throw new IOException(e);
         }
+
+        // throw away the existing directory.
+        if (modIndexDirectory != null) {
+            modIndexDirectory.close();
+            modIndexDirectory = null;
+        }
+
+        // get the index directory from Cloud Storage. if it exists, wipe it.
+        File dir = new File("/tmp/mod_search_index");
+        if (dir.exists()) {
+            FileUtils.deleteDirectory(dir);
+        }
+        dir.mkdir();
+        for (Blob b : storage.list("max480-random-stuff.appspot.com").iterateAll()) {
+            if (b.getName().startsWith("mod_search_index/")) {
+                b.downloadTo(Paths.get("/tmp/" + b.getName()));
+            }
+        }
+
+        modIndexDirectory = FSDirectory.open(Paths.get("/tmp/mod_search_index"));
+        logger.fine("Index directory contains " + modIndexDirectory.listAll().length + " files.");
     }
 }
