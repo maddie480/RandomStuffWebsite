@@ -1,6 +1,5 @@
 package com.max480.randomstuff.gae;
 
-import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 import org.apache.commons.io.FileUtils;
@@ -36,6 +35,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import static com.max480.discord.randombots.UpdateCheckerTracker.ModInfo;
 
@@ -389,7 +390,6 @@ public class CelesteModSearchService extends HttpServlet {
 
     // mapping takes an awful amount of time on App Engine (~2 seconds) so we can't make it when the user calls the API.
     private void refreshModDatabase() throws IOException {
-
         // get and deserialize the mod list from Cloud Storage.
         try (ObjectInputStream is = new ObjectInputStream(CelesteModUpdateService.getCloudStorageInputStream("mod_search_database.ser"))) {
             modDatabaseForSorting = (List<ModInfo>) is.readObject();
@@ -406,18 +406,19 @@ public class CelesteModSearchService extends HttpServlet {
         }
 
         // get the index directory from Cloud Storage. if it exists, wipe it.
-        File dir = new File("/tmp/mod_search_index");
+        File dir = new File("/tmp/mod_index");
         if (dir.exists()) {
             FileUtils.deleteDirectory(dir);
         }
         dir.mkdir();
-        for (Blob b : storage.list("max480-random-stuff.appspot.com").iterateAll()) {
-            if (b.getName().startsWith("mod_search_index/")) {
-                b.downloadTo(Paths.get("/tmp/" + b.getName()));
+        try (ZipInputStream zipInputStream = new ZipInputStream(CelesteModUpdateService.getCloudStorageInputStream("mod_index.zip"))) {
+            ZipEntry entry;
+            while ((entry = zipInputStream.getNextEntry()) != null) {
+                FileUtils.copyToFile(zipInputStream, new File("/tmp/mod_index/" + entry.getName()));
             }
         }
 
-        modIndexDirectory = FSDirectory.open(Paths.get("/tmp/mod_search_index"));
+        modIndexDirectory = FSDirectory.open(Paths.get("/tmp/mod_index"));
         logger.fine("Index directory contains " + modIndexDirectory.listAll().length + " files.");
     }
 }
