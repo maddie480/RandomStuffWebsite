@@ -102,6 +102,23 @@ The output format is the same as the GameBanana search API, [see the previous se
 
 You can pass `full=true` to the API to get the full info on mods instead of just their IDs, **in JSON**. The format is also the same as the GameBanana search API with `full=true`.
 
+## GameBanana featured mods list API
+
+Hit the following URL: `https://max480-random-stuff.appspot.com/celeste/gamebanana-featured` to get a list of all mods that are shown in the front page of Celeste.
+
+The output is JSON, in the same as the GameBanana search API with the `full=true` option ([see the previous section](#the-gamebanana-search-api)).
+
+Each mod has a `Featured` key if it is featured. The `Category` is one of the following:
+- `today`: Best of today
+- `week`: Best of this week
+- `month`: Best of this month
+- `3month`: Best of 3 months
+- `6month`: Best of 6 months
+- `year`: Best of this year
+- `alltime`: Best of all time
+
+This API sorts the mods in the same order as they are on the website: by `Category` (following the order above) then by `Position`.
+
 ## GameBanana categories list API
 
 This API allows getting a list of GameBanana item types _that have at least one Celeste mod in it_ (contrary to [the official GameBanana v2 API for this](https://api.gamebanana.com/Core/Item/Data/AllowedItemTypes?&help)), along with how many mods there are for each category.

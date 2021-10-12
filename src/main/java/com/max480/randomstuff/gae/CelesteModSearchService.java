@@ -45,7 +45,7 @@ import static com.max480.discord.randombots.UpdateCheckerTracker.ModInfo;
  */
 @WebServlet(name = "CelesteModSearchService", loadOnStartup = 2, urlPatterns = {"/celeste/gamebanana-search",
         "/celeste/gamebanana-search-reload", "/celeste/gamebanana-list", "/celeste/gamebanana-categories", "/celeste/webp-to-png",
-        "/celeste/banana-mirror-image", "/celeste/mod_search_database.yaml", "/celeste/random-map"})
+        "/celeste/banana-mirror-image", "/celeste/mod_search_database.yaml", "/celeste/random-map", "/celeste/gamebanana-featured"})
 public class CelesteModSearchService extends HttpServlet {
 
     private final Logger logger = Logger.getLogger("CelesteModSearchService");
@@ -258,6 +258,27 @@ public class CelesteModSearchService extends HttpServlet {
                     response.getWriter().write(new Yaml().dump(responseBody));
                 }
             }
+        }
+
+        if (request.getRequestURI().equals("/celeste/gamebanana-featured")) {
+            final List<String> catOrder = Arrays.asList("today", "week", "month", "3month", "6month", "year", "alltime");
+            final List<Map<String, Object>> responseBody = modDatabaseForSorting.stream()
+                    .filter(mod -> mod.fullInfo.containsKey("Featured"))
+                    .sorted((a, b) -> {
+                        Map<String, Object> aInfo = (Map<String, Object>) a.fullInfo.get("Featured");
+                        Map<String, Object> bInfo = (Map<String, Object>) b.fullInfo.get("Featured");
+
+                        // sort by category, then by position.
+                        if (aInfo.get("Category").equals(bInfo.get("Category"))) {
+                            return (int) aInfo.get("Position") - (int) bInfo.get("Position");
+                        }
+                        return catOrder.indexOf(aInfo.get("Category")) - catOrder.indexOf(bInfo.get("Category"));
+                    })
+                    .map(mod -> mod.fullInfo)
+                    .collect(Collectors.toList());
+
+            response.setHeader("Content-Type", "application/json");
+            response.getWriter().write(new JSONArray(responseBody).toString());
         }
 
         if (request.getRequestURI().equals("/celeste/gamebanana-categories")) {
