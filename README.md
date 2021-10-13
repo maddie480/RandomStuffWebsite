@@ -55,35 +55,44 @@ For a full list of supported syntax, check [the Lucene documentation](https://lu
 You can pass `full=true` to the API to get the full info on mods instead of just their IDs, **in JSON instead of YAML**:
 
 ```yaml
-$ curl "localhost:8080/celeste/gamebanana-search?q=spring+collab+2020&full=true"
-        [
-          {
-            "CategoryId": 4632,
-            "Screenshots": [
-                "https://images.gamebanana.com/img/ss/mods/5fcaf5f6990f6.jpg",
-                "https://images.gamebanana.com/img/ss/mods/5fcaf5ffe2893.jpg"
-            ],
-            "Description": "Made by KawaiiDawn",
-            "Views": 3377,
-            "GameBananaType": "Mod",
-            "GameBananaId": 53717,
-            "Text": "NOTE: THIS RANDOMIZER WILL SOON BE OBSOLETED BY ANOTHER COLLAB RANDOMIZER THAT IS FARTHER IN PROGRESS THAN THIS ONE, BE SURE TO DISABLE THIS MOD WHEN THAT MOD COMES OUT (You can still enjoy this until that comes out, think of this as a preview ;D)<br>Bigkahuna is making the updated one btw<br><br>This mod adds in randomizer options for maps from the 2020 Celeste Community Spring Collab. Currently, only beginner maps are available, but I am still actively working to add in every map.&nbsp;If you have any questions feel free to post here or message me on discord:&nbsp;?KawaiiDawn?#2795<br>FINISHED:<br>Beginner Maps<br>PLANNED:<br>Intermediate Maps, Advanced Maps, Expert Maps, Grandmaster Maps<br>KNOWN ISSUES:<br>Crystal Enigma causes the game to crash at the randomizer menu, so that map is currently absent from the list of available maps.<br>Screens from certain maps may appear much less often, I don't know why this happens.<br>The game randomizes the custom tileset slots, but I plan to keep this as I think randomized tilesets is a neat feature.<br>Some rooms may be impossible. I went through every room, but there still may be issues in some. Contact me if you find an impossible room.",
-            "Name": "2020 Spring Collab Randomizer (v0.1)",
-            "CreatedDate": 1607137213,
-            "Author": "KawaiiDawn",
-            "CategoryName": "Other/Misc",
-            "Downloads": 204,
-            "Likes": 1,
-            "Files": [{
-              "CreatedDate": 1607136797,
-              "HasEverestYaml": true,
-              "Downloads": 204,
-              "Size": 8859,
-              "URL": "https://gamebanana.com/dl/499384",
-              "Name": "sc2020rando.zip"
-            }]
-          },
-[...]
+$ curl "https://max480-random-stuff.appspot.com/celeste/gamebanana-search?q=spring+collab+2020&full=true"
+[
+  {
+    "CategoryId": 4632,
+    "Screenshots": [
+      "https://images.gamebanana.com/img/ss/mods/5fcaf5f6990f6.jpg",
+      "https://images.gamebanana.com/img/ss/mods/5fcaf5ffe2893.jpg"
+    ],
+    "Description": "Made by KawaiiDawn",
+    "Views": 3456,
+    "GameBananaType": "Mod",
+    "GameBananaId": 53717,
+    "Text": "NOTE: THIS RANDOMIZER WILL SOON BE OBSOLETED BY ANOTHER COLLAB RANDOMIZER THAT IS FARTHER IN PROGRESS THAN THIS ONE, BE SURE TO DISABLE THIS MOD WHEN THAT MOD COMES OUT (You can still enjoy this until that comes out, think of this as a preview ;D)<br>Bigkahuna is making the updated one btw<br><br>This mod adds in randomizer options for maps from the 2020 Celeste Community Spring Collab. Currently, only beginner maps are available, but I am still actively working to add in every map.&nbsp;If you have any questions feel free to post here or message me on discord:&nbsp;?KawaiiDawn?#2795<br>FINISHED:<br>Beginner Maps<br>PLANNED:<br>Intermediate Maps, Advanced Maps, Expert Maps, Grandmaster Maps<br>KNOWN ISSUES:<br>Crystal Enigma causes the game to crash at the randomizer menu, so that map is currently absent from the list of available maps.<br>Screens from certain maps may appear much less often, I don't know why this happens.<br>The game randomizes the custom tileset slots, but I plan to keep this as I think randomized tilesets is a neat feature.<br>Some rooms may be impossible. I went through every room, but there still may be issues in some. Contact me if you find an impossible room.",
+    "Name": "2020 Spring Collab Randomizer (v0.1)",
+    "PageURL": "https://gamebanana.com/mods/53717",
+    "MirroredScreenshots": [
+      "https://celestemodupdater.0x0a.de/banana-mirror-images/img_ss_mods_5fcaf5f6990f6.png",
+      "https://celestemodupdater.0x0a.de/banana-mirror-images/img_ss_mods_5fcaf5ffe2893.png"
+    ],
+    "CreatedDate": 1607137213,
+    "Author": "KawaiiDawn",
+    "CategoryName": "Other/Misc",
+    "Downloads": 209,
+    "Likes": 1,
+    "Files": [
+      {
+        "Description": "",
+        "HasEverestYaml": true,
+        "Size": 8859,
+        "CreatedDate": 1607136797,
+        "Downloads": 209,
+        "URL": "https://gamebanana.com/dl/499384",
+        "Name": "sc2020rando.zip"
+      }
+    ]
+  },
+  [...]
+]
 ```
 
 ## GameBanana sorted list API
@@ -149,16 +158,6 @@ The URL is `https://max480-random-stuff.appspot.com/celeste/gamebanana-categorie
 
 Not passing `?version=2` will result in only `itemtype`s getting returned, with one of them being `Mod`. This is here for backwards compatibility.
 
-## GameBanana Image Mirror API
-
-This API redirects to a mirror of a GameBanana image on [Banana Mirror](https://celestemodupdater.0x0a.de/banana-mirror-images), hosted by 0x0ade.
-
-This contains every 1st and 2nd screenshot of Celeste submissions on GameBanana, downscaled to 220x220, and converted to PNG.
-
-Usage example: `https://max480-random-stuff.appspot.com/celeste/banana-mirror-image?src=https://images.gamebanana.com/img/ss/mods/5b05ac2b4b6da.webp`
-
-_For compatibility reasons, you can also use `webp-to-png` instead of `banana-mirror-image`._
-
 ## GameBanana category RSS feed API
 
 _Note that this API works for all GameBanana categories, not only Celeste ones._
@@ -183,3 +182,17 @@ If the GameBanana API returns an error (for example if you pass an invalid param
 ## Random Celeste map button
 
 Click [here](https://max480-random-stuff.appspot.com/celeste/random-map) to get redirected to a random Celeste map.
+
+## GameBanana Image Mirror API (deprecated)
+
+**Deprecated: You can get the direct URL to the mirrored images by checking `MirroredScreenshots`** in the response of the [search](#gamebanana-search-api) and [list](#gamebanana-sorted-list-api) APIs (by passing `full=true`), and in the [featured mod list](#gamebanana-featured-mods-list-api) API.
+
+--------
+
+This API redirects to a mirror of a GameBanana image on [Banana Mirror](https://celestemodupdater.0x0a.de/banana-mirror-images), hosted by 0x0ade.
+
+This contains every 1st and 2nd screenshot of Celeste submissions on GameBanana, downscaled to 220x220, and converted to PNG.
+
+Usage example: `https://max480-random-stuff.appspot.com/celeste/banana-mirror-image?src=https://images.gamebanana.com/img/ss/mods/5b05ac2b4b6da.webp`
+
+_For compatibility reasons, you can also use `webp-to-png` instead of `banana-mirror-image`._
