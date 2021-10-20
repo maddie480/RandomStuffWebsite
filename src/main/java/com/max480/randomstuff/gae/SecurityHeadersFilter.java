@@ -24,6 +24,8 @@ public class SecurityHeadersFilter extends HttpFilter {
         // allow only self as an origin, except for styles, and prevent the site from being iframed (except for the arbitrary mod app settings).
         if (req.getRequestURI().equals("/gamebanana/arbitrary-mod-app-settings")) {
             res.setHeader("Content-Security-Policy", "default-src 'self'; style-src 'self' 'unsafe-inline' https://stackpath.bootstrapcdn.com; frame-ancestors https://gamebanana.com; object-src 'none';");
+        } else if (req.getRequestURI().equals("/parrot-quick-importer-online")) {
+            res.setHeader("Content-Security-Policy", "default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' https://code.jquery.com; img-src 'self' https://cultofthepartyparrot.com; frame-ancestors 'none'; object-src 'none';");
         } else {
             res.setHeader("Content-Security-Policy", "default-src 'self'; style-src 'self' 'unsafe-inline' https://stackpath.bootstrapcdn.com; frame-ancestors 'none'; object-src 'none';");
         }

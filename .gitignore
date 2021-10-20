@@ -37,7 +37,3 @@ src/main/java/com/max480/randomstuff/gae/Constants.java
 
 # Exclude some private-joke stuff that barely has anything to do here :p
 src/main/java/com/max480/randomstuff/gae/privateservices/
-src/main/webapp/*.html
-src/main/webapp/img/*
-src/main/webapp/js/*
-src/main/webapp/WEB-INF/private/*
