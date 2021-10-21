@@ -223,15 +223,9 @@
             </plugin>
 
             <plugin>
-                <groupId>com.google.appengine</groupId>
+                <groupId>com.google.cloud.tools</groupId>
                 <artifactId>appengine-maven-plugin</artifactId>
-                <version>${appengine.maven.plugin.version}</version>
-                <configuration>
-                    <jvmFlags>
-                        <jvmFlag>-Xdebug</jvmFlag>
-                        <jvmFlag>-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005</jvmFlag>
-                    </jvmFlags>
-                </configuration>
+                <version>2.4.1</version>
             </plugin>
 
             <plugin>
