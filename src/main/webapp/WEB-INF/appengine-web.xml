@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <appengine-web-app xmlns="http://appengine.google.com/ns/1.0">
-
     <threadsafe>true</threadsafe>
     <sessions-enabled>false</sessions-enabled>
     <runtime>java8</runtime>
@@ -15,4 +14,16 @@
         <property name="java.util.logging.config.file" value="WEB-INF/logging.properties"/>
     </system-properties>
 
+    <static-files>
+        <!-- Static HTML files, that should have a Content-Security-Policy -->
+        <include path="/*.html">
+            <http-header name="Content-Security-Policy" value="default-src 'self'; style-src 'self' 'unsafe-inline' https://stackpath.bootstrapcdn.com; frame-ancestors 'none'; object-src 'none';"/>
+        </include>
+
+        <!-- Static images, CSS and JS, that don't need anything -->
+        <include path="/celeste/*"/>
+        <include path="/css/*"/>
+        <include path="/img/*"/>
+        <include path="/js/*"/>
+    </static-files>
 </appengine-web-app>

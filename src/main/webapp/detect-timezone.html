@@ -1,14 +1,48 @@
 <html>
 <head>
 	<title>Timezone Detector</title>
+
+	<style>
+		.main-text {
+			text-align: center;
+			font-family: sans-serif;
+			font-size: 24pt;
+			margin-top: 30px;
+		}
+
+		.smaller {
+			font-size: 20px;
+		}
+
+		code {
+			color: #dd0000;
+			border: solid gray 1px;
+			padding: 3px
+		}
+
+		@media(prefers-color-scheme: dark) {
+			body {
+				background-color: black;
+				color: #dedad6;
+			}
+
+			code {
+				color: #ff5c99;
+			}
+		}
+	</style>
 </head>
 
 <body>
-	<div id="text" style="text-align: center; font-family: sans-serif; font-size: 24pt; margin-top: 30px;">Your timezone couldn't be detected.</div>
-	
-	<script>
-		let timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-		document.getElementById('text').innerHTML = 'Your timezone is: <pre>' + timezone + '</pre><div style="font-size: 20px;">Use <code style="color: #dd0000; border: solid gray 1px; padding: 3px">/timezone ' + timezone + '</code> to grab your timezone role!</div>'
-	</script>
+	<div id="text" class="main-text">Please wait...</div>
+
+	<div id="reveal" class="main-text" style="display: none">
+		Your timezone is: <pre class="timezone">${timezone}</pre>
+		<div class="smaller">
+			Use <code>/timezone <span class="timezone">${timezone}</span></code> to grab your timezone role!
+		</div>
+	</div>
+
+	<script src="/js/detect-timezone.js"></script>
 </body>
 </html>
