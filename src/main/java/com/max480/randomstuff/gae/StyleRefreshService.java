@@ -25,7 +25,7 @@ public class StyleRefreshService extends HttpServlet {
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        if (("key=" + Constants.CATALOG_RELOAD_SHARED_SECRET).equals(request.getQueryString())) {
+        if (("key=" + SecretConstants.CATALOG_RELOAD_SHARED_SECRET).equals(request.getQueryString())) {
             String[] backgrounds = new String[]{
                     "https://cdn.discordapp.com/attachments/445236692136230943/871419692617699328/SplashScreen.png",
                     "https://cdn.discordapp.com/attachments/445236692136230943/850141381888311336/pride_month_maddy.png",

@@ -33,7 +33,7 @@ public class HerokuLogger extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        if (!Constants.LOGGING_EXPECTED_AUTH_HEADER.equals(request.getHeader("Authorization"))) {
+        if (!SecretConstants.LOGGING_EXPECTED_AUTH_HEADER.equals(request.getHeader("Authorization"))) {
             response.setStatus(401);
         } else {
             try (Reader reader = new BufferedReader(new InputStreamReader(request.getInputStream(), StandardCharsets.UTF_8))) {

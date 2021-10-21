@@ -254,7 +254,7 @@ public class EverestYamlValidatorService extends HttpServlet {
     private InputStream authenticatedGitHubRequest(String url) throws IOException {
         HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
         connection.setRequestProperty("Authorization", "Basic " + Base64.getEncoder().encodeToString(
-                (Constants.GITHUB_USERNAME + ":" + Constants.GITHUB_PERSONAL_ACCESS_TOKEN).getBytes(UTF_8)));
+                (SecretConstants.GITHUB_USERNAME + ":" + SecretConstants.GITHUB_PERSONAL_ACCESS_TOKEN).getBytes(UTF_8)));
         return connection.getInputStream();
     }
 

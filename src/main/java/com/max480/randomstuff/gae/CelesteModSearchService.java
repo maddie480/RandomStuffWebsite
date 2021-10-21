@@ -68,7 +68,7 @@ public class CelesteModSearchService extends HttpServlet {
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         if (request.getRequestURI().equals("/celeste/gamebanana-search-reload")) {
-            if (("key=" + Constants.CATALOG_RELOAD_SHARED_SECRET).equals(request.getQueryString())) {
+            if (("key=" + SecretConstants.CATALOG_RELOAD_SHARED_SECRET).equals(request.getQueryString())) {
                 refreshModDatabase();
             } else {
                 // invalid secret

@@ -31,9 +31,3 @@ target/
 .project
 .settings/*
 *.iml
-
-# Private configuration that shouldn't be updated on git
-src/main/java/com/max480/randomstuff/gae/Constants.java
-
-# Exclude some private-joke stuff that barely has anything to do here :p
-src/main/java/com/max480/randomstuff/gae/privateservices/

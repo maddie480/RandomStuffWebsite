@@ -31,7 +31,7 @@ public class LuaCutscenesDocumentationUploader extends HttpServlet {
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        if (("key=" + Constants.CATALOG_RELOAD_SHARED_SECRET).equals(request.getQueryString())) {
+        if (("key=" + SecretConstants.CATALOG_RELOAD_SHARED_SECRET).equals(request.getQueryString())) {
             // search for the Lua Cutscenes download URL in the mod updater database.
             // (we want the mirror so that we don't impact download count... and because it tends to be more stable.)
             String luaCutscenesDownloadUrl;

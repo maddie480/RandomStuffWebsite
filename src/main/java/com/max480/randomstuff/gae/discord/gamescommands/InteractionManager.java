@@ -2,7 +2,7 @@ package com.max480.randomstuff.gae.discord.gamescommands;
 
 import com.goterl.lazysodium.LazySodiumJava;
 import com.goterl.lazysodium.SodiumJava;
-import com.max480.randomstuff.gae.Constants;
+import com.max480.randomstuff.gae.SecretConstants;
 import com.max480.randomstuff.gae.discord.gamescommands.games.Connect4;
 import com.max480.randomstuff.gae.discord.gamescommands.games.Minesweeper;
 import com.max480.randomstuff.gae.discord.gamescommands.games.Reversi;
@@ -56,7 +56,7 @@ public class InteractionManager extends HttpServlet {
                 !sodium.cryptoSignVerifyDetached(
                         hexStringToByteArray(signature),
                         signedStuff, signedStuff.length,
-                        hexStringToByteArray(Constants.GAMES_BOT_PUBLIC_KEY))) {
+                        hexStringToByteArray(SecretConstants.GAMES_BOT_PUBLIC_KEY))) {
 
             // signature bad!
             logger.warning("Invalid or absent signature!");
@@ -116,7 +116,7 @@ public class InteractionManager extends HttpServlet {
                         }
 
                         JSONObject resolvedUser = data.getJSONObject("data").getJSONObject("resolved").getJSONObject("users").getJSONObject(userid);
-                        if (userid.equals(Constants.GAMES_BOT_CLIENT_ID)) {
+                        if (userid.equals(SecretConstants.GAMES_BOT_CLIENT_ID)) {
                             // the user picked Games Bot. :thinking: So they definitely want to play against CPU.
                             pickLevelAgainstBot(resp, gameName, selfId);
                         } else if (resolvedUser.has("bot") && resolvedUser.getBoolean("bot")) {
@@ -532,7 +532,7 @@ public class InteractionManager extends HttpServlet {
                 responseStream.getWriter().write(response.toString());
             } else {
                 // we should call Discord to edit the message, since we already responded.
-                String url = "https://discord.com/api/v9/webhooks/" + Constants.GAMES_BOT_CLIENT_ID + "/" + interactionToken + "/messages/@original";
+                String url = "https://discord.com/api/v9/webhooks/" + SecretConstants.GAMES_BOT_CLIENT_ID + "/" + interactionToken + "/messages/@original";
 
                 logger.fine("Responding with: " + responseData.toString(2) + " to " + url);
 

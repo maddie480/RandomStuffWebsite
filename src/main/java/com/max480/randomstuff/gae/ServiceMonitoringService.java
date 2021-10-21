@@ -26,7 +26,7 @@ import java.util.TreeMap;
 public class ServiceMonitoringService extends HttpServlet {
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        if (!("key=" + Constants.SERVICE_MONITORING_SECRET).equals(request.getQueryString())) {
+        if (!("key=" + SecretConstants.SERVICE_MONITORING_SECRET).equals(request.getQueryString())) {
             response.setStatus(403);
             return;
         }

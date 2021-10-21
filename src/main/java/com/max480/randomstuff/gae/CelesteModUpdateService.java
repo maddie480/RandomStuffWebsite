@@ -46,7 +46,7 @@ public class CelesteModUpdateService extends HttpServlet {
                 IOUtils.copy(is, response.getOutputStream());
             }
         } else if (request.getRequestURI().equals("/celeste/everest-update-reload")
-                && ("key=" + Constants.CATALOG_RELOAD_SHARED_SECRET).equals(request.getQueryString())) {
+                && ("key=" + SecretConstants.CATALOG_RELOAD_SHARED_SECRET).equals(request.getQueryString())) {
             // trigger a reload of everest_update.yaml
             everestYaml = IOUtils.toByteArray(getCloudStorageInputStream("everest_update.yaml"));
         } else if (request.getRequestURI().equals("/celeste/everest_update.yaml")) {

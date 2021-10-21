@@ -44,7 +44,7 @@ public class CelesteModCatalogService extends HttpServlet {
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         if (request.getRequestURI().equals("/celeste/custom-entity-catalog-reload")
-                && ("key=" + Constants.CATALOG_RELOAD_SHARED_SECRET).equals(request.getQueryString())) {
+                && ("key=" + SecretConstants.CATALOG_RELOAD_SHARED_SECRET).equals(request.getQueryString())) {
 
             reloadList();
         } else if (request.getRequestURI().equals("/celeste/custom-entity-catalog.json")) {
