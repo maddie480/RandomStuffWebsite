@@ -1,0 +1,24 @@
+pre {
+    display: inline;
+}
+
+h2 {
+    margin-top: 30px;
+    border-bottom: solid lightgray 1px;
+    padding-bottom: 5px;
+}
+
+
+@media(prefers-color-scheme: dark) {
+    body {
+        background-color: black;
+        color: #dedad6;
+    }
+    pre {
+        color: #aaa8a7;
+    }
+
+    a {
+        color: #47a0ff;
+    }
+}

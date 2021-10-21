@@ -14,41 +14,7 @@
         integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
         crossorigin="anonymous">
 
-    <style>
-        .btn {
-            margin: 3px 1px 20px 1px;
-        }
-        .alert-danger {
-            color: #fff;
-            border-color: #f93154;
-            background-color: #be0626;
-        }
-        body {
-            color: #DEDAD6;
-            background-color: #151D23;
-        }
-        .form-control {
-            background-color: black;
-            border-color: #83888c;
-            color: #dedad6;
-        }
-        .form-control:disabled {
-            background-color: #515151;
-        }
-        .form-control:focus {
-            background-color: black;
-            color: #dedad6;
-            border-color: #125cc8;
-        }
-        .container {
-            margin-top: 30px;
-        }
-        .alert-success {
-            color: #fff;
-            border-color: #00b74a;
-            background-color: #007b32;
-        }
-    </style>
+    <link rel="stylesheet" href="/css/gamebanana-modlist-settings-v1.css">
 </head>
 
 <body>

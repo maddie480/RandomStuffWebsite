@@ -24,24 +24,7 @@
 		crossorigin="anonymous">
 
     <link rel="stylesheet" href="/css/common-v7.css">
-
-    <% if (request.getAttribute("parseError") != null) { %>
-        <style>
-            pre {
-                background: #eee;
-                border: solid gray 1px;
-                padding: 4px;
-                margin: 5px 0;
-                white-space: pre-wrap;
-            }
-        </style>
-    <% } else if (request.getAttribute("validationErrors") != null || request.getAttribute("modInfo") != null) { %>
-        <style>
-            ul {
-                margin-bottom: 2px;
-            }
-        </style>
-    <% } %>
+    <link rel="stylesheet" href="/css/everest-yaml-validator-v1.css">
 </head>
 
 <body>

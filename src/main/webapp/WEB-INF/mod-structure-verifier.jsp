@@ -23,17 +23,7 @@
 		integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
 		crossorigin="anonymous">
 
-    <style>
-        pre {
-            display: inline;
-        }
-
-        h2 {
-            margin-top: 30px;
-            border-bottom: solid lightgray 1px;
-            padding-bottom: 5px;
-        }
-    </style>
+    <link rel="stylesheet" href="/css/mod-structure-verifier-v1.css">
 </head>
 
 <body>

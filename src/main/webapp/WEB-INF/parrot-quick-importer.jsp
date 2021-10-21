@@ -18,35 +18,7 @@
                 crossorigin="anonymous">
         </script>
 
-        <style>
-            body {
-                font-family: sans-serif;
-                text-align: center;
-            }
-            .content {
-                width: 40em;
-                display: inline-block;
-            }
-            form {
-                margin-bottom: 0.5em;
-            }
-            input[type="radio"] {
-                margin-right: 1em;
-            }
-
-            @media(prefers-color-scheme: dark) {
-                body {
-                    background-color: black;
-                    color: #dedad6;
-                }
-
-                input {
-                    background-color: transparent;
-                    border-color: #83888c;
-                    color: #dedad6;
-                }
-            }
-        </style>
+    <link rel="stylesheet" href="/css/parrot-quick-importer-v1.css">
     </head>
 
     <body>

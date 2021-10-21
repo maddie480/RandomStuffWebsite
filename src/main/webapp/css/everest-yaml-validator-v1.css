@@ -1,0 +1,11 @@
+pre {
+    background: #eee;
+    border: solid gray 1px;
+    padding: 4px;
+    margin: 5px 0;
+    white-space: pre-wrap;
+}
+
+ul {
+    margin-bottom: 2px;
+}

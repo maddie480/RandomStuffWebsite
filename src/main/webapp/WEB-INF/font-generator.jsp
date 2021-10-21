@@ -24,17 +24,7 @@
         crossorigin="anonymous">
 
     <link rel="stylesheet" href="/css/common-v7.css">
-
-    <style>
-        .btn {
-            margin: 3px 1px 20px 1px;
-        }
-
-        .alert p {
-            margin-top: 0.5rem;
-            margin-bottom: 0.5rem;
-        }
-    </style>
+    <link rel="stylesheet" href="/css/font-generator-v1.css">
 </head>
 
 <body>
