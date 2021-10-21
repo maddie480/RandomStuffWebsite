@@ -4,7 +4,35 @@
 
 <%@page session="false"%>
 
-<link rel="stylesheet" href="/css/gamebanana-modlist-v1.css">
+<!-- CSS fixup due to relative font sizes behaving weird -->
+<style>
+    @media(max-width: 400px) {
+        #tpm__sArbitraryModsModule span, #tpm__sArbitraryModsModule .PageModule {
+            font-size: 12.8px;
+        }
+        #tpm__sArbitraryModsModule h2 {
+            font-size: 16px;
+        }
+    }
+    @media(min-width: 401px) {
+        @media(max-width: 600px) {
+            #tpm__sArbitraryModsModule span, #tpm__sArbitraryModsModule .PageModule {
+                font-size: 14.4px;
+            }
+            #tpm__sArbitraryModsModule h2 {
+                font-size: 18px;
+            }
+        }
+    }
+    @media(min-width: 601px) {
+        #tpm__sArbitraryModsModule span, #tpm__sArbitraryModsModule .PageModule {
+            font-size: 16px;
+        }
+        #tpm__sArbitraryModsModule h2 {
+            font-size: 20px;
+        }
+    }
+</style>
 
 <module class="PageModule MultipleRowListModule MemberProfileModule SubmissionsListModule">
     <h2><%= escapeHtml4((String) request.getAttribute("title")) %></h2>
