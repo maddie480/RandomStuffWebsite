@@ -12,6 +12,7 @@ It contains the full source for:
 - [the "Show Arbitrary Mods on Profile" GameBanana app](https://gamebanana.com/apps/752)
 - [the Discord Games Bot](https://max480-random-stuff.appspot.com/discord-bots/#games-bot) - the "bot" is actually a webhook that gets called by Discord
 - Some [GameBanana](https://gamebanana.com)-related APIs extending the official API, described below
+- ... and some other things of more limited use that are on the website.
 
 If you want to check how the update checker's everest_update.yaml file is generated, check [the Everest Update Checker Server repo](https://github.com/max4805/EverestUpdateCheckerServer) instead.
 
