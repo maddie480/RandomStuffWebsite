@@ -7,37 +7,50 @@
 
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="UTF-8">
-		<title>Parrot Quick Importer Online</title>
+    <head>
+        <meta charset="UTF-8">
+        <title>Parrot Quick Importer Online</title>
 
-		<link rel="shortcut icon" href="https://cultofthepartyparrot.com/still/parrots/parrot.png">
+        <link rel="shortcut icon" href="https://cultofthepartyparrot.com/still/parrots/parrot.png">
 
-		<script src="https://code.jquery.com/jquery-3.6.0.slim.min.js"
-		        integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI="
-		        crossorigin="anonymous">
+        <script src="https://code.jquery.com/jquery-3.6.0.slim.min.js"
+                integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI="
+                crossorigin="anonymous">
         </script>
 
-		<style>
-			body {
-				font-family: sans-serif;
-				text-align: center;
-			}
-			.content {
-				width: 40em;
-				display: inline-block;
+        <style>
+            body {
+                font-family: sans-serif;
+                text-align: center;
             }
-			form {
-				margin-bottom: 0.5em;
-			}
-			input[type="radio"] {
-				margin-right: 1em;
-			}
-		</style>
-	</head>
+            .content {
+                width: 40em;
+                display: inline-block;
+            }
+            form {
+                margin-bottom: 0.5em;
+            }
+            input[type="radio"] {
+                margin-right: 1em;
+            }
 
-	<body>
-	    <div class="content">
+            @media(prefers-color-scheme: dark) {
+                body {
+                    background-color: black;
+                    color: #dedad6;
+                }
+
+                input {
+                    background-color: transparent;
+                    border-color: #83888c;
+                    color: #dedad6;
+                }
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="content">
             <h1>Parrot Quick Importer Online</h1>
 
             <form>
@@ -60,6 +73,6 @@
             <% } %>
         </div>
 
-		<script type="text/javascript" src="/js/parrot-script.js"></script>
-	</body>
+        <script type="text/javascript" src="/js/parrot-script.js"></script>
+    </body>
 </html>
