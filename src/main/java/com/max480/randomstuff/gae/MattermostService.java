@@ -50,7 +50,8 @@ import static java.nio.charset.StandardCharsets.UTF_8;
         "/mattermost/ckc", "/mattermost/jcvd", "/mattermost/languedebois", "/mattermost/noel", "/mattermost/joiesducode",
         "/mattermost/patoche", "/mattermost/coronavirus", "/mattermost/fakename", "/mattermost/tendancesyoutube", "/mattermost/putaclic",
         "/mattermost/exploit", "/mattermost/absents", "/mattermost/randomparrot", "/mattermost/monkeyuser", "/mattermost/xkcd",
-        "/mattermost/lock", "/mattermost/unlock", "/mattermost/planning-reload", "/mattermost/consistencycheck", "/mattermost/infopipo"})
+        "/mattermost/lock", "/mattermost/unlock", "/mattermost/planning-reload", "/mattermost/consistencycheck", "/mattermost/infopipo",
+        "/mattermost/weekend", "/mattermost/eddy", "/mattermost/pipo"})
 public class MattermostService extends HttpServlet {
 
     private final Logger logger = Logger.getLogger("MattermostService");
@@ -416,6 +417,27 @@ public class MattermostService extends HttpServlet {
                 response.setHeader("Content-Type", "application/json");
 
                 String responseString = commandInfoPipo();
+                response.getWriter().write(responseString);
+                break;
+            }
+            case "/mattermost/weekend": {
+                response.setHeader("Content-Type", "application/json");
+
+                String responseString = commandWeekend(request.getParameter("user_name"));
+                response.getWriter().write(responseString);
+                break;
+            }
+            case "/mattermost/eddy": {
+                response.setHeader("Content-Type", "application/json");
+
+                String responseString = commandEddy();
+                response.getWriter().write(responseString);
+                break;
+            }
+            case "/mattermost/pipo": {
+                response.setHeader("Content-Type", "application/json");
+
+                String responseString = commandPipo(request.getParameter("text"), request.getParameter("user_name"));
                 response.getWriter().write(responseString);
                 break;
             }
@@ -1372,6 +1394,235 @@ public class MattermostService extends HttpServlet {
             jsonObject.put("text", ":ckc:");
             return jsonObject.toString();
         }
+    }
+
+    /**
+     * Ported from a website I cannot find anymore.
+     */
+    private String commandEddy() {
+        final String[][] generator = {
+                {"Chapitre abstrait 3 du conpendium :", "C’est à dire ici, c’est le contraire, au lieu de panacée,", "Au nom de toute la communauté des savants,", "Lorsqu’on parle de tous ces points de vues,", "C’est à dire quand on parle de ces rollers,", "Quand on parle de relaxation,", "Nous n’allons pas seulement danser ou jouer au football,", "D'une manière ou d'une autre,", "Quand on prend les triangles rectangles,", "Se consolidant dans le système de insiding et outsiding,", "Lorsque l'on parle des végétaliens, du végétalisme,", "Contre la morosité du peuple,", "Tandis que la politique est encadrée par des scientifiques issus de Sciences Po et Administratives,", "On ne peut pas parler de politique administrative scientifique,", "Pour emphysiquer l'animalculisme,", "Comme la coumbacérie ou le script de Aze,", "Vous avez le système de check-up vers les anti-valeurs, vous avez le curuna, or", "La convergence n’est pas la divergence,", "L’émergence ici c’est l’émulsion, c’est pas l’immersion donc", "Imbiber, porter", "Une semaine passée sans parler du peuple c’est errer sans abri, autrement dit", "Actuellement,", "Parallèlement,", "Mesdames et messieurs fidèles,"},
+                {"la cosmogonisation", "l'activisme", "le système", "le rédynamisme", "l'ensemble des 5 sens", "la société civile", "la politique", "la compétence", "le colloque", "la contextualisation", "la congolexicomatisation", "la congolexicomatisation", "la congolexicomatisation", "la congolexicomatisation", "la prédestination", "la force", "la systématique", "l'ittérativisme", "le savoir", "l'imbroglio", "la concertation politique", "la délégation", "la pédagogie", "la réflexologie"},
+                {"vers la compromettance pour des saint-bioules", "vers ce qu’on appelle la dynamique des sports", "de la technicité informatisée", "de la Théorie Générale des Organisations", "autour de la Géo Physique Spatiale", "purement technique", "des lois du marché", "de l'orthodoxisation", "inter-continentaliste", "à l'égard de la complexité", "éventualiste sous cet angle là", "de toute la République Démocratique du Congo", "à l'incognito", "autour de l'ergonométrie", "indispensable(s) en science et culture", "autour de phylogomènes généralisés", "à forciori,", "par rapport aux diplomaties"},
+                {"tend à ", "nous pousse à ", "fait allusion à ", "va ", "doit ", "consiste à ", "nous incite à", "vise à", "semble", "est censé(e)", "paraît", "peut", "s'applique à", "consent à", "continue à", "invite à", "oblige à", "parvient à", "pousse à", "se résume à", "suffit à", "se résoud à", "sert à", "tarde à"},
+                {"incristaliser", "imposer", "intentionner ", "mettre un accent sur ", "tourner ", "informatiser ", "aider ", "défendre ", "gérer ", "prévaloir ", "vanter ", "rabibocher", "booster", "porter d'avis sur ce qu'on appelle", "cadrer", "se baser sur", "effaceter", "réglementer", "régler", "faceter", "partager", "uniformiser", "défendre", "soutenir", "propulser", "catapulter", "établir"},
+                {"les interchanges", "mes frères propres", "les revenus", "cette climatologie", "une discipline", "la nucléarité", "l'upensmie", "les sens dynamitiels", "la renaissance africaine", "l'estime du savoir", "une kermesse", "une certaine compétitivité", "cet environnement de 2 345 410 km²", "le kilométrage", "le conpemdium", "la quatripartie", "les encadrés", "le point adjacent", "la bijectivité", "le panafricanisme", "ce système phénoménal", "le système de Guipoti : 1/B+1/B’=1/D", "une position axisienne", "les grabuses lastiques", "le chicouangue", "le trabajo, le travail, la machinale, la robotisation", "les quatre carrés fous du fromage"},
+                {"autour des dialogues intercommunautaires", "provenant d'une dynamique syncronique", "vers le monde entier", "propre(s) aux congolais", "vers Lovanium", "vers l'humanisme", "comparé(e)(s) la rénaque", "autour des gens qui connaissent beaucoup de choses", "possédant la francophonie", "dans ces prestances", "off-shore", "dans Kinshasa", "dans la sous-régionalité", "dans le prémice", "belvédère", "avec la formule 1+(2x5)", "axé(e)(s) sur la réalité du terrain", "dans les camps militaires non-voyants", "avéré(e)(s)", "comme pour le lancement de Troposphère V"},
+                {", tu sais ça", ", c’est clair", ", je vous en prie", ", merci", ", mais oui", ", Bonne Année", ", bonnes fêtes"}
+        };
+
+        String s = "";
+        for (String[] parts : generator) {
+            String chosen = parts[(int) (Math.random() * parts.length)];
+
+            s += " " + chosen;
+        }
+
+        s = s.substring(1).replace("  ", " ").replace(" ,", ",") + ".";
+
+        JSONObject outputJSON = new JSONObject();
+
+        outputJSON.put("response_type", "in_channel");
+        outputJSON.put("text", s);
+        return outputJSON.toString();
+    }
+
+    /**
+     * Ported from https://www.pipotronic.com/
+     */
+    private String commandPipo(String param, String userName) {
+        int count = 1;
+        String phrases = "";
+
+        String supMessage = "";
+
+        if (param != null && !param.trim().isEmpty()) {
+            try {
+                count = Integer.parseInt(param);
+
+                if (count > 5) {
+                    // force-cap to 5
+                    supMessage = "@" + userName + ": J'envoie 5 pipos au maximum. Ca suffit...";
+                    count = 5;
+                } else if (count <= 0) {
+                    // messages in case the user invokes with 0 or less
+                    switch ((int) (Math.random() * 5)) {
+                        case 0:
+                            phrases = "Tu veux que je te réponde quoi au juste là ?";
+                            break;
+                        case 1:
+                            phrases = "T'es sérieux ?";
+                            break;
+                        case 2:
+                            phrases = "...";
+                            break;
+                        case 3:
+                            phrases = "<rien du tout>";
+                            break;
+                        case 4:
+                            phrases = "Hum... " + count + " pipos ? T'essaierais pas de me pipoter là ?";
+                            break;
+                    }
+
+                    JSONObject outputJSON = new JSONObject();
+
+                    outputJSON.put("response_type", "in_channel");
+                    outputJSON.put("text", phrases);
+                    return outputJSON.toString();
+                }
+            } catch (NumberFormatException nfe) {
+                // invalid number, will default to 1
+                supMessage = "@" + userName + ": La prochaine fois, passe-moi un nombre en paramètre ;)";
+            }
+        }
+
+        for (int l = 0; l < count; l++) {
+            String[][] pipo = {
+                    {"Face à", "Relativement à", "Pour optimiser", "Pour accentuer", "Afin de maîtriser", "Au moyen d#", "Depuis l'émergence d#", "Pour challenger", "Pour défier",
+                            "Pour résoudre", "En termes de redynamisation d#", "Concernant l'implémentation d#", "À travers", "En s'orientant vers", "En termes de process, concernant",
+                            "En rebondissant sur", "Pour intégrer", "Une fois internalisée", "Pour externaliser", "Dans la lignée d#", "En synergie avec",
+                            "Là où les benchmarks désignent", "Au cœur d#", "En auditant", "Une fois evaluée", "Partout où domine", "Pour réagir à", "En jouant", "Parallèlement à",
+                            "Malgré", "En réponse à", "En réaction à", "Répliquant à", "En phase de montée en charge d#", "En réponse à", "En phase de montée en charge d#", "Grâce à",
+                            "Perpendiculairement à", "Indépendamment d#", "Corrélativement à", "Tangentiellement à", "Concomitamment à", "Par l'implémentation d#"
+                    },
+                    {"la problématique", "l'opportunité", "la mondialisation", "une globalisation", "la bulle", "la culture", "la synergie", "l'efficience", "la compétitivité",
+                            "une dynamique", "une flexibilité", "la revalorisation", "la crise", "la stagflation", "la convergence", "une réactivité", "une forte croissance",
+                            "la gouvernance", "la prestation", "l'offre", "l'expertise", "une forte suppléance", "une proposition de valeur", "une supply chain", "la démarche",
+                            "une plate-forme", "une approche", "la mutation", "l'adaptabilité", "la pluralité", "une solution", "la multiplicité", "la transversalité",
+                            "la mutualisation"
+                    },
+                    {"opérationnelle,", "quantitative,", "des expertises,", "porteuse,", "autoporteuse,", "collaborative,", "accélérationnelle,", "durable,", "conjoncturelle,",
+                            "institutionnelle,", "managériale,", "multi-directionnelle,", "communicationnelle,", "organisationnelle,", "entrepreneuriale,", "motivationnelle,",
+                            "soutenable,", "qualitative,", "stratégique,", "interne / externe,", "online / offline,", "situationnelle,", "référentielle,", "institutionnelle,",
+                            "globalisante,", "solutionnelle,", "opérationnelle,", "compétitionnelle,", "gagnant-gagnant,", "interventionnelle,", "sectorielle,", "transversale,",
+                            "des prestations,", "ambitionnelle,", "des sous-traitances,", "corporate,", "asymétrique,", "budget", "référentielle"
+                    },
+                    {"les cadres doivent ", "les personnels concernés doivent ", "les personnels concernés doivent ", "les N+1 doivent ", "le challenge consiste à",
+                            "le défi est d#", "il faut", "on doit", "il faut", "on doit", "il faut", "on doit", "il faut", "on doit", "chacun doit", "les fournisseurs vont",
+                            "les managers décident d#", "les acteurs du secteur vont", "les responsables peuvent", "la conjecture peut", "il est impératif d#",
+                            "un meilleur relationnel permet d#", "une ambition s'impose :", "mieux vaut", "le marché exige d#", "le marché impose d#", "il s'agit d#",
+                            "voici notre ambition :", "une réaction s'impose :", "voici notre conviction :", "les bonnes pratiques consistent à", "chaque entité peut",
+                            "les décideurs doivent", "il est requis d#", "les sociétés s'engagent à", "les décisionnaires veulent", "les experts doivent",
+                            "la conjecture pousse les analystes à", "les structures vont", "il faut un signal fort :", "la réponse est simple :", "il faut créer des occasions :",
+                            "la réponse est simple :", "l'objectif est d#", "l'objectif est évident :", "l'ambition est claire :", "chaque entité doit", "une seule solution :",
+                            "il y a nécessité d#", "il est porteur d#", "il faut rapidement", "il faut muscler son jeu : ", "la réponse client permet d#",
+                            "la connaissance des paramètres permet d#", "les éléments moteurs vont"
+                    },
+                    {"optimiser", "faire interagir", "capitaliser sur", "prendre en considération", "anticiper ", "intervenir dans", "imaginer", "solutionner", "piloter",
+                            "dématerialiser", "délocaliser", "coacher", "investir sur", "valoriser", "flexibiliser", "externaliser", "auditer", "sous-traiter", "revaloriser", "habiliter",
+                            "requalifier", "revitaliser", "solutionner", "démarcher", "budgetiser", "performer", "incentiver", "monitorer", "segmenter", "désenclaver", "décloisonner",
+                            "déployer", "réinventer", "flexibiliser", "optimiser", "piloter", "révolutionner", "gagner", "réussir", "connecter", "faire converger", "planifier",
+                            "innover sur", "monétiser", "concrétiser", "impacter", "transformer", "prioriser", "chiffrer", "initiativer", "budgetiser", "rénover", "dominer"
+                    },
+                    {"solutions", "issues", "axes mobilisateurs", "problématiques", "cultures", "alternatives", "interactions", "issues", "expertises", "focus", "démarches",
+                            "alternatives", "thématiques", "atouts", "ressources", "applications", "applicatifs", "architectures", "prestations", "process", "performances", "bénéfices",
+                            "facteurs", "paramètres", "capitaux", "sourcing", "émergences", "kick-off", "recapitalisations", "produits", "frameworks", "focus", "challenges", "décisionnels",
+                            "ouvertures", "fonctionnels", "opportunités", "potentiels", "territoires", "leaderships", "applicatifs", "prestations", "plans sociaux", "wordings",
+                            "harcèlements", "monitorings", "montées en puissance", "montées en régime", "facteurs", "harcèlements", "référents", "éléments", "nécessités",
+                            "partenariats", "retours d'expérience", "dispositifs", "potentiels", "intervenants", "directives", "directives", "perspectives", "contenus", "implications",
+                            "kilo-instructions", "supports", "potentiels", "mind mappings", "thématiques", "workshops", "cœurs de mission", "managements", "orientations", "cibles"
+                    },
+                    {"métier", "prospect", "customer", "back-office", "client", "envisageables", "à l'international", "secteur", "client", "vente", "projet", "partenaires", "durables",
+                            "à forte valeur ajoutée", "soutenables", "chiffrables", "évaluables", "force de vente", "corporate", "fournisseurs", "bénéfices", "convivialité",
+                            "compétitivité", "investissement", "achat", "performance", "à forte valeur ajoutée", "dès l'horizon 2020", "à fort rendement", "qualité", "logistiques",
+                            "développement", "risque", "terrain", "mobilité", "praticables", "infrastructures", "organisation", "projet", "recevables", "investissement",
+                            "conseil", "conseil", "sources", "imputables", "intermédiaires", "leadership", "pragmatiques", "framework", "coordination", "d'excellence", "stratégie",
+                            "de confiance", "crédibilité", "compétitivité", "méthodologie", "mobilité", "efficacité", "efficacité"
+                    }
+            };
+
+            String[] selectedPipos = new String[pipo.length];
+            int i = 0;
+            for (String[] pipoLine : pipo) {
+                selectedPipos[i++] = pipoLine[(int) (Math.random() * pipoLine.length)];
+            }
+
+            for (i = 0; i < selectedPipos.length - 1; i++) {
+                if (selectedPipos[i].endsWith("#")) {
+                    if (selectedPipos[i + 1].startsWith("a")
+                            || selectedPipos[i + 1].startsWith("e")
+                            || selectedPipos[i + 1].startsWith("i")
+                            || selectedPipos[i + 1].startsWith("o")
+                            || selectedPipos[i + 1].startsWith("u")
+                            || selectedPipos[i + 1].startsWith("y")) {
+                        selectedPipos[i] = selectedPipos[i].substring(0, selectedPipos[i].length() - 1) + "'";
+                    } else {
+                        selectedPipos[i] = selectedPipos[i].substring(0, selectedPipos[i].length() - 1) + "e ";
+                    }
+                } else {
+                    selectedPipos[i] += " ";
+                }
+            }
+
+            String phrase = (selectedPipos[0] + " "
+                    + selectedPipos[1] + " "
+                    + selectedPipos[2] + " "
+                    + selectedPipos[3] + " "
+                    + selectedPipos[4] + " les "
+                    + selectedPipos[5] + " "
+                    + selectedPipos[6] + ".");
+
+            while (phrase.contains("  "))
+                phrase = phrase.replace("  ", " ");
+            phrase = phrase.replace("' ", "'");
+            phrase = phrase.replace(" .", ".");
+
+            phrase = "_" + phrase + "_";
+
+            if (phrases.isEmpty()) phrases = phrase;
+            else phrases += "\n" + phrase;
+        }
+
+        if (!supMessage.isEmpty()) {
+            phrases += "\n" + supMessage;
+        }
+
+        JSONObject outputJSON = new JSONObject();
+        outputJSON.put("response_type", "in_channel");
+        outputJSON.put("text", phrases);
+        return outputJSON.toString();
+    }
+
+    private String commandWeekend(String userName) {
+        String endingPhrase = "*C'est le week-end \\o/*";
+        String notFinishedPhrase = "@" + userName + ", le week-end est dans ";
+
+        // weekend is at 6pm on Friday. Go back if today is Saturday or Sunday.
+        ZonedDateTime zdt = ZonedDateTime.now().withZoneSameInstant(ZoneId.of("Europe/Paris"));
+        while (zdt.getDayOfWeek() != DayOfWeek.FRIDAY) {
+            if (Arrays.asList(DayOfWeek.SATURDAY, DayOfWeek.SUNDAY).contains(zdt.getDayOfWeek())) {
+                zdt = zdt.minusDays(1);
+            } else {
+                zdt = zdt.plusDays(1);
+            }
+        }
+        zdt = zdt.withHour(18).withMinute(0).withSecond(0).withNano(0);
+
+        long time = zdt.toInstant().toEpochMilli();
+        long now = System.currentTimeMillis();
+
+        long seconds = ((time - now) / (1000));
+        long minutes = seconds / 60;
+        seconds %= 60;
+
+        long hours = minutes / 60;
+        minutes %= 60;
+
+        long days = hours / 24;
+        hours %= 24;
+
+        JSONObject outputJSON = new JSONObject();
+        String phrase;
+        if (time - now < 0) {
+            phrase = endingPhrase;
+        } else {
+            phrase = notFinishedPhrase
+                    + (days == 0 ? "" : days + " jour(s), ") + hours + " heure(s), " + minutes + " minute(s) et " + seconds + " seconde(s) !";
+        }
+
+        outputJSON.put("response_type", "in_channel");
+        outputJSON.put("text", phrase);
+        return outputJSON.toString();
     }
 
     /**
