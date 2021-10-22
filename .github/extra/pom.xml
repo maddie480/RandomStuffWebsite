@@ -13,7 +13,7 @@
     <artifactId>quest-community-bot-website</artifactId>
 
     <properties>
-        <appengine.maven.plugin.version>1.9.71</appengine.maven.plugin.version>
+        <appengine.maven.plugin.version>1.9.84</appengine.maven.plugin.version>
         <appengine.api.sdk.version>1.9.71</appengine.api.sdk.version>
         <project.build.sourceEncoding>windows-1252</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
