@@ -28,6 +28,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
+import static com.max480.randomstuff.gae.ConnectionUtils.openStreamWithTimeout;
+
 /**
  * A status page for the Update Checker, that determines the status by reading the Google Cloud Logging logs
  * of the backend server.
@@ -61,7 +63,7 @@ public class UpdateCheckerStatusService extends HttpServlet {
         );
 
         // check mod count by just downloading the mod database and counting objects in it.
-        try (InputStream is = new URL("https://max480-random-stuff.appspot.com/celeste/everest_update.yaml").openStream()) {
+        try (InputStream is = openStreamWithTimeout(new URL("https://max480-random-stuff.appspot.com/celeste/everest_update.yaml"))) {
             Map<Object, Object> mods = new Yaml().load(is);
             request.setAttribute("modCount", mods.size());
         }

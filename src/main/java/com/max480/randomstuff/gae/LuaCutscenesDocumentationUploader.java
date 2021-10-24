@@ -20,6 +20,8 @@ import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import static com.max480.randomstuff.gae.ConnectionUtils.openStreamWithTimeout;
+
 /**
  * This service is called when Lua Cutscenes got updated, and mirrors the docs included in the mod zip
  * at https://storage.googleapis.com/lua-cutscenes-documentation/index.html.
@@ -35,7 +37,7 @@ public class LuaCutscenesDocumentationUploader extends HttpServlet {
             // search for the Lua Cutscenes download URL in the mod updater database.
             // (we want the mirror so that we don't impact download count... and because it tends to be more stable.)
             String luaCutscenesDownloadUrl;
-            try (InputStream is = new URL("https://max480-random-stuff.appspot.com/celeste/everest_update.yaml").openStream()) {
+            try (InputStream is = openStreamWithTimeout(new URL("https://max480-random-stuff.appspot.com/celeste/everest_update.yaml"))) {
                 Map<String, Map<String, Object>> db = new Yaml().load(is);
                 luaCutscenesDownloadUrl = db.get("LuaCutscenes").get("URL").toString();
             }
@@ -49,6 +51,8 @@ public class LuaCutscenesDocumentationUploader extends HttpServlet {
             // download Lua Cutscenes and go through its files
             logger.info("Downloading Lua Cutscenes from " + luaCutscenesDownloadUrl + "...");
             HttpURLConnection connection = (HttpURLConnection) new URL(luaCutscenesDownloadUrl).openConnection();
+            connection.setConnectTimeout(10000);
+            connection.setReadTimeout(30000);
             connection.setRequestProperty("User-Agent", "max480-random-stuff/1.0.0"); // the mirror hates Java 8 for some reason.
             try (ZipInputStream zip = new ZipInputStream(connection.getInputStream())) {
                 ZipEntry entry;

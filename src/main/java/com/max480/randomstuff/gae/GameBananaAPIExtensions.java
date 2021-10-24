@@ -37,6 +37,8 @@ public class GameBananaAPIExtensions extends HttpServlet {
 
         HttpURLConnection connection = (HttpURLConnection) new URL("https://gamebanana.com/apiv6/Mod/ByCategory?_csvProperties=_sName,_sProfileUrl,_aPreviewMedia," + pubDateField + "&"
                 + request.getQueryString()).openConnection();
+        connection.setConnectTimeout(10000);
+        connection.setReadTimeout(30000);
 
         if (connection.getResponseCode() != 200) {
             // pass the answer through

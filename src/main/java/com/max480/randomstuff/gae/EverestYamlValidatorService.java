@@ -21,6 +21,7 @@ import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import static com.max480.randomstuff.gae.ConnectionUtils.openStreamWithTimeout;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
@@ -133,7 +134,7 @@ public class EverestYamlValidatorService extends HttpServlet {
 
             if (metadatas != null) {
                 // load the mod database to check if dependencies exist there.
-                Map<String, Object> databaseUnparsed = new Yaml().load(new java.net.URL("https://max480-random-stuff.appspot.com/celeste/everest_update.yaml").openStream());
+                Map<String, Object> databaseUnparsed = new Yaml().load(openStreamWithTimeout(new URL("https://max480-random-stuff.appspot.com/celeste/everest_update.yaml")));
                 List<EverestModuleMetadata> database = databaseUnparsed
                         .entrySet().stream()
                         .map(entry -> {
@@ -253,6 +254,8 @@ public class EverestYamlValidatorService extends HttpServlet {
 
     private InputStream authenticatedGitHubRequest(String url) throws IOException {
         HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+        connection.setConnectTimeout(10000);
+        connection.setReadTimeout(30000);
         connection.setRequestProperty("Authorization", "Basic " + Base64.getEncoder().encodeToString(
                 (SecretConstants.GITHUB_USERNAME + ":" + SecretConstants.GITHUB_PERSONAL_ACCESS_TOKEN).getBytes(UTF_8)));
         return connection.getInputStream();
@@ -315,7 +318,7 @@ public class EverestYamlValidatorService extends HttpServlet {
      * Checks Azure to get the latest Everest version.
      */
     private static int getEverestVersion() throws IOException {
-        JSONObject object = new JSONObject(IOUtils.toString(new URL("https://dev.azure.com/EverestAPI/Everest/_apis/build/builds?api-version=5.0").openStream(), UTF_8));
+        JSONObject object = new JSONObject(IOUtils.toString(openStreamWithTimeout(new URL("https://dev.azure.com/EverestAPI/Everest/_apis/build/builds?api-version=5.0")), UTF_8));
         JSONArray versionList = object.getJSONArray("value");
         int latest = 0;
         for (Object version : versionList) {

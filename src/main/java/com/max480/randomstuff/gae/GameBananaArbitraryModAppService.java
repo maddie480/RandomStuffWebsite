@@ -23,6 +23,7 @@ import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import static com.max480.randomstuff.gae.ConnectionUtils.openStreamWithTimeout;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 @WebServlet(name = "GameBananaArbitraryModAppService", urlPatterns = {"/gamebanana/arbitrary-mod-app",
@@ -140,8 +141,8 @@ public class GameBananaArbitraryModAppService extends HttpServlet {
     }
 
     private JSONObject queryModById(String modId) {
-        try (InputStream is = new URL("https://gamebanana.com/apiv6/Mod/" + modId +
-                "?_csvProperties=_sProfileUrl,_sName,_aPreviewMedia,_tsDateAdded,_tsDateUpdated,_aGame,_aSubmitter,_bIsWithheld,_bIsTrashed,_bIsPrivate").openStream()) {
+        try (InputStream is = openStreamWithTimeout(new URL("https://gamebanana.com/apiv6/Mod/" + modId +
+                "?_csvProperties=_sProfileUrl,_sName,_aPreviewMedia,_tsDateAdded,_tsDateUpdated,_aGame,_aSubmitter,_bIsWithheld,_bIsTrashed,_bIsPrivate"))) {
             return new JSONObject(IOUtils.toString(is, UTF_8));
         } catch (IOException e) {
             logger.severe("Could not retrieve mod by ID!" + e.toString());
@@ -349,4 +350,5 @@ public class GameBananaArbitraryModAppService extends HttpServlet {
             }
         }
     }
+
 }

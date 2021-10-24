@@ -38,6 +38,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static com.max480.randomstuff.gae.ConnectionUtils.openStreamWithTimeout;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
@@ -83,7 +84,7 @@ public class MattermostService extends HttpServlet {
         PlanningExploit exploit = new PlanningExploit();
 
         // the "exploit" planning is stored in iCalendar format and has someone as "principal" and one as "backup" every week.
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(new URL(SecretConstants.EXPLOIT_PLANNING_URL).openStream()))) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(openStreamWithTimeout(new URL(SecretConstants.EXPLOIT_PLANNING_URL))))) {
             // date => name
             TreeMap<String, String> principals = new TreeMap<>();
             TreeMap<String, String> backups = new TreeMap<>();
@@ -979,6 +980,8 @@ public class MattermostService extends HttpServlet {
         try {
             // we need to spoof the user agent because a lot of things (CloudFlare?) hate Java 8 for some reason
             HttpURLConnection connection = (HttpURLConnection) new URL("https://disease.sh/v2/countries?sort=cases").openConnection();
+            connection.setConnectTimeout(10000);
+            connection.setReadTimeout(30000);
             connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:74.0) Gecko/20100101 Firefox/74.0");
             connection.connect();
 
@@ -1086,8 +1089,8 @@ public class MattermostService extends HttpServlet {
 
         List<VideoTendance> tendancesYoutube = new ArrayList<>();
 
-        JSONObject youtubeResponse = new JSONObject(IOUtils.toString(new URL("https://www.googleapis.com/youtube/v3/videos?hl=fr&maxResults=50" +
-                "&regionCode=FR&chart=mostPopular&part=snippet,statistics&key=" + SecretConstants.YOUTUBE_API_KEY).openStream(), UTF_8));
+        JSONObject youtubeResponse = new JSONObject(IOUtils.toString(openStreamWithTimeout(new URL("https://www.googleapis.com/youtube/v3/videos?hl=fr&maxResults=50" +
+                "&regionCode=FR&chart=mostPopular&part=snippet,statistics&key=" + SecretConstants.YOUTUBE_API_KEY)), UTF_8));
 
         for (Object video : youtubeResponse.getJSONArray("items")) {
             try {
@@ -1238,7 +1241,7 @@ public class MattermostService extends HttpServlet {
         final String sourceCode;
 
         try {
-            sourceCode = IOUtils.toString(new URL("https://www.monkeyuser.com/").openStream(), UTF_8);
+            sourceCode = IOUtils.toString(openStreamWithTimeout(new URL("https://www.monkeyuser.com/")), UTF_8);
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Problem with /monkeyuser: " + e);
 
@@ -1385,7 +1388,7 @@ public class MattermostService extends HttpServlet {
         try {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("response_type", "in_channel");
-            jsonObject.put("text", "`" + IOUtils.toString(new URL("https://www.luc-damas.fr/pipotron/fail_geek/"), UTF_8) + "`");
+            jsonObject.put("text", "`" + IOUtils.toString(openStreamWithTimeout(new URL("https://www.luc-damas.fr/pipotron/fail_geek/")), UTF_8) + "`");
             return jsonObject.toString();
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Problem while getting info pipo: " + e);
