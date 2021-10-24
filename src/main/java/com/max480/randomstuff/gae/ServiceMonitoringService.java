@@ -1,5 +1,8 @@
 package com.max480.randomstuff.gae;
 
+import com.google.cloud.logging.LogEntry;
+import com.google.cloud.logging.Logging;
+import com.google.cloud.logging.LoggingOptions;
 import com.google.cloud.monitoring.v3.MetricServiceClient;
 import com.google.common.collect.ImmutableMap;
 import com.google.monitoring.v3.ListTimeSeriesRequest;
@@ -15,8 +18,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 /**
  * An internal API that gives the backend ("bot") and frontend ("website") uptimes, and the number of requests
@@ -24,6 +33,9 @@ import java.util.TreeMap;
  */
 @WebServlet(name = "ServiceMonitoring", urlPatterns = {"/service-monitoring"})
 public class ServiceMonitoringService extends HttpServlet {
+    private static final Logging logging = LoggingOptions.getDefaultInstance().toBuilder().setProjectId("max480-random-stuff").build().getService();
+    private static final ExecutorService executor = Executors.newFixedThreadPool(2);
+
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         if (!("key=" + SecretConstants.SERVICE_MONITORING_SECRET).equals(request.getQueryString())) {
@@ -31,12 +43,34 @@ public class ServiceMonitoringService extends HttpServlet {
             return;
         }
 
+        Future<Integer> gamesBotUsage = countLogEntriesAsync("protoPayload.resource=\"/discord/games-bot\"");
+        Future<Integer> timezoneBotUsage = countLogEntriesAsync("labels.loggerName=\"com.max480.discord.randombots.TimezoneBot\" and jsonPayload.message =~ \"^New command: .*\"");
+
         try (MetricServiceClient client = MetricServiceClient.create()) {
+            response.setContentType("text/yaml");
             response.getWriter().write(new Yaml().dump(ImmutableMap.of(
                     "uptimePercent", getUptimes(client),
-                    "responseCountPerCode", getResponseCount(client)
+                    "responseCountPerCode", getResponseCount(client),
+                    "gamesBotUsage", gamesBotUsage.get(),
+                    "timezoneBotUsage", timezoneBotUsage.get()
             )));
+        } catch (ExecutionException | InterruptedException e) {
+            throw new IOException(e);
         }
+    }
+
+    private Future<Integer> countLogEntriesAsync(String filter) {
+        return executor.submit(() -> {
+            int count = 0;
+            for (LogEntry ignored : logging.listLogEntries(
+                    Logging.EntryListOption.sortOrder(Logging.SortingField.TIMESTAMP, Logging.SortingOrder.DESCENDING),
+                    Logging.EntryListOption.filter(filter + " and timestamp >= \"" + ZonedDateTime.now().minusDays(1).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME) + "\""),
+                    Logging.EntryListOption.pageSize(1000)
+            ).iterateAll()) {
+                count++;
+            }
+            return count;
+        });
     }
 
     private Map<String, Long> getResponseCount(MetricServiceClient client) {

@@ -35,7 +35,7 @@ import java.util.concurrent.ExecutionException;
 @WebServlet(name = "UpdateCheckerStatus", urlPatterns = {"/celeste/update-checker-status"})
 @MultipartConfig
 public class UpdateCheckerStatusService extends HttpServlet {
-    private static Logging logging = LoggingOptions.getDefaultInstance().getService();
+    private static final Logging logging = LoggingOptions.getDefaultInstance().toBuilder().setProjectId("max480-random-stuff").build().getService();
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
