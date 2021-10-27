@@ -44,19 +44,19 @@
     </p>
 
     <ul>
-        <li><code>/detect_timezone</code> - gives a link to <a href="/detect-timezone.html" target="_blank">a page</a> to figure out your timezone</li>
+        <li><code>/detect-timezone</code> - gives a link to <a href="/detect-timezone.html" target="_blank">a page</a> to figure out your timezone</li>
         <li>
             <code>/timezone [tz_name]</code> - sets your timezone role. You can use the following formats:
             <ul>
-                <li><a href="https://en.wikipedia.org/wiki/Tz_database" target="_blank">tz database</a> time zones, like <code>Europe/Paris</code>: that's the one the <code>/detect_timezone</code> command gives you, and it will make your role change automatically when you switch between summer and winter time.</li>
+                <li><a href="https://en.wikipedia.org/wiki/Tz_database" target="_blank">tz database</a> time zones, like <code>Europe/Paris</code>: that's the one the <code>/detect-timezone</code> command gives you, and it will make your role change automatically when you switch between summer and winter time.</li>
                 <li>timezone names, for example <code>PST</code> or <code>Pacific Standard Time</code></li>
                 <li>UTC offsets, for example <code>UTC+3</code></li>
             </ul>
         </li>
-        <li><code>/remove_timezone</code> - removes your timezone role</li>
-        <li><code>/discord_timestamp [date_time]</code> - gives a <a href="https://discord.com/developers/docs/reference#message-formatting-timestamp-styles" target="_blank">Discord timestamp</a>, to tell a date/time to other people regardless of their timezone</li>
-        <li><code>/time_for [member]</code> - gives the time it is now for another member of the server, if they have a timezone role</li>
-        <li><code>/toggle_times</code> - sets whether timezone roles should show the time it is in the timezone (for example <code>Timezone UTC+01:00 (2pm)</code>) or not (for example <code>Timezone UTC+01:00</code>). Enabling this causes "role update" events to be logged hourly. This is disabled by default, and only members with the Manage Server or Admin permission can enable it.</li>
+        <li><code>/remove-timezone</code> - removes your timezone role</li>
+        <li><code>/discord-timestamp [date_time]</code> - gives a <a href="https://discord.com/developers/docs/reference#message-formatting-timestamp-styles" target="_blank">Discord timestamp</a>, to tell a date/time to other people regardless of their timezone</li>
+        <li><code>/time-for [member]</code> - gives the time it is now for another member of the server, if they have a timezone role</li>
+        <li><code>/toggle-times</code> - sets whether timezone roles should show the time it is in the timezone (for example <code>Timezone UTC+01:00 (2pm)</code>) or not (for example <code>Timezone UTC+01:00</code>). Enabling this causes "role update" events to be logged hourly. This is disabled by default, and only members with the Manage Server or Admin permission can enable it.</li>
     </ul>
 
     <p>
@@ -73,13 +73,13 @@
             <p class="lighttheme"><img src="/img/example_timezone_bot_lighttheme.png"></p>
             <p class="darktheme"><img src="/img/example_timezone_bot.png"></p>
 
-            <p><b>/time_for usage:</b></p>
+            <p><b>/time-for usage:</b></p>
             <p class="lighttheme"><img src="/img/time_for_light.png"></p>
             <p class="darktheme"><img src="/img/time_for_dark.png"></p>
         </div>
 
         <div class="col-md-6 col-xs-12">
-            <b class="gametitle">/discord_timestamp usage:</b>
+            <b class="gametitle">/discord-timestamp usage:</b>
             <p class="lighttheme"><img src="/img/discord_timestamp_light.png"></p>
             <p class="darktheme"><img src="/img/discord_timestamp_dark.png"></p>
         </div>
@@ -91,13 +91,13 @@
 
     <div class="row">
         <div class="col-md-6 col-xs-12">
-            <b class="gametitle">If /toggle_times is enabled:</b>
+            <b class="gametitle">If /toggle-times is enabled:</b>
             <p class="lighttheme"><img src="/img/timezone_role_with_times_lighttheme.png"></p>
             <p class="darktheme"><img src="/img/timezone_role_with_times.png"></p>
         </div>
 
         <div class="col-md-6 col-xs-12">
-            <b class="gametitle">If /toggle_times is disabled:</b>
+            <b class="gametitle">If /toggle-times is disabled:</b>
             <p class="lighttheme"><img src="/img/timezone_role_no_time_lighttheme.png"></p>
             <p class="darktheme"><img src="/img/timezone_role_no_time.png"></p>
         </div>
