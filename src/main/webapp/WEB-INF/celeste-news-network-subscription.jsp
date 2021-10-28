@@ -35,7 +35,8 @@
             <a href="https://max480-random-stuff.herokuapp.com/banana-mirror-browser">Banana&nbsp;Mirror&nbsp;Browser</a> <span class="sep break">|</span>
             <a href="/celeste/font-generator">Font&nbsp;Generator</a> <span class="sep">|</span>
             <a href="https://max480-random-stuff.herokuapp.com/wipe-converter">Wipe&nbsp;Converter</a> <span class="sep">|</span>
-            <a href="/discord-bots.html">Discord&nbsp;Bots</a>
+            <a href="/discord-bots.html">Discord&nbsp;Bots</a> <span class="sep">|</span>
+            <a href="/celeste/news-network-subscription" class="active">#celeste_news&nbsp;Subscription</a>
         </div>
 
         <h1>#celeste_news_network subscription service</h1>
