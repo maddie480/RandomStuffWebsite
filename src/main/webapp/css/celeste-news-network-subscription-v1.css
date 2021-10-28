@@ -1,0 +1,9 @@
+input[type="submit"] {
+    margin-bottom: 20px;
+}
+
+@media(max-width: 450px) {
+    h1 {
+        font-size: 1.8em;
+    }
+}

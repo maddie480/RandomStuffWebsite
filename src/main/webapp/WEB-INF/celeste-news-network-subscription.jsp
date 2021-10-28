@@ -24,6 +24,7 @@
         crossorigin="anonymous">
 
     <link rel="stylesheet" href="/css/common-v7.css">
+    <link rel="stylesheet" href="/css/celeste-news-network-subscription-v1.css">
 </head>
 
 <body>
@@ -94,7 +95,6 @@
 
             <input type="submit" class="btn btn-success" name="action" value="Subscribe">
             <input type="submit" class="btn btn-danger" name="action" value="Unsubscribe">
-            <br/>
         </form>
     </div>
 </body>
