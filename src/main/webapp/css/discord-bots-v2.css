@@ -59,3 +59,17 @@ img {
     display: block;
     margin-bottom: 15px;
 }
+
+.big-badge {
+    margin-left: 10px;
+}
+@media(max-width: 499px) {
+    .big-badge {
+        display: none;
+    }
+}
+@media(min-width: 500px) {
+    .small-badge {
+        display: none;
+    }
+}

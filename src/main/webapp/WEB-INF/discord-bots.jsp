@@ -1,3 +1,8 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+
+<%@page session="false"%>
+
 <!DOCTYPE html>
 
 <html lang="en">
@@ -16,7 +21,7 @@
           crossorigin="anonymous">
 
     <link rel="stylesheet" href="/css/common-v7.css">
-    <link rel="stylesheet" href="/css/discord-bots-v1.css">
+    <link rel="stylesheet" href="/css/discord-bots-v2.css">
 </head>
 
 <body>
@@ -28,7 +33,7 @@
         <a href="https://max480-random-stuff.herokuapp.com/banana-mirror-browser">Banana&nbsp;Mirror&nbsp;Browser</a> <span class="sep break">|</span>
         <a href="/celeste/font-generator">Font&nbsp;Generator</a> <span class="sep">|</span>
         <a href="https://max480-random-stuff.herokuapp.com/wipe-converter">Wipe&nbsp;Converter</a> <span class="sep">|</span>
-        <a href="/discord-bots.html" class="active">Discord&nbsp;Bots</a> <span class="sep">|</span>
+        <a href="/discord-bots" class="active">Discord&nbsp;Bots</a> <span class="sep">|</span>
         <a href="/celeste/news-network-subscription">#celeste_news&nbsp;Subscription</a>
     </div>
 
@@ -38,7 +43,21 @@
         If you need support on those bots or want to try them out, you can <a href="https://discord.gg/59ztc8QZQ7">join the bot testing server</a>!
     </div>
 
-    <h1 class="botname" id="timezone-bot"><img src="/img/timezone-bot-logo.png" class="botlogo"> Timezone Bot</h1>
+    <h1 class="botname" id="timezone-bot">
+        <img src="/img/timezone-bot-logo.png" class="botlogo"> Timezone Bot
+
+        <span class="badge badge-secondary big-badge">
+            <%= request.getAttribute("timezoneBotServerCount") %>
+            server<%= ((int) request.getAttribute("timezoneBotServerCount")) == 1 ? "" : "s" %>
+        </span>
+    </h1>
+
+    <p class="small-badge">
+        <span class="badge badge-secondary">
+            <%= request.getAttribute("timezoneBotServerCount") %>
+            server<%= ((int) request.getAttribute("timezoneBotServerCount")) == 1 ? "" : "s" %>
+        </span>
+    </p>
 
     <p>
         This bot allows server members to grab timezone roles on your server, using slash commands. Here is the list of commands:
@@ -106,7 +125,21 @@
 
     <a class="btn btn-primary" href="https://discord.com/oauth2/authorize?client_id=806514800045064213&scope=bot%20applications.commands&permissions=268435456" target="_blank">Invite</a>
 
-    <h1 class="botname margin" id="mod-structure-verifier"><img src="/img/mod-structure-verifier-logo.png" class="botlogo"> Mod Structure Verifier</h1>
+    <h1 class="botname margin" id="mod-structure-verifier">
+        <img src="/img/mod-structure-verifier-logo.png" class="botlogo"> Mod Structure Verifier
+
+        <span class="badge badge-secondary big-badge">
+            <%= request.getAttribute("modStructureVerifierServerCount") %>
+            server<%= ((int) request.getAttribute("modStructureVerifierServerCount")) == 1 ? "" : "s" %>
+        </span>
+    </h1>
+
+    <p class="small-badge">
+        <span class="badge badge-secondary">
+            <%= request.getAttribute("modStructureVerifierServerCount") %>
+            server<%= ((int) request.getAttribute("modStructureVerifierServerCount")) == 1 ? "" : "s" %>
+        </span>
+    </p>
 
     <p>
         This is a bot that downloads zips from Discord attachments or Google Drive links posted in a specific channel,
@@ -160,7 +193,21 @@
 
     <a class="btn btn-primary" href="https://discord.com/oauth2/authorize?client_id=809572233953542154&scope=bot&permissions=19520" target="_blank">Invite</a>
 
-    <h1 class="botname margin" id="games-bot"><img src="/img/games-bot-logo.png" class="botlogo"> Games Bot</h1>
+    <h1 class="botname margin" id="games-bot">
+        <img src="/img/games-bot-logo.png" class="botlogo"> Games Bot
+
+        <span class="badge badge-secondary big-badge">
+            <%= request.getAttribute("gamesBotServerCount") %>
+            server<%= ((int) request.getAttribute("gamesBotServerCount")) == 1 ? "" : "s" %>
+        </span>
+    </h1>
+
+    <p class="small-badge">
+        <span class="badge badge-secondary">
+            <%= request.getAttribute("gamesBotServerCount") %>
+            server<%= ((int) request.getAttribute("gamesBotServerCount")) == 1 ? "" : "s" %>
+        </span>
+    </p>
 
     <p>
         A bot that allows you to play several 1- or 2-player games using slash commands and Discord interactions.
