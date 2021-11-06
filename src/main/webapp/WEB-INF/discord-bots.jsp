@@ -11,9 +11,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="author" content="max480">
-    <meta name="description" content="Read more about the Mod Structure Verifier and the Timezone Bot here.">
+    <meta name="description" content="Read more about the Mod Structure Verifier, the Timezone Bot and the Games Bot here.">
     <meta property="og:title" content="Discord Bots">
-    <meta property="og:description" content="Read more about the Mod Structure Verifier and the Timezone Bot here.">
+    <meta property="og:description" content="Read more about the Mod Structure Verifier, the Timezone Bot and the Games Bot here.">
 
     <link rel="stylesheet"
           href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
@@ -21,7 +21,7 @@
           crossorigin="anonymous">
 
     <link rel="stylesheet" href="/css/common-v7.css">
-    <link rel="stylesheet" href="/css/discord-bots-v2.css">
+    <link rel="stylesheet" href="/css/discord-bots-v3.css">
 </head>
 
 <body>
