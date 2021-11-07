@@ -53,7 +53,7 @@ public class CelesteModSearchService extends HttpServlet {
 
     private final Analyzer analyzer = new StandardAnalyzer();
     private Directory modIndexDirectory = null;
-    private List<ModInfo> modDatabaseForSorting = Collections.emptyList();
+    private static List<ModInfo> modDatabaseForSorting = Collections.emptyList();
     private Map<Integer, String> modCategories;
 
     @Override
@@ -441,5 +441,12 @@ public class CelesteModSearchService extends HttpServlet {
 
         modIndexDirectory = FSDirectory.open(Paths.get("/tmp/mod_index"));
         logger.fine("Index directory contains " + modIndexDirectory.listAll().length + " files.");
+    }
+
+    public static ModInfo getModInfoByTypeAndId(String itemtype, int itemid) {
+        return modDatabaseForSorting.stream()
+                .filter(m -> m.type.equals(itemtype) && m.id == itemid)
+                .findFirst()
+                .orElse(null);
     }
 }
