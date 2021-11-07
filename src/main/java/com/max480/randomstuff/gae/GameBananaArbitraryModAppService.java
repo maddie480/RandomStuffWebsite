@@ -64,6 +64,7 @@ public class GameBananaArbitraryModAppService extends HttpServlet {
                 housekeep();
             } else {
                 // invalid secret
+                logger.warning("Invalid key");
                 response.setStatus(403);
             }
             return;

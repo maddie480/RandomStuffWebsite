@@ -49,6 +49,8 @@ public class SrcModUpdateNotificationService extends HttpServlet {
         if (("key=" + SecretConstants.SRC_MOD_LIST_KEY).equals(request.getQueryString())) {
             populateModList(request);
         } else {
+            logger.warning("Invalid key");
+            response.setStatus(403);
             request.setAttribute("access_forbidden", true);
         }
 
@@ -124,6 +126,8 @@ public class SrcModUpdateNotificationService extends HttpServlet {
 
             populateModList(request);
         } else {
+            logger.warning("Invalid key");
+            response.setStatus(403);
             request.setAttribute("access_forbidden", true);
         }
 

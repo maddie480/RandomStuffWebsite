@@ -202,11 +202,15 @@ public class MattermostService extends HttpServlet {
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        if (request.getRequestURI().equals("/mattermost/planning-reload")
-                && ("key=" + SecretConstants.CATALOG_RELOAD_SHARED_SECRET).equals(request.getQueryString())) {
-
-            cachedPlanningExploit = getExploit();
+        if (request.getRequestURI().equals("/mattermost/planning-reload")) {
+            if (("key=" + SecretConstants.CATALOG_RELOAD_SHARED_SECRET).equals(request.getQueryString())) {
+                cachedPlanningExploit = getExploit();
+            } else {
+                logger.warning("Invalid key");
+                response.setStatus(403);
+            }
         } else {
+            logger.warning("Route not found");
             response.setStatus(404);
         }
     }
@@ -443,6 +447,7 @@ public class MattermostService extends HttpServlet {
                 break;
             }
             default: {
+                logger.warning("Route not found");
                 response.setStatus(404);
                 break;
             }

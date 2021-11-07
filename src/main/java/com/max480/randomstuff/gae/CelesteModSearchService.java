@@ -72,6 +72,7 @@ public class CelesteModSearchService extends HttpServlet {
                 refreshModDatabase();
             } else {
                 // invalid secret
+                logger.warning("Invalid key");
                 response.setStatus(403);
             }
             return;
@@ -96,6 +97,7 @@ public class CelesteModSearchService extends HttpServlet {
             if (queryParam == null || queryParam.trim().isEmpty()) {
                 // the user didn't give any search!
                 response.setHeader("Content-Type", "text/plain");
+                logger.warning("Bad request");
                 response.setStatus(400);
                 response.getWriter().write("\"q\" query parameter expected");
             } else {
@@ -181,6 +183,7 @@ public class CelesteModSearchService extends HttpServlet {
             if (!Arrays.asList("latest", "likes", "views", "downloads").contains(sortParam)) {
                 // invalid sort!
                 response.setHeader("Content-Type", "text/plain");
+                logger.warning("Bad request");
                 response.setStatus(400);
                 response.getWriter().write("expected \"sort\" parameter with value \"latest\", \"likes\", \"views\" or \"downloads\"");
             } else {
@@ -341,6 +344,7 @@ public class CelesteModSearchService extends HttpServlet {
             if (imagePath == null) {
                 // no image path passed!
                 response.setHeader("Content-Type", "text/plain");
+                logger.warning("Bad request");
                 response.setStatus(400);
                 response.getWriter().write("expected \"src\" parameter");
             } else if ((!imagePath.startsWith("https://screenshots.gamebanana.com/") && !imagePath.startsWith("https://images.gamebanana.com/"))) {

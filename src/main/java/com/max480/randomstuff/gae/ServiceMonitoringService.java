@@ -26,6 +26,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.logging.Logger;
 
 /**
  * An internal API that gives the backend ("bot") and frontend ("website") uptimes, and the number of requests
@@ -33,12 +34,15 @@ import java.util.concurrent.Future;
  */
 @WebServlet(name = "ServiceMonitoring", urlPatterns = {"/service-monitoring"})
 public class ServiceMonitoringService extends HttpServlet {
+    private final Logger logger = Logger.getLogger("ServiceMonitoringService");
+
     private static final Logging logging = LoggingOptions.getDefaultInstance().toBuilder().setProjectId("max480-random-stuff").build().getService();
     private static final ExecutorService executor = Executors.newFixedThreadPool(2);
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         if (!("key=" + SecretConstants.SERVICE_MONITORING_SECRET).equals(request.getQueryString())) {
+            logger.warning("Invalid key");
             response.setStatus(403);
             return;
         }

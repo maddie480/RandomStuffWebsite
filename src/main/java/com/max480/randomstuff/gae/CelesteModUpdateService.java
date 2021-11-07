@@ -54,7 +54,8 @@ public class CelesteModUpdateService extends HttpServlet {
             response.setHeader("Content-Type", "text/yaml");
             IOUtils.write(everestYaml, response.getOutputStream());
         } else {
-            response.setStatus(404);
+            logger.warning("Invalid key");
+            response.setStatus(403);
         }
     }
 

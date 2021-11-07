@@ -47,6 +47,7 @@ public class HealthCheckService extends HttpServlet {
                 response.getWriter().write("KO");
             }
         } else {
+            logger.warning("Route not found");
             response.setStatus(404);
         }
     }

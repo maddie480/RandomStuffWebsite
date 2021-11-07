@@ -75,6 +75,7 @@ public class StyleRefreshService extends HttpServlet {
             response.getWriter().write(report);
         } else {
             // invalid secret
+            logger.warning("Invalid key");
             response.setStatus(403);
         }
     }

@@ -74,7 +74,8 @@ public class CelesteModCatalogService extends HttpServlet {
             }
             request.getRequestDispatcher("/WEB-INF/mod-catalog.jsp").forward(request, response);
         } else {
-            response.setStatus(404);
+            logger.warning("Invalid key");
+            response.setStatus(403);
         }
     }
 

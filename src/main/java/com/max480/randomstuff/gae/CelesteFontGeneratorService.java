@@ -78,6 +78,7 @@ public class CelesteFontGeneratorService extends HttpServlet {
         if (!ServletFileUpload.isMultipartContent(request)) {
             // if not, we stop here
             request.setAttribute("badrequest", true);
+            logger.warning("Bad request");
             response.setStatus(400);
         } else {
             DiskFileItemFactory factory = new DiskFileItemFactory();
@@ -128,6 +129,7 @@ public class CelesteFontGeneratorService extends HttpServlet {
 
                 // parameter missing, or font file name has illegal characters
                 request.setAttribute("badrequest", true);
+                logger.warning("Bad request");
                 response.setStatus(400);
             } else {
                 try {
