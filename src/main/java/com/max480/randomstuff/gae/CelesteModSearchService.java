@@ -53,6 +53,8 @@ public class CelesteModSearchService extends HttpServlet {
     private static List<ModInfo> modDatabaseForSorting = Collections.emptyList();
     private Map<Integer, String> modCategories;
 
+    private static final String modIndexDirectoryLock = "lock";
+
     @Override
     public void init() {
         try {
@@ -99,65 +101,67 @@ public class CelesteModSearchService extends HttpServlet {
                 response.getWriter().write("\"q\" query parameter expected");
             } else {
                 // let's prepare a request through Lucene.
-                try (DirectoryReader reader = DirectoryReader.open(modIndexDirectory)) {
-                    IndexSearcher searcher = new IndexSearcher(reader);
-                    Query query;
-                    try {
-                        // try parsing the query.
-                        query = new QueryParser("name", analyzer).parse(queryParam);
-                        logger.fine("Query we are going to run: " + query.toString());
-                    } catch (ParseException e) {
-                        // query could not be parsed! aaaaa
-                        // we will give up on trying to parse it and just interpret everything as search terms.
-                        logger.info("Query could not be parsed!");
-
-                        query = new QueryBuilder(analyzer).createBooleanQuery("name", queryParam);
-
-                        if (query == null) {
-                            // invalid request is invalid! (for example "*")
-                            logger.warning("Could not generate fallback request!");
-                            response.setHeader("Content-Type", "text/yaml");
-                            response.getWriter().write(new Yaml().dump(Collections.emptyList()));
-                            return;
-                        }
-
-                        logger.fine("Fallback query we are going to run: " + query.toString());
-                    }
-
-                    ScoreDoc[] hits = searcher.search(query, 20).scoreDocs;
-
-                    // convert the results to yaml
-                    List<Map<String, Object>> responseBody;
-                    responseBody = Arrays.stream(hits).map(hit -> {
+                synchronized (modIndexDirectoryLock) {
+                    try (DirectoryReader reader = DirectoryReader.open(modIndexDirectory)) {
+                        IndexSearcher searcher = new IndexSearcher(reader);
+                        Query query;
                         try {
-                            Document doc = searcher.doc(hit.doc);
-                            if (fullInfo) {
-                                return modDatabaseForSorting.stream()
-                                        .filter(m -> m.type.equals(doc.get("type")) && m.id == Integer.parseInt(doc.get("id")))
-                                        .findFirst().map(m -> m.fullInfo)
-                                        .orElseThrow(() -> new RuntimeException("Found mod that's not in the database!"));
-                            } else {
-                                Map<String, Object> result = new LinkedHashMap<>();
-                                result.put("itemtype", doc.get("type"));
-                                result.put("itemid", Integer.parseInt(doc.get("id")));
+                            // try parsing the query.
+                            query = new QueryParser("name", analyzer).parse(queryParam);
+                            logger.fine("Query we are going to run: " + query.toString());
+                        } catch (ParseException e) {
+                            // query could not be parsed! aaaaa
+                            // we will give up on trying to parse it and just interpret everything as search terms.
+                            logger.info("Query could not be parsed!");
 
-                                logger.fine("Result: " + doc.get("type") + " " + doc.get("id")
-                                        + " (" + doc.get("name") + ") with " + hit.score + " pt(s)");
-                                return result;
+                            query = new QueryBuilder(analyzer).createBooleanQuery("name", queryParam);
+
+                            if (query == null) {
+                                // invalid request is invalid! (for example "*")
+                                logger.warning("Could not generate fallback request!");
+                                response.setHeader("Content-Type", "text/yaml");
+                                response.getWriter().write(new Yaml().dump(Collections.emptyList()));
+                                return;
                             }
-                        } catch (IOException e) {
-                            // how would we have an I/O exception on a memory stream?
-                            throw new RuntimeException(e);
-                        }
-                    }).collect(Collectors.toList());
 
-                    // send out the response
-                    if (fullInfo) {
-                        response.setHeader("Content-Type", "application/json");
-                        response.getWriter().write(new JSONArray(responseBody).toString());
-                    } else {
-                        response.setHeader("Content-Type", "text/yaml");
-                        response.getWriter().write(new Yaml().dump(responseBody));
+                            logger.fine("Fallback query we are going to run: " + query.toString());
+                        }
+
+                        ScoreDoc[] hits = searcher.search(query, 20).scoreDocs;
+
+                        // convert the results to yaml
+                        List<Map<String, Object>> responseBody;
+                        responseBody = Arrays.stream(hits).map(hit -> {
+                            try {
+                                Document doc = searcher.doc(hit.doc);
+                                if (fullInfo) {
+                                    return modDatabaseForSorting.stream()
+                                            .filter(m -> m.type.equals(doc.get("type")) && m.id == Integer.parseInt(doc.get("id")))
+                                            .findFirst().map(m -> m.fullInfo)
+                                            .orElseThrow(() -> new RuntimeException("Found mod that's not in the database!"));
+                                } else {
+                                    Map<String, Object> result = new LinkedHashMap<>();
+                                    result.put("itemtype", doc.get("type"));
+                                    result.put("itemid", Integer.parseInt(doc.get("id")));
+
+                                    logger.fine("Result: " + doc.get("type") + " " + doc.get("id")
+                                            + " (" + doc.get("name") + ") with " + hit.score + " pt(s)");
+                                    return result;
+                                }
+                            } catch (IOException e) {
+                                // how would we have an I/O exception on a memory stream?
+                                throw new RuntimeException(e);
+                            }
+                        }).collect(Collectors.toList());
+
+                        // send out the response
+                        if (fullInfo) {
+                            response.setHeader("Content-Type", "application/json");
+                            response.getWriter().write(new JSONArray(responseBody).toString());
+                        } else {
+                            response.setHeader("Content-Type", "text/yaml");
+                            response.getWriter().write(new Yaml().dump(responseBody));
+                        }
                     }
                 }
             }
@@ -421,26 +425,29 @@ public class CelesteModSearchService extends HttpServlet {
             throw new IOException(e);
         }
 
-        // throw away the existing directory.
-        if (modIndexDirectory != null) {
-            modIndexDirectory.close();
-            modIndexDirectory = null;
-        }
-
-        // get the index directory from Cloud Storage. if it exists, wipe it.
-        File dir = new File("/tmp/mod_index");
-        if (dir.exists()) {
-            FileUtils.deleteDirectory(dir);
-        }
-        dir.mkdir();
-        try (ZipInputStream zipInputStream = new ZipInputStream(CloudStorageUtils.getCloudStorageInputStream("mod_index.zip"))) {
-            ZipEntry entry;
-            while ((entry = zipInputStream.getNextEntry()) != null) {
-                FileUtils.copyToFile(zipInputStream, new File("/tmp/mod_index/" + entry.getName()));
+        synchronized (modIndexDirectoryLock) {
+            // throw away the existing directory.
+            if (modIndexDirectory != null) {
+                modIndexDirectory.close();
+                modIndexDirectory = null;
             }
+
+            // get the index directory from Cloud Storage. if it exists, wipe it.
+            File dir = new File("/tmp/mod_index");
+            if (dir.exists()) {
+                FileUtils.deleteDirectory(dir);
+            }
+            dir.mkdir();
+            try (ZipInputStream zipInputStream = new ZipInputStream(CloudStorageUtils.getCloudStorageInputStream("mod_index.zip"))) {
+                ZipEntry entry;
+                while ((entry = zipInputStream.getNextEntry()) != null) {
+                    FileUtils.copyToFile(zipInputStream, new File("/tmp/mod_index/" + entry.getName()));
+                }
+            }
+
+            modIndexDirectory = FSDirectory.open(Paths.get("/tmp/mod_index"));
         }
 
-        modIndexDirectory = FSDirectory.open(Paths.get("/tmp/mod_index"));
         logger.fine("Index directory contains " + modIndexDirectory.listAll().length + " files.");
     }
 
