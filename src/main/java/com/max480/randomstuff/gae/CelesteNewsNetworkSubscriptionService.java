@@ -1,9 +1,5 @@
 package com.max480.randomstuff.gae;
 
-import com.google.cloud.storage.BlobId;
-import com.google.cloud.storage.BlobInfo;
-import com.google.cloud.storage.Storage;
-import com.google.cloud.storage.StorageOptions;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 
@@ -24,7 +20,6 @@ import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import static com.max480.randomstuff.gae.CelesteModUpdateService.getCloudStorageInputStream;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
@@ -34,7 +29,6 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 @MultipartConfig
 public class CelesteNewsNetworkSubscriptionService extends HttpServlet {
     private static final Logger logger = Logger.getLogger("CelesteNewsNetworkSubscriptionService");
-    private static final Storage storage = StorageOptions.newBuilder().setProjectId("max480-random-stuff").build().getService();
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
@@ -69,7 +63,7 @@ public class CelesteNewsNetworkSubscriptionService extends HttpServlet {
 
         } else {
             List<String> webhookUrls;
-            try (InputStream is = getCloudStorageInputStream("celeste_news_network_subscribers.json")) {
+            try (InputStream is = CloudStorageUtils.getCloudStorageInputStream("celeste_news_network_subscribers.json")) {
                 webhookUrls = new JSONArray(IOUtils.toString(is, UTF_8)).toList()
                         .stream()
                         .map(Object::toString)
@@ -107,12 +101,8 @@ public class CelesteNewsNetworkSubscriptionService extends HttpServlet {
             }
 
             if (save) {
-                BlobId blobId = BlobId.of("max480-random-stuff.appspot.com", "celeste_news_network_subscribers.json");
-                BlobInfo blobInfo = BlobInfo.newBuilder(blobId)
-                        .setContentType("application/json")
-                        .setCacheControl("no-store")
-                        .build();
-                storage.create(blobInfo, new JSONArray(webhookUrls).toString().getBytes(UTF_8));
+                CloudStorageUtils.sendBytesToCloudStorage("celeste_news_network_subscribers.json", "application/json",
+                        new JSONArray(webhookUrls).toString().getBytes(UTF_8));
             }
         }
 

@@ -13,8 +13,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
-import static com.max480.randomstuff.gae.CelesteModUpdateService.getCloudStorageInputStream;
-
 /**
  * A page with information on Discord bots.
  * The dynamic part of the page is just the server count of each bot.
@@ -25,7 +23,7 @@ public class DiscordBotsService extends HttpServlet {
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         Map<String, Integer> serverCounts = new Yaml().load(
-                IOUtils.toString(getCloudStorageInputStream("bot_server_counts.yaml"), StandardCharsets.UTF_8));
+                IOUtils.toString(CloudStorageUtils.getCloudStorageInputStream("bot_server_counts.yaml"), StandardCharsets.UTF_8));
 
         request.setAttribute("timezoneBotServerCount", serverCounts.get("TimezoneBot"));
         request.setAttribute("modStructureVerifierServerCount", serverCounts.get("ModStructureVerifier"));

@@ -1,7 +1,5 @@
 package com.max480.randomstuff.gae;
 
-import com.google.cloud.storage.Storage;
-import com.google.cloud.storage.StorageOptions;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.lucene.analysis.Analyzer;
@@ -49,7 +47,6 @@ import static com.max480.discord.randombots.UpdateCheckerTracker.ModInfo;
 public class CelesteModSearchService extends HttpServlet {
 
     private final Logger logger = Logger.getLogger("CelesteModSearchService");
-    private static final Storage storage = StorageOptions.newBuilder().setProjectId("max480-random-stuff").build().getService();
 
     private final Analyzer analyzer = new StandardAnalyzer();
     private Directory modIndexDirectory = null;
@@ -168,7 +165,7 @@ public class CelesteModSearchService extends HttpServlet {
 
         if (request.getRequestURI().equals("/celeste/mod_search_database.yaml")) {
             response.setHeader("Content-Type", "text/yaml");
-            try (InputStream is = CelesteModUpdateService.getCloudStorageInputStream("mod_search_database.yaml")) {
+            try (InputStream is = CloudStorageUtils.getCloudStorageInputStream("mod_search_database.yaml")) {
                 IOUtils.copy(is, response.getOutputStream());
             }
         }
@@ -416,7 +413,7 @@ public class CelesteModSearchService extends HttpServlet {
     // mapping takes an awful amount of time on App Engine (~2 seconds) so we can't make it when the user calls the API.
     private void refreshModDatabase() throws IOException {
         // get and deserialize the mod list from Cloud Storage.
-        try (ObjectInputStream is = new ObjectInputStream(CelesteModUpdateService.getCloudStorageInputStream("mod_search_database.ser"))) {
+        try (ObjectInputStream is = new ObjectInputStream(CloudStorageUtils.getCloudStorageInputStream("mod_search_database.ser"))) {
             modDatabaseForSorting = (List<ModInfo>) is.readObject();
             modCategories = (Map<Integer, String>) is.readObject();
             logger.fine("There are " + modDatabaseForSorting.size() + " mods in the search database.");
@@ -436,7 +433,7 @@ public class CelesteModSearchService extends HttpServlet {
             FileUtils.deleteDirectory(dir);
         }
         dir.mkdir();
-        try (ZipInputStream zipInputStream = new ZipInputStream(CelesteModUpdateService.getCloudStorageInputStream("mod_index.zip"))) {
+        try (ZipInputStream zipInputStream = new ZipInputStream(CloudStorageUtils.getCloudStorageInputStream("mod_index.zip"))) {
             ZipEntry entry;
             while ((entry = zipInputStream.getNextEntry()) != null) {
                 FileUtils.copyToFile(zipInputStream, new File("/tmp/mod_index/" + entry.getName()));

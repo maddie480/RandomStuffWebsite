@@ -1,15 +1,11 @@
 package com.max480.randomstuff.gae;
 
-import com.google.cloud.storage.BlobId;
-import com.google.cloud.storage.Storage;
-import com.google.cloud.storage.StorageOptions;
 import org.apache.commons.io.IOUtils;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.logging.Level;
@@ -23,7 +19,6 @@ import java.util.logging.Logger;
         "/celeste/file_ids.yaml", "/celeste/everest-update-reload"})
 public class CelesteModUpdateService extends HttpServlet {
     private final Logger logger = Logger.getLogger("CelesteModUpdateService");
-    private static final Storage storage = StorageOptions.newBuilder().setProjectId("max480-random-stuff").build().getService();
 
     private byte[] everestYaml;
 
@@ -31,7 +26,7 @@ public class CelesteModUpdateService extends HttpServlet {
     public void init() {
         try {
             logger.fine("Downloading everest_update.yaml from Cloud Storage");
-            everestYaml = IOUtils.toByteArray(getCloudStorageInputStream("everest_update.yaml"));
+            everestYaml = IOUtils.toByteArray(CloudStorageUtils.getCloudStorageInputStream("everest_update.yaml"));
         } catch (Exception e) {
             logger.log(Level.WARNING, "Warming up failed: " + e.toString());
         }
@@ -42,13 +37,13 @@ public class CelesteModUpdateService extends HttpServlet {
         if ("/celeste/file_ids.yaml".equals(request.getRequestURI())) {
             // transfer file_ids.yaml from backend
             response.setHeader("Content-Type", "text/yaml");
-            try (InputStream is = getCloudStorageInputStream("file_ids.yaml")) {
+            try (InputStream is = CloudStorageUtils.getCloudStorageInputStream("file_ids.yaml")) {
                 IOUtils.copy(is, response.getOutputStream());
             }
         } else if (request.getRequestURI().equals("/celeste/everest-update-reload")
                 && ("key=" + SecretConstants.CATALOG_RELOAD_SHARED_SECRET).equals(request.getQueryString())) {
             // trigger a reload of everest_update.yaml
-            everestYaml = IOUtils.toByteArray(getCloudStorageInputStream("everest_update.yaml"));
+            everestYaml = IOUtils.toByteArray(CloudStorageUtils.getCloudStorageInputStream("everest_update.yaml"));
         } else if (request.getRequestURI().equals("/celeste/everest_update.yaml")) {
             // send the everest_update.yaml we have in cache
             response.setHeader("Content-Type", "text/yaml");
@@ -57,10 +52,5 @@ public class CelesteModUpdateService extends HttpServlet {
             logger.warning("Invalid key");
             response.setStatus(403);
         }
-    }
-
-    public static InputStream getCloudStorageInputStream(String filename) {
-        BlobId blobId = BlobId.of("max480-random-stuff.appspot.com", filename);
-        return new ByteArrayInputStream(storage.readAllBytes(blobId));
     }
 }

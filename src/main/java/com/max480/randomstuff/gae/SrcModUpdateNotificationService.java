@@ -1,9 +1,5 @@
 package com.max480.randomstuff.gae;
 
-import com.google.cloud.storage.BlobId;
-import com.google.cloud.storage.BlobInfo;
-import com.google.cloud.storage.Storage;
-import com.google.cloud.storage.StorageOptions;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.yaml.snakeyaml.Yaml;
@@ -24,7 +20,6 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import static com.max480.discord.randombots.UpdateCheckerTracker.ModInfo;
-import static com.max480.randomstuff.gae.CelesteModUpdateService.getCloudStorageInputStream;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
@@ -34,7 +29,6 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 @MultipartConfig
 public class SrcModUpdateNotificationService extends HttpServlet {
     private static final Logger logger = Logger.getLogger("SrcModUpdateNotificationService");
-    private static final Storage storage = StorageOptions.newBuilder().setProjectId("max480-random-stuff").build().getService();
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
@@ -77,7 +71,7 @@ public class SrcModUpdateNotificationService extends HttpServlet {
 
             } else {
                 List<String> modList;
-                try (InputStream is = getCloudStorageInputStream("src_mod_update_notification_ids.json")) {
+                try (InputStream is = CloudStorageUtils.getCloudStorageInputStream("src_mod_update_notification_ids.json")) {
                     modList = new JSONArray(IOUtils.toString(is, UTF_8)).toList()
                             .stream()
                             .map(Object::toString)
@@ -115,12 +109,8 @@ public class SrcModUpdateNotificationService extends HttpServlet {
                 }
 
                 if (save) {
-                    BlobId blobId = BlobId.of("max480-random-stuff.appspot.com", "src_mod_update_notification_ids.json");
-                    BlobInfo blobInfo = BlobInfo.newBuilder(blobId)
-                            .setContentType("application/json")
-                            .setCacheControl("no-store")
-                            .build();
-                    storage.create(blobInfo, new JSONArray(modList).toString().getBytes(UTF_8));
+                    CloudStorageUtils.sendBytesToCloudStorage("src_mod_update_notification_ids.json", "application/json",
+                            new JSONArray(modList).toString().getBytes(UTF_8));
                 }
             }
 
@@ -136,7 +126,7 @@ public class SrcModUpdateNotificationService extends HttpServlet {
 
     private void populateModList(HttpServletRequest request) throws IOException {
         List<String> modList;
-        try (InputStream is = getCloudStorageInputStream("src_mod_update_notification_ids.json")) {
+        try (InputStream is = CloudStorageUtils.getCloudStorageInputStream("src_mod_update_notification_ids.json")) {
             modList = new JSONArray(IOUtils.toString(is, UTF_8)).toList()
                     .stream()
                     .map(Object::toString)
@@ -144,7 +134,7 @@ public class SrcModUpdateNotificationService extends HttpServlet {
         }
 
         Map<String, Map<String, Object>> modUpdateDatabase;
-        try (InputStream is = getCloudStorageInputStream("everest_update.yaml")) {
+        try (InputStream is = CloudStorageUtils.getCloudStorageInputStream("everest_update.yaml")) {
             modUpdateDatabase = new Yaml().load(is);
         }
 
@@ -169,7 +159,7 @@ public class SrcModUpdateNotificationService extends HttpServlet {
     }
 
     private boolean doesModExist(String modName) throws IOException {
-        try (InputStream is = getCloudStorageInputStream("everest_update.yaml")) {
+        try (InputStream is = CloudStorageUtils.getCloudStorageInputStream("everest_update.yaml")) {
             Map<String, Object> database = new Yaml().load(is);
             return database.containsKey(modName);
         }

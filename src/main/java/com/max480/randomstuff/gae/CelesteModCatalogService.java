@@ -49,7 +49,7 @@ public class CelesteModCatalogService extends HttpServlet {
             reloadList();
         } else if (request.getRequestURI().equals("/celeste/custom-entity-catalog.json")) {
             response.setHeader("Content-Type", "application/json");
-            try (InputStream is = CelesteModUpdateService.getCloudStorageInputStream("custom_entity_catalog.json")) {
+            try (InputStream is = CloudStorageUtils.getCloudStorageInputStream("custom_entity_catalog.json")) {
                 IOUtils.copy(is, response.getOutputStream());
             }
         } else if (request.getRequestURI().equals("/celeste/custom-entity-catalog")) {
@@ -81,7 +81,7 @@ public class CelesteModCatalogService extends HttpServlet {
 
     private void reloadList() throws IOException {
         // just load and parse the custom entity catalog JSON.
-        try (InputStream is = CelesteModUpdateService.getCloudStorageInputStream("custom_entity_catalog.json")) {
+        try (InputStream is = CloudStorageUtils.getCloudStorageInputStream("custom_entity_catalog.json")) {
             JSONObject obj = new JSONObject(IOUtils.toString(is, UTF_8));
             lastUpdated = ZonedDateTime.parse(obj.getString("lastUpdated")).withZoneSameInstant(ZoneId.of("UTC"));
             modInfo = obj.getJSONArray("modInfo").toList().stream()
