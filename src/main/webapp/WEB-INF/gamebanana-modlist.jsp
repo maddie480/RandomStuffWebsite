@@ -108,10 +108,10 @@
         $('#SubmissionsListModule record:has(spriteicon.App)').hide();
         fetch('https://max480-random-stuff.appspot.com/celeste/update-checker-status?widget=true')
             .then(r => r.text())
-            .then(r => $('#UpdateCheckerStatus').html(r))
-            .catch(() => {
-                $('#UpdateCheckerStatusTitle').hide();
-                $('#UpdateCheckerStatus').hide();
-            })
+            .then(r => {
+                $('#UpdateCheckerStatus').html(r);
+                $('#UpdateCheckerStatusTitle').removeClass('hidden');
+                $('#UpdateCheckerStatus').removeClass('hidden');
+            });
     <% } %>
 </script>
