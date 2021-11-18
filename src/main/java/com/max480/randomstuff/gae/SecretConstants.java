@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 public class SecretConstants {
     private static final Logger logger = Logger.getLogger("SecretConstants");
 
-    public static String CATALOG_RELOAD_SHARED_SECRET = "";
+    public static String RELOAD_SHARED_SECRET = "";
 
     public static String SRC_MOD_LIST_KEY = "";
 
@@ -39,7 +39,7 @@ public class SecretConstants {
 
     static {
         Map<String, Consumer<String>> secrets = new HashMap<>();
-        secrets.put("CATALOG_RELOAD_SHARED_SECRET", s -> CATALOG_RELOAD_SHARED_SECRET = s);
+        secrets.put("RELOAD_SHARED_SECRET", s -> RELOAD_SHARED_SECRET = s);
         secrets.put("SRC_MOD_LIST_KEY", s -> SRC_MOD_LIST_KEY = s);
         secrets.put("GITHUB_USERNAME", s -> GITHUB_USERNAME = s);
         secrets.put("GITHUB_PERSONAL_ACCESS_TOKEN", s -> GITHUB_PERSONAL_ACCESS_TOKEN = s);

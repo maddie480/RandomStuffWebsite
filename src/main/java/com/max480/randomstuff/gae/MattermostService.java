@@ -46,7 +46,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  * Some of them are public (in French though), and others require a key to use.
  * Most of those just pull info from some website and reformat it.
  */
-@WebServlet(name = "MattermostService", loadOnStartup = 4, urlPatterns = {"/mattermost/tableflip", "/mattermost/bientotleweekend",
+@WebServlet(name = "MattermostService", loadOnStartup = 3, urlPatterns = {"/mattermost/tableflip", "/mattermost/bientotleweekend",
         "/mattermost/vacances", "/mattermost/chucknorris", "/mattermost/random", "/mattermost/toplyrics",
         "/mattermost/ckc", "/mattermost/jcvd", "/mattermost/languedebois", "/mattermost/noel", "/mattermost/joiesducode",
         "/mattermost/patoche", "/mattermost/coronavirus", "/mattermost/fakename", "/mattermost/tendancesyoutube", "/mattermost/putaclic",
@@ -203,7 +203,7 @@ public class MattermostService extends HttpServlet {
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         if (request.getRequestURI().equals("/mattermost/planning-reload")) {
-            if (("key=" + SecretConstants.CATALOG_RELOAD_SHARED_SECRET).equals(request.getQueryString())) {
+            if (("key=" + SecretConstants.RELOAD_SHARED_SECRET).equals(request.getQueryString())) {
                 cachedPlanningExploit = getExploit();
             } else {
                 logger.warning("Invalid key");

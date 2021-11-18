@@ -15,7 +15,7 @@ import java.util.logging.Logger;
  * This servlet caches and provides the everest_update.yaml Everest downloads to check for updates.
  * It also provides file_ids.yaml, that can be used to get all GameBanana file IDs that belong to Celeste mods.
  */
-@WebServlet(name = "CelesteModUpdateService", loadOnStartup = 3, urlPatterns = {"/celeste/everest_update.yaml",
+@WebServlet(name = "CelesteModUpdateService", loadOnStartup = 1, urlPatterns = {"/celeste/everest_update.yaml",
         "/celeste/file_ids.yaml", "/celeste/everest-update-reload"})
 public class CelesteModUpdateService extends HttpServlet {
     private final Logger logger = Logger.getLogger("CelesteModUpdateService");
@@ -41,7 +41,7 @@ public class CelesteModUpdateService extends HttpServlet {
                 IOUtils.copy(is, response.getOutputStream());
             }
         } else if (request.getRequestURI().equals("/celeste/everest-update-reload")
-                && ("key=" + SecretConstants.CATALOG_RELOAD_SHARED_SECRET).equals(request.getQueryString())) {
+                && ("key=" + SecretConstants.RELOAD_SHARED_SECRET).equals(request.getQueryString())) {
             // trigger a reload of everest_update.yaml
             everestYaml = IOUtils.toByteArray(CloudStorageUtils.getCloudStorageInputStream("everest_update.yaml"));
         } else if (request.getRequestURI().equals("/celeste/everest_update.yaml")) {

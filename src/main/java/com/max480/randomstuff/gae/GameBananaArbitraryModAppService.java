@@ -60,7 +60,7 @@ public class GameBananaArbitraryModAppService extends HttpServlet {
         }
 
         if (request.getRequestURI().equals("/gamebanana/arbitrary-mod-app-housekeep")) {
-            if (("key=" + SecretConstants.CATALOG_RELOAD_SHARED_SECRET).equals(request.getQueryString())) {
+            if (("key=" + SecretConstants.RELOAD_SHARED_SECRET).equals(request.getQueryString())) {
                 housekeep();
             } else {
                 // invalid secret

@@ -1,6 +1,7 @@
 package com.max480.randomstuff.gae;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.json.JSONObject;
 
 import javax.servlet.ServletException;
@@ -14,7 +15,6 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -23,39 +23,34 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 /**
  * This is the servlet generating the Custom Entity Catalog page.
  */
-@WebServlet(name = "CelesteModCatalogService", loadOnStartup = 1, urlPatterns = {
-        "/celeste/custom-entity-catalog", "/celeste/custom-entity-catalog.json", "/celeste/custom-entity-catalog-reload"})
+@WebServlet(name = "CelesteModCatalogService", urlPatterns = {"/celeste/custom-entity-catalog", "/celeste/custom-entity-catalog.json"})
 public class CelesteModCatalogService extends HttpServlet {
 
     private final Logger logger = Logger.getLogger("CelesteModCatalogService");
 
-    private static List<QueriedModInfo> modInfo = null;
-    private static ZonedDateTime lastUpdated = null;
-
-    @Override
-    public void init() {
-        try {
-            reloadList();
-        } catch (Exception e) {
-            logger.log(Level.WARNING, "Loading mod catalog failed: " + e.toString());
-        }
-    }
-
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        if (request.getRequestURI().equals("/celeste/custom-entity-catalog-reload")
-                && ("key=" + SecretConstants.CATALOG_RELOAD_SHARED_SECRET).equals(request.getQueryString())) {
-
-            reloadList();
-        } else if (request.getRequestURI().equals("/celeste/custom-entity-catalog.json")) {
+        if (request.getRequestURI().equals("/celeste/custom-entity-catalog.json")) {
             response.setHeader("Content-Type", "application/json");
             try (InputStream is = CloudStorageUtils.getCloudStorageInputStream("custom_entity_catalog.json")) {
                 IOUtils.copy(is, response.getOutputStream());
             }
         } else if (request.getRequestURI().equals("/celeste/custom-entity-catalog")) {
-            if (modInfo == null) {
+            Pair<List<QueriedModInfo>, ZonedDateTime> list = null;
+
+            try {
+                list = loadList();
+            } catch (Exception e) {
+                logger.severe("Could not load mod catalog: " + e);
+            }
+
+
+            if (list == null) {
                 request.setAttribute("error", true);
             } else {
+                List<QueriedModInfo> modInfo = list.getLeft();
+                ZonedDateTime lastUpdated = list.getRight();
+
                 request.setAttribute("error", false);
                 request.setAttribute("mods", modInfo);
                 request.setAttribute("lastUpdated", lastUpdated.format(
@@ -63,33 +58,34 @@ public class CelesteModCatalogService extends HttpServlet {
                 ));
                 request.setAttribute("modCount", modInfo.size());
                 request.setAttribute("entityCount", modInfo.stream()
-                        .mapToLong(modInfo -> modInfo.entityList.size())
+                        .mapToLong(info -> info.entityList.size())
                         .sum());
                 request.setAttribute("triggerCount", modInfo.stream()
-                        .mapToLong(modInfo -> modInfo.triggerList.size())
+                        .mapToLong(info -> info.triggerList.size())
                         .sum());
                 request.setAttribute("effectCount", modInfo.stream()
-                        .mapToLong(modInfo -> modInfo.effectList.size())
+                        .mapToLong(info -> info.effectList.size())
                         .sum());
             }
             request.getRequestDispatcher("/WEB-INF/mod-catalog.jsp").forward(request, response);
         } else {
-            logger.warning("Invalid key");
-            response.setStatus(403);
+            logger.warning("Not found");
+            response.setStatus(404);
         }
     }
 
-    private void reloadList() throws IOException {
+    private Pair<List<QueriedModInfo>, ZonedDateTime> loadList() throws IOException {
         // just load and parse the custom entity catalog JSON.
         try (InputStream is = CloudStorageUtils.getCloudStorageInputStream("custom_entity_catalog.json")) {
             JSONObject obj = new JSONObject(IOUtils.toString(is, UTF_8));
-            lastUpdated = ZonedDateTime.parse(obj.getString("lastUpdated")).withZoneSameInstant(ZoneId.of("UTC"));
-            modInfo = obj.getJSONArray("modInfo").toList().stream()
+            ZonedDateTime lastUpdated = ZonedDateTime.parse(obj.getString("lastUpdated")).withZoneSameInstant(ZoneId.of("UTC"));
+            List<QueriedModInfo> modInfo = obj.getJSONArray("modInfo").toList().stream()
                     .map(item -> (HashMap<String, Object>) item)
                     .map(QueriedModInfo::new)
                     .collect(Collectors.toList());
 
-            logger.info("Loaded " + modInfo.size() + " mods.");
+            logger.fine("Loaded " + modInfo.size() + " mods.");
+            return Pair.of(modInfo, lastUpdated);
         }
     }
 
