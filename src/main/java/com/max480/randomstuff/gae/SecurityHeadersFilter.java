@@ -12,10 +12,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.logging.Logger;
 
 /**
  * A filter adding a Content-Security-Policy header on all non-static files.
- * It also serves Renogare.otf with a header allowing it to be used on gamebanana.com.
  */
 @WebFilter(filterName = "SecurityHeadersFilter", urlPatterns = "/*")
 public class SecurityHeadersFilter extends HttpFilter {
@@ -33,17 +33,5 @@ public class SecurityHeadersFilter extends HttpFilter {
             res.setHeader("Access-Control-Allow-Origin", "https://gamebanana.com");
         }
         chain.doFilter(req, res);
-    }
-
-    @WebServlet(name = "FontServlet", urlPatterns = "/fonts/Renogare.otf")
-    public static class FontServlet extends HttpServlet {
-        @Override
-        protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-            resp.setContentType("application/font-sfnt");
-            resp.setHeader("Access-Control-Allow-Origin", "https://gamebanana.com");
-            try (InputStream is = FontServlet.class.getClassLoader().getResourceAsStream("font-generator/fonts/Renogare.otf")) {
-                IOUtils.copy(is, resp.getOutputStream());
-            }
-        }
     }
 }
