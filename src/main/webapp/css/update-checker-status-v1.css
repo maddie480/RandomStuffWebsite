@@ -1,0 +1,12 @@
+h2 {
+    margin-top: 20px;
+}
+
+@media (prefers-color-scheme: dark) {
+    .table td {
+        border-top: 1px solid #555;
+    }
+    .table-striped > tbody > tr:nth-of-type(2n + 1) {
+        background-color: #222;
+    }
+}

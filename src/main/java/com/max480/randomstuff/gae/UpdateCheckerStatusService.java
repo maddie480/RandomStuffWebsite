@@ -25,8 +25,12 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static com.max480.randomstuff.gae.ConnectionUtils.openStreamWithTimeout;
 
@@ -39,8 +43,28 @@ import static com.max480.randomstuff.gae.ConnectionUtils.openStreamWithTimeout;
 public class UpdateCheckerStatusService extends HttpServlet {
     private static final Logging logging = LoggingOptions.getDefaultInstance().toBuilder().setProjectId("max480-random-stuff").build().getService();
 
+    private static final Pattern INFORMATION_EXTRACTOR = Pattern.compile(".* Mod\\{name='(.+)', version='([0-9.]+)',.*");
+
+    public static class LatestUpdatesEntry {
+        public boolean isAddition;
+        public String name;
+        public String version;
+        public String date;
+        public long timestamp;
+
+        public LatestUpdatesEntry(boolean isAddition, String name, String version, String date, long timestamp) {
+            this.isAddition = isAddition;
+            this.name = name;
+            this.version = version;
+            this.date = date;
+            this.timestamp = timestamp;
+        }
+    }
+
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        final boolean isWidget = "true".equals(request.getParameter("widget"));
+
         // the service is down until proven otherwise.
         request.setAttribute("up", false);
 
@@ -50,17 +74,20 @@ public class UpdateCheckerStatusService extends HttpServlet {
                 Logging.EntryListOption.filter("jsonPayload.message =~ \"^=== Ended searching for updates.\""),
                 Logging.EntryListOption.pageSize(1)
         );
-        // check logs for last update with updates found (limit 7 days)
-        final ApiFuture<AsyncPage<LogEntry>> lastCheckWithUpdates = logging.listLogEntriesAsync(
-                Logging.EntryListOption.sortOrder(Logging.SortingField.TIMESTAMP, Logging.SortingOrder.DESCENDING),
-                Logging.EntryListOption.filter("(" +
-                        "jsonPayload.message =~ \"^=> Saved new information to database:\" " +
-                        "OR jsonPayload.message =~ \"was deleted from the database$\" " +
-                        "OR jsonPayload.message =~ \"Adding to the excluded files list.$\" " +
-                        "OR jsonPayload.message =~ \"Adding to the no yaml files list.$\")" +
-                        " AND timestamp >= \"" + ZonedDateTime.now().minusDays(7).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME) + "\""),
-                Logging.EntryListOption.pageSize(1)
-        );
+
+        // check logs for latest database changes (limit 7 days)
+        ApiFuture<AsyncPage<LogEntry>> latestUpdates = null;
+
+        if (!isWidget) {
+            latestUpdates = logging.listLogEntriesAsync(
+                    Logging.EntryListOption.sortOrder(Logging.SortingField.TIMESTAMP, Logging.SortingOrder.DESCENDING),
+                    Logging.EntryListOption.filter("(" +
+                            "jsonPayload.message =~ \"^=> Saved new information to database:\" " +
+                            "OR jsonPayload.message =~ \"^Mod .* was deleted from the database$\")" +
+                            " AND timestamp >= \"" + ZonedDateTime.now().minusDays(7).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME) + "\""),
+                    Logging.EntryListOption.pageSize(5)
+            );
+        }
 
         // check mod count by just downloading the mod database and counting objects in it.
         try (InputStream is = openStreamWithTimeout(new URL("https://max480-random-stuff.appspot.com/celeste/everest_update.yaml"))) {
@@ -86,20 +113,36 @@ public class UpdateCheckerStatusService extends HttpServlet {
 
                     // pass it to the webpage
                     Pair<String, String> date = formatDate(timeUtc);
-                    request.setAttribute("lastUpdated", date.getLeft() + " (" + date.getRight() + ")");
+                    request.setAttribute("lastUpdatedTimestamp", timeUtc.toEpochSecond());
+                    request.setAttribute("lastUpdatedAt", date.getLeft());
                     request.setAttribute("lastUpdatedAgo", date.getRight());
                     request.setAttribute("duration", new DecimalFormat("0.0").format(timeMs / 1000.0));
                 }
             }
 
-            for (LogEntry entry : lastCheckWithUpdates.get().getValues()) {
-                ZonedDateTime timeUtc = Instant.ofEpochMilli(entry.getTimestamp()).atZone(ZoneId.of("UTC"));
-                Pair<String, String> date = formatDate(timeUtc);
-                request.setAttribute("lastUpdateFound", date.getLeft() + " (" + date.getRight() + ")");
+            if (!isWidget) {
+                List<LatestUpdatesEntry> latestUpdatesEntries = new ArrayList<>();
+
+                for (LogEntry logEntry : latestUpdates.get().getValues()) {
+                    String message = (String) logEntry.<Payload.JsonPayload>getPayload().getDataAsMap().get("message");
+
+                    final Matcher matcher = INFORMATION_EXTRACTOR.matcher(message);
+                    if (matcher.matches()) {
+                        latestUpdatesEntries.add(new LatestUpdatesEntry(
+                                message.startsWith("=> Saved new information to database:"),
+                                matcher.group(1),
+                                matcher.group(2),
+                                DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).format(logEntry.getInstantTimestamp().atZone(ZoneId.of("UTC"))),
+                                logEntry.getInstantTimestamp().toEpochMilli() / 1000L
+                        ));
+                    }
+                }
+
+                request.setAttribute("latestUpdates", latestUpdatesEntries);
             }
 
-            request.getRequestDispatcher("true".equals(request.getParameter("widget")) ?
-                    "/WEB-INF/update-checker-status-widget.jsp" : "/WEB-INF/update-checker-status.jsp").forward(request, response);
+            request.getRequestDispatcher(isWidget ? "/WEB-INF/update-checker-status-widget.jsp" : "/WEB-INF/update-checker-status.jsp")
+                    .forward(request, response);
         } catch (InterruptedException | ExecutionException e) {
             throw new IOException(e);
         }

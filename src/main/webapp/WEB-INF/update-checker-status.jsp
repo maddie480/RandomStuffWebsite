@@ -1,6 +1,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 
+<%@ page import="java.util.List, static org.apache.commons.text.StringEscapeUtils.escapeHtml4, static com.max480.randomstuff.gae.UpdateCheckerStatusService.LatestUpdatesEntry"%>
+
 <%@page session="false"%>
 
 <!DOCTYPE html>
@@ -24,6 +26,7 @@
 		crossorigin="anonymous">
 
     <link rel="stylesheet" href="/css/common-v7.css">
+    <link rel="stylesheet" href="/css/update-checker-status-v1.css">
 </head>
 
 <body>
@@ -50,20 +53,50 @@
             </div>
         <% } %>
 
-        <% if (request.getAttribute("lastUpdated") != null) { %>
+        <% if (request.getAttribute("lastUpdatedAt") != null) { %>
             <p>
-                The database was last updated successfully on <b><%= request.getAttribute("lastUpdated") %></b>.
+                The database was last updated successfully on
+                <b>
+                    <span class="timestamp-long" data-timestamp="<%= request.getAttribute("lastUpdatedTimestamp") %>">
+                        <%= request.getAttribute("lastUpdatedAt") %>
+                    </span>
+                    (<%= request.getAttribute("lastUpdatedAgo") %>)
+                </b>.
                 The update check took <%= request.getAttribute("duration") %> seconds.
             </p>
         <% } %>
 
-        <% if (request.getAttribute("lastUpdateFound") != null) { %>
-            <p>
-                A mod update was last found on <b><%= request.getAttribute("lastUpdateFound") %></b>.
-            </p>
-        <% } %>
-
         <b><%= request.getAttribute("modCount") %></b> mods are currently registered.
+
+        <% if (!((List<LatestUpdatesEntry>) request.getAttribute("latestUpdates")).isEmpty()) { %>
+            <h2>Latest updates</h2>
+
+            <table class="table table-striped">
+                <% for (LatestUpdatesEntry entry : (List<LatestUpdatesEntry>) request.getAttribute("latestUpdates")) { %>
+                    <tr>
+                        <td>
+                            <% if (entry.isAddition) { %>
+                                &#x2705;
+                            <% } else { %>
+                                &#x274c;
+                            <% } %>
+                        </td>
+                        <td>
+                            <span class="timestamp-short" data-timestamp="<%= entry.timestamp %>">
+                                <%= escapeHtml4(entry.date) %>
+                            </span>
+                        </td>
+                        <td>
+                            <% if (entry.isAddition) { %>
+                                <b><%= escapeHtml4(entry.name) %></b> was updated to version <b><%= escapeHtml4(entry.version) %></b>
+                            <% } else { %>
+                                <b><%= escapeHtml4(entry.name) %></b> was deleted
+                            <% } %>
+                        </td>
+                    </tr>
+                <% } %>
+            </table>
+        <% } %>
 
         <!-- Developed by max480 - version 1.0 - last updated on Mar 20, 2021 -->
         <!-- What are you doing here? :thinkeline: -->
