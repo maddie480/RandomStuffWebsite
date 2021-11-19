@@ -9,28 +9,28 @@
 
 <html lang="en">
 <head>
-	<title>Everest Update Checker status page</title>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<meta name="author" content="max480">
-	<meta name="description" content="Check the status of the Everest Update Checker here.">
-	<meta property="og:title" content="Everest Update Checker status page">
-	<meta property="og:description" content="Check the status of the Everest Update Checker here.">
+    <title>Everest Update Checker status page</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="max480">
+    <meta name="description" content="Check the status of the Everest Update Checker here.">
+    <meta property="og:title" content="Everest Update Checker status page">
+    <meta property="og:description" content="Check the status of the Everest Update Checker here.">
     <meta http-equiv="refresh" content="60" >
 
     <link rel="shortcut icon" href="/celeste/favicon.ico">
 
-	<link rel="stylesheet"
-		href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
-		integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
-		crossorigin="anonymous">
+    <link rel="stylesheet"
+        href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
+        integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
+        crossorigin="anonymous">
 
     <link rel="stylesheet" href="/css/common-v7.css">
     <link rel="stylesheet" href="/css/update-checker-status-v1.css">
 </head>
 
 <body>
-	<div class="container">
+    <div class="container">
         <div id="nav">
             <a href="/celeste/custom-entity-catalog">Custom&nbsp;Entity&nbsp;Catalog</a> <span class="sep">|</span>
             <a href="/celeste/everest-yaml-validator">everest.yaml&nbsp;validator</a> <span class="sep">|</span>
@@ -56,12 +56,10 @@
         <% if (request.getAttribute("lastUpdatedAt") != null) { %>
             <p>
                 The database was last updated successfully on
-                <b>
-                    <span class="timestamp-long" data-timestamp="<%= request.getAttribute("lastUpdatedTimestamp") %>">
-                        <%= request.getAttribute("lastUpdatedAt") %>
-                    </span>
-                    (<%= request.getAttribute("lastUpdatedAgo") %>)
-                </b>.
+                <b><span class="timestamp-long" data-timestamp="<%= request.getAttribute("lastUpdatedTimestamp") %>">
+                    <%= request.getAttribute("lastUpdatedAt") %>
+                </span>
+                (<%= request.getAttribute("lastUpdatedAgo") %>)</b>.
                 The update check took <%= request.getAttribute("duration") %> seconds.
             </p>
         <% } %>
@@ -97,7 +95,7 @@
                 <% } %>
             </table>
         <% } %>
-	</div>
+    </div>
 
     <script src="/js/update-checker-status.js"></script>
 </body>
