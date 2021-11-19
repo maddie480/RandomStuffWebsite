@@ -108,9 +108,6 @@
                 <a href="https://jsonformatter.org/yaml-validator/" target="_blank" rel="noopener">this one</a>.
             </div>
         <% } %>
-
-        <!-- Developed by max480 - version 1.3 - last updated on Dec 12, 2020 -->
-        <!-- What are you doing here? :thinkeline: -->
 	</div>
 </body>
 </html>

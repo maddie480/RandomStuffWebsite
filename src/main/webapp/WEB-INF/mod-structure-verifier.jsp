@@ -183,9 +183,6 @@
         <% } %>
 
         <div style="height: 30px"/>
-
-        <!-- Developed by max480 - version 1.1 - last updated on Apr 03, 2021 -->
-        <!-- What are you doing here? :thinkeline: -->
 	</div>
 </body>
 </html>

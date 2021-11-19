@@ -97,9 +97,8 @@
                 <% } %>
             </table>
         <% } %>
-
-        <!-- Developed by max480 - version 1.0 - last updated on Mar 20, 2021 -->
-        <!-- What are you doing here? :thinkeline: -->
 	</div>
+
+    <script src="/js/update-checker-status.js"></script>
 </body>
 </html>

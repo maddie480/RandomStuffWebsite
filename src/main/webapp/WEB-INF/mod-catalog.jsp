@@ -134,9 +134,6 @@
                 <% } %>
             <% } %>
         <% } %>
-
-        <!-- Developed by max480 - version 1.4 - last updated on Apr 3, 2021 -->
-        <!-- What are you doing here? :thinkeline: -->
     </div>
 </body>
 </html>
