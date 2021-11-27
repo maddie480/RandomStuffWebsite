@@ -38,6 +38,8 @@ public class CelesteNewsNetworkSubscriptionService extends HttpServlet {
         request.setAttribute("already_registered", false);
         request.setAttribute("subscribe_success", false);
         request.setAttribute("unsubscribe_success", false);
+
+        request.setAttribute("sub_count", countSubscribers());
         request.getRequestDispatcher("/WEB-INF/celeste-news-network-subscription.jsp").forward(request, response);
     }
 
@@ -106,6 +108,7 @@ public class CelesteNewsNetworkSubscriptionService extends HttpServlet {
             }
         }
 
+        request.setAttribute("sub_count", countSubscribers());
         request.getRequestDispatcher("/WEB-INF/celeste-news-network-subscription.jsp").forward(request, response);
     }
 
@@ -139,6 +142,12 @@ public class CelesteNewsNetworkSubscriptionService extends HttpServlet {
             // well, the webhook is definitely not working. :p
             logger.severe("I/O error while calling webhook: " + e);
             return false;
+        }
+    }
+
+    private int countSubscribers() throws IOException {
+        try (InputStream is = CloudStorageUtils.getCloudStorageInputStream("celeste_news_network_subscribers.json")) {
+            return new JSONArray(IOUtils.toString(is, UTF_8)).length();
         }
     }
 }

@@ -75,6 +75,10 @@
             and <a href="https://twitter.com/EverestAPI" target="_blank">@EverestAPI</a>.
         </p>
 
+        <p>
+            <b><%= request.getAttribute("sub_count") %> <%= ((int) request.getAttribute("sub_count")) == 1 ? "webhook" : "webhooks" %></b> are currently registered.
+        </p>
+
         <div class="alert alert-info">
             When registering your webhook, a message saying <i>"This webhook was registered on the #celeste_news_network subscription service!"</i> will be sent to it.
         </div>
