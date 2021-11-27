@@ -51,7 +51,7 @@
                     <recordCell class="Preview">
                         <div class="Preview ModPreview">
                             <a href="<%= escapeHtml4(modInfo.url) %>">
-                            <img class="PreviewImage lazy" alt="<%= escapeHtml4(modInfo.name) %>" data-src="<%= escapeHtml4(modInfo.image) %>"/></a>
+                            <img class="PreviewImage" loading="lazy" alt="<%= escapeHtml4(modInfo.name) %>" src="<%= escapeHtml4(modInfo.image) %>"/></a>
                         </div>
                     </recordCell>
                     <recordCell class="Identifiers">
@@ -78,7 +78,7 @@
                     </recordCell>
 
                     <recordCell class="Category">
-                        <img alt="<%= escapeHtml4(modInfo.gameName) %> icon" class="GameIcon lazy" data-src="<%= escapeHtml4(modInfo.gameIcon) %>"/>
+                        <img alt="<%= escapeHtml4(modInfo.gameName) %> icon" class="GameIcon" loading="lazy" src="<%= escapeHtml4(modInfo.gameIcon) %>"/>
                     </recordCell>
                     <div class="BananaTip">
                         <div class="Title">Game</div>
@@ -88,7 +88,7 @@
                     </div>
 
                     <recordCell class="Ownership">
-                        <img alt="avatar" class="AvatarIcon lazy" data-src="<%= escapeHtml4(modInfo.submitterAvatar) %>"/>
+                        <img alt="avatar" class="AvatarIcon" loading="lazy" src="<%= escapeHtml4(modInfo.submitterAvatar) %>"/>
                         <div class="BananaTip">
                             <div class="Title">Submitter</div>
                             <a class="MemberLink" href="<%= escapeHtml4(modInfo.submitterUrl) %>">
