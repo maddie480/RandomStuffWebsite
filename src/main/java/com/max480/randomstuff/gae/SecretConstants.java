@@ -3,11 +3,9 @@ package com.max480.randomstuff.gae;
 import com.google.cloud.secretmanager.v1.AccessSecretVersionResponse;
 import com.google.cloud.secretmanager.v1.SecretManagerServiceClient;
 import com.google.cloud.secretmanager.v1.SecretVersionName;
+import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Consumer;
 import java.util.logging.Logger;
 
 /**
@@ -38,33 +36,29 @@ public class SecretConstants {
     public static String YOUTUBE_API_KEY = "";
 
     static {
-        Map<String, Consumer<String>> secrets = new HashMap<>();
-        secrets.put("RELOAD_SHARED_SECRET", s -> RELOAD_SHARED_SECRET = s);
-        secrets.put("SRC_MOD_LIST_KEY", s -> SRC_MOD_LIST_KEY = s);
-        secrets.put("GITHUB_USERNAME", s -> GITHUB_USERNAME = s);
-        secrets.put("GITHUB_PERSONAL_ACCESS_TOKEN", s -> GITHUB_PERSONAL_ACCESS_TOKEN = s);
-        secrets.put("LOGGING_EXPECTED_AUTH_HEADER", s -> LOGGING_EXPECTED_AUTH_HEADER = s);
-        secrets.put("GAMES_BOT_CLIENT_ID", s -> GAMES_BOT_CLIENT_ID = s);
-        secrets.put("GAMES_BOT_PUBLIC_KEY", s -> GAMES_BOT_PUBLIC_KEY = s);
-        secrets.put("EXPLOIT_PLANNING_URL", s -> EXPLOIT_PLANNING_URL = s);
-        secrets.put("MATTERMOST_TOKEN_VACANCES", s -> MATTERMOST_TOKEN_VACANCES = s);
-        secrets.put("MATTERMOST_TOKEN_LOCK", s -> MATTERMOST_TOKEN_LOCK = s);
-        secrets.put("MATTERMOST_TOKEN_UNLOCK", s -> MATTERMOST_TOKEN_UNLOCK = s);
-        secrets.put("MATTERMOST_TOKEN_EXPLOIT", s -> MATTERMOST_TOKEN_EXPLOIT = s);
-        secrets.put("MATTERMOST_TOKEN_ABSENTS", s -> MATTERMOST_TOKEN_ABSENTS = s);
-        secrets.put("MATTERMOST_TOKEN_CONSISTENCYCHECK", s -> MATTERMOST_TOKEN_CONSISTENCYCHECK = s);
-        secrets.put("YOUTUBE_API_KEY", s -> YOUTUBE_API_KEY = s);
-
         try (SecretManagerServiceClient client = SecretManagerServiceClient.create()) {
-            for (Map.Entry<String, Consumer<String>> secret : secrets.entrySet()) {
-                SecretVersionName secretVersionName = SecretVersionName.of("max480-random-stuff", secret.getKey(), "1");
-                AccessSecretVersionResponse response = client.accessSecretVersion(secretVersionName);
-                String payload = response.getPayload().getData().toStringUtf8();
-                secret.getValue().accept(payload);
-            }
+            // FRONTEND_SECRETS contains all the secrets, in JSON format.
+            SecretVersionName secretVersionName = SecretVersionName.of("max480-random-stuff", "FRONTEND_SECRETS", "1");
+            AccessSecretVersionResponse response = client.accessSecretVersion(secretVersionName);
+            JSONObject secrets = new JSONObject(response.getPayload().getData().toStringUtf8());
+
+            EXPLOIT_PLANNING_URL = secrets.getString("EXPLOIT_PLANNING_URL");
+            GAMES_BOT_CLIENT_ID = secrets.getString("GAMES_BOT_CLIENT_ID");
+            GAMES_BOT_PUBLIC_KEY = secrets.getString("GAMES_BOT_PUBLIC_KEY");
+            GITHUB_PERSONAL_ACCESS_TOKEN = secrets.getString("GITHUB_PERSONAL_ACCESS_TOKEN");
+            GITHUB_USERNAME = secrets.getString("GITHUB_USERNAME");
+            LOGGING_EXPECTED_AUTH_HEADER = secrets.getString("LOGGING_EXPECTED_AUTH_HEADER");
+            MATTERMOST_TOKEN_ABSENTS = secrets.getString("MATTERMOST_TOKEN_ABSENTS");
+            MATTERMOST_TOKEN_CONSISTENCYCHECK = secrets.getString("MATTERMOST_TOKEN_CONSISTENCYCHECK");
+            MATTERMOST_TOKEN_EXPLOIT = secrets.getString("MATTERMOST_TOKEN_EXPLOIT");
+            MATTERMOST_TOKEN_LOCK = secrets.getString("MATTERMOST_TOKEN_LOCK");
+            MATTERMOST_TOKEN_UNLOCK = secrets.getString("MATTERMOST_TOKEN_UNLOCK");
+            MATTERMOST_TOKEN_VACANCES = secrets.getString("MATTERMOST_TOKEN_VACANCES");
+            RELOAD_SHARED_SECRET = secrets.getString("RELOAD_SHARED_SECRET");
+            SRC_MOD_LIST_KEY = secrets.getString("SRC_MOD_LIST_KEY");
+            YOUTUBE_API_KEY = secrets.getString("YOUTUBE_API_KEY");
         } catch (IOException e) {
             logger.severe("Could not load application secrets! " + e.toString());
         }
-
     }
 }
