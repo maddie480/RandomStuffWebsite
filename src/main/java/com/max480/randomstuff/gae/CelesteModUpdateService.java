@@ -16,7 +16,7 @@ import java.util.logging.Logger;
  * It also provides file_ids.yaml, that can be used to get all GameBanana file IDs that belong to Celeste mods.
  */
 @WebServlet(name = "CelesteModUpdateService", loadOnStartup = 1, urlPatterns = {"/celeste/everest_update.yaml",
-        "/celeste/file_ids.yaml", "/celeste/everest-update-reload"})
+        "/celeste/file_ids.yaml", "/celeste/everest-update-reload", "/celeste/mod_search_database.yaml", "/celeste/mod_files_database.zip"})
 public class CelesteModUpdateService extends HttpServlet {
     private final Logger logger = Logger.getLogger("CelesteModUpdateService");
 
@@ -48,6 +48,18 @@ public class CelesteModUpdateService extends HttpServlet {
             // send the everest_update.yaml we have in cache
             response.setHeader("Content-Type", "text/yaml");
             IOUtils.write(everestYaml, response.getOutputStream());
+        } else if (request.getRequestURI().equals("/celeste/mod_search_database.yaml")) {
+            // send mod_search_database.yaml from Cloud Storage
+            response.setHeader("Content-Type", "text/yaml");
+            try (InputStream is = CloudStorageUtils.getCloudStorageInputStream("mod_search_database.yaml")) {
+                IOUtils.copy(is, response.getOutputStream());
+            }
+        } else if (request.getRequestURI().equals("/celeste/mod_files_database.zip")) {
+            // send mod_files_database.zip from Cloud Storage
+            response.setHeader("Content-Type", "application/zip");
+            try (InputStream is = CloudStorageUtils.getCloudStorageInputStream("mod_files_database.zip")) {
+                IOUtils.copy(is, response.getOutputStream());
+            }
         } else {
             logger.warning("Invalid key");
             response.setStatus(403);

@@ -43,7 +43,7 @@ import static com.max480.discord.randombots.UpdateCheckerTracker.ModInfo;
  */
 @WebServlet(name = "CelesteModSearchService", loadOnStartup = 2, urlPatterns = {"/celeste/gamebanana-search",
         "/celeste/gamebanana-search-reload", "/celeste/gamebanana-list", "/celeste/gamebanana-categories", "/celeste/webp-to-png",
-        "/celeste/banana-mirror-image", "/celeste/mod_search_database.yaml", "/celeste/random-map", "/celeste/gamebanana-featured"})
+        "/celeste/banana-mirror-image", "/celeste/random-map", "/celeste/gamebanana-featured"})
 public class CelesteModSearchService extends HttpServlet {
 
     private final Logger logger = Logger.getLogger("CelesteModSearchService");
@@ -164,13 +164,6 @@ public class CelesteModSearchService extends HttpServlet {
                         }
                     }
                 }
-            }
-        }
-
-        if (request.getRequestURI().equals("/celeste/mod_search_database.yaml")) {
-            response.setHeader("Content-Type", "text/yaml");
-            try (InputStream is = CloudStorageUtils.getCloudStorageInputStream("mod_search_database.yaml")) {
-                IOUtils.copy(is, response.getOutputStream());
             }
         }
 
