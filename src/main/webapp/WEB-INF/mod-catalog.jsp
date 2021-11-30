@@ -24,7 +24,7 @@
         crossorigin="anonymous">
 
     <link rel="stylesheet" href="/css/common-v7.css">
-    <link rel="stylesheet" href="/css/mod-catalog-v1.css">
+    <link rel="stylesheet" href="/css/mod-catalog-v2.css">
 </head>
 
 <body>
@@ -108,6 +108,13 @@
                             class="btn btn-outline-secondary"><%= escapeHtml4(docLink.getKey()) %></a>
                     <% } %>
                 </p>
+
+                <% if(mod.dependentCount == 1) { %>
+                    <p class="dependent-count">Used as a dependency by 1 mod.</p>
+                <% } else if(mod.dependentCount > 1) { %>
+                    <p class="dependent-count">Used as a dependency by <%= mod.dependentCount %> mods.</p>
+                <% } %>
+
                 <% if(!mod.effectList.isEmpty()) { %>
                     <h4>Effects</h4>
                     <ul>

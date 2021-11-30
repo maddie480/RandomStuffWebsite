@@ -98,6 +98,7 @@ public class CelesteModCatalogService extends HttpServlet {
         public int categoryId;
         public String categoryName;
         public String modName;
+        public int dependentCount;
         public Set<String> entityList;
         public Set<String> triggerList;
         public Set<String> effectList;
@@ -109,6 +110,7 @@ public class CelesteModCatalogService extends HttpServlet {
             categoryId = (int) object.get("categoryId");
             categoryName = (String) object.get("categoryName");
             modName = (String) object.get("modName");
+            dependentCount = (int) object.get("dependentCount");
             entityList = ((ArrayList<Object>) object.get("entityList")).stream().map(Object::toString).collect(Collectors.toCollection(TreeSet::new));
             triggerList = ((ArrayList<Object>) object.get("triggerList")).stream().map(Object::toString).collect(Collectors.toCollection(TreeSet::new));
             effectList = ((ArrayList<Object>) object.get("effectList")).stream().map(Object::toString).collect(Collectors.toCollection(TreeSet::new));
