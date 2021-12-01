@@ -24,7 +24,7 @@
         crossorigin="anonymous">
 
     <link rel="stylesheet" href="/css/common-v7.css">
-    <link rel="stylesheet" href="/css/mod-catalog-v2.css">
+    <link rel="stylesheet" href="/css/mod-catalog-v3.css">
 </head>
 
 <body>
@@ -113,6 +113,11 @@
                     <p class="dependent-count">Used as a dependency by 1 mod.</p>
                 <% } else if(mod.dependentCount > 1) { %>
                     <p class="dependent-count">Used as a dependency by <%= mod.dependentCount %> mods.</p>
+                <% } %>
+
+                <% if(mod.latestVersion != null) { %>
+                    <h4>everest.yaml entry</h4>
+                    <pre><%= CelesteModCatalogService.getSampleEverestYaml(mod) %></pre>
                 <% } %>
 
                 <% if(!mod.effectList.isEmpty()) { %>

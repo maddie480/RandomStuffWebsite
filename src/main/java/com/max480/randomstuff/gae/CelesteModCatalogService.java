@@ -1,8 +1,12 @@
 package com.max480.randomstuff.gae;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.json.JSONObject;
+import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.Yaml;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -74,6 +78,20 @@ public class CelesteModCatalogService extends HttpServlet {
         }
     }
 
+    public static String getSampleEverestYaml(QueriedModInfo mod) {
+        return new Yaml().dumpAs(ImmutableList.of(
+                ImmutableMap.of(
+                        "Name", "YourModName",
+                        "Version", "1.0.0",
+                        "Dependencies", ImmutableList.of(
+                                ImmutableMap.of(
+                                        "Name", mod.modEverestYamlId,
+                                        "Version", mod.latestVersion
+                                )
+                        ))
+        ), null, DumperOptions.FlowStyle.BLOCK);
+    }
+
     private Pair<List<QueriedModInfo>, ZonedDateTime> loadList() throws IOException {
         // just load and parse the custom entity catalog JSON.
         try (InputStream is = CloudStorageUtils.getCloudStorageInputStream("custom_entity_catalog.json")) {
@@ -98,6 +116,8 @@ public class CelesteModCatalogService extends HttpServlet {
         public int categoryId;
         public String categoryName;
         public String modName;
+        public String modEverestYamlId;
+        public String latestVersion;
         public int dependentCount;
         public Set<String> entityList;
         public Set<String> triggerList;
@@ -110,6 +130,8 @@ public class CelesteModCatalogService extends HttpServlet {
             categoryId = (int) object.get("categoryId");
             categoryName = (String) object.get("categoryName");
             modName = (String) object.get("modName");
+            modEverestYamlId = (String) object.get("modEverestYamlId");
+            latestVersion = (String) object.get("latestVersion");
             dependentCount = (int) object.get("dependentCount");
             entityList = ((ArrayList<Object>) object.get("entityList")).stream().map(Object::toString).collect(Collectors.toCollection(TreeSet::new));
             triggerList = ((ArrayList<Object>) object.get("triggerList")).stream().map(Object::toString).collect(Collectors.toCollection(TreeSet::new));
