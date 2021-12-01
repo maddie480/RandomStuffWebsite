@@ -37,7 +37,7 @@ public class GameBananaArbitraryModAppService extends HttpServlet {
     public static class ModInfo {
         public String url; // _sProfileUrl
         public String name; // _sName
-        public String image; // _aPreviewMedia[0]._sBaseUrl + _aPreviewMedia[0]._sFile100
+        public String image; // _aPreviewMedia._aImages[0]._sBaseUrl + _aPreviewMedia._aImages[0]._sFile100
         public String dateAdded; // _tsDateAdded
         public String dateAddedClass;
         public String dateAddedRelative;
@@ -103,9 +103,9 @@ public class GameBananaArbitraryModAppService extends HttpServlet {
                     info.url = object.getString("_sProfileUrl");
                     info.name = object.getString("_sName");
 
-                    if (!object.getJSONArray("_aPreviewMedia").isEmpty()) {
-                        info.image = object.getJSONArray("_aPreviewMedia").getJSONObject(0).getString("_sBaseUrl")
-                                + "/" + object.getJSONArray("_aPreviewMedia").getJSONObject(0).getString("_sFile220");
+                    if (!object.getJSONObject("_aPreviewMedia").getJSONArray("_aImages").isEmpty()) {
+                        info.image = object.getJSONObject("_aPreviewMedia").getJSONArray("_aImages").getJSONObject(0).getString("_sBaseUrl")
+                                + "/" + object.getJSONObject("_aPreviewMedia").getJSONArray("_aImages").getJSONObject(0).getString("_sFile220");
                     }
 
                     long dateAdded = object.getLong("_tsDateAdded");
@@ -142,7 +142,7 @@ public class GameBananaArbitraryModAppService extends HttpServlet {
     }
 
     private JSONObject queryModById(String modId) {
-        try (InputStream is = openStreamWithTimeout(new URL("https://gamebanana.com/apiv6/Mod/" + modId +
+        try (InputStream is = openStreamWithTimeout(new URL("https://gamebanana.com/apiv7/Mod/" + modId +
                 "?_csvProperties=_sProfileUrl,_sName,_aPreviewMedia,_tsDateAdded,_tsDateUpdated,_aGame,_aSubmitter,_bIsWithheld,_bIsTrashed,_bIsPrivate"))) {
             return new JSONObject(IOUtils.toString(is, UTF_8));
         } catch (IOException e) {

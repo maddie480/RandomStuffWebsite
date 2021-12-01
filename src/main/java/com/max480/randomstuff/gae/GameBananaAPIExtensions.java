@@ -35,7 +35,7 @@ public class GameBananaAPIExtensions extends HttpServlet {
             pubDateField = "_tsDateUpdated";
         }
 
-        HttpURLConnection connection = (HttpURLConnection) new URL("https://gamebanana.com/apiv6/Mod/ByCategory?_csvProperties=_sName,_sProfileUrl,_aPreviewMedia," + pubDateField + "&"
+        HttpURLConnection connection = (HttpURLConnection) new URL("https://gamebanana.com/apiv7/Mod/ByCategory?_csvProperties=_sName,_sProfileUrl,_aPreviewMedia," + pubDateField + "&"
                 + request.getQueryString()).openConnection();
         connection.setConnectTimeout(10000);
         connection.setReadTimeout(30000);
@@ -62,7 +62,7 @@ public class GameBananaAPIExtensions extends HttpServlet {
             rss.append("\t\t\t<title>").append(StringEscapeUtils.escapeXml10(mod.getString("_sName"))).append("</title>\n");
             rss.append("\t\t\t<link>").append(mod.getString("_sProfileUrl")).append("</link>\n");
 
-            JSONObject image = mod.getJSONArray("_aPreviewMedia").getJSONObject(0);
+            JSONObject image = mod.getJSONObject("_aPreviewMedia").getJSONArray("_aImages").getJSONObject(0);
             rss.append("\t\t\t<image>")
                     .append(image.getString("_sBaseUrl")).append("/").append(image.getString("_sFile"))
                     .append("</image>\n");

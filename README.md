@@ -168,7 +168,7 @@ This API uses the "get mods for a category" API from GameBanana, then turns the 
 
 Usage is very similar to the "vanilla" GameBanana API, since it calls it directly behind the scenes: for example, getting the latest Celeste helpers (https://gamebanana.com/mods/cats/5081 :arrow_right: ID is 5081) is done with
 ```
-https://gamebanana.com/apiv6/Mod/ByCategory?_csvProperties=@gbprofile&_aCategoryRowIds[]=5081&_sOrderBy=_tsDateAdded,DESC&_nPerpage=10
+https://gamebanana.com/apiv7/Mod/ByCategory?_csvProperties=@gbprofile&_aCategoryRowIds[]=5081&_sOrderBy=_tsDateAdded,DESC&_nPerpage=10
 ```
 
 You can get them in the RSS format by just replacing the URL and carrying over all query params except `_csvProperties`:
