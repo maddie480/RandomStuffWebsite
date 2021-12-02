@@ -74,7 +74,7 @@
                 <a href="https://github.com/max4805/EverestUpdateCheckerServer/blob/master/README.md" target="_blank">on GitHub</a>.
             </p>
             <p>
-                APIs are also available that provide mod search and sorted / filtered lists,
+                APIs that provide mod search and sorted / filtered lists are also available,
                 <a href="https://github.com/max4805/RandomStuffWebsite/blob/main/README.md#gamebanana-search-api" target="_blank">check the docs here</a>.
             </p>
         </div>
