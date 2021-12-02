@@ -77,6 +77,9 @@
                 APIs that provide mod search and sorted / filtered lists are also available,
                 <a href="https://github.com/max4805/RandomStuffWebsite/blob/main/README.md#gamebanana-search-api" target="_blank">check the docs here</a>.
             </p>
+            <p>
+                Not inspired? Try <a href="/celeste/random-map" target="_blank">a random Celeste map</a>.
+            </p>
         </div>
 
         <% if (!((List<LatestUpdatesEntry>) request.getAttribute("latestUpdates")).isEmpty()) { %>
