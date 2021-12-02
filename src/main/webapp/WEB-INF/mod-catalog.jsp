@@ -60,7 +60,7 @@
 
             <div class="alert alert-info">
                 <p>
-                    This list is mostly generated automatically from Ahorn plugin file names. It was last updated on <b><%= request.getAttribute("lastUpdated") %></b>.
+                    This page is mostly generated automatically from Ahorn plugin file names. It was last updated on <b><%= request.getAttribute("lastUpdated") %></b>.
                 </p>
                 <p>
                     If you are a mod maker and want to <b>rename</b> an entity appearing here, rename its Ahorn plugin file.
