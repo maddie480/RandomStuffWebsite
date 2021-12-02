@@ -54,6 +54,10 @@
                 If something looks interesting to you, check the GameBanana page for the mod for more details!
             </p>
 
+            <p>
+                This list is also available <a href="/celeste/custom-entity-catalog.json" target="_blank">in JSON format</a>.
+            </p>
+
             <div class="alert alert-info">
                 <p>
                     This list is mostly generated automatically from Ahorn plugin file names. It was last updated on <b><%= request.getAttribute("lastUpdated") %></b>.
