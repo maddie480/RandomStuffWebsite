@@ -23,8 +23,8 @@
         integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
         crossorigin="anonymous">
 
-    <link rel="stylesheet" href="/css/common-v7.css">
-    <link rel="stylesheet" href="/css/celeste-news-network-subscription-v1.css">
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/celeste-news-network-subscription.css">
 </head>
 
 <body>

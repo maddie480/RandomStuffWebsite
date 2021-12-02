@@ -14,7 +14,7 @@
         integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
         crossorigin="anonymous">
 
-    <link rel="stylesheet" href="/css/gamebanana-modlist-settings-v1.css">
+    <link rel="stylesheet" href="/css/gamebanana-modlist-settings.css">
 </head>
 
 <body>

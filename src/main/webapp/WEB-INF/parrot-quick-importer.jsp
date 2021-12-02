@@ -18,7 +18,7 @@
                 crossorigin="anonymous">
         </script>
 
-    <link rel="stylesheet" href="/css/parrot-quick-importer-v1.css">
+    <link rel="stylesheet" href="/css/parrot-quick-importer.css">
     </head>
 
     <body>

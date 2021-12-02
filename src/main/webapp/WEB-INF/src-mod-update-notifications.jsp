@@ -19,16 +19,16 @@
     <link rel="shortcut icon" href="/celeste/favicon.ico">
 
     <% if((boolean) request.getAttribute("access_forbidden")) { %>
-        <link rel="stylesheet" href="/css/common-v7.css">
-        <link rel="stylesheet" href="/css/page-not-found-v1.css">
+        <link rel="stylesheet" href="/css/common.css">
+        <link rel="stylesheet" href="/css/page-not-found.css">
     <% } else { %>
         <link rel="stylesheet"
             href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
             integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
             crossorigin="anonymous">
 
-        <link rel="stylesheet" href="/css/common-v7.css">
-        <link rel="stylesheet" href="/css/src-mod-update-notifications-v1.css">
+        <link rel="stylesheet" href="/css/common.css">
+        <link rel="stylesheet" href="/css/src-mod-update-notifications.css">
     <% } %>
 </head>
 

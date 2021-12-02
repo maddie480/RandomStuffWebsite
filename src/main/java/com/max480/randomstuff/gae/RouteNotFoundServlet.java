@@ -26,8 +26,8 @@ public class RouteNotFoundServlet extends HttpServlet {
             response.setStatus(404);
             response.setHeader("Content-Type", "text/html; charset=UTF-8");
             response.getWriter().write("<html>" +
-                    "<link rel=\"stylesheet\" href=\"/css/common-v7.css\">" +
-                    "<link rel=\"stylesheet\" href=\"/css/page-not-found-v1.css\">" +
+                    "<link rel=\"stylesheet\" href=\"/css/common.css\">" +
+                    "<link rel=\"stylesheet\" href=\"/css/page-not-found.css\">" +
                     "<h1>\u274C Not Found</h1><a href=\"/\">\u2B05 Back to Home Page</a></html>");
             logger.warning("Route not found!");
         }
