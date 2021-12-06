@@ -113,6 +113,6 @@
         <% } %>
     </div>
 
-    <script src="/js/update-checker-status.js"></script>
+    <script src="/js/timestamp-converter.js"></script>
 </body>
 </html>

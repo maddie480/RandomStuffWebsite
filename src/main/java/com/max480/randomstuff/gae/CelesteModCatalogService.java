@@ -60,6 +60,7 @@ public class CelesteModCatalogService extends HttpServlet {
                 request.setAttribute("lastUpdated", lastUpdated.format(
                         DateTimeFormatter.ofPattern("MMMM d, yyyy HH:mm zzz", Locale.ENGLISH)
                 ));
+                request.setAttribute("lastUpdatedTimestamp", lastUpdated.toEpochSecond());
                 request.setAttribute("modCount", modInfo.size());
                 request.setAttribute("entityCount", modInfo.stream()
                         .mapToLong(info -> info.entityList.size())

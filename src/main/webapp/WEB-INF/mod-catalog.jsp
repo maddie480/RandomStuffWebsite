@@ -49,9 +49,21 @@
             <h1>Celeste Custom Entity and Trigger List</h1>
 
             <p>
-                Here is the list of entities and triggers you can get from helpers on GameBanana.
+                Here is the list of entities and triggers that are available from helpers on GameBanana.
                 You can get those by installing the helper they belong to, then restarting Ahorn.
-                If something looks interesting to you, check the GameBanana page for the mod for more details!
+                If something looks interesting to you, check the GameBanana page to learn more and download it!
+            </p>
+
+            <p>
+                <b>If you want to use one of those helpers in your map</b>, you should add it as a <i>dependency</i> using <code>everest.yaml</code>,
+                to make sure people getting your map get the helper as well:
+                <a href="https://github.com/EverestAPI/Resources/wiki/Mod-Structure#using-helper-mods" target="_blank">check the wiki for more details</a>.
+                In the list, you will find sample <code>everest.yaml</code> files that show how to add the latest version of each mod as a dependency.
+            </p>
+
+            <p>
+                Note that it is <b>not recommended</b> to use <span class="badge badge-danger">Maps</span> as dependencies, because anyone wanting to play your map
+                would have to get that other map and all its dependencies as well. Maps that ship with custom entities are still included here for completeness.
             </p>
 
             <p>
@@ -60,7 +72,8 @@
 
             <div class="alert alert-info">
                 <p>
-                    This page is mostly generated automatically from Ahorn plugin file names. It was last updated on <b><%= request.getAttribute("lastUpdated") %></b>.
+                    This page is mostly generated automatically from Ahorn plugin file names. It was last updated on
+                    <b><span class="timestamp-long" data-timestamp="<%= request.getAttribute("lastUpdatedTimestamp") %>"><%= request.getAttribute("lastUpdated") %></span></b>.
                 </p>
                 <p>
                     If you are a mod maker and want to <b>rename</b> an entity appearing here, rename its Ahorn plugin file.
@@ -120,7 +133,7 @@
                 <% } %>
 
                 <% if(mod.latestVersion != null) { %>
-                    <h4>everest.yaml entry</h4>
+                    <h4>Sample everest.yaml</h4>
                     <pre><%= CelesteModCatalogService.getSampleEverestYaml(mod) %></pre>
                 <% } %>
 
@@ -151,5 +164,7 @@
             <% } %>
         <% } %>
     </div>
+
+    <script src="/js/timestamp-converter.js"></script>
 </body>
 </html>
