@@ -59,6 +59,17 @@
             <div class="alert alert-danger">
                 <b>Your everest.yaml file is not valid.</b> An error occurred while parsing it:
                 <pre><%= escapeHtml4((String) request.getAttribute("parseError")) %></pre>
+                This probably means your file isn't valid YAML or that it doesn't match the structure of an everest.yaml file.
+                Make sure your everest.yaml looks like this one, using spaces (not tabs) and making sure text is aligned in the same way:
+
+<!-- pre blocks are sensitive to indentation so it has to be over there on the left aaaa -->
+<pre>
+- Name: YourModName
+  Version: 1.0.0
+  Dependencies:
+    - Name: DependencyName
+      Version: 1.0.0
+</pre>
             </div>
         <% } else if (request.getAttribute("validationErrors") != null) { %>
             <div class="alert alert-warning">
@@ -104,6 +115,7 @@
             </div>
 
             <div class="alert alert-info">
+                <b>This page only validates the everest.yaml files you place at the root of your mod.</b>
                 If you want to validate the syntax of other YAML files (like map meta.yamls), use online tools like
                 <a href="https://jsonformatter.org/yaml-validator/" target="_blank" rel="noopener">this one</a>.
             </div>
