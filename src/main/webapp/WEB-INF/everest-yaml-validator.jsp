@@ -59,8 +59,10 @@
             <div class="alert alert-danger">
                 <b>Your everest.yaml file is not valid.</b> An error occurred while parsing it:
                 <pre><%= escapeHtml4((String) request.getAttribute("parseError")) %></pre>
-                This probably means your file isn't valid YAML or that it doesn't match the structure of an everest.yaml file.
-                Make sure it looks like this one, using spaces (not tabs) and making sure text is aligned in the same way:
+                <p class="error-description">
+                    This probably means your file is not valid YAML or that it does not match the structure of an everest.yaml file.
+                    Make sure it looks like this one, using spaces (not tabs) and making sure text is aligned in the same way:
+                </p>
 
 <!-- pre blocks are sensitive to indentation so it has to be over there on the left aaaa -->
 <pre>
