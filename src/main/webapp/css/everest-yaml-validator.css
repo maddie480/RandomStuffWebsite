@@ -9,3 +9,8 @@ pre {
 ul {
     margin-bottom: 2px;
 }
+
+.error-description {
+    margin-top: 15px;
+    margin-bottom: 0;
+}
