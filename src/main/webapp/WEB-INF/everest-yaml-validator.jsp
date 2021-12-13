@@ -69,7 +69,9 @@
 - Name: YourModName
   Version: 1.0.0
   Dependencies:
-    - Name: DependencyName
+    - Name: DependencyName1
+      Version: 1.0.0
+    - Name: DependencyName2
       Version: 1.0.0
 </pre>
             </div>
