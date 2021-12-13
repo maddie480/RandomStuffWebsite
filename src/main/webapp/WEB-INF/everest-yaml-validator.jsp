@@ -61,7 +61,7 @@
                 <pre><%= escapeHtml4((String) request.getAttribute("parseError")) %></pre>
                 <p class="error-description">
                     This probably means your file is not valid YAML or that it does not match the structure of an everest.yaml file.
-                    Make sure it looks like this one, using spaces (not tabs) and making sure text is aligned in the same way:
+                    Make sure it looks like this one, use spaces (not tabs) and check text is aligned in the same way:
                 </p>
 
 <!-- pre blocks are sensitive to indentation so it has to be over there on the left aaaa -->
