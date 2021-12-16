@@ -50,7 +50,7 @@
 
             <p>
                 Here is the list of entities and triggers that are available from helpers on GameBanana.
-                You can get those by installing the helper they belong to, then restarting Ahorn.
+                You can get those by installing the helper they belong to, then restarting your map making program.
                 If something looks interesting to you, check the GameBanana page to learn more and download it!
             </p>
 
@@ -72,11 +72,13 @@
 
             <div class="alert alert-info">
                 <p>
-                    This page is mostly generated automatically from Ahorn plugin file names. It was last updated on
+                    This page is mostly generated automatically from entity IDs found in map editor plugins. It was last updated on
                     <b><span class="timestamp-long" data-timestamp="<%= request.getAttribute("lastUpdatedTimestamp") %>"><%= request.getAttribute("lastUpdated") %></span></b>.
                 </p>
                 <p>
-                    If you are a mod maker and want to <b>rename</b> an entity appearing here, rename its Ahorn plugin file.
+                    If you are a mod maker and want to <b>rename</b> an entity appearing here, make a pull request on
+                    <a href="https://github.com/max4805/RandomBackendStuff/blob/main/modcatalogdictionary.txt" target="_blank">that file</a>
+                    in order to add an exception for it.
                     If you want to <b>add a button that links to your documentation</b>,
                     <a href="https://github.com/EverestAPI/Resources/wiki/Helper-Manuals" rel="noopener" target="_blank">update this GitHub wiki page</a>!
                 </p>
@@ -140,24 +142,46 @@
                 <% if(!mod.effectList.isEmpty()) { %>
                     <h4>Effects</h4>
                     <ul>
-                        <% for(String effect : mod.effectList.keySet()) { %>
-                            <li><%= escapeHtml4(effect) %></li>
+                        <% for(Map.Entry<String, List<String>> effect : mod.effectList.entrySet()) { %>
+                            <li>
+                                <%= escapeHtml4(effect.getKey()) %>
+                                <% if (effect.getValue().contains("ahorn")) { %>
+                                    <span class="badge badge-secondary">Ahorn</span>
+                                <% } %>
+                                <% if (effect.getValue().contains("loenn")) { %>
+                                    <span class="badge badge-primary">L&#x00f6;nn</span>
+                                <% } %>
+                            </li>
                         <% } %>
                     </ul>
                 <% } %>
                 <% if(!mod.entityList.isEmpty()) { %>
                     <h4>Entities</h4>
                     <ul>
-                        <% for(String entity : mod.entityList.keySet()) { %>
-                            <li><%= escapeHtml4(entity) %></li>
+                        <% for(Map.Entry<String, List<String>> entity : mod.entityList.entrySet()) { %>
+                            <li><%= escapeHtml4(entity.getKey()) %>
+                                <% if (entity.getValue().contains("ahorn")) { %>
+                                    <span class="badge badge-secondary">Ahorn</span>
+                                <% } %>
+                                <% if (entity.getValue().contains("loenn")) { %>
+                                    <span class="badge badge-primary">L&#x00f6;nn</span>
+                                <% } %>
+                            </li>
                         <% } %>
                     </ul>
                 <% } %>
                 <% if(!mod.triggerList.isEmpty()) { %>
                     <h4>Triggers</h4>
                     <ul>
-                        <% for(String trigger : mod.triggerList.keySet()) { %>
-                            <li><%= escapeHtml4(trigger) %></li>
+                        <% for(Map.Entry<String, List<String>> trigger : mod.triggerList.entrySet()) { %>
+                            <li><%= escapeHtml4(trigger.getKey()) %>
+                                <% if (trigger.getValue().contains("ahorn")) { %>
+                                    <span class="badge badge-secondary">Ahorn</span>
+                                <% } %>
+                                <% if (trigger.getValue().contains("loenn")) { %>
+                                    <span class="badge badge-primary">L&#x00f6;nn</span>
+                                <% } %>
+                            </li>
                         <% } %>
                     </ul>
                 <% } %>
