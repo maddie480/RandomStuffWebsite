@@ -46,6 +46,7 @@ public class CelesteModCatalogService extends HttpServlet {
                 list = loadList();
             } catch (Exception e) {
                 logger.severe("Could not load mod catalog: " + e);
+                e.printStackTrace();
             }
 
 
@@ -120,9 +121,9 @@ public class CelesteModCatalogService extends HttpServlet {
         public String modEverestYamlId;
         public String latestVersion;
         public int dependentCount;
-        public Set<String> entityList;
-        public Set<String> triggerList;
-        public Set<String> effectList;
+        public Map<String, List<String>> entityList;
+        public Map<String, List<String>> triggerList;
+        public Map<String, List<String>> effectList;
         public Map<String, String> documentationLinks;
 
         public QueriedModInfo(HashMap<String, Object> object) {
@@ -134,9 +135,9 @@ public class CelesteModCatalogService extends HttpServlet {
             modEverestYamlId = (String) object.get("modEverestYamlId");
             latestVersion = (String) object.get("latestVersion");
             dependentCount = (int) object.get("dependentCount");
-            entityList = ((ArrayList<Object>) object.get("entityList")).stream().map(Object::toString).collect(Collectors.toCollection(TreeSet::new));
-            triggerList = ((ArrayList<Object>) object.get("triggerList")).stream().map(Object::toString).collect(Collectors.toCollection(TreeSet::new));
-            effectList = ((ArrayList<Object>) object.get("effectList")).stream().map(Object::toString).collect(Collectors.toCollection(TreeSet::new));
+            entityList = new TreeMap<>((Map<String, List<String>>) object.get("entityList"));
+            triggerList = new TreeMap<>((Map<String, List<String>>) object.get("triggerList"));
+            effectList = new TreeMap<>((Map<String, List<String>>) object.get("effectList"));
             documentationLinks = new LinkedHashMap<>();
 
             ((ArrayList<Object>) object.get("documentationLinks")).stream()

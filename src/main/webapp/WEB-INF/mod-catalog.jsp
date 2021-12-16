@@ -42,7 +42,7 @@
 
         <% if((boolean) request.getAttribute("error")) { %>
             <div class="alert alert-danger">
-                An error occurred while refreshing the entity and trigger list. Please try again in an hour.<br>
+                An error occurred while loading the entity and trigger list. Please try again later.<br>
                 If this keeps happening, get in touch with max480#4596 on <a href="https://discord.gg/6qjaePQ" target="_blank">Discord</a>.
             </div>
         <% } else { %>
@@ -140,7 +140,7 @@
                 <% if(!mod.effectList.isEmpty()) { %>
                     <h4>Effects</h4>
                     <ul>
-                        <% for(String effect : mod.effectList) { %>
+                        <% for(String effect : mod.effectList.keySet()) { %>
                             <li><%= escapeHtml4(effect) %></li>
                         <% } %>
                     </ul>
@@ -148,7 +148,7 @@
                 <% if(!mod.entityList.isEmpty()) { %>
                     <h4>Entities</h4>
                     <ul>
-                        <% for(String entity : mod.entityList) { %>
+                        <% for(String entity : mod.entityList.keySet()) { %>
                             <li><%= escapeHtml4(entity) %></li>
                         <% } %>
                     </ul>
@@ -156,7 +156,7 @@
                 <% if(!mod.triggerList.isEmpty()) { %>
                     <h4>Triggers</h4>
                     <ul>
-                        <% for(String trigger : mod.triggerList) { %>
+                        <% for(String trigger : mod.triggerList.keySet()) { %>
                             <li><%= escapeHtml4(trigger) %></li>
                         <% } %>
                     </ul>
