@@ -46,7 +46,6 @@ public class CelesteModCatalogService extends HttpServlet {
                 list = loadList();
             } catch (Exception e) {
                 logger.severe("Could not load mod catalog: " + e);
-                e.printStackTrace();
             }
 
 
