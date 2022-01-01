@@ -1,7 +1,6 @@
 package com.max480.randomstuff.gae;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
@@ -24,7 +23,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.nio.file.Paths;
 import java.util.*;
@@ -286,6 +284,9 @@ public class CelesteModSearchService extends HttpServlet {
             for (ModInfo modInfo : modDatabaseForSorting) {
                 Object category = modInfo.type;
                 if (v2 && category.equals("Mod")) {
+                    // skip mods belonging to unapproved categories
+                    if (modInfo.categoryId == -1) continue;
+
                     category = modInfo.categoryId;
                 }
                 if (!categoriesAndCounts.containsKey(category)) {
