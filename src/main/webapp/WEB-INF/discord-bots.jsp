@@ -191,7 +191,7 @@
         </div>
     </div>
 
-    <a class="btn btn-primary" href="https://discord.com/oauth2/authorize?client_id=809572233953542154&scope=bot&permissions=19520" target="_blank">Invite</a>
+    <a class="btn btn-primary" href="https://discord.com/oauth2/authorize?client_id=809572233953542154&scope=bot&permissions=52288" target="_blank">Invite</a>
 
     <h1 class="botname margin" id="games-bot">
         <img src="/img/games-bot-logo.png" class="botlogo"> Games Bot
