@@ -182,6 +182,34 @@
             <div><i>Note: "Effects" refer to the Effects tab of the Stylegrounds window in Ahorn here.</i></div>
         <% } %>
 
+        <% if (request.getParameter("missingfonts") != null) { %>
+            <h2>You use characters that are missing from the game's font</h2>
+
+            <div>
+                The game does not ship with complete fonts, because that is not necessary and would unnecessarily take space:
+                Celeste only uses a small subset of those characters, in particular for languages like Chinese or Korean.
+            </div>
+
+            <div>
+                Some of the characters you used in your dialogue are not included in the game, so you need to ship them with your mod,
+                otherwise they will be missing when you see that dialogue in-game.
+                These extra characters take the form of a .fnt file defining the characters,
+                and one or multiple .png files containing the characters themselves.
+            </div>
+
+            <div>
+                You can use <a target="_blank" href="/celeste/font-generator">this tool</a> in order to generate those files
+                with only the missing characters. After generating the font, include it in your mod zip like indicated by the tool.
+            </div>
+
+            <div>
+                <i>If you already ship the missing characters with your mod,</i> check that they are at the right place (<pre>Mods/yourmod/Dialog/Fonts</pre>),
+                with a correct name (one of <pre>chinese.fnt</pre>, <pre>japanese.fnt</pre>, <pre>korean.fnt</pre>, <pre>russian.fnt</pre> or <pre>renogare64.fnt</pre>),
+                and check that the .fnt file is valid (it should be in XML format). More details can be found
+                <a href="https://github.com/EverestAPI/Resources/wiki/Adding-Custom-Dialogue#custom-font-loading" target="_blank">on the wiki</a>.
+            </div>
+        <% } %>
+
         <div style="height: 30px"/>
 	</div>
 </body>
