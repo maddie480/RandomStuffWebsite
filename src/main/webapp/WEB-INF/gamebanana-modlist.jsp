@@ -6,6 +6,10 @@
 
 <!-- CSS fixup due to relative font sizes behaving weird -->
 <style>
+    <% if (((boolean) request.getAttribute("isMax480")) && ((boolean) request.getAttribute("isLoggedOut"))) { %>
+        @import url("https://files.gamebanana.com/Member/uberstyles/61bdd30cb700c.css");
+    <% } %>
+
     @media(max-width: 400px) {
         #tpm__sArbitraryModsModule span, #tpm__sArbitraryModsModule .PageModule {
             font-size: 12.8px;
@@ -104,7 +108,8 @@
 
 <script>
     $(".BananaTip").joUninited("joBindBananaTip").joBindBananaTip();
-    <% if ("1698143".equals(request.getAttribute("memberId"))) { %>
+
+    <% if ((boolean) request.getAttribute("isMax480")) { %>
         $('#SubmissionsListModule record:has(spriteicon.App)').hide();
         fetch('https://max480-random-stuff.appspot.com/celeste/update-checker-status?widget=true')
             .then(r => r.text())
