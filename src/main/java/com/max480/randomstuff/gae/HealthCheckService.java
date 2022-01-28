@@ -10,6 +10,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.DayOfWeek;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.logging.Logger;
@@ -36,7 +38,7 @@ public class HealthCheckService extends HttpServlet {
                     Logging.EntryListOption.sortOrder(Logging.SortingField.TIMESTAMP, Logging.SortingOrder.DESCENDING),
                     Logging.EntryListOption.filter(
                             "jsonPayload.message =\"Bot status is CONNECTED\" " +
-                                    " AND timestamp >= \"" + ZonedDateTime.now().minusMinutes(3).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME) + "\""),
+                                    " AND timestamp >= \"" + ZonedDateTime.now().minusMinutes(isExtendedDelay() ? 15 : 2).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME) + "\""),
                     Logging.EntryListOption.pageSize(1)
             );
 
@@ -50,5 +52,13 @@ public class HealthCheckService extends HttpServlet {
             logger.warning("Route not found");
             response.setStatus(404);
         }
+    }
+
+    private boolean isExtendedDelay() {
+        // The bot stops reporting its status during the midnight checks,
+        // and at 8am on Sundays due to a backup scheduled task.
+        ZonedDateTime now = ZonedDateTime.now(ZoneId.of("Europe/Paris"));
+        return (now.getHour() == 0 && now.getMinute() < 15)
+            || (now.getDayOfWeek() == DayOfWeek.SUNDAY && now.getHour() == 8 && now.getMinute() < 15);
     }
 }
