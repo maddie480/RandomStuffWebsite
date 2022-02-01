@@ -76,12 +76,12 @@
         <li><code>/remove-timezone</code> - removes your timezone role</li>
         <li><code>/discord-timestamp [date_time]</code> - gives a <a href="https://discord.com/developers/docs/reference#message-formatting-timestamp-styles" target="_blank">Discord timestamp</a>, to tell a date/time to other people regardless of their timezone</li>
         <li><code>/time-for [member]</code> - gives the time it is now for another member of the server, if they have a timezone role</li>
-        <li><code>/list-timezones</code> - lists the timezones of all members in the server that have timezone roles</li>
+        <li><code>/list-timezones [visibility]</code> - lists the timezones of all members in the server that have timezone roles. You can pass <code>visibility = public</code> in order to have the bot response be visible to everyone in the channel.</li>
         <li><code>/toggle-times</code> - sets whether timezone roles should show the time it is in the timezone (for example <code>Timezone UTC+01:00 (2pm)</code>) or not (for example <code>Timezone UTC+01:00</code>). Enabling this causes "role update" events to be logged hourly. This is disabled by default, and only members with the Manage Server or Admin permission can enable it.</li>
     </ul>
 
     <p>
-        These slash commands issue private responses, so they can be used from anywhere without cluttering a channel with commands.
+        These slash commands issue private responses by default, so they can be used from anywhere without cluttering a channel with commands.
     </p>
 
     <p>
