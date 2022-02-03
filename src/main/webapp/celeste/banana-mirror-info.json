@@ -1,0 +1,10 @@
+{
+    "mirrors": [
+        {
+            "id": "jade",
+            "name": "0x0a.de (Germany)",
+            "pattern": "https://celestemodupdater.0x0a.de/banana-mirror/%id%.zip"
+        }
+    ],
+    "default": "jade"
+}
