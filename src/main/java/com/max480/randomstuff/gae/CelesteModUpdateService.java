@@ -63,8 +63,11 @@ public class CelesteModUpdateService extends HttpServlet {
             }
         } else if (request.getRequestURI().equals("/celeste/mod_dependency_graph.yaml")) {
             // send mod_dependency_graph.yaml from Cloud Storage
+            boolean everestYamlFormat = "everestyaml".equals(request.getParameter("format"));
             response.setHeader("Content-Type", "text/yaml");
-            try (InputStream is = CloudStorageUtils.getCloudStorageInputStream("mod_dependency_graph.yaml")) {
+
+            try (InputStream is = CloudStorageUtils.getCloudStorageInputStream(
+                    everestYamlFormat ? "mod_dependency_graph_everest.yaml" : "mod_dependency_graph.yaml")) {
                 IOUtils.copy(is, response.getOutputStream());
             }
         } else {
