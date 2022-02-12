@@ -66,8 +66,14 @@
             In order to do this, send your dialog file here, then unzip the contents of the zip you're given to <code>Mods/yourmod/Dialog/Fonts</code>.
         </p>
 
-        <div class="alert alert-info">
+        <p>
             If characters are missing from the font, you will find a <code>missing-characters.txt</code> file in the generated zip.
+        </p>
+
+        <div class="alert alert-info">
+            For languages that exist in vanilla, you can also use the <code>--generate-font [language]</code> command of the
+            <a href="/discord-bots#mod-structure-verifier">Mod Structure Verifier</a> Discord bot.
+            It is more accurate than this page, as it uses the same tool as the one that was used for vanilla Celeste.
         </div>
 
         <form method="POST" enctype="multipart/form-data">

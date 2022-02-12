@@ -178,6 +178,13 @@
         (they will have to use the <code>--verify</code> command if you set up the bot with <code>--setup-free-names</code>).
     </p>
 
+    <p>
+        If you have a dialog file in a language like Japanese or Korean, you might be using characters that are absent from the vanilla game's font.
+        The Mod Structure Verifier checks for that, and gives you <b>a command to generate the missing characters</b>: <code>--generate-font [language]</code>.
+        Send this command along with your dialog file to get a zip with all the files you need to integrate the characters you use into the game's font!
+        <i><code>language</code> should be one of <code>chinese</code>, <code>japanese</code>, <code>korean</code>, <code>renogare</code> or <code>russian</code>.</i>
+    </p>
+
     <div class="row">
         <div class="col-md-6 col-xs-12">
             <b class="gametitle">Example of a mod passing verification:</b>

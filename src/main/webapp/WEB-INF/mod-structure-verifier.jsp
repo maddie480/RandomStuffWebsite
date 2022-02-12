@@ -203,6 +203,11 @@
             </div>
 
             <div>
+                You can also run the <code>--generate-font [language]</code> command with your dialog file attached to have the Mod Structure Verifier generate those files.
+                <code>language</code> should be one of <code>chinese</code>, <code>japanese</code>, <code>korean</code>, <code>renogare</code> or <code>russian</code>.
+            </div>
+
+            <div>
                 <i>If you already ship the missing characters with your mod,</i> check that they are at the right place (<pre>Mods/yourmod/Dialog/Fonts</pre>),
                 with a correct name (one of <pre>chinese.fnt</pre>, <pre>japanese.fnt</pre>, <pre>korean.fnt</pre>, <pre>russian.fnt</pre> or <pre>renogare64.fnt</pre>),
                 and check that the .fnt file is valid (it should be in XML format). More details can be found
