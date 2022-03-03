@@ -1,6 +1,7 @@
 package com.max480.randomstuff.gae;
 
 import com.google.api.gax.batching.BatchingSettings;
+import com.google.cloud.WriteChannel;
 import com.google.cloud.pubsub.v1.Publisher;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.BlobInfo;
@@ -9,9 +10,11 @@ import com.google.cloud.storage.StorageOptions;
 import com.google.protobuf.ByteString;
 import com.google.pubsub.v1.PubsubMessage;
 import com.google.pubsub.v1.TopicName;
-import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileItemIterator;
+import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
 
 import javax.servlet.ServletException;
@@ -21,11 +24,16 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * Servlet allowing to submit files to the Mod Structure Verifier bot.
@@ -64,21 +72,28 @@ public class ModStructureVerifierService extends HttpServlet {
             logger.warning("Bad request");
             response.setStatus(400);
         } else {
-            ServletFileUpload upload = new ServletFileUpload(new CloudStorageUploadItem.Factory());
+            ServletFileUpload upload = new ServletFileUpload();
 
             logger.fine("Parsing request...");
 
+            String id = UUID.randomUUID().toString();
+
             // parse request
-            FileItem modZip = null;
+            boolean modZipFound = false;
             String assetsFolderName = null;
             String mapsFolderName = null;
 
             try {
-                for (FileItem item : upload.parseRequest(request)) {
+                FileItemIterator iter = upload.getItemIterator(request);
+                while (iter.hasNext()) {
+                    FileItemStream item = iter.next();
                     if (item.isFormField()) {
                         // Process regular form field (input type="text|radio|checkbox|etc", select, etc).
                         String fieldname = item.getFieldName();
-                        String fieldvalue = item.getString();
+                        String fieldvalue;
+                        try (InputStream is = item.openStream()) {
+                            fieldvalue = IOUtils.toString(is, UTF_8);
+                        }
 
                         if ("assetFolderName".equals(fieldname)) {
                             assetsFolderName = fieldvalue;
@@ -89,7 +104,23 @@ public class ModStructureVerifierService extends HttpServlet {
                         // Process form file field (input type="file").
                         String fieldname = item.getFieldName();
                         if ("zipFile".equals(fieldname)) {
-                            modZip = item;
+                            modZipFound = true;
+
+                            // stream file straight into Cloud Storage.
+                            BlobId blobId = BlobId.of("staging.max480-random-stuff.appspot.com", "mod-structure-verify-" + id + ".zip");
+                            BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType("application/octet-stream").build();
+
+                            try (InputStream readerStream = item.openStream();
+                                 WriteChannel writer = storage.writer(blobInfo);
+                                 ReadableByteChannel reader = Channels.newChannel(readerStream)) {
+
+                                ByteBuffer buffer = ByteBuffer.allocate(4 * 1024);
+                                while (reader.read(buffer) > 0 || buffer.position() != 0) {
+                                    buffer.flip();
+                                    writer.write(buffer);
+                                    buffer.compact();
+                                }
+                            }
                         }
                     }
                 }
@@ -97,7 +128,7 @@ public class ModStructureVerifierService extends HttpServlet {
                 logger.warning("Cannot parse request: " + e);
             }
 
-            if (modZip == null
+            if (!modZipFound
                     || (mapsFolderName != null && !mapsFolderName.matches("^[A-Za-z0-9]*$"))
                     || (assetsFolderName != null && !assetsFolderName.matches("^[A-Za-z0-9]*$"))) {
 
@@ -106,7 +137,7 @@ public class ModStructureVerifierService extends HttpServlet {
                 response.setStatus(400);
             } else {
                 // create the task, and redirect to the page that will allow to follow it
-                String id = runModStructureVerifyTask((CloudStorageUploadItem) modZip, assetsFolderName, mapsFolderName);
+                runModStructureVerifyTask(id, assetsFolderName, mapsFolderName);
                 response.setStatus(302);
                 response.setHeader("Location", "/celeste/task-tracker/mod-structure-verify/" + id);
                 return;
@@ -116,22 +147,11 @@ public class ModStructureVerifierService extends HttpServlet {
         request.getRequestDispatcher("/WEB-INF/mod-structure-verifier.jsp").forward(request, response);
     }
 
-    private String runModStructureVerifyTask(CloudStorageUploadItem modZip, String assetsFolderName, String mapsFolderName) throws IOException {
-        String id = UUID.randomUUID().toString();
-
+    private void runModStructureVerifyTask(String id, String assetsFolderName, String mapsFolderName) throws IOException {
         // send timestamp marker to Cloud Storage (this will save that the task exists, and the timestamp at which it started)
         BlobId blobId = BlobId.of("staging.max480-random-stuff.appspot.com", "mod-structure-verify-" + id + "-timestamp.txt");
         BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType("text/plain").build();
-        storage.create(blobInfo, Long.toString(System.currentTimeMillis()).getBytes(StandardCharsets.UTF_8));
-
-        logger.fine("Copying file...");
-
-        // copy the temp upload file to its final target
-        blobId = BlobId.of("staging.max480-random-stuff.appspot.com", "mod-structure-verify-" + id + ".zip");
-        storage.copy(Storage.CopyRequest.newBuilder()
-                .setSource(modZip.getCloudStorageFile())
-                .setTarget(blobId)
-                .build());
+        storage.create(blobInfo, Long.toString(System.currentTimeMillis()).getBytes(UTF_8));
 
         logger.fine("Creating task...");
 
@@ -166,7 +186,5 @@ public class ModStructureVerifierService extends HttpServlet {
         } catch (InterruptedException | ExecutionException e) {
             throw new IOException(e);
         }
-
-        return id;
     }
 }
