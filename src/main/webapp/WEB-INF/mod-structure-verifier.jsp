@@ -75,6 +75,7 @@
         </ul>
 
         <div class="alert alert-info" id="bmfont-info">
+            <b>File upload on the website is slow.</b>
             For faster verifying, you can use the <a href="/discord-bots#mod-structure-verifier">Mod Structure Verifier</a> Discord bot.
             If you host a contest/collab that has its own Discord server, you can invite the bot on it and preset the folder names,
             so that mappers just have to drop their zip files in a designated channel to have them verified.
