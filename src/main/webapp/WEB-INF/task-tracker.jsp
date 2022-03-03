@@ -33,14 +33,24 @@
             <a href="/celeste/custom-entity-catalog">Custom&nbsp;Entity&nbsp;Catalog</a> <span class="sep">|</span>
             <a href="/celeste/everest-yaml-validator">everest.yaml&nbsp;validator</a> <span class="sep">|</span>
             <a href="/celeste/update-checker-status">Update&nbsp;Checker&nbsp;status</a> <span class="sep">|</span>
-            <a href="https://max480-random-stuff.herokuapp.com/celeste/banana-mirror-browser">Banana&nbsp;Mirror&nbsp;Browser</a> <span class="sep break">|</span>
-            <a href="/celeste/font-generator" class="active">Font&nbsp;Generator</a> <span class="sep">|</span>
+            <a href="https://max480-random-stuff.herokuapp.com/celeste/banana-mirror-browser">Banana&nbsp;Mirror&nbsp;Browser</a> <span class="sep">|</span>
+            <% if ("font-generate".equals(request.getAttribute("type"))) { %>
+                <a href="/celeste/mod-structure-verifier">Mod&nbsp;Structure&nbsp;Verifier</a> <span class="sep break">|</span>
+                <a href="/celeste/font-generator" class="active">Font&nbsp;Generator</a> <span class="sep">|</span>
+            <% } else { %>
+                <a href="/celeste/mod-structure-verifier" class="active">Mod&nbsp;Structure&nbsp;Verifier</a> <span class="sep break">|</span>
+                <a href="/celeste/font-generator">Font&nbsp;Generator</a> <span class="sep">|</span>
+            <% } %>
             <a href="https://max480-random-stuff.herokuapp.com/celeste/wipe-converter">Wipe&nbsp;Converter</a> <span class="sep">|</span>
             <a href="/discord-bots">Discord&nbsp;Bots</a> <span class="sep">|</span>
-            <a href="/celeste/news-network-subscription">#celeste_news&nbsp;Subscription</a>
+            <a href="/celeste/news-network-subscription">#celeste_news_network&nbsp;Subscription</a>
         </div>
 
-        <h1>Celeste Font Generator</h1>
+        <% if ("font-generate".equals(request.getAttribute("type"))) { %>
+            <h1>Celeste Font Generator</h1>
+        <% } else { %>
+            <h1>Celeste Mod Structure Verifier</h1>
+        <% } %>
 
         <% if((boolean) request.getAttribute("taskNotFound")) { %>
             <div class="alert alert-danger">
@@ -74,7 +84,11 @@
 
         <% if(!((boolean) request.getAttribute("taskOngoing"))) { %>
             <div class="back-link">
-                <a class="btn btn-outline-secondary" href="/celeste/font-generator">&#x2B05; Back to Font Generator</a>
+                <% if ("font-generate".equals(request.getAttribute("type"))) { %>
+                    <a class="btn btn-outline-secondary" href="/celeste/font-generator">&#x2B05; Back to Font Generator</a>
+                <% } else { %>
+                    <a class="btn btn-outline-secondary" href="/celeste/mod-structure-verifier">&#x2B05; Back to Mod Structure Verifier</a>
+                <% } %>
             </div>
         <% } %>
     </div>

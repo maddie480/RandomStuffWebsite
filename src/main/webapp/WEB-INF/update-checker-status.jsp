@@ -35,11 +35,12 @@
             <a href="/celeste/custom-entity-catalog">Custom&nbsp;Entity&nbsp;Catalog</a> <span class="sep">|</span>
             <a href="/celeste/everest-yaml-validator">everest.yaml&nbsp;validator</a> <span class="sep">|</span>
             <a href="/celeste/update-checker-status" class="active">Update&nbsp;Checker&nbsp;status</a> <span class="sep">|</span>
-            <a href="https://max480-random-stuff.herokuapp.com/celeste/banana-mirror-browser">Banana&nbsp;Mirror&nbsp;Browser</a> <span class="sep break">|</span>
+            <a href="https://max480-random-stuff.herokuapp.com/celeste/banana-mirror-browser">Banana&nbsp;Mirror&nbsp;Browser</a> <span class="sep">|</span>
+            <a href="/celeste/mod-structure-verifier">Mod&nbsp;Structure&nbsp;Verifier</a> <span class="sep break">|</span>
             <a href="/celeste/font-generator">Font&nbsp;Generator</a> <span class="sep">|</span>
             <a href="https://max480-random-stuff.herokuapp.com/celeste/wipe-converter">Wipe&nbsp;Converter</a> <span class="sep">|</span>
             <a href="/discord-bots">Discord&nbsp;Bots</a> <span class="sep">|</span>
-            <a href="/celeste/news-network-subscription">#celeste_news&nbsp;Subscription</a>
+            <a href="/celeste/news-network-subscription">#celeste_news_network&nbsp;Subscription</a>
         </div>
 
         <h1 class="mt-4">Everest Update Checker status page</h1>

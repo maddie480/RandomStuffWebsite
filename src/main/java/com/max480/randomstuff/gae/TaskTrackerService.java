@@ -18,9 +18,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -28,7 +26,7 @@ import java.util.regex.Pattern;
 /**
  * This follows the progress of a font generation, or of a mod structure verification, and shows the result.
  */
-@WebServlet(name = "TaskTrackerService", urlPatterns = {"/celeste/task-tracker/font-generate/*"})
+@WebServlet(name = "TaskTrackerService", urlPatterns = {"/celeste/task-tracker/font-generate/*", "/celeste/task-tracker/mod-structure-verify/*"})
 @MultipartConfig
 public class TaskTrackerService extends HttpServlet {
     private static final Logger logger = Logger.getLogger("TaskTrackerService");
@@ -36,6 +34,7 @@ public class TaskTrackerService extends HttpServlet {
 
     private final Pattern trackerPageUrlPattern = Pattern.compile("^/celeste/task-tracker/([a-z-]+)/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/?$");
     private final Pattern downloadPageUrlPattern = Pattern.compile("^/celeste/task-tracker/([a-z-]+)/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/download/([0-9]+)/?$");
+    private final Pattern modStructureVerifierHelpPattern = Pattern.compile("^Click here for more help: https://max480-random-stuff.appspot.com/celeste/mod-structure-verifier-help\\?([A-Za-z0-9&;=]+)$");
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
@@ -140,6 +139,8 @@ public class TaskTrackerService extends HttpServlet {
             // the URL the user tried to access is invalid, so let's just answer the task was not found.
             logger.warning("URI does not match regex => task not found!");
             request.setAttribute("taskNotFound", true);
+
+            request.setAttribute("type", request.getRequestURI().startsWith("/celeste/task-tracker/font-generate") ? "font-generate" : "mod-structure-verify");
         }
 
         request.getRequestDispatcher("/WEB-INF/task-tracker.jsp").forward(request, response);
@@ -188,13 +189,21 @@ public class TaskTrackerService extends HttpServlet {
         }
     }
 
-    private static String toHtml(String responseText) {
+    private String toHtml(String responseText) {
         // escape HTML and handle emojis
         String escapedHtml = StringEscapeUtils.escapeHtml4(responseText
                 .replace(":white_check_mark:", "✅")
                 .replace(":warning:", "⚠")
                 .replace(":x:", "❌")
+                .replace(":thinking:", "\uD83E\uDD14")
                 .replace(":bomb:", "\uD83D\uDCA3"));
+
+        // handle links
+        escapedHtml = escapedHtml
+                .replace("&lt;https://max480-random-stuff.appspot.com/celeste/everest-yaml-validator&gt;",
+                        "<a href=\"/celeste/everest-yaml-validator\" target=\"_blank\">the everest.yaml validator</a>")
+                .replace("&lt;https://max480-random-stuff.appspot.com/celeste/font-generator&gt;",
+                        "<a href=\"/celeste/font-generator\" target=\"_blank\">the Font Generator</a>");
 
         // handle bold text
         while (escapedHtml.contains("**") && escapedHtml.replaceFirst("\\*\\*", "").contains("**")) {
@@ -220,6 +229,14 @@ public class TaskTrackerService extends HttpServlet {
                 line = escapedHtml.substring(0, escapedHtml.indexOf("\n") + 1);
             }
 
+            escapedHtml = escapedHtml.substring(line.length());
+
+            // turn "click here for more help" into an actual link as well!
+            Matcher helpMatch = modStructureVerifierHelpPattern.matcher(line);
+            if (helpMatch.matches()) {
+                line = "<a href=\"/celeste/mod-structure-verifier-help?" + helpMatch.group(1) + "\" target=\"_blank\">Click here for more help.</a>";
+            }
+
             if (line.startsWith("- ")) {
                 if (!ulOpen) {
                     newHtml.append("<ul>");
@@ -233,8 +250,6 @@ public class TaskTrackerService extends HttpServlet {
                 }
                 newHtml.append(line.replace("\n", "<br>"));
             }
-
-            escapedHtml = escapedHtml.substring(line.length());
         }
 
         return newHtml.toString();
@@ -270,8 +285,17 @@ public class TaskTrackerService extends HttpServlet {
                 default:
                     return Collections.emptyList();
             }
+        } else if (type.equals("mod-structure-verify")) {
+            List<String> attachmentList = new ArrayList<>();
+            for (Object o : result.getJSONArray("attachments")) {
+                String attachmentName = (String) o;
+                attachmentName = attachmentName.substring(attachmentName.lastIndexOf("-") + 1, attachmentName.indexOf("_"));
+                attachmentName = attachmentName.substring(0, 1).toUpperCase(Locale.ROOT) + attachmentName.substring(1);
+                attachmentList.add("Missing characters in " + attachmentName);
+            }
+            return attachmentList;
         }
-        
+
         return Collections.emptyList();
     }
 }

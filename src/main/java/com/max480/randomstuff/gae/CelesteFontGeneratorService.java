@@ -159,6 +159,7 @@ public class CelesteFontGeneratorService extends HttpServlet {
                     String id = runBMFontTask(font, dialogFile);
                     response.setStatus(302);
                     response.setHeader("Location", "/celeste/task-tracker/font-generate/" + id);
+                    return;
                 }
             } else if (font == null || fontFileName == null || dialogFile == null || hasForbiddenCharacter(fontFileName)
                     || (font.equals("custom") && (customFontFileName == null || hasForbiddenCharacter(customFontFileName)))) {
