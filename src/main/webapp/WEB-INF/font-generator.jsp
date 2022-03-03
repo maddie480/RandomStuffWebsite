@@ -70,14 +70,22 @@
             If characters are missing from the font, you will find a <code>missing-characters.txt</code> file in the generated zip.
         </p>
 
-        <div class="alert alert-info">
-            For languages that exist in vanilla, you can also use the <code>--generate-font [language]</code> command of the
-            <a href="/discord-bots#mod-structure-verifier">Mod Structure Verifier</a> Discord bot.
-            It is more accurate than this page, as it uses the same tool as the one that was used for vanilla Celeste.
-        </div>
-
         <form method="POST" enctype="multipart/form-data">
             <div class="form-group">
+                <label for="method">Generating method</label>
+                <select class="form-control" id="method" name="method">
+                    <option value="bmfont">BMFont (more accurate for vanilla fonts)</option>
+                    <option value="libgdx">libgdx (faster, supports custom fonts)</option>
+                </select>
+            </div>
+
+            <div class="alert alert-info" id="bmfont-info" style="display: none">
+                For faster generation with BMFont, you can also use the <code>--generate-font [language]</code> command of the
+                <a href="/discord-bots#mod-structure-verifier">Mod Structure Verifier</a> Discord bot.
+                BMFont is the same tool as the one that was used to generate vanilla Celeste's fonts.
+            </div>
+
+            <div class="form-group" id="font-file-name-field">
                 <label for="fontFileName">Font file name (should be unique, for example: max480_extendedvariants_korean)</label>
                 <input type="text" class="form-control" id="fontFileName" name="fontFileName" required pattern="[^/\\*?:&quot;<>|]+">
             </div>
@@ -90,7 +98,7 @@
                     <option value="chinese">Simplified Chinese (Noto Sans CJK SC Medium)</option>
                     <option value="russian">Russian (Noto Sans Medium)</option>
                     <option value="renogare">Other (Renogare)</option>
-                    <option value="custom">Custom Font</option>
+                    <option value="custom" id="customfont-option">Custom Font</option>
                 </select>
             </div>
 

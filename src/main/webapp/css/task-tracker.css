@@ -1,0 +1,26 @@
+ul {
+    margin-bottom: 0;
+}
+
+.attachment-list {
+    margin-top: 10px;
+}
+
+.attachment-list a {
+    display: inline-block;
+    margin-right: 5px;
+}
+
+.back-link {
+    text-align: center;
+}
+
+@media(prefers-color-scheme: dark) {
+    code {
+        color: #fff;
+    }
+
+    .alert a.btn {
+        text-decoration: none;
+    }
+}
