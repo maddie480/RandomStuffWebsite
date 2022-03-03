@@ -1,7 +1,6 @@
 package com.max480.randomstuff.gae;
 
 import com.google.api.gax.batching.BatchingSettings;
-import com.google.cloud.WriteChannel;
 import com.google.cloud.pubsub.v1.Publisher;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.BlobInfo;
@@ -12,7 +11,6 @@ import com.google.pubsub.v1.PubsubMessage;
 import com.google.pubsub.v1.TopicName;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.json.JSONObject;
 
@@ -22,12 +20,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.ByteBuffer;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
@@ -74,9 +67,7 @@ public class ModStructureVerifierService extends HttpServlet {
             logger.warning("Bad request");
             response.setStatus(400);
         } else {
-            DiskFileItemFactory factory = new DiskFileItemFactory();
-            factory.setRepository(new File("/tmp"));
-            ServletFileUpload upload = new ServletFileUpload(factory);
+            ServletFileUpload upload = new ServletFileUpload(new CloudStorageUploadItem.Factory());
 
             // parse request
             FileItem modZip = null;
@@ -138,18 +129,12 @@ public class ModStructureVerifierService extends HttpServlet {
         BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType("text/plain").build();
         storage.create(blobInfo, Long.toString(System.currentTimeMillis()).getBytes(StandardCharsets.UTF_8));
 
-        // send zip file to Cloud Storage
+        // copy the temp upload file to its final target
         blobId = BlobId.of("staging.max480-random-stuff.appspot.com", "mod-structure-verify-" + id + ".zip");
-        blobInfo = BlobInfo.newBuilder(blobId).setContentType("text/plain").build();
-        try (InputStream readerStream = modZip.getInputStream(); WriteChannel writer = storage.writer(blobInfo); ReadableByteChannel reader = Channels.newChannel(readerStream)) {
-            ByteBuffer buffer = ByteBuffer.allocate(4 * 1024);
-            while (reader.read(buffer) > 0 || buffer.position() != 0) {
-                buffer.flip();
-                writer.write(buffer);
-                buffer.compact();
-            }
-        }
-        modZip.delete();
+        storage.copy(Storage.CopyRequest.newBuilder()
+                .setSource(((CloudStorageUploadItem) modZip).getCloudStorageFile())
+                .setTarget(blobId)
+                .build());
 
         // generate message payload
         JSONObject message = new JSONObject();

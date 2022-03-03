@@ -203,7 +203,9 @@ public class TaskTrackerService extends HttpServlet {
                 .replace("&lt;https://max480-random-stuff.appspot.com/celeste/everest-yaml-validator&gt;",
                         "<a href=\"/celeste/everest-yaml-validator\" target=\"_blank\">the everest.yaml validator</a>")
                 .replace("&lt;https://max480-random-stuff.appspot.com/celeste/font-generator&gt;",
-                        "<a href=\"/celeste/font-generator\" target=\"_blank\">the Font Generator</a>");
+                        "<a href=\"/celeste/font-generator\" target=\"_blank\">the Font Generator</a>")
+                .replace("&lt;https://gamebanana.com/tools/6908&gt;",
+                        "<a href=\"https://gamebanana.com/tools/6908\" target=\"_blank\">Dependency Generator</a>");
 
         // handle bold text
         while (escapedHtml.contains("**") && escapedHtml.replaceFirst("\\*\\*", "").contains("**")) {

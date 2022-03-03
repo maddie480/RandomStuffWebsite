@@ -8,7 +8,12 @@
 
 <html lang="en">
 <head>
-    <title>Celeste Font Generator</title>
+    <% if ("font-generate".equals(request.getAttribute("type"))) { %>
+        <title>Celeste Font Generator</title>
+    <% } else { %>
+        <title>Celeste Mod Structure Verifier</title>
+    <% } %>
+
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 

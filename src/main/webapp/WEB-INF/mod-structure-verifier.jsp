@@ -82,7 +82,7 @@
 
         <form method="POST" enctype="multipart/form-data">
             <div class="form-group">
-                <label for="zipFile">Zip file to verify</label>
+                <label for="zipFile">Zip file to verify (max. 32 MB, delete audio if file is too big)</label>
                 <input type="file" class="form-control" accept=".zip" id="zipFile" name="zipFile" required>
             </div>
             <div class="form-check">
