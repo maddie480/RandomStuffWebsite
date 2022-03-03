@@ -39,7 +39,7 @@ public class CloudStorageUploadItem implements FileItem {
 
     @Override
     public InputStream getInputStream() throws IOException {
-        return Channels.newInputStream(storage.reader(cloudStorageFile));
+        return new BufferedInputStream(Channels.newInputStream(storage.reader(cloudStorageFile)), 16384);
     }
 
     @Override
@@ -119,7 +119,7 @@ public class CloudStorageUploadItem implements FileItem {
 
     @Override
     public OutputStream getOutputStream() throws IOException {
-        return Channels.newOutputStream(storage.writer(BlobInfo.newBuilder(cloudStorageFile).setContentType(contentType).build()));
+        return new BufferedOutputStream(Channels.newOutputStream(storage.writer(BlobInfo.newBuilder(cloudStorageFile).setContentType(contentType).build())), 16384);
     }
 
     @Override

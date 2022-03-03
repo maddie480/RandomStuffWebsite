@@ -48,9 +48,6 @@ public class ModStructureVerifierService extends HttpServlet {
         }
     }
 
-    private static class AllCharactersMissingException extends Exception {
-    }
-
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         request.setAttribute("badrequest", false);
@@ -68,6 +65,8 @@ public class ModStructureVerifierService extends HttpServlet {
             response.setStatus(400);
         } else {
             ServletFileUpload upload = new ServletFileUpload(new CloudStorageUploadItem.Factory());
+
+            logger.fine("Parsing request...");
 
             // parse request
             FileItem modZip = null;
@@ -102,16 +101,12 @@ public class ModStructureVerifierService extends HttpServlet {
                     || (mapsFolderName != null && !mapsFolderName.matches("^[A-Za-z0-9]*$"))
                     || (assetsFolderName != null && !assetsFolderName.matches("^[A-Za-z0-9]*$"))) {
 
-                if (modZip != null) {
-                    modZip.delete();
-                }
-
                 request.setAttribute("badrequest", true);
                 logger.warning("Bad request: no file was sent in POST request, or one of the folder names has forbidden characters");
                 response.setStatus(400);
             } else {
                 // create the task, and redirect to the page that will allow to follow it
-                String id = runModStructureVerifyTask(modZip, assetsFolderName, mapsFolderName);
+                String id = runModStructureVerifyTask((CloudStorageUploadItem) modZip, assetsFolderName, mapsFolderName);
                 response.setStatus(302);
                 response.setHeader("Location", "/celeste/task-tracker/mod-structure-verify/" + id);
                 return;
@@ -121,7 +116,7 @@ public class ModStructureVerifierService extends HttpServlet {
         request.getRequestDispatcher("/WEB-INF/mod-structure-verifier.jsp").forward(request, response);
     }
 
-    private String runModStructureVerifyTask(FileItem modZip, String assetsFolderName, String mapsFolderName) throws IOException {
+    private String runModStructureVerifyTask(CloudStorageUploadItem modZip, String assetsFolderName, String mapsFolderName) throws IOException {
         String id = UUID.randomUUID().toString();
 
         // send timestamp marker to Cloud Storage (this will save that the task exists, and the timestamp at which it started)
@@ -129,12 +124,16 @@ public class ModStructureVerifierService extends HttpServlet {
         BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType("text/plain").build();
         storage.create(blobInfo, Long.toString(System.currentTimeMillis()).getBytes(StandardCharsets.UTF_8));
 
+        logger.fine("Copying file...");
+
         // copy the temp upload file to its final target
         blobId = BlobId.of("staging.max480-random-stuff.appspot.com", "mod-structure-verify-" + id + ".zip");
         storage.copy(Storage.CopyRequest.newBuilder()
-                .setSource(((CloudStorageUploadItem) modZip).getCloudStorageFile())
+                .setSource(modZip.getCloudStorageFile())
                 .setTarget(blobId)
                 .build());
+
+        logger.fine("Creating task...");
 
         // generate message payload
         JSONObject message = new JSONObject();
