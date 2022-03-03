@@ -80,7 +80,7 @@
             so that mappers just have to drop their zip files in a designated channel to have them verified.
         </div>
 
-        <form method="POST" enctype="multipart/form-data">
+        <form method="POST" action="/celeste/mod-structure-verifier" enctype="multipart/form-data" id="verify-form">
             <div class="form-group">
                 <label for="zipFile">Zip file to verify (max. 32 MB, delete audio if file is too big)</label>
                 <input type="file" class="form-control" accept=".zip" id="zipFile" name="zipFile" required>
@@ -101,7 +101,7 @@
                 </div>
             </div>
 
-            <input type="submit" class="btn btn-primary" value="Verify">
+            <input type="submit" class="btn btn-primary" value="Verify" id="submit-button">
         </form>
     </div>
 
