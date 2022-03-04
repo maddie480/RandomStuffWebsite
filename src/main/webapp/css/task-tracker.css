@@ -6,6 +6,10 @@ ul {
     margin-top: 10px;
 }
 
+.btn-outline-secondary {
+    margin-bottom: 20px;
+}
+
 .attachment-list a {
     display: inline-block;
     margin-right: 5px;

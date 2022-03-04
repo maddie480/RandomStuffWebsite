@@ -3,10 +3,7 @@ package com.max480.randomstuff.gae;
 import com.google.api.gax.batching.BatchingSettings;
 import com.google.cloud.WriteChannel;
 import com.google.cloud.pubsub.v1.Publisher;
-import com.google.cloud.storage.BlobId;
-import com.google.cloud.storage.BlobInfo;
-import com.google.cloud.storage.Storage;
-import com.google.cloud.storage.StorageOptions;
+import com.google.cloud.storage.*;
 import com.google.protobuf.ByteString;
 import com.google.pubsub.v1.PubsubMessage;
 import com.google.pubsub.v1.TopicName;
@@ -52,7 +49,7 @@ public class ModStructureVerifierService extends HttpServlet {
                     .setBatchingSettings(BatchingSettings.newBuilder().setIsEnabled(false).build())
                     .build();
         } catch (IOException e) {
-            logger.log(Level.WARNING, "Building the Pub/Sub publisher for Font Generator failed: " + e.toString());
+            logger.log(Level.WARNING, "Building the Pub/Sub publisher for Mod Structure Verifier failed: " + e);
         }
     }
 
@@ -82,6 +79,8 @@ public class ModStructureVerifierService extends HttpServlet {
             boolean modZipFound = false;
             String assetsFolderName = null;
             String mapsFolderName = null;
+            String chunkIndex = null;
+            String chunkId = null;
 
             try {
                 FileItemIterator iter = upload.getItemIterator(request);
@@ -99,6 +98,10 @@ public class ModStructureVerifierService extends HttpServlet {
                             assetsFolderName = fieldvalue;
                         } else if ("mapFolderName".equals(fieldname)) {
                             mapsFolderName = fieldvalue;
+                        } else if ("chunkId".equals(fieldname)) {
+                            chunkId = fieldvalue;
+                        } else if ("chunkIndex".equals(fieldname)) {
+                            chunkIndex = fieldvalue;
                         }
                     } else {
                         // Process form file field (input type="file").
@@ -136,10 +139,26 @@ public class ModStructureVerifierService extends HttpServlet {
                 logger.warning("Bad request: no file was sent in POST request, or one of the folder names has forbidden characters");
                 response.setStatus(400);
             } else {
-                // create the task, and redirect to the page that will allow to follow it
-                runModStructureVerifyTask(id, assetsFolderName, mapsFolderName);
-                response.setStatus(302);
-                response.setHeader("Location", "/celeste/task-tracker/mod-structure-verify/" + id);
+                if (chunkIndex != null) {
+                    chunkId = handleChunkRequest("mod-structure-verify-" + id + ".zip", chunkIndex, chunkId);
+
+                    if (chunkId == null) {
+                        // chunk request was invalid
+                        response.setStatus(400);
+                        return;
+                    } else if (!"31".equals(chunkIndex)) {
+                        // didn't send the last chunk, respond with chunk ID
+                        response.setContentType("text/plain; charset=UTF-8");
+                        response.getWriter().write(chunkId);
+                        return;
+                    }
+                }
+
+                // create the task, and give the URL to the page that will allow to follow it
+                // (at this point, we either have all 32 chunks uploaded, or the sending was not chunked)
+                runModStructureVerifyTask(id, chunkId, assetsFolderName, mapsFolderName);
+                response.setContentType("text/plain; charset=UTF-8");
+                response.getWriter().write("/celeste/task-tracker/mod-structure-verify/" + id);
                 return;
             }
         }
@@ -147,11 +166,25 @@ public class ModStructureVerifierService extends HttpServlet {
         request.getRequestDispatcher("/WEB-INF/mod-structure-verifier.jsp").forward(request, response);
     }
 
-    private void runModStructureVerifyTask(String id, String assetsFolderName, String mapsFolderName) throws IOException {
+    private void runModStructureVerifyTask(String id, String chunkId, String assetsFolderName, String mapsFolderName) throws IOException {
         // send timestamp marker to Cloud Storage (this will save that the task exists, and the timestamp at which it started)
         BlobId blobId = BlobId.of("staging.max480-random-stuff.appspot.com", "mod-structure-verify-" + id + "-timestamp.txt");
         BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType("text/plain").build();
         storage.create(blobInfo, Long.toString(System.currentTimeMillis()).getBytes(UTF_8));
+
+        if (chunkId != null) {
+            // merge the chunks together, there should be exactly 32 of them
+            logger.fine("Composing chunks with id " + chunkId + "...");
+
+            BlobId mergedBlobId = BlobId.of("staging.max480-random-stuff.appspot.com", "mod-structure-verify-" + id + ".zip");
+            BlobInfo mergedBlobInfo = BlobInfo.newBuilder(mergedBlobId).setContentType("application/zip").build();
+
+            final Storage.ComposeRequest.Builder builder = Storage.ComposeRequest.newBuilder();
+            for (int i = 0; i < 32; i++) {
+                builder.addSource("upload-chunk-" + chunkId + "-" + i + ".bin");
+            }
+            storage.compose(builder.setTarget(mergedBlobInfo).build());
+        }
 
         logger.fine("Creating task...");
 
@@ -186,5 +219,47 @@ public class ModStructureVerifierService extends HttpServlet {
         } catch (InterruptedException | ExecutionException e) {
             throw new IOException(e);
         }
+    }
+
+    private String handleChunkRequest(String gcsFileName, String chunkIndex, String chunkId) {
+        if ("0".equals(chunkIndex)) {
+            // generate a new chunk upload
+            chunkId = UUID.randomUUID().toString();
+        } else if (chunkId == null) {
+            logger.warning("No chunk id was given and this is not the first chunk!");
+            return null;
+        } else if (!chunkId.matches("^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$")) {
+            logger.warning("Chunk ID is not a UUID: " + chunkId);
+            return null;
+        } else {
+            // check if the chunk index is in bounds and if the previous chunk exists.
+            try {
+                int chunkIndexInt = Integer.parseInt(chunkIndex);
+                if (chunkIndexInt < 1 || chunkIndexInt > 31) {
+                    logger.warning("Chunk index is outside of the allowed bounds: " + chunkIndexInt);
+                    return null;
+                } else {
+                    Blob previousChunk = storage.get(
+                            BlobId.of("staging.max480-random-stuff.appspot.com", "upload-chunk-" + chunkId + "-" + (chunkIndexInt - 1) + ".bin"));
+
+                    if (previousChunk == null) {
+                        logger.warning("Previous chunk upload-chunk-" + chunkId + "-" + (chunkIndexInt - 1) + ".bin does not exist!");
+                        return null;
+                    }
+                }
+            } catch (NumberFormatException e) {
+                logger.warning("Chunk index is not an integer: " + chunkIndex);
+                return null;
+            }
+        }
+
+        // it seems renaming is not a thing on Cloud Storage... oh well.
+        // (we are not deleting the original file because that takes time, and the bucket has a rule where any file older than 1 day is deleted.)
+        logger.fine("Copying file to expected location...");
+        BlobId uploadedFile = BlobId.of("staging.max480-random-stuff.appspot.com", gcsFileName);
+        BlobId targetFile = BlobId.of("staging.max480-random-stuff.appspot.com", "upload-chunk-" + chunkId + "-" + chunkIndex + ".bin");
+        storage.copy(Storage.CopyRequest.of(uploadedFile, targetFile));
+
+        return chunkId;
     }
 }

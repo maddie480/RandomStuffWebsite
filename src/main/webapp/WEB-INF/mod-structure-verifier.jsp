@@ -75,15 +75,20 @@
         </ul>
 
         <div class="alert alert-info" id="bmfont-info">
-            <b>File upload on the website is slow.</b>
-            For faster verifying, you can use the <a href="/discord-bots#mod-structure-verifier">Mod Structure Verifier</a> Discord bot.
-            If you host a contest/collab that has its own Discord server, you can invite the bot on it and preset the folder names,
-            so that mappers just have to drop their zip files in a designated channel to have them verified.
+            <p>
+                <b>File upload on the website can be quite slow.</b> To reduce the file size, you can delete the Audio folder from the zip you upload.
+            </p>
+
+            <p>
+                For faster verifying, you can use the <a href="/discord-bots#mod-structure-verifier">Mod Structure Verifier</a> Discord bot.
+                If you host a contest/collab that has its own Discord server, you can invite the bot on it and preset the folder names,
+                so that mappers just have to drop their zip files in a designated channel to have them verified.
+            </p>
         </div>
 
         <form method="POST" action="/celeste/mod-structure-verifier" enctype="multipart/form-data" id="verify-form">
             <div class="form-group">
-                <label for="zipFile">Zip file to verify (max. 32 MB, delete audio if file is too big)</label>
+                <label for="zipFile">Zip file to verify</label>
                 <input type="file" class="form-control" accept=".zip" id="zipFile" name="zipFile" required>
             </div>
             <div class="form-check">
