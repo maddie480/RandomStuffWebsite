@@ -83,7 +83,7 @@
             <div class="alert alert-info" id="bmfont-info" style="display: none">
                 For faster generation with BMFont, you can also use the <code>--generate-font [language]</code> command of the
                 <a href="/discord-bots#mod-structure-verifier">Mod Structure Verifier</a> Discord bot.
-                BMFont is the same tool as the one that was used to generate vanilla Celeste's fonts.
+                BMFont is the same tool as the one that was used to generate the fonts for vanilla Celeste.
             </div>
 
             <div class="form-group" id="font-file-name-field">
