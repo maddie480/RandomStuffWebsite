@@ -215,7 +215,7 @@ public class ModStructureVerifierService extends HttpServlet {
 
         try {
             String messageId = publisher.publish(pubsubMessage).get();
-            logger.info("Emitted message id " + messageId + " to handle font generation task " + id + "!");
+            logger.info("Emitted message id " + messageId + " to handle mod structure verification task " + id + "!");
         } catch (InterruptedException | ExecutionException e) {
             throw new IOException(e);
         }
