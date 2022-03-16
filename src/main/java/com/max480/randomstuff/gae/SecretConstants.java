@@ -27,13 +27,11 @@ public class SecretConstants {
     public static String GAMES_BOT_PUBLIC_KEY = "";
 
     public static String EXPLOIT_PLANNING_URL = "";
-    public static String MATTERMOST_TOKEN_VACANCES = "";
     public static String MATTERMOST_TOKEN_LOCK = "";
     public static String MATTERMOST_TOKEN_UNLOCK = "";
     public static String MATTERMOST_TOKEN_EXPLOIT = "";
     public static String MATTERMOST_TOKEN_ABSENTS = "";
     public static String MATTERMOST_TOKEN_CONSISTENCYCHECK = "";
-    public static String YOUTUBE_API_KEY = "";
 
     static {
         try (SecretManagerServiceClient client = SecretManagerServiceClient.create()) {
@@ -53,10 +51,8 @@ public class SecretConstants {
             MATTERMOST_TOKEN_EXPLOIT = secrets.getString("MATTERMOST_TOKEN_EXPLOIT");
             MATTERMOST_TOKEN_LOCK = secrets.getString("MATTERMOST_TOKEN_LOCK");
             MATTERMOST_TOKEN_UNLOCK = secrets.getString("MATTERMOST_TOKEN_UNLOCK");
-            MATTERMOST_TOKEN_VACANCES = secrets.getString("MATTERMOST_TOKEN_VACANCES");
             RELOAD_SHARED_SECRET = secrets.getString("RELOAD_SHARED_SECRET");
             SRC_MOD_LIST_KEY = secrets.getString("SRC_MOD_LIST_KEY");
-            YOUTUBE_API_KEY = secrets.getString("YOUTUBE_API_KEY");
         } catch (IOException e) {
             logger.severe("Could not load application secrets! " + e.toString());
         }
