@@ -10,8 +10,24 @@
     margin-bottom: 0.5rem;
 }
 
+.btn-light {
+    vertical-align: baseline;
+}
+
 @media(prefers-color-scheme: dark) {
     code {
         color: #ff5c99;
+    }
+
+    a.btn-light {
+        color: #fff;
+        background-color: #343a40;
+        border-color: #343a40;
+        text-decoration: none;
+    }
+
+    a.btn-light:hover {
+        background-color: #23272b;
+        border-color: #1d2124;
     }
 }

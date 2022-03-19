@@ -92,18 +92,32 @@
                 <input type="file" class="form-control" accept=".zip" id="zipFile" name="zipFile" required>
             </div>
             <div class="form-check">
-              <input class="form-check-input" type="checkbox" value="" id="checkPaths">
+              <input class="form-check-input" type="checkbox" value="" id="checkPaths"
+               <% if (request.getParameter("assetFolderName") != null || request.getParameter("mapFolderName") != null) { %>
+                  checked
+               <% } %>>
               <label class="form-check-label" for="checkPaths">Enable path checking</label>
             </div>
 
             <div id="path-checking" style="display: none">
                 <div class="form-group">
                     <label for="assetFolderName">Asset folder name (alphanumeric)</label>
-                    <input type="text" class="form-control" id="assetFolderName" name="assetFolderName" pattern="[A-Za-z0-9]+">
+                    <input type="text" class="form-control" id="assetFolderName" name="assetFolderName" pattern="[A-Za-z0-9]+"
+                        <% if (request.getParameter("assetFolderName") != null) { %>
+                            value="<%= escapeHtml4(request.getParameter("assetFolderName")) %>"
+                        <% } %>>
                 </div>
                 <div class="form-group">
                     <label for="mapFolderName">Map folder name (alphanumeric)</label>
-                    <input type="text" class="form-control" id="mapFolderName" name="mapFolderName" placeholder="Same as asset folder name" pattern="[A-Za-z0-9]+">
+                    <input type="text" class="form-control" id="mapFolderName" name="mapFolderName" placeholder="Same as asset folder name" pattern="[A-Za-z0-9]+"
+                        <% if (request.getParameter("mapFolderName") != null) { %>
+                            value="<%= escapeHtml4(request.getParameter("mapFolderName")) %>"
+                        <% } %>>
+                </div>
+
+                <div class="alert alert-info">
+                    If you want to reuse those settings frequently, you can use a direct link to have them filled out by default:
+                    <a class="btn btn-light" href="#" id="copyUrl">Copy URL</a>
                 </div>
             </div>
 

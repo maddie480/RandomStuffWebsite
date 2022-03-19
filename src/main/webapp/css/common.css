@@ -47,8 +47,8 @@
 
     .alert-success {
         color: #fff;
-        border-color: #00b74a;
-        background-color: #007b32;
+        border-color: #00a442;
+        background-color: #016f2d;
     }
     .alert-info {
         color: #fff;
@@ -57,13 +57,13 @@
     }
     .alert-warning {
         color: #fff;
-        border-color: #c18000;
-        background-color: #9f6a00;
+        border-color: #b97b00;
+        background-color: #8e5f00;
     }
     .alert-danger {
         color: #fff;
-        border-color: #f93154;
-        background-color: #be0626;
+        border-color: #bf203d;
+        background-color: #8e071e;
     }
     .alert a {
         color: #ddd;

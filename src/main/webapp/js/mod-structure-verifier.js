@@ -107,3 +107,30 @@ function enhanceFormWithUploadProgress(form, progress) {
 };
 
 enhanceFormWithUploadProgress(document.getElementById('verify-form'), document.getElementById('submit-button'));
+
+// handle "Copy URL" button
+document.getElementById('copyUrl').addEventListener('click', function(e) {
+    e.preventDefault();
+
+    var url = 'https://max480-random-stuff.appspot.com/celeste/mod-structure-verifier';
+    var assetFolderName = document.getElementById("assetFolderName").value;
+    var mapFolderName = document.getElementById("mapFolderName").value;
+    if (assetFolderName.length > 0) {
+        url += "?assetFolderName=" + encodeURIComponent(assetFolderName);
+    }
+    if (mapFolderName.length > 0) {
+        if (assetFolderName.length > 0) {
+            url += "&mapFolderName=" + encodeURIComponent(mapFolderName);
+        } else {
+            url += "?mapFolderName=" + encodeURIComponent(mapFolderName);
+        }
+    }
+
+    navigator.clipboard.writeText(url).then(() => {
+        e.target.innerHTML = '\u2705 Copied!';
+    }).catch(() => {
+        e.target.innerHTML = '\u274C Error!';
+    }).finally(() => {
+        setTimeout(() => e.target.innerHTML = 'Copy URL', 5000)
+    });
+});

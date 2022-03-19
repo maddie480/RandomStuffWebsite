@@ -3,8 +3,8 @@
 }
 .alert-danger {
     color: #fff;
-    border-color: #f93154;
-    background-color: #be0626;
+    border-color: #bf203d;
+    background-color: #8e071e;
 }
 body {
     color: #DEDAD6;
@@ -28,6 +28,6 @@ body {
 }
 .alert-success {
     color: #fff;
-    border-color: #00b74a;
-    background-color: #007b32;
+    border-color: #00a442;
+    background-color: #016f2d;
 }
