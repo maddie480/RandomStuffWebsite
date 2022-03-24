@@ -35,7 +35,7 @@ public class GameBananaAPIExtensions extends HttpServlet {
             pubDateField = "_tsDateUpdated";
         }
 
-        HttpURLConnection connection = (HttpURLConnection) new URL("https://gamebanana.com/apiv7/Mod/ByCategory?_csvProperties=_sName,_sProfileUrl,_aPreviewMedia," + pubDateField + "&"
+        HttpURLConnection connection = (HttpURLConnection) new URL("https://gamebanana.com/apiv8/Mod/ByCategory?_csvProperties=_sName,_sProfileUrl,_aPreviewMedia," + pubDateField + "&"
                 + request.getQueryString()).openConnection();
         connection.setConnectTimeout(10000);
         connection.setReadTimeout(30000);

@@ -146,7 +146,7 @@ public class GameBananaArbitraryModAppService extends HttpServlet {
     }
 
     private JSONObject queryModById(String modId) {
-        try (InputStream is = openStreamWithTimeout(new URL("https://gamebanana.com/apiv7/Mod/" + modId +
+        try (InputStream is = openStreamWithTimeout(new URL("https://gamebanana.com/apiv8/Mod/" + modId +
                 "?_csvProperties=_sProfileUrl,_sName,_aPreviewMedia,_tsDateAdded,_tsDateUpdated,_aGame,_aSubmitter,_bIsWithheld,_bIsTrashed,_bIsPrivate"))) {
             return new JSONObject(IOUtils.toString(is, UTF_8));
         } catch (IOException e) {
