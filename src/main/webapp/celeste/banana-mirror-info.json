@@ -4,7 +4,12 @@
             "id": "jade",
             "name": "0x0a.de (Germany)",
             "pattern": "https://celestemodupdater.0x0a.de/banana-mirror/%id%.zip"
+        },
+        {
+            "id": "wegfan",
+            "name": "weg.fan (China)",
+            "pattern": "https://celeste.weg.fan/api/v1/mirror/download?type=mod&fileName=%id%.zip"
         }
     ],
-    "default": "jade"
+    "default": null
 }
