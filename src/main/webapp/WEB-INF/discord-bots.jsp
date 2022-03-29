@@ -126,6 +126,8 @@
     </div>
 
     <a class="btn btn-primary" href="https://discord.com/oauth2/authorize?client_id=806514800045064213&scope=bot%20applications.commands&permissions=268435456" target="_blank">Invite</a>
+    <a class="btn btn-link" href="/discord-bots/timezone-bot/terms-of-service.html">Terms of Service</a>
+    <a class="btn btn-link" href="/discord-bots/timezone-bot/privacy-policy.html">Privacy Policy</a>
 
     <h1 class="botname margin" id="mod-structure-verifier">
         <img src="/img/mod-structure-verifier-logo.png" class="botlogo"> Mod Structure Verifier

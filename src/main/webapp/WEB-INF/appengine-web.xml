@@ -19,6 +19,9 @@
         <include path="/*.html">
             <http-header name="Content-Security-Policy" value="default-src 'self'; style-src 'self' 'unsafe-inline' https://stackpath.bootstrapcdn.com; frame-ancestors 'none'; object-src 'none';"/>
         </include>
+        <include path="/discord-bots/timezone-bot/*.html">
+            <http-header name="Content-Security-Policy" value="default-src 'self'; style-src 'self' 'unsafe-inline' https://stackpath.bootstrapcdn.com; frame-ancestors 'none'; object-src 'none';"/>
+        </include>
 
         <!-- Static images, CSS and JS, that don't need anything -->
         <include path="/celeste/*"/>

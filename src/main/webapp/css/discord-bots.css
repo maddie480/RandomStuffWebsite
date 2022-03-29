@@ -73,3 +73,7 @@ img {
         display: none;
     }
 }
+
+.btn-primary {
+    margin-right: 12px;
+}
