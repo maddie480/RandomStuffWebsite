@@ -1,13 +1,8 @@
 package com.max480.randomstuff.gae;
 
-import com.google.api.core.ApiFuture;
-import com.google.api.gax.paging.AsyncPage;
-import com.google.cloud.logging.LogEntry;
-import com.google.cloud.logging.Logging;
-import com.google.cloud.logging.LoggingOptions;
-import com.google.cloud.logging.Payload;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.yaml.snakeyaml.Yaml;
+import org.json.JSONObject;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -17,7 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -27,12 +22,6 @@ import java.time.format.FormatStyle;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import static com.max480.randomstuff.gae.ConnectionUtils.openStreamWithTimeout;
 
 /**
  * A status page for the Update Checker, that determines the status by reading the Google Cloud Logging logs
@@ -41,10 +30,6 @@ import static com.max480.randomstuff.gae.ConnectionUtils.openStreamWithTimeout;
 @WebServlet(name = "UpdateCheckerStatus", urlPatterns = {"/celeste/update-checker-status"})
 @MultipartConfig
 public class UpdateCheckerStatusService extends HttpServlet {
-    private static final Logging logging = LoggingOptions.getDefaultInstance().toBuilder().setProjectId("max480-random-stuff").build().getService();
-
-    private static final Pattern INFORMATION_EXTRACTOR = Pattern.compile(".* Mod\\{name='(.+)', version='([0-9.]+)',.*");
-
     public static class LatestUpdatesEntry {
         public boolean isAddition;
         public String name;
@@ -52,12 +37,12 @@ public class UpdateCheckerStatusService extends HttpServlet {
         public String date;
         public long timestamp;
 
-        public LatestUpdatesEntry(boolean isAddition, String name, String version, String date, long timestamp) {
-            this.isAddition = isAddition;
-            this.name = name;
-            this.version = version;
-            this.date = date;
-            this.timestamp = timestamp;
+        public LatestUpdatesEntry(JSONObject object) {
+            this.isAddition = object.getBoolean("isAddition");
+            this.name = object.getString("name");
+            this.version = object.getString("version");
+            this.date = object.getString("date");
+            this.timestamp = object.getLong("timestamp");
         }
     }
 
@@ -68,84 +53,48 @@ public class UpdateCheckerStatusService extends HttpServlet {
         // the service is down until proven otherwise.
         request.setAttribute("up", false);
 
-        // check logs for the last successful update (limit 24 hours)
-        final ApiFuture<AsyncPage<LogEntry>> lastCheck = logging.listLogEntriesAsync(
-                Logging.EntryListOption.sortOrder(Logging.SortingField.TIMESTAMP, Logging.SortingOrder.DESCENDING),
-                Logging.EntryListOption.filter("jsonPayload.message =~ \"^=== Ended searching for updates.\""),
-                Logging.EntryListOption.pageSize(1)
-        );
+        long lastCheckTimestamp;
+        int lastCheckDuration;
+        List<LatestUpdatesEntry> latestUpdatesEntries;
 
-        // check logs for latest database changes (limit 7 days)
-        ApiFuture<AsyncPage<LogEntry>> latestUpdates = null;
+        // retrieve the update checker status from Cloud Storage!
+        try (InputStream is = CloudStorageUtils.getCloudStorageInputStream("update_checker_status.json")) {
+            JSONObject object = new JSONObject(IOUtils.toString(is, StandardCharsets.UTF_8));
+
+            lastCheckTimestamp = object.getLong("lastCheckTimestamp");
+            lastCheckDuration = object.getInt("lastCheckDuration");
+            latestUpdatesEntries = new ArrayList<>();
+            for (Object o : object.getJSONArray("latestUpdatesEntries")) {
+                latestUpdatesEntries.add(new LatestUpdatesEntry((JSONObject) o));
+            }
+
+            request.setAttribute("modCount", object.getInt("modCount"));
+        }
+
+        if (lastCheckTimestamp > 0) {
+            ZonedDateTime timeUtc = Instant.ofEpochMilli(lastCheckTimestamp).atZone(ZoneId.of("UTC"));
+
+            if (timeUtc.isAfter(ZonedDateTime.now().minusMinutes(30))) {
+                // consider the service to be up if the latest successful update was less than 30 minutes ago.
+                request.setAttribute("up", true);
+            }
+
+            if (lastCheckDuration > 0) {
+                // pass the latest check timestamp and duration to the webpage
+                Pair<String, String> date = formatDate(timeUtc);
+                request.setAttribute("lastUpdatedTimestamp", timeUtc.toEpochSecond());
+                request.setAttribute("lastUpdatedAt", date.getLeft());
+                request.setAttribute("lastUpdatedAgo", date.getRight());
+                request.setAttribute("duration", new DecimalFormat("0.0").format(lastCheckDuration / 1000.0));
+            }
+        }
 
         if (!isWidget) {
-            latestUpdates = logging.listLogEntriesAsync(
-                    Logging.EntryListOption.sortOrder(Logging.SortingField.TIMESTAMP, Logging.SortingOrder.DESCENDING),
-                    Logging.EntryListOption.filter("(" +
-                            "jsonPayload.message =~ \"^=> Saved new information to database:\" " +
-                            "OR jsonPayload.message =~ \"^Mod .* was deleted from the database$\")" +
-                            " AND timestamp >= \"" + ZonedDateTime.now().minusDays(7).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME) + "\""),
-                    Logging.EntryListOption.pageSize(5)
-            );
+            request.setAttribute("latestUpdates", latestUpdatesEntries);
         }
 
-        // check mod count by just downloading the mod database and counting objects in it.
-        try (InputStream is = openStreamWithTimeout(new URL("https://max480-random-stuff.appspot.com/celeste/everest_update.yaml"))) {
-            Map<Object, Object> mods = new Yaml().load(is);
-            request.setAttribute("modCount", mods.size());
-        }
-
-        try {
-            for (LogEntry entry : lastCheck.get().getValues()) {
-                ZonedDateTime timeUtc = Instant.ofEpochMilli(entry.getTimestamp()).atZone(ZoneId.of("UTC"));
-
-                if (timeUtc.isAfter(ZonedDateTime.now().minusMinutes(30))) {
-                    // consider the service to be up if the latest successful update was less than 30 minutes ago.
-                    request.setAttribute("up", true);
-                }
-
-                // extract the duration
-                String logContent = entry.<Payload.JsonPayload>getPayload().getDataAsMap().get("message").toString();
-                if (logContent.endsWith(" ms.")) {
-                    logContent = logContent.substring(0, logContent.length() - 4);
-                    logContent = logContent.substring(logContent.lastIndexOf(" ") + 1);
-                    int timeMs = Integer.parseInt(logContent);
-
-                    // pass it to the webpage
-                    Pair<String, String> date = formatDate(timeUtc);
-                    request.setAttribute("lastUpdatedTimestamp", timeUtc.toEpochSecond());
-                    request.setAttribute("lastUpdatedAt", date.getLeft());
-                    request.setAttribute("lastUpdatedAgo", date.getRight());
-                    request.setAttribute("duration", new DecimalFormat("0.0").format(timeMs / 1000.0));
-                }
-            }
-
-            if (!isWidget) {
-                List<LatestUpdatesEntry> latestUpdatesEntries = new ArrayList<>();
-
-                for (LogEntry logEntry : latestUpdates.get().getValues()) {
-                    String message = (String) logEntry.<Payload.JsonPayload>getPayload().getDataAsMap().get("message");
-
-                    final Matcher matcher = INFORMATION_EXTRACTOR.matcher(message);
-                    if (matcher.matches()) {
-                        latestUpdatesEntries.add(new LatestUpdatesEntry(
-                                message.startsWith("=> Saved new information to database:"),
-                                matcher.group(1),
-                                matcher.group(2),
-                                DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).format(logEntry.getInstantTimestamp().atZone(ZoneId.of("UTC"))),
-                                logEntry.getInstantTimestamp().toEpochMilli() / 1000L
-                        ));
-                    }
-                }
-
-                request.setAttribute("latestUpdates", latestUpdatesEntries);
-            }
-
-            request.getRequestDispatcher(isWidget ? "/WEB-INF/update-checker-status-widget.jsp" : "/WEB-INF/update-checker-status.jsp")
-                    .forward(request, response);
-        } catch (InterruptedException | ExecutionException e) {
-            throw new IOException(e);
-        }
+        request.getRequestDispatcher(isWidget ? "/WEB-INF/update-checker-status-widget.jsp" : "/WEB-INF/update-checker-status.jsp")
+                .forward(request, response);
     }
 
     private Pair<String, String> formatDate(ZonedDateTime date) {
