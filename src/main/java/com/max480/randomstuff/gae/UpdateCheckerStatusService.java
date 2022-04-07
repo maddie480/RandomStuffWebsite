@@ -34,6 +34,7 @@ public class UpdateCheckerStatusService extends HttpServlet {
         public boolean isAddition;
         public String name;
         public String version;
+        public String url;
         public String date;
         public long timestamp;
 
@@ -41,6 +42,7 @@ public class UpdateCheckerStatusService extends HttpServlet {
             this.isAddition = object.getBoolean("isAddition");
             this.name = object.getString("name");
             this.version = object.getString("version");
+            this.url = object.getString("url");
             this.date = object.getString("date");
             this.timestamp = object.getLong("timestamp");
         }

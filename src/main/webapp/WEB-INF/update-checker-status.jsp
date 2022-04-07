@@ -103,7 +103,8 @@
                         </td>
                         <td>
                             <% if (entry.isAddition) { %>
-                                <b><%= escapeHtml4(entry.name) %></b> was updated to version <b><%= escapeHtml4(entry.version) %></b>
+                                <a href="<%= escapeHtml4(entry.url) %>" target="_blank"><b><%= escapeHtml4(entry.name) %></b></a>
+                                was updated to version <b><%= escapeHtml4(entry.version) %></b>
                             <% } else { %>
                                 <b><%= escapeHtml4(entry.name) %></b> was deleted
                             <% } %>
