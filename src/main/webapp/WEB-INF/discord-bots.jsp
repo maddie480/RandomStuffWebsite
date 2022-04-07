@@ -125,7 +125,14 @@
         </div>
     </div>
 
-    <a class="btn btn-primary" href="https://discord.com/oauth2/authorize?client_id=806514800045064213&scope=bot%20applications.commands&permissions=268435456" target="_blank">Invite</a>
+    <% if(((int) request.getAttribute("timezoneBotServerCount")) >= 100) { %>
+        <p>
+            <b>This bot cannot be invited because it hit the limit of 100 servers applied by Discord to all non-verified bots.</b>
+        </p>
+        <button class="btn btn-primary" disabled>Invite</button>
+    <% } else { %>
+        <a class="btn btn-primary" href="https://discord.com/oauth2/authorize?client_id=806514800045064213&scope=bot%20applications.commands&permissions=268435456" target="_blank">Invite</a>
+    <% } %>
 
     <h1 class="botname margin" id="mod-structure-verifier">
         <img src="/img/mod-structure-verifier-logo.png" class="botlogo"> Mod Structure Verifier
@@ -200,7 +207,14 @@
         </div>
     </div>
 
-    <a class="btn btn-primary" href="https://discord.com/oauth2/authorize?client_id=809572233953542154&scope=bot&permissions=52288" target="_blank">Invite</a>
+    <% if(((int) request.getAttribute("modStructureVerifierServerCount")) >= 100) { %>
+        <p>
+            <b>This bot cannot be invited because it hit the limit of 100 servers applied by Discord to all non-verified bots.</b>
+        </p>
+        <button class="btn btn-primary" disabled>Invite</button>
+    <% } else { %>
+        <a class="btn btn-primary" href="https://discord.com/oauth2/authorize?client_id=809572233953542154&scope=bot&permissions=52288" target="_blank">Invite</a>
+    <% } %>
 
     <h1 class="botname margin" id="games-bot">
         <img src="/img/games-bot-logo.png" class="botlogo"> Games Bot
