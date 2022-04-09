@@ -30,3 +30,9 @@ b {
         display: block;
     }
 }
+
+@media(max-width: 450px) {
+    h1 {
+        font-size: 1.8em;
+    }
+}
