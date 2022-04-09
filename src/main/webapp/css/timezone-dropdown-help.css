@@ -6,3 +6,27 @@
 .space {
     margin-top: 40px;
 }
+
+img {
+    max-width: 100%;
+    display: block;
+}
+
+b {
+    margin-top: 10px;
+    display: block;
+}
+
+.darktheme {
+    display: none;
+}
+
+@media(prefers-color-scheme: dark) {
+    .lighttheme {
+        display: none;
+    }
+
+    .darktheme {
+        display: block;
+    }
+}

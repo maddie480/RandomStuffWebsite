@@ -77,8 +77,16 @@
         <li><code>/remove-timezone</code> - removes your timezone role</li>
         <li><code>/discord-timestamp [date_time]</code> - gives a <a href="https://discord.com/developers/docs/reference#message-formatting-timestamp-styles" target="_blank">Discord timestamp</a>, to tell a date/time to other people regardless of their timezone</li>
         <li><code>/time-for [member]</code> - gives the time it is now for another member of the server, if they have a timezone role</li>
-        <li><code>/list-timezones [visibility]</code> - lists the timezones of all members in the server that have timezone roles. You can pass <code>visibility = public</code> in order to have the bot response be visible to everyone in the channel.</li>
-        <li><code>/toggle-times</code> - sets whether timezone roles should show the time it is in the timezone (for example <code>Timezone UTC+01:00 (2pm)</code>) or not (for example <code>Timezone UTC+01:00</code>). Enabling this causes "role update" events to be logged hourly. This is disabled by default, and only members with the Manage Server or Admin permission can enable it.</li>
+        <li><code>/list-timezones [visibility] [names]</code> - lists the timezones of all members in the server that have timezone roles. You can pass <code>visibility = public</code> in order to have the bot response be visible to everyone in the channel.</li>
+    </ul>
+
+    <p>
+        Two more commands allow admins to set the bot up, and are only accessible to members with the "Administrator" or "Manage Server" permission:
+    </p>
+
+    <ul>
+        <li><code>/toggle-times</code> - sets whether timezone roles should show the time it is in the timezone (for example <code>Timezone UTC+01:00 (2pm)</code>) or not (for example <code>Timezone UTC+01:00</code>). Enabling this causes "role update" events to be logged hourly. This is disabled by default.</li>
+        <li><code>/timezone-dropdown</code> - creates a dropdown that lets users pick a timezone role. This is useful if most members in your server have the same timezone roles. An admin can set this up in a fixed <code>#roles</code> channel, similarly to reaction roles. <a href="/discord-bots/timezone-bot/timezone-dropdown-help.html">Check this page for help with the syntax and examples.</a></li>
     </ul>
 
     <p>
