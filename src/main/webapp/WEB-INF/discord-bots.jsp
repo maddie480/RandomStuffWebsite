@@ -81,7 +81,7 @@
     </ul>
 
     <p>
-        Two more commands allow admins to set the bot up, and are only accessible to members with the "Administrator" or "Manage Server" permission:
+        Two more commands allow admins to set the bot up, and are only accessible to members with the "Administrator" or "Manage Server" permission by default:
     </p>
 
     <ul>
