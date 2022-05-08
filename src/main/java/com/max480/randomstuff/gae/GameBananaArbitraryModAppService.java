@@ -3,7 +3,6 @@ package com.max480.randomstuff.gae;
 import com.google.appengine.api.datastore.*;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.Storage;
-import com.google.cloud.storage.StorageException;
 import com.google.cloud.storage.StorageOptions;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -170,13 +169,14 @@ public class GameBananaArbitraryModAppService extends HttpServlet {
             // see https://github.com/max4805/RandomBackendStuff/blob/main/src/celeste-backend-crontabs/ArbitraryModAppCacher.java
             BlobId blobId = BlobId.of("staging.max480-random-stuff.appspot.com", "arbitrary-mod-app-cache/" + modId + ".json");
             return new JSONObject(new String(storage.readAllBytes(blobId), UTF_8));
-        } catch (StorageException ex) {
+        } catch (Exception ex) {
             // if this is not possible, read from GameBanana directly instead
+            logger.info("Could not retrieve mod by ID from cache, querying GameBanana directly: " + ex.toString());
             try (InputStream is = openStreamWithTimeout(new URL("https://gamebanana.com/apiv8/Mod/" + modId +
                     "?_csvProperties=_sProfileUrl,_sName,_aPreviewMedia,_tsDateAdded,_tsDateUpdated,_aGame,_aSubmitter,_bIsWithheld,_bIsTrashed,_bIsPrivate"))) {
                 return new JSONObject(IOUtils.toString(is, UTF_8));
             } catch (IOException e) {
-                logger.severe("Could not retrieve mod by ID!" + e.toString());
+                logger.severe("Could not retrieve mod by ID! " + e.toString());
                 e.printStackTrace();
                 return null;
             }
