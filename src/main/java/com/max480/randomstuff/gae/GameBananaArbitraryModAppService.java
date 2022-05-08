@@ -1,8 +1,13 @@
 package com.max480.randomstuff.gae;
 
 import com.google.appengine.api.datastore.*;
+import com.google.cloud.storage.BlobId;
+import com.google.cloud.storage.Storage;
+import com.google.cloud.storage.StorageException;
+import com.google.cloud.storage.StorageOptions;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
@@ -27,10 +32,11 @@ import static com.max480.randomstuff.gae.ConnectionUtils.openStreamWithTimeout;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 @WebServlet(name = "GameBananaArbitraryModAppService", urlPatterns = {"/gamebanana/arbitrary-mod-app",
-        "/gamebanana/arbitrary-mod-app-settings", "/gamebanana/arbitrary-mod-app-housekeep"})
+        "/gamebanana/arbitrary-mod-app-settings", "/gamebanana/arbitrary-mod-app-housekeep", "/gamebanana/arbitrary-mod-app-modlist"})
 public class GameBananaArbitraryModAppService extends HttpServlet {
     private static final Logger logger = Logger.getLogger("GameBananaArbitraryModAppService");
     private final DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    private final Storage storage = StorageOptions.newBuilder().setProjectId("max480-random-stuff").build().getService();
 
     private static DateTimeFormatter format = DateTimeFormatter.ofPattern("MMM d yyyy @ h:mm a O", Locale.ENGLISH);
 
@@ -62,6 +68,19 @@ public class GameBananaArbitraryModAppService extends HttpServlet {
         if (request.getRequestURI().equals("/gamebanana/arbitrary-mod-app-housekeep")) {
             if (("key=" + SecretConstants.RELOAD_SHARED_SECRET).equals(request.getQueryString())) {
                 housekeep();
+            } else {
+                // invalid secret
+                logger.warning("Invalid key");
+                response.setStatus(403);
+            }
+            return;
+        }
+
+        if (request.getRequestURI().equals("/gamebanana/arbitrary-mod-app-modlist")) {
+            if (("key=" + SecretConstants.RELOAD_SHARED_SECRET).equals(request.getQueryString())) {
+                Set<String> modIds = getModList();
+                response.setContentType("application/json");
+                response.getWriter().write(new JSONArray(modIds).toString());
             } else {
                 // invalid secret
                 logger.warning("Invalid key");
@@ -146,13 +165,21 @@ public class GameBananaArbitraryModAppService extends HttpServlet {
     }
 
     private JSONObject queryModById(String modId) {
-        try (InputStream is = openStreamWithTimeout(new URL("https://gamebanana.com/apiv8/Mod/" + modId +
-                "?_csvProperties=_sProfileUrl,_sName,_aPreviewMedia,_tsDateAdded,_tsDateUpdated,_aGame,_aSubmitter,_bIsWithheld,_bIsTrashed,_bIsPrivate"))) {
-            return new JSONObject(IOUtils.toString(is, UTF_8));
-        } catch (IOException e) {
-            logger.severe("Could not retrieve mod by ID!" + e.toString());
-            e.printStackTrace();
-            return null;
+        try {
+            // try reading from the Cloud Storage cache, that is fed daily by the backend:
+            // see https://github.com/max4805/RandomBackendStuff/blob/main/src/celeste-backend-crontabs/ArbitraryModAppCacher.java
+            BlobId blobId = BlobId.of("staging.max480-random-stuff.appspot.com", "arbitrary-mod-app-cache/" + modId + ".json");
+            return new JSONObject(new String(storage.readAllBytes(blobId), UTF_8));
+        } catch (StorageException ex) {
+            // if this is not possible, read from GameBanana directly instead
+            try (InputStream is = openStreamWithTimeout(new URL("https://gamebanana.com/apiv8/Mod/" + modId +
+                    "?_csvProperties=_sProfileUrl,_sName,_aPreviewMedia,_tsDateAdded,_tsDateUpdated,_aGame,_aSubmitter,_bIsWithheld,_bIsTrashed,_bIsPrivate"))) {
+                return new JSONObject(IOUtils.toString(is, UTF_8));
+            } catch (IOException e) {
+                logger.severe("Could not retrieve mod by ID!" + e.toString());
+                e.printStackTrace();
+                return null;
+            }
         }
     }
 
@@ -354,6 +381,18 @@ public class GameBananaArbitraryModAppService extends HttpServlet {
                 datastore.delete(entity.getKey());
             }
         }
+    }
+
+    private Set<String> getModList() {
+        Set<String> result = new HashSet<>();
+
+        final Query query = new Query("arbitraryModAppConfiguration");
+        for (Entity entity : datastore.prepare(query).asIterable()) {
+            String list = (String) entity.getProperty("modList");
+            result.addAll(Arrays.asList(list.split(",")));
+        }
+
+        return result;
     }
 
 }
