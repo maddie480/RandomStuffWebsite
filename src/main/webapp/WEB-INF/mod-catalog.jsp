@@ -18,29 +18,49 @@
 
     <link rel="shortcut icon" href="/celeste/favicon.ico">
 
-    <link rel="stylesheet"
-        href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
-        integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
-        crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 
     <link rel="stylesheet" href="/css/common.css">
     <link rel="stylesheet" href="/css/mod-catalog.css">
 </head>
 
 <body>
-    <div class="container">
-        <div id="nav">
-            <a href="/celeste/custom-entity-catalog" class="active">Custom&nbsp;Entity&nbsp;Catalog</a> <span class="sep">|</span>
-            <a href="/celeste/everest-yaml-validator">everest.yaml&nbsp;validator</a> <span class="sep">|</span>
-            <a href="/celeste/update-checker-status">Update&nbsp;Checker&nbsp;status</a> <span class="sep">|</span>
-            <a href="https://max480-random-stuff.herokuapp.com/celeste/banana-mirror-browser">Banana&nbsp;Mirror&nbsp;Browser</a> <span class="sep">|</span>
-            <a href="/celeste/mod-structure-verifier">Mod&nbsp;Structure&nbsp;Verifier</a> <span class="sep break">|</span>
-            <a href="/celeste/font-generator">Font&nbsp;Generator</a> <span class="sep">|</span>
-            <a href="https://max480-random-stuff.herokuapp.com/celeste/wipe-converter">Wipe&nbsp;Converter</a> <span class="sep">|</span>
-            <a href="/discord-bots">Discord&nbsp;Bots</a> <span class="sep">|</span>
-            <a href="/celeste/news-network-subscription">#celeste_news_network&nbsp;Subscription</a>
-        </div>
+    <nav class="navbar navbar-expand navbar-light bg-light border-bottom shadow-sm">
+        <div class="container-fluid">
+            <h5 class="navbar-brand m-0">max480's Random Stuff</h5>
 
+            <ul class="navbar-nav">
+                <li class="nav-item dropdown">
+                    <a class="nav-link active dropdown-toggle" href="#" id="celesteDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Celeste</a>
+                    <ul class="dropdown-menu dropdown-menu-sm-end" aria-labelledby="celesteDropdown">
+                        <li><a class="dropdown-item" href="https://max480-random-stuff.herokuapp.com/celeste/banana-mirror-browser">Banana Mirror Browser</a></li>
+                        <li><a class="dropdown-item" href="/celeste/news-network-subscription">#celeste_news_network Subscription</a></li>
+                        <li><a class="dropdown-item active" href="/celeste/custom-entity-catalog">Custom Entity Catalog</a></li>
+                        <li><a class="dropdown-item" href="/celeste/everest-yaml-validator">everest.yaml validator</a></li>
+                        <li><a class="dropdown-item" href="/celeste/font-generator">Font Generator</a></li>
+                        <li><a class="dropdown-item" href="/celeste/mod-structure-verifier">Mod Structure Verifier</a></li>
+                        <li><a class="dropdown-item" href="/celeste/update-checker-status">Update Checker status</a></li>
+                        <li><a class="dropdown-item" href="https://max480-random-stuff.herokuapp.com/celeste/wipe-converter">Wipe Converter</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/discord-bots">Discord Bots</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="linksDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Links</a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="linksDropdown">
+                        <li><a class="dropdown-item" href="https://gamebanana.com/members/1698143" target="_blank">GameBanana</a></li>
+                        <li><a class="dropdown-item" href="https://github.com/max4805" target="_blank">GitHub</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
         <% if((boolean) request.getAttribute("error")) { %>
             <div class="alert alert-danger">
                 An error occurred while loading the entity and trigger list. Please try again later.<br>
@@ -63,7 +83,7 @@
             </p>
 
             <p>
-                Note that it is <b>not recommended</b> to use <span class="badge badge-danger">Maps</span> as dependencies, because anyone wanting to play your map
+                Note that it is <b>not recommended</b> to use <span class="badge bg-danger">Maps</span> as dependencies, because anyone wanting to play your map
                 would have to get that other map and all its dependencies as well. Maps that ship with custom entities are still included here for completeness.
             </p>
 
@@ -95,11 +115,11 @@
                     <li>
                         <a href="#<%= CelesteModCatalogService.dasherize(mod.modName) %>"><%= escapeHtml4(mod.modName) %></a>
                         <% if(mod.categoryId == 5081) { %>
-                            <span class="badge badge-success"><%= escapeHtml4(mod.categoryName) %></span>
+                            <span class="badge bg-success"><%= escapeHtml4(mod.categoryName) %></span>
                         <% } else if(mod.categoryId == 6800) { %>
-                            <span class="badge badge-danger"><%= escapeHtml4(mod.categoryName) %></span>
+                            <span class="badge bg-danger"><%= escapeHtml4(mod.categoryName) %></span>
                         <% } else { %>
-                            <span class="badge badge-warning"><%= escapeHtml4(mod.categoryName) %></span>
+                            <span class="badge bg-warning"><%= escapeHtml4(mod.categoryName) %></span>
                         <% } %>
                     </li>
                 <% } %>
@@ -113,11 +133,11 @@
                 <h3 id="<%= CelesteModCatalogService.dasherize(mod.modName) %>">
                     <%= escapeHtml4(mod.modName) %>
                     <% if(mod.categoryId == 5081) { %>
-                        <span class="badge badge-success"><%= escapeHtml4(mod.categoryName) %></span>
+                        <span class="badge bg-success"><%= escapeHtml4(mod.categoryName) %></span>
                     <% } else if(mod.categoryId == 6800) { %>
-                        <span class="badge badge-danger"><%= escapeHtml4(mod.categoryName) %></span>
+                        <span class="badge bg-danger"><%= escapeHtml4(mod.categoryName) %></span>
                     <% } else { %>
-                        <span class="badge badge-warning"><%= escapeHtml4(mod.categoryName) %></span>
+                        <span class="badge bg-warning"><%= escapeHtml4(mod.categoryName) %></span>
                     <% } %>
                 </h3>
                 <p>
@@ -147,10 +167,10 @@
                             <li>
                                 <%= escapeHtml4(effect.getKey()) %>
                                 <% if (effect.getValue().contains("ahorn")) { %>
-                                    <span class="badge badge-secondary">Ahorn</span>
+                                    <span class="badge bg-secondary">Ahorn</span>
                                 <% } %>
                                 <% if (effect.getValue().contains("loenn")) { %>
-                                    <span class="badge badge-primary">L&#x00f6;nn</span>
+                                    <span class="badge bg-primary">L&#x00f6;nn</span>
                                 <% } %>
                             </li>
                         <% } %>
@@ -162,10 +182,10 @@
                         <% for(Map.Entry<String, List<String>> entity : mod.entityList.entrySet()) { %>
                             <li><%= escapeHtml4(entity.getKey()) %>
                                 <% if (entity.getValue().contains("ahorn")) { %>
-                                    <span class="badge badge-secondary">Ahorn</span>
+                                    <span class="badge bg-secondary">Ahorn</span>
                                 <% } %>
                                 <% if (entity.getValue().contains("loenn")) { %>
-                                    <span class="badge badge-primary">L&#x00f6;nn</span>
+                                    <span class="badge bg-primary">L&#x00f6;nn</span>
                                 <% } %>
                             </li>
                         <% } %>
@@ -177,10 +197,10 @@
                         <% for(Map.Entry<String, List<String>> trigger : mod.triggerList.entrySet()) { %>
                             <li><%= escapeHtml4(trigger.getKey()) %>
                                 <% if (trigger.getValue().contains("ahorn")) { %>
-                                    <span class="badge badge-secondary">Ahorn</span>
+                                    <span class="badge bg-secondary">Ahorn</span>
                                 <% } %>
                                 <% if (trigger.getValue().contains("loenn")) { %>
-                                    <span class="badge badge-primary">L&#x00f6;nn</span>
+                                    <span class="badge bg-primary">L&#x00f6;nn</span>
                                 <% } %>
                             </li>
                         <% } %>

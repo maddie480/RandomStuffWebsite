@@ -3,11 +3,17 @@ h2 {
 }
 
 @media (prefers-color-scheme: dark) {
-    .table td {
-        border-top: 1px solid #555;
-    }
     .table-striped > tbody > tr:nth-of-type(2n + 1) {
         background-color: #222;
+    }
+    .table {
+        color: rgb(222, 218, 214);
+    }
+    .table-striped > tbody > tr:nth-of-type(2n+1) > * {
+        color: rgb(222, 218, 214);
+    }
+    tr {
+        border-color: #555;
     }
 }
 

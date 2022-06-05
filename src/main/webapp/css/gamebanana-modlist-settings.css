@@ -10,6 +10,12 @@ body {
     color: #DEDAD6;
     background-color: #151D23;
 }
+p {
+    margin-bottom: 0;
+}
+.form-group {
+    margin-bottom: 16px;
+}
 .form-control {
     background-color: black;
     border-color: #83888c;
