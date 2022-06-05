@@ -24,7 +24,6 @@ public class GameBananaAssetsServlet extends HttpServlet {
         if (req.getRequestURI().equals("/fonts/Renogare.otf")) {
             // this is a static asset, but we need to serve it with special response headers to be able to use it on gamebanana.com.
             resp.setContentType("application/font-sfnt");
-            resp.setHeader("Access-Control-Allow-Origin", "https://gamebanana.com");
             try (InputStream is = GameBananaAssetsServlet.class.getClassLoader().getResourceAsStream("font-generator/fonts/Renogare.otf")) {
                 IOUtils.copy(is, resp.getOutputStream());
             }

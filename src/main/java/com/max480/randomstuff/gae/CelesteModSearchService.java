@@ -88,8 +88,6 @@ public class CelesteModSearchService extends HttpServlet {
         }
 
         if (request.getRequestURI().equals("/celeste/gamebanana-search")) {
-            response.setHeader("Access-Control-Allow-Origin", "*");
-
             String queryParam = request.getParameter("q");
             boolean fullInfo = "true".equals(request.getParameter("full"));
 
@@ -168,8 +166,6 @@ public class CelesteModSearchService extends HttpServlet {
         }
 
         if (request.getRequestURI().equals("/celeste/gamebanana-list")) {
-            response.setHeader("Access-Control-Allow-Origin", "*");
-
             boolean fullInfo = "true".equals(request.getParameter("full"));
             String sortParam = request.getParameter("sort");
             String pageParam = request.getParameter("page");
@@ -260,8 +256,6 @@ public class CelesteModSearchService extends HttpServlet {
         }
 
         if (request.getRequestURI().equals("/celeste/gamebanana-featured")) {
-            response.setHeader("Access-Control-Allow-Origin", "*");
-
             final List<String> catOrder = Arrays.asList("today", "week", "month", "3month", "6month", "year", "alltime");
             final List<Map<String, Object>> responseBody = modDatabaseForSorting.stream()
                     .filter(mod -> mod.fullInfo.containsKey("Featured"))
@@ -283,8 +277,6 @@ public class CelesteModSearchService extends HttpServlet {
         }
 
         if (request.getRequestURI().equals("/celeste/gamebanana-categories")) {
-            response.setHeader("Access-Control-Allow-Origin", "*");
-
             boolean v2 = "2".equals(request.getParameter("version"));
 
             // go across all mods and aggregate stats per category.

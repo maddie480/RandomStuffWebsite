@@ -94,7 +94,7 @@
         <form method="POST" enctype="multipart/form-data">
             <div class="form-group">
                 <label for="method">Generating method</label>
-                <select class="form-control" id="method" name="method">
+                <select class="form-select" id="method" name="method">
                     <option value="bmfont">BMFont (more accurate for vanilla fonts)</option>
                     <option value="libgdx">libgdx (faster, supports custom fonts)</option>
                 </select>
@@ -113,7 +113,7 @@
 
             <div class="form-group">
                 <label for="font">Font</label>
-                <select class="form-control" id="font" name="font">
+                <select class="form-select" id="font" name="font">
                     <option value="japanese">Japanese (Noto Sans CJK JP Medium)</option>
                     <option value="korean">Korean (Noto Sans CJK KR Medium)</option>
                     <option value="chinese">Simplified Chinese (Noto Sans CJK SC Medium)</option>
