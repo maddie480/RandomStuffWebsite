@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Serializable;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -59,7 +60,9 @@ public class MattermostService extends HttpServlet {
         }
     }
 
-    private static class PlanningExploit {
+    private static class PlanningExploit implements Serializable {
+        private static final long serialVersionUID = 56185131613831863L;
+
         private final List<ZonedDateTime> exploitTimes = new ArrayList<>();
         private final List<String> principalExploit = new ArrayList<>();
         private final List<String> backupExploit = new ArrayList<>();
