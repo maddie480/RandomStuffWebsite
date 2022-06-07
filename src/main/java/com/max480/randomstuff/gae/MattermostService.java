@@ -3,7 +3,6 @@ package com.max480.randomstuff.gae;
 import com.google.appengine.api.datastore.*;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.json.JSONObject;
 
@@ -12,13 +11,9 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Serializable;
-import java.net.URL;
+import java.io.ObjectInputStream;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -27,7 +22,7 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static com.max480.randomstuff.gae.ConnectionUtils.openStreamWithTimeout;
+import static com.max480.discord.slashcommandbot.SlashCommandBot.PlanningExploit;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
@@ -38,7 +33,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  * Lock/unlock is a simple resource locking system, exploit and absents do lookups on an iCalendar,
  * and consistencycheck compares a calendar in an internal JSON format with the iCalendar one.
  */
-@WebServlet(name = "MattermostService", loadOnStartup = 3, urlPatterns = {
+@WebServlet(name = "MattermostService", urlPatterns = {
         "/mattermost/exploit", "/mattermost/absents", "/mattermost/lock", "/mattermost/unlock",
         "/mattermost/planning-reload", "/mattermost/consistencycheck"})
 public class MattermostService extends HttpServlet {
@@ -51,150 +46,36 @@ public class MattermostService extends HttpServlet {
 
     private PlanningExploit cachedPlanningExploit;
 
-    @Override
-    public void init() {
-        try {
-            cachedPlanningExploit = getExploit();
-        } catch (Exception e) {
-            logger.log(Level.WARNING, "Preloading planning failed: " + e.toString());
+    private PlanningExploit retrievePlanningExploit() throws IOException {
+        PlanningExploit exploit;
+
+        // that planning is parsed from an iCalendar and serialized by the backend, because that can take a bit of time
+        // (and the iCalendar provider can turn out to be quite unstable).
+        try (ObjectInputStream is = new ObjectInputStream(CloudStorageUtils.getCloudStorageInputStream("planning_exploit.ser"))) {
+            exploit = (PlanningExploit) is.readObject();
+        } catch (ClassNotFoundException e) {
+            throw new IOException(e);
         }
+
+        logger.info("Exploit entries count: " + exploit.principalExploit.size());
+        logger.info("Holiday entries count: " + exploit.holidays.values().stream().mapToInt(List::size).sum());
+
+        return exploit;
     }
 
-    private static class PlanningExploit implements Serializable {
-        private static final long serialVersionUID = 56185131613831863L;
-
-        private final List<ZonedDateTime> exploitTimes = new ArrayList<>();
-        private final List<String> principalExploit = new ArrayList<>();
-        private final List<String> backupExploit = new ArrayList<>();
-
-        private final Map<String, List<Pair<ZonedDateTime, ZonedDateTime>>> holidays = new HashMap<>();
-    }
-
-    private PlanningExploit getExploit() throws IOException {
-        PlanningExploit exploit = new PlanningExploit();
-
-        // the "exploit" planning is stored in iCalendar format and has someone as "principal" and one as "backup" every week.
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(openStreamWithTimeout(new URL(SecretConstants.EXPLOIT_PLANNING_URL))))) {
-            // date => name
-            TreeMap<String, String> principals = new TreeMap<>();
-            TreeMap<String, String> backups = new TreeMap<>();
-
-            // jank iCal parser incoming!
-            String line;
-            while ((line = reader.readLine()) != null) {
-                if (line.equals("BEGIN:VEVENT")) {
-                    Map<String, String> properties = new HashMap<>();
-                    String propertyBeingParsed = null;
-                    String propertyValue = null;
-
-                    // get event fields until we hit the end of it
-                    while (!(line = reader.readLine()).equals("END:VEVENT")) {
-                        if (propertyBeingParsed == null || !line.startsWith(" ")) {
-                            // start of another property
-                            if (propertyBeingParsed != null) {
-                                properties.put(propertyBeingParsed, propertyValue);
-                            }
-
-                            // [name]:[value] or [name];[value]
-                            if (line.contains(":")) {
-                                propertyBeingParsed = line.substring(0, line.indexOf(":"));
-                                propertyValue = line.substring(line.indexOf(":") + 1);
-                            } else {
-                                propertyBeingParsed = line.substring(0, line.indexOf(";"));
-                                propertyValue = line.substring(line.indexOf(";") + 1);
-                            }
-                        } else {
-                            // lines starting with a space are a continuation of the previous one.
-                            propertyValue += line.substring(1);
-                        }
-                    }
-
-                    // add the last property of the event
-                    if (propertyBeingParsed != null) {
-                        properties.put(propertyBeingParsed, propertyValue);
-                    }
-
-                    // is this a valid exploit entry?
-                    if ("Exploitation".equals(properties.get("CATEGORIES")) && Arrays.asList("Principal", "Backup").contains(properties.get("SUMMARY"))
-                            && properties.containsKey("DTSTART;VALUE=DATE") && properties.getOrDefault("ATTENDEE", "").contains("CN=")) {
-
-                        // extract user
-                        String userName = properties.get("ATTENDEE");
-                        userName = userName.substring(userName.indexOf("CN=") + 3);
-                        userName = userName.substring(0, userName.indexOf(";"));
-
-                        // put it in the appropriate map
-                        if (properties.get("SUMMARY").equals("Principal")) {
-                            principals.put(properties.get("DTSTART;VALUE=DATE"), userName);
-                        } else {
-                            backups.put(properties.get("DTSTART;VALUE=DATE"), userName);
-                        }
-                    }
-
-                    // is this a valid holidays entry?
-                    if (Arrays.asList("Formation École", "leaves", "Formation").contains(properties.get("CATEGORIES"))
-                            && (properties.containsKey("DTSTART;VALUE=DATE") || properties.containsKey("DTSTART;TZID=Europe/Paris"))
-                            && (properties.containsKey("DTEND;VALUE=DATE") || properties.containsKey("DTEND;TZID=Europe/Paris"))
-                            && properties.getOrDefault("ATTENDEE", "").contains("CN=")) {
-
-                        // get the user
-                        String userName = properties.get("ATTENDEE");
-                        userName = userName.substring(userName.indexOf("CN=") + 3);
-                        userName = userName.substring(0, userName.indexOf(";"));
-
-                        // parse the date (that can contain a time or not) and put it in the planning
-                        List<Pair<ZonedDateTime, ZonedDateTime>> userHolidays = exploit.holidays.getOrDefault(userName, new ArrayList<>());
-                        userHolidays.add(new ImmutablePair<>(
-                                properties.containsKey("DTSTART;VALUE=DATE") ?
-                                        LocalDate.parse(properties.get("DTSTART;VALUE=DATE"), DateTimeFormatter.ofPattern("yyyyMMdd"))
-                                                .atTime(0, 0, 0).atZone(ZoneId.of("Europe/Paris")) :
-                                        LocalDateTime.parse(properties.get("DTSTART;TZID=Europe/Paris"), DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss"))
-                                                .atZone(ZoneId.of("Europe/Paris")),
-                                properties.containsKey("DTEND;VALUE=DATE") ?
-                                        LocalDate.parse(properties.get("DTEND;VALUE=DATE"), DateTimeFormatter.ofPattern("yyyyMMdd"))
-                                                .atTime(0, 0, 0).atZone(ZoneId.of("Europe/Paris")) :
-                                        LocalDateTime.parse(properties.get("DTEND;TZID=Europe/Paris"), DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss"))
-                                                .atZone(ZoneId.of("Europe/Paris"))));
-                        exploit.holidays.put(userName, userHolidays);
-                    }
-                }
-            }
-
-            for (String date : principals.keySet()) {
-                if (backups.containsKey(date)) {
-                    // if we have a principal/backup pair, add it to the planning, starting on Monday 8am
-                    exploit.principalExploit.add(principals.get(date));
-                    exploit.backupExploit.add(backups.get(date));
-                    exploit.exploitTimes.add(LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyyMMdd"))
-                            .atTime(8, 0).atZone(ZoneId.of("Europe/Paris")));
-                }
-            }
-
-            // remove past exploit entries
-            exploit.exploitTimes.remove(0);
-            while (!exploit.exploitTimes.isEmpty() && exploit.exploitTimes.get(0).isBefore(ZonedDateTime.now())) {
-                exploit.exploitTimes.remove(0);
-                exploit.principalExploit.remove(0);
-                exploit.backupExploit.remove(0);
-            }
-
-            // cleanup past holidays
-            for (List<Pair<ZonedDateTime, ZonedDateTime>> holidays : exploit.holidays.values()) {
-                holidays.removeIf(holiday -> holiday.getRight().isBefore(ZonedDateTime.now()));
-            }
-
-            logger.info("Exploit entries count: " + exploit.principalExploit.size());
-            logger.info("Holiday entries count: " + exploit.holidays.values().stream().mapToInt(List::size).sum());
-
-            return exploit;
+    private PlanningExploit getPlanningExploitCached() throws IOException {
+        if (cachedPlanningExploit == null) {
+            cachedPlanningExploit = retrievePlanningExploit();
         }
+
+        return cachedPlanningExploit;
     }
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         if (request.getRequestURI().equals("/mattermost/planning-reload")) {
             if (("key=" + SecretConstants.RELOAD_SHARED_SECRET).equals(request.getQueryString())) {
-                cachedPlanningExploit = getExploit();
+                cachedPlanningExploit = retrievePlanningExploit();
             } else {
                 logger.warning("Invalid key");
                 response.setStatus(403);
@@ -365,7 +246,7 @@ public class MattermostService extends HttpServlet {
     private String commandExploit() {
         PlanningExploit exploit;
         try {
-            exploit = cachedPlanningExploit == null ? getExploit() : cachedPlanningExploit;
+            exploit = getPlanningExploitCached();
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Problem while getting exploit planning: " + e.toString());
 
@@ -394,7 +275,7 @@ public class MattermostService extends HttpServlet {
     private String commandAbsents() {
         PlanningExploit exploit;
         try {
-            exploit = cachedPlanningExploit == null ? getExploit() : cachedPlanningExploit;
+            exploit = getPlanningExploitCached();
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Problem while getting exploit planning: " + e.toString());
 
@@ -440,7 +321,7 @@ public class MattermostService extends HttpServlet {
     private String commandConsistencyCheck(String calendarString) {
         PlanningExploit exploit;
         try {
-            exploit = cachedPlanningExploit == null ? getExploit() : cachedPlanningExploit;
+            exploit = getPlanningExploitCached();
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Problem while getting exploit planning: " + e.toString());
 

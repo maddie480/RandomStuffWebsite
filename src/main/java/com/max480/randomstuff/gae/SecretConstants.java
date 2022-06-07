@@ -26,7 +26,6 @@ public class SecretConstants {
     public static String GAMES_BOT_CLIENT_ID = "";
     public static String GAMES_BOT_PUBLIC_KEY = "";
 
-    public static String EXPLOIT_PLANNING_URL = "";
     public static String MATTERMOST_TOKEN_LOCK = "";
     public static String MATTERMOST_TOKEN_UNLOCK = "";
     public static String MATTERMOST_TOKEN_EXPLOIT = "";
@@ -40,7 +39,6 @@ public class SecretConstants {
             AccessSecretVersionResponse response = client.accessSecretVersion(secretVersionName);
             JSONObject secrets = new JSONObject(response.getPayload().getData().toStringUtf8());
 
-            EXPLOIT_PLANNING_URL = secrets.getString("EXPLOIT_PLANNING_URL");
             GAMES_BOT_CLIENT_ID = secrets.getString("GAMES_BOT_CLIENT_ID");
             GAMES_BOT_PUBLIC_KEY = secrets.getString("GAMES_BOT_PUBLIC_KEY");
             GITHUB_PERSONAL_ACCESS_TOKEN = secrets.getString("GITHUB_PERSONAL_ACCESS_TOKEN");

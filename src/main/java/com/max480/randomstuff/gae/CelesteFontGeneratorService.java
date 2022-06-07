@@ -59,7 +59,7 @@ import java.util.zip.ZipOutputStream;
 /**
  * Servlet allowing to generate bitmap fonts for usage in Celeste (~~and any other game using the XML output of BMFont actually~~).
  */
-@WebServlet(name = "CelesteFontGeneratorService", loadOnStartup = 4, urlPatterns = {"/celeste/font-generator"})
+@WebServlet(name = "CelesteFontGeneratorService", loadOnStartup = 3, urlPatterns = {"/celeste/font-generator"})
 @MultipartConfig
 public class CelesteFontGeneratorService extends HttpServlet {
     private static final Logger logger = Logger.getLogger("CelesteFontGeneratorService");

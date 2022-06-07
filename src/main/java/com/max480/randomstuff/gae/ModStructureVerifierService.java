@@ -35,7 +35,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 /**
  * Servlet allowing to submit files to the Mod Structure Verifier bot.
  */
-@WebServlet(name = "ModStructureVerifierService", loadOnStartup = 5, urlPatterns = {"/celeste/mod-structure-verifier"})
+@WebServlet(name = "ModStructureVerifierService", loadOnStartup = 4, urlPatterns = {"/celeste/mod-structure-verifier"})
 @MultipartConfig
 public class ModStructureVerifierService extends HttpServlet {
     private static final Logger logger = Logger.getLogger("ModStructureVerifierService");

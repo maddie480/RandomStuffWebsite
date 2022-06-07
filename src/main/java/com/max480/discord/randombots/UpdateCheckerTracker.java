@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Map;
 
 /**
- * The ModInfo class needs to be at the same place than on the backend to allow deserialization.
+ * The ModInfo class needs to be at the same place as on the backend to allow deserialization.
  */
 public class UpdateCheckerTracker {
     public static class ModInfo implements Serializable {
