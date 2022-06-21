@@ -18,9 +18,6 @@ public class SecretConstants {
 
     public static String SRC_MOD_LIST_KEY = "";
 
-    public static String GITHUB_USERNAME = "";
-    public static String GITHUB_PERSONAL_ACCESS_TOKEN = "";
-
     public static String LOGGING_EXPECTED_AUTH_HEADER = "";
 
     public static String GAMES_BOT_CLIENT_ID = "";
@@ -41,8 +38,6 @@ public class SecretConstants {
 
             GAMES_BOT_CLIENT_ID = secrets.getString("GAMES_BOT_CLIENT_ID");
             GAMES_BOT_PUBLIC_KEY = secrets.getString("GAMES_BOT_PUBLIC_KEY");
-            GITHUB_PERSONAL_ACCESS_TOKEN = secrets.getString("GITHUB_PERSONAL_ACCESS_TOKEN");
-            GITHUB_USERNAME = secrets.getString("GITHUB_USERNAME");
             LOGGING_EXPECTED_AUTH_HEADER = secrets.getString("LOGGING_EXPECTED_AUTH_HEADER");
             MATTERMOST_TOKEN_ABSENTS = secrets.getString("MATTERMOST_TOKEN_ABSENTS");
             MATTERMOST_TOKEN_CONSISTENCYCHECK = secrets.getString("MATTERMOST_TOKEN_CONSISTENCYCHECK");

@@ -13,11 +13,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -200,13 +201,6 @@ public class EverestYamlValidatorService extends HttpServlet {
                             databaseDependency = new EverestModuleMetadata();
                             databaseDependency.Version = "1.0.0";
                         }
-                        if (dependency.Name.equals("GravityHelper")) {
-                            databaseDependency = new EverestModuleMetadata();
-                            try (InputStream is = authenticatedGitHubRequest("https://api.github.com/repos/swoolcock/GravityHelper/tags")) {
-                                JSONArray tags = new JSONArray(IOUtils.toString(is, UTF_8));
-                                databaseDependency.Version = tags.getJSONObject(0).getString("name");
-                            }
-                        }
 
                         if (databaseDependency == null) {
                             problems.add("One of your dependencies, \"" + dependency.Name + "\", does not exist in the database." +
@@ -250,15 +244,6 @@ public class EverestYamlValidatorService extends HttpServlet {
         }
 
         request.getRequestDispatcher("/WEB-INF/everest-yaml-validator.jsp").forward(request, response);
-    }
-
-    private InputStream authenticatedGitHubRequest(String url) throws IOException {
-        HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
-        connection.setConnectTimeout(10000);
-        connection.setReadTimeout(30000);
-        connection.setRequestProperty("Authorization", "Basic " + Base64.getEncoder().encodeToString(
-                (SecretConstants.GITHUB_USERNAME + ":" + SecretConstants.GITHUB_PERSONAL_ACCESS_TOKEN).getBytes(UTF_8)));
-        return connection.getInputStream();
     }
 
     /**
