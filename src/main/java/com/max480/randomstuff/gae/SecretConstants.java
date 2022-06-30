@@ -20,8 +20,13 @@ public class SecretConstants {
 
     public static String LOGGING_EXPECTED_AUTH_HEADER = "";
 
+
     public static String GAMES_BOT_CLIENT_ID = "";
     public static String GAMES_BOT_PUBLIC_KEY = "";
+
+    public static String CUSTOM_SLASH_COMMANDS_CLIENT_ID = "";
+    public static String CUSTOM_SLASH_COMMANDS_CLIENT_SECRET = "";
+    public static String CUSTOM_SLASH_COMMANDS_PUBLIC_KEY = "";
 
     public static String MATTERMOST_TOKEN_LOCK = "";
     public static String MATTERMOST_TOKEN_UNLOCK = "";
@@ -38,13 +43,21 @@ public class SecretConstants {
 
             GAMES_BOT_CLIENT_ID = secrets.getString("GAMES_BOT_CLIENT_ID");
             GAMES_BOT_PUBLIC_KEY = secrets.getString("GAMES_BOT_PUBLIC_KEY");
+
+            CUSTOM_SLASH_COMMANDS_CLIENT_ID = secrets.getString("CUSTOM_SLASH_COMMANDS_CLIENT_ID");
+            CUSTOM_SLASH_COMMANDS_CLIENT_SECRET = secrets.getString("CUSTOM_SLASH_COMMANDS_CLIENT_SECRET");
+            CUSTOM_SLASH_COMMANDS_PUBLIC_KEY = secrets.getString("CUSTOM_SLASH_COMMANDS_PUBLIC_KEY");
+
             LOGGING_EXPECTED_AUTH_HEADER = secrets.getString("LOGGING_EXPECTED_AUTH_HEADER");
+
             MATTERMOST_TOKEN_ABSENTS = secrets.getString("MATTERMOST_TOKEN_ABSENTS");
             MATTERMOST_TOKEN_CONSISTENCYCHECK = secrets.getString("MATTERMOST_TOKEN_CONSISTENCYCHECK");
             MATTERMOST_TOKEN_EXPLOIT = secrets.getString("MATTERMOST_TOKEN_EXPLOIT");
             MATTERMOST_TOKEN_LOCK = secrets.getString("MATTERMOST_TOKEN_LOCK");
             MATTERMOST_TOKEN_UNLOCK = secrets.getString("MATTERMOST_TOKEN_UNLOCK");
+
             RELOAD_SHARED_SECRET = secrets.getString("RELOAD_SHARED_SECRET");
+
             SRC_MOD_LIST_KEY = secrets.getString("SRC_MOD_LIST_KEY");
         } catch (IOException e) {
             logger.severe("Could not load application secrets! " + e.toString());

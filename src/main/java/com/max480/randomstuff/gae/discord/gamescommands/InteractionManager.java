@@ -1,8 +1,7 @@
 package com.max480.randomstuff.gae.discord.gamescommands;
 
-import com.goterl.lazysodium.LazySodiumJava;
-import com.goterl.lazysodium.SodiumJava;
 import com.max480.randomstuff.gae.SecretConstants;
+import com.max480.randomstuff.gae.discord.SodiumInstance;
 import com.max480.randomstuff.gae.discord.gamescommands.games.Connect4;
 import com.max480.randomstuff.gae.discord.gamescommands.games.Minesweeper;
 import com.max480.randomstuff.gae.discord.gamescommands.games.Reversi;
@@ -38,7 +37,6 @@ import java.util.stream.Collectors;
 @WebServlet(name = "DiscordGamesInteractionManager", urlPatterns = {"/discord/games-bot"})
 public class InteractionManager extends HttpServlet {
     private static final Logger logger = Logger.getLogger("InteractionManager");
-    private static final LazySodiumJava sodium = new LazySodiumJava(new SodiumJava());
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -53,7 +51,7 @@ public class InteractionManager extends HttpServlet {
         System.arraycopy(body, 0, signedStuff, timestampBytes.length, body.length);
 
         if (signature == null || timestamp == null ||
-                !sodium.cryptoSignVerifyDetached(
+                !SodiumInstance.sodium.cryptoSignVerifyDetached(
                         hexStringToByteArray(signature),
                         signedStuff, signedStuff.length,
                         hexStringToByteArray(SecretConstants.GAMES_BOT_PUBLIC_KEY))) {
@@ -532,7 +530,7 @@ public class InteractionManager extends HttpServlet {
                 responseStream.getWriter().write(response.toString());
             } else {
                 // we should call Discord to edit the message, since we already responded.
-                String url = "https://discord.com/api/v9/webhooks/" + SecretConstants.GAMES_BOT_CLIENT_ID + "/" + interactionToken + "/messages/@original";
+                String url = "https://discord.com/api/v10/webhooks/" + SecretConstants.GAMES_BOT_CLIENT_ID + "/" + interactionToken + "/messages/@original";
 
                 logger.fine("Responding with: " + responseData.toString(2) + " to " + url);
 
