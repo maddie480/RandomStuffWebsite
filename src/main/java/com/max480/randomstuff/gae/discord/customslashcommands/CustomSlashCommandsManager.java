@@ -10,13 +10,22 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Base64;
+import java.util.logging.Logger;
 
 /**
  * This class handles the API calls to Discord that adds or removes the guild slash commands on their end.
  */
 public class CustomSlashCommandsManager {
+    private static final Logger logger = Logger.getLogger("CustomSlashCommandsManager");
+
     private static final String USER_AGENT = "DiscordBot (https://max480-random-stuff.appspot.com, 1.0)";
+
+    private static String accessToken = null;
+    private static long tokenExpiresAt = 0;
 
     public static class MaximumCommandsReachedException extends Exception {
     }
@@ -79,6 +88,10 @@ public class CustomSlashCommandsManager {
     }
 
     private static String authenticate() throws IOException {
+        if (tokenExpiresAt > System.currentTimeMillis()) {
+            return accessToken;
+        }
+
         String basicAuth = Base64.getEncoder().encodeToString(
                 (SecretConstants.CUSTOM_SLASH_COMMANDS_CLIENT_ID + ":" + SecretConstants.CUSTOM_SLASH_COMMANDS_CLIENT_SECRET).getBytes(StandardCharsets.UTF_8));
 
@@ -98,7 +111,14 @@ public class CustomSlashCommandsManager {
         try (InputStream is = connection.getInputStream()) {
             String response = IOUtils.toString(is, StandardCharsets.UTF_8);
             JSONObject o = new JSONObject(response);
-            return o.getString("access_token");
+
+            accessToken = o.getString("access_token");
+            tokenExpiresAt = System.currentTimeMillis() + (o.getInt("expires_in") * 1000L) - 5000;
+
+            logger.info("Got a new access token that expires at "
+                    + Instant.ofEpochMilli(tokenExpiresAt).atZone(ZoneId.of("UTC")).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME));
+
+            return accessToken;
         }
     }
 }
