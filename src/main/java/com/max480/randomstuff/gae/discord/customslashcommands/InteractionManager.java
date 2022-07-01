@@ -21,6 +21,8 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.logging.Logger;
 
+import static com.max480.randomstuff.gae.discord.customslashcommands.CustomSlashCommandsManager.MaximumCommandsReachedException;
+
 /**
  * This is the API that makes Custom Slash Commands run.
  */
@@ -126,16 +128,21 @@ public class InteractionManager extends HttpServlet {
         } else if (answer.length() > 2000) {
             respond(":x: The answer is too long! The max length is 2000 characters.", resp, true);
         } else {
-            long commandId = CustomSlashCommandsManager.addSlashCommand(serverId, name, description);
+            try {
+                long commandId = CustomSlashCommandsManager.addSlashCommand(serverId, name, description);
 
-            JSONObject storedData = new JSONObject();
-            storedData.put("id", commandId);
-            storedData.put("answer", answer);
-            storedData.put("isPublic", isPublic);
-            CloudStorageUtils.sendBytesToCloudStorage("custom_slash_commands/" + serverId + "/" + name + ".json",
-                    "application/json", storedData.toString().getBytes(StandardCharsets.UTF_8));
+                JSONObject storedData = new JSONObject();
+                storedData.put("id", commandId);
+                storedData.put("answer", answer);
+                storedData.put("isPublic", isPublic);
+                CloudStorageUtils.sendBytesToCloudStorage("custom_slash_commands/" + serverId + "/" + name + ".json",
+                        "application/json", storedData.toString().getBytes(StandardCharsets.UTF_8));
 
-            respond(":white_check_mark: The **/" + name + "** command was created.", resp, true);
+                respond(":white_check_mark: The **/" + name + "** command was created.", resp, true);
+            } catch (MaximumCommandsReachedException e) {
+                respond(":x: **You reached the maximum amount of commands you can create on your server!**\n" +
+                        "The limit set by Discord is 100 commands. Delete other commands to be able to create new ones!", resp, true);
+            }
         }
     }
 

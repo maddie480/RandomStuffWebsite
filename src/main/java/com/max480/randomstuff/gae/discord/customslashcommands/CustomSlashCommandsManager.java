@@ -18,10 +18,13 @@ import java.util.Base64;
 public class CustomSlashCommandsManager {
     private static final String USER_AGENT = "DiscordBot (https://max480-random-stuff.appspot.com, 1.0)";
 
+    public static class MaximumCommandsReachedException extends Exception {
+    }
+
     /**
      * Adds a slash command with the given name and description to the given server.
      */
-    public static long addSlashCommand(long serverId, String name, String description) throws IOException {
+    public static long addSlashCommand(long serverId, String name, String description) throws IOException, MaximumCommandsReachedException {
         JSONObject commandObject = new JSONObject();
         commandObject.put("name", name);
         commandObject.put("description", description);
@@ -43,6 +46,19 @@ public class CustomSlashCommandsManager {
             String response = IOUtils.toString(is, StandardCharsets.UTF_8);
             JSONObject o = new JSONObject(response);
             return Long.parseLong(o.getString("id"));
+        } catch (IOException e) {
+            if (connection.getResponseCode() == 400) {
+                try (InputStream is = connection.getErrorStream()) {
+                    String response = IOUtils.toString(is, StandardCharsets.UTF_8);
+                    JSONObject o = new JSONObject(response);
+                    if (o.getInt("code") == 30032) {
+                        // Maximum number of application commands reached (100)
+                        throw new MaximumCommandsReachedException();
+                    }
+                }
+            }
+
+            throw e;
         }
     }
 
