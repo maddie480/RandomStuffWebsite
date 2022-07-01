@@ -68,14 +68,12 @@ public class InteractionManager extends HttpServlet {
                 try {
                     String commandName = data.getJSONObject("data").getString("name");
                     long serverId = Long.parseLong(data.getString("guild_id"));
-                    if (commandName.equals("admin")) {
-                        // admin command: add or remove a slash command
-                        JSONObject subcommand = data.getJSONObject("data").getJSONArray("options").getJSONObject(0);
-                        if ("add".equals(subcommand.getString("name"))) {
-                            addCommand(serverId, subcommand.getJSONArray("options"), resp);
-                        } else {
-                            removeCommand(serverId, subcommand.getJSONArray("options").getJSONObject(0).getString("value"), resp);
-                        }
+                    if (commandName.equals("addc")) {
+                        // admin command: add a command to the server
+                        addCommand(serverId, data.getJSONObject("data").getJSONArray("options"), resp);
+                    } else if (commandName.equals("removec")) {
+                        // admin command: remove a command from the server
+                        removeCommand(serverId, data.getJSONObject("data").getJSONArray("options").getJSONObject(0).getString("value"), resp);
                     } else {
                         // another command: most definitely a custom configured one
                         handleCommand(serverId, commandName, resp);
@@ -119,8 +117,8 @@ public class InteractionManager extends HttpServlet {
 
         answer = answer.replace("\\n", "\n");
 
-        if (name.equals("admin")) {
-            respond(":x: \"admin\" is a reserved name!", resp, true);
+        if (name.equals("addc") || name.equals("removec")) {
+            respond(":x: You cannot name a command `addc` or `removec`! This would conflict with the built-in commands.", resp, true);
         } else if (!name.matches("[a-z0-9_-]{1,32}")) {
             respond(":x: Slash command names can only contain lowercase letters, numbers, `_` or `-`, and cannot exceed 32 characters.", resp, true);
         } else if (description.length() > 100) {
