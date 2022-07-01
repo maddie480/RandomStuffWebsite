@@ -345,7 +345,7 @@
     </p>
 
     <p>
-        To set it up, use the <code>/admin add</code> command:
+        To set it up, use the <code>/addc</code> command:
     </p>
 
     <p>
@@ -376,9 +376,9 @@
         <b>Hints:</b>
         <ul>
             <li>
-                You can manage who can use commands (including <code>/admin</code>) and in which channels by going to
+                You can manage who can use commands (including <code>/addc</code> and <code>/removec</code>) and in which channels by going to
                 <b>Server Settings &gt; Integrations &gt; Custom Slash Commands</b>.
-                By default, members with Administrator or Manage Server permissions can use <code>/admin</code>, and everyone can use the created custom commands.
+                By default, members with Administrator or Manage Server permissions can use <code>/addc</code> and <code>/removec</code>, and everyone can use the created custom commands.
             </li>
             <li>
                 If you want to update a command, create it again with the same name: the existing one will be replaced.
