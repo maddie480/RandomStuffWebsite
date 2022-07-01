@@ -4,6 +4,7 @@ import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageException;
 import com.google.cloud.storage.StorageOptions;
+import com.goterl.lazysodium.exceptions.SodiumException;
 import com.max480.randomstuff.gae.CloudStorageUtils;
 import com.max480.randomstuff.gae.SecretConstants;
 import com.max480.randomstuff.gae.discord.SodiumInstance;
@@ -19,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static com.max480.randomstuff.gae.discord.customslashcommands.CustomSlashCommandsManager.MaximumCommandsReachedException;
@@ -26,10 +28,19 @@ import static com.max480.randomstuff.gae.discord.customslashcommands.CustomSlash
 /**
  * This is the API that makes Custom Slash Commands run.
  */
-@WebServlet(name = "CustomSlashCommandsBot", urlPatterns = {"/discord/custom-slash-commands"})
+@WebServlet(name = "CustomSlashCommandsBot", urlPatterns = {"/discord/custom-slash-commands"}, loadOnStartup = 5)
 public class InteractionManager extends HttpServlet {
     private static final Logger logger = Logger.getLogger("InteractionManager");
     private static final Storage storage = StorageOptions.newBuilder().setProjectId("max480-random-stuff").build().getService();
+
+    @Override
+    public void init() {
+        try {
+            logger.info("Computing sha512 with sodium for warmup: " + SodiumInstance.sodium.cryptoHashSha512("warmup"));
+        } catch (SodiumException e) {
+            logger.log(Level.WARNING, "Sodium warmup failed! " + e.toString());
+        }
+    }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
