@@ -11,9 +11,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="author" content="max480">
-    <meta name="description" content="Read more about the Mod Structure Verifier, the Timezone Bot and the Games Bot here.">
+    <meta name="description" content="Read more about the Mod Structure Verifier, the Timezone Bot, the Games Bot and the Custom Slash Commands application here.">
     <meta property="og:title" content="Discord Bots">
-    <meta property="og:description" content="Read more about the Mod Structure Verifier, the Timezone Bot and the Games Bot here.">
+    <meta property="og:description" content="Read more about the Mod Structure Verifier, the Timezone Bot, the Games Bot and the Custom Slash Commands application here.">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
