@@ -9,6 +9,9 @@ h1.botname.margin {
     border-top: solid lightgray 1px;
     padding-top: 30px;
 }
+.botlogo.extra-margin {
+    margin-right: 10px;
+}
 
 img {
     max-width: 100%;
@@ -26,7 +29,10 @@ img {
 
 @media(max-width: 767px) {
     h1.botname {
-        font-size: 20pt;
+        font-size: 17pt;
+    }
+    .botlogo.extra-margin {
+        margin-right: 5px;
     }
 
     h1 .botlogo {

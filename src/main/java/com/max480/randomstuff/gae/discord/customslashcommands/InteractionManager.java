@@ -140,7 +140,7 @@ public class InteractionManager extends HttpServlet {
 
                 respond(":white_check_mark: The **/" + name + "** command was created.", resp, true);
             } catch (MaximumCommandsReachedException e) {
-                respond(":x: **You reached the maximum amount of commands you can create on your server!**\n" +
+                respond(":x: **You reached the maximum amount of commands you can create on this server!**\n" +
                         "The limit set by Discord is 100 commands. Delete other commands to be able to create new ones!", resp, true);
             }
         }

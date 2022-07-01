@@ -28,6 +28,7 @@ public class DiscordBotsService extends HttpServlet {
         request.setAttribute("timezoneBotServerCount", serverCounts.get("TimezoneBot"));
         request.setAttribute("modStructureVerifierServerCount", serverCounts.get("ModStructureVerifier"));
         request.setAttribute("gamesBotServerCount", serverCounts.get("GamesBot"));
+        request.setAttribute("customSlashCommandsServerCount", serverCounts.get("CustomSlashCommands"));
 
         request.getRequestDispatcher("/WEB-INF/discord-bots.jsp").forward(request, response);
     }

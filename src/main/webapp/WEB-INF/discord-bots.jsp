@@ -60,9 +60,20 @@
 <div class="container">
     <h1>Discord Bots</h1>
 
+    <div>
+        I am currently hosting 4 publicly available Discord bots and applications:
+        <ul>
+            <li><a href="#timezone-bot">Timezone Bot</a></li>
+            <li><a href="#mod-structure-verifier">Mod Structure Verifier</a></li>
+            <li><a href="#games-bot">Games Bot</a></li>
+            <li><a href="#custom-slash-commands">Custom Slash Commands</a></li>
+        </ul>
+    </div>
+
     <div class="alert alert-info">
         If you need support on those bots or want to try them out, you can <a href="https://discord.gg/59ztc8QZQ7">join the bot testing server</a>!
     </div>
+
 
     <h1 class="botname" id="timezone-bot">
         <img src="/img/timezone-bot-logo.png" class="botlogo"> Timezone Bot
@@ -245,7 +256,7 @@
     <% } %>
 
     <h1 class="botname margin" id="games-bot">
-        <img src="/img/games-bot-logo.png" class="botlogo"> Games Bot
+        <img src="/img/games-bot-logo.png" class="botlogo extra-margin"> Games Bot
 
         <span class="badge bg-secondary big-badge">
             <%= request.getAttribute("gamesBotServerCount") %>
@@ -312,6 +323,73 @@
     </div>
 
     <a class="btn btn-primary" href="https://discord.com/api/oauth2/authorize?client_id=890556635091697665&scope=applications.commands" target="_blank">Invite</a>
+
+    <h1 class="botname margin" id="custom-slash-commands">
+        <img src="/img/custom-slash-commands-logo.png" class="botlogo extra-margin"> Custom Slash Commands
+
+        <span class="badge bg-secondary big-badge">
+            <%= request.getAttribute("customSlashCommandsServerCount") %>
+            server<%= ((int) request.getAttribute("customSlashCommandsServerCount")) == 1 ? "" : "s" %>
+        </span>
+    </h1>
+
+    <p class="small-badge">
+        <span class="badge bg-secondary">
+            <%= request.getAttribute("customSlashCommandsServerCount") %>
+            server<%= ((int) request.getAttribute("customSlashCommandsServerCount")) == 1 ? "" : "s" %>
+        </span>
+    </p>
+
+    <p>
+        This application allows you to add custom slash commands that send out fixed responses of your choice on your server.
+    </p>
+
+    <p>
+        To set it up, use the <code>/admin add</code> command:
+    </p>
+
+    <p>
+        <span class="lighttheme"><img src="/img/create_command_light.png"></span>
+        <span class="darktheme"><img src="/img/create_command_dark.png"></span>
+    </p>
+
+    <p>
+        <i><code>is_public</code> controls whether the bot response should be visible to everyone (<code>is_public = true</code>), or only to the person that ran the command (<code>is_public = false</code>).</i>
+    </p>
+
+    <p>
+        Then, anyone on the server can see and use the command:
+    </p>
+
+    <div class="row">
+        <div class="col-md-6 col-xs-12 mb-4">
+            <span class="lighttheme"><img src="/img/command_suggestion_light.png"></span>
+            <span class="darktheme"><img src="/img/command_suggestion_dark.png"></span>
+        </div>
+        <div class="col-md-6 col-xs-12 mb-4">
+            <span class="lighttheme"><img src="/img/command_response_light.png"></span>
+            <span class="darktheme"><img src="/img/command_response_dark.png"></span>
+        </div>
+    </div>
+
+    <div>
+        <b>Hints:</b>
+        <ul>
+            <li>
+                You can manage who can use commands (including <code>/admin</code>) and in which channels by going to
+                <b>Server Settings &gt; Integrations &gt; Custom Slash Commands</b>.
+                By default, members with Administrator or Manage Server permissions can use <code>/admin</code>, and everyone can use the created custom commands.
+            </li>
+            <li>
+                If you want to update a command, create it again with the same name: the existing one will be replaced.
+            </li>
+            <li>
+                You can include line breaks in answers by using <code>\n</code> (for example <code>line1\nline2</code>).
+            </li>
+        </ul>
+    </div>
+
+    <a class="btn btn-primary" href="https://discord.com/api/oauth2/authorize?client_id=992122149764608041&scope=applications.commands" target="_blank">Invite</a>
 
     <p class="end"><i>Timezone Bot and Mod Structure Verifier logos by phant</i></p>
 </div>
