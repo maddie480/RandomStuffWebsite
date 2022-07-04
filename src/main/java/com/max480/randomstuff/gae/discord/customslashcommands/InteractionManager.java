@@ -1,9 +1,7 @@
 package com.max480.randomstuff.gae.discord.customslashcommands;
 
-import com.google.cloud.storage.BlobId;
-import com.google.cloud.storage.Storage;
-import com.google.cloud.storage.StorageException;
-import com.google.cloud.storage.StorageOptions;
+import com.google.api.gax.paging.Page;
+import com.google.cloud.storage.*;
 import com.goterl.lazysodium.exceptions.SodiumException;
 import com.max480.randomstuff.gae.CloudStorageUtils;
 import com.max480.randomstuff.gae.SecretConstants;
@@ -20,6 +18,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -75,7 +76,15 @@ public class InteractionManager extends HttpServlet {
                 // ping => pong
                 logger.fine("Ping => Pong");
                 resp.getWriter().write("{\"type\": 1}");
+            } else if (data.getInt("type") == 5) {
+                // edit form submit
+                String[] customIdCut = data.getJSONObject("data").getString("custom_id").split("\\|");
+                long serverId = Long.parseLong(customIdCut[0]);
+                String commandName = customIdCut[1];
+
+                editCommand(serverId, commandName, data.getJSONObject("data").getJSONArray("components"), resp);
             } else {
+                // slash command invocation
                 try {
                     String commandName = data.getJSONObject("data").getString("name");
                     long serverId = Long.parseLong(data.getString("guild_id"));
@@ -85,6 +94,12 @@ public class InteractionManager extends HttpServlet {
                     } else if (commandName.equals("removec")) {
                         // admin command: remove a command from the server
                         removeCommand(serverId, data.getJSONObject("data").getJSONArray("options").getJSONObject(0).getString("value"), resp);
+                    } else if (commandName.equals("editc")) {
+                        // admin command: show the modal allowing to edit a command
+                        sendEditCommandForm(serverId, data.getJSONObject("data").getJSONArray("options").getJSONObject(0).getString("value"), resp);
+                    } else if (commandName.equals("clist")) {
+                        // admin command: show the modal allowing to edit a command
+                        listCommands(serverId, resp);
                     } else {
                         // another command: most definitely a custom configured one
                         handleCommand(serverId, commandName, resp);
@@ -128,8 +143,8 @@ public class InteractionManager extends HttpServlet {
 
         answer = answer.replace("\\n", "\n");
 
-        if (name.equals("addc") || name.equals("removec")) {
-            respond(":x: You cannot name a command `addc` or `removec`! This would conflict with the built-in commands.", resp, true);
+        if (name.equals("addc") || name.equals("removec") || name.equals("editc") || name.equals("clist")) {
+            respond(":x: You cannot name a command `addc`, `removec`, `editc` or `clist`! This would conflict with the built-in commands.", resp, true);
         } else if (!name.matches("[a-z0-9_-]{1,32}")) {
             respond(":x: Slash command names can only contain lowercase letters, numbers, `_` or `-`, and cannot exceed 32 characters.", resp, true);
         } else if (description.length() > 100) {
@@ -138,14 +153,7 @@ public class InteractionManager extends HttpServlet {
             respond(":x: The answer is too long! The max length is 2000 characters.", resp, true);
         } else {
             try {
-                long commandId = CustomSlashCommandsManager.addSlashCommand(serverId, name, description);
-
-                JSONObject storedData = new JSONObject();
-                storedData.put("id", commandId);
-                storedData.put("answer", answer);
-                storedData.put("isPublic", isPublic);
-                CloudStorageUtils.sendBytesToCloudStorage("custom_slash_commands/" + serverId + "/" + name + ".json",
-                        "application/json", storedData.toString().getBytes(StandardCharsets.UTF_8));
+                addSlashCommand(serverId, name, description, answer, isPublic);
 
                 respond(":white_check_mark: The **/" + name + "** command was created.", resp, true);
             } catch (MaximumCommandsReachedException e) {
@@ -162,12 +170,7 @@ public class InteractionManager extends HttpServlet {
         String slashCommandPath = "custom_slash_commands/" + serverId + "/" + name + ".json";
 
         try (InputStream is = CloudStorageUtils.getCloudStorageInputStream(slashCommandPath)) {
-            JSONObject commandInfo = new JSONObject(IOUtils.toString(is, StandardCharsets.UTF_8));
-            long commandId = commandInfo.getLong("id");
-
-            CustomSlashCommandsManager.removeSlashCommand(serverId, commandId);
-
-            storage.delete(BlobId.of("max480-random-stuff.appspot.com", slashCommandPath));
+            removeSlashCommand(serverId, slashCommandPath, is);
             respond(":white_check_mark: The **/" + name + "** command was deleted.", resp, true);
         } catch (StorageException e) {
             if (e.getCode() == 404) {
@@ -176,6 +179,185 @@ public class InteractionManager extends HttpServlet {
                 throw e;
             }
         }
+    }
+
+    private void listCommands(long serverId, HttpServletResponse resp) throws IOException {
+        String prefix = "custom_slash_commands/" + serverId + "/";
+
+        Set<String> commands = new TreeSet<>();
+        Page<Blob> blobs = storage.list("max480-random-stuff.appspot.com", Storage.BlobListOption.prefix(prefix));
+        for (Blob blob : blobs.iterateAll()) {
+            String commandName = blob.getName();
+            commandName = commandName.substring(prefix.length(), commandName.lastIndexOf("."));
+            commands.add(commandName);
+        }
+
+        if (commands.isEmpty()) {
+            respond("There is no command on this server yet.", resp, true);
+        } else {
+            String message = "Here is the list of commands registered on this server:\n/" + String.join("\n/", commands);
+            if (message.length() > 2000) {
+                message = message.substring(0, 1995) + "[...]";
+            }
+            respond(message, resp, true);
+        }
+    }
+
+    /**
+     * Allows to display the "edit slash command" form.
+     */
+    private void sendEditCommandForm(long serverId, String name, HttpServletResponse resp) throws IOException {
+        String slashCommandPath = "custom_slash_commands/" + serverId + "/" + name + ".json";
+
+        try (InputStream is = CloudStorageUtils.getCloudStorageInputStream(slashCommandPath)) {
+            // get info on the current command
+            JSONObject commandInfo = new JSONObject(IOUtils.toString(is, StandardCharsets.UTF_8));
+            long commandId = commandInfo.getLong("id");
+            String description = CustomSlashCommandsManager.getSlashCommandDescription(serverId, commandId);
+            String answer = commandInfo.getString("answer");
+            boolean isPublic = commandInfo.getBoolean("isPublic");
+
+            // build the response
+            JSONObject response = new JSONObject();
+            response.put("type", 9); // modal
+
+            JSONObject responseData = new JSONObject();
+            responseData.put("custom_id", serverId + "|" + name);
+            responseData.put("title", "Edit – /" + name);
+
+            JSONArray componentData = new JSONArray();
+            componentData.put(getComponentDataForTextInput("name", "Name", name, 32, false));
+            componentData.put(getComponentDataForTextInput("description", "Description", description, 100, false));
+            componentData.put(getComponentDataForTextInput("answer", "Answer", answer, 2000, true));
+            componentData.put(getComponentDataForTextInput("isPublic", "Response is public (true or false)", isPublic ? "true" : "false", 5, false));
+            responseData.put("components", componentData);
+
+            response.put("data", responseData);
+            logger.fine("Responding with: " + response.toString(2));
+            resp.getWriter().write(response.toString());
+        } catch (StorageException e) {
+            if (e.getCode() == 404) {
+                respond(":x: The command you specified does not exist! Check that you spelled it correctly.", resp, true);
+            } else {
+                throw e;
+            }
+        }
+    }
+
+    /**
+     * Gives the JSON object describing a single text input.
+     */
+    private static JSONObject getComponentDataForTextInput(String id, String name, String value, long maxLength, boolean isLong) {
+        JSONObject row = new JSONObject();
+        row.put("type", 1); // ... action row
+
+        JSONObject component = new JSONObject();
+        component.put("type", 4); // text input
+        component.put("custom_id", id);
+        component.put("label", name);
+        component.put("style", isLong ? 2 : 1);
+        component.put("min_length", 1);
+        component.put("max_length", maxLength);
+        component.put("required", true);
+        component.put("value", value);
+
+        JSONArray rowContent = new JSONArray();
+        rowContent.put(component);
+        row.put("components", rowContent);
+
+        return row;
+    }
+
+    /**
+     * Handles actually editing a slash command.
+     */
+    private void editCommand(long serverId, String oldName, JSONArray options, HttpServletResponse resp) throws IOException {
+        String newName = null;
+        String description = null;
+        String answer = null;
+        String isPublic = null;
+
+        for (Object item : options) {
+            JSONObject itemObject = ((JSONObject) item).getJSONArray("components").getJSONObject(0);
+
+            switch (itemObject.getString("custom_id")) {
+                case "name":
+                    newName = itemObject.getString("value");
+                    break;
+                case "description":
+                    description = itemObject.getString("value");
+                    break;
+                case "answer":
+                    answer = itemObject.getString("value");
+                    break;
+                case "isPublic":
+                    isPublic = itemObject.getString("value");
+                    break;
+            }
+        }
+
+        if (newName.equals("addc") || newName.equals("removec") || newName.equals("editc") || newName.equals("clist")) {
+            respond(":x: You cannot name a command `addc`, `removec`, `editc` or `clist`! This would conflict with the built-in commands.", resp, true);
+        } else if (!newName.matches("[a-z0-9_-]{1,32}")) {
+            respond(":x: Slash command names can only contain lowercase letters, numbers, `_` or `-`, and cannot exceed 32 characters.", resp, true);
+        } else if (!Arrays.asList("true", "false").contains(isPublic)) {
+            respond(":x: The value for \"Response is public\" should be either \"true\" or \"false\"!", resp, true);
+        } else {
+            String slashCommandPath = "custom_slash_commands/" + serverId + "/" + oldName + ".json";
+            try (InputStream is = CloudStorageUtils.getCloudStorageInputStream(slashCommandPath)) {
+                // since adding a command is an upsert, deleting first is only required if the name changed.
+                if (!oldName.equals(newName)) {
+                    removeSlashCommand(serverId, slashCommandPath, is);
+                }
+
+                addSlashCommand(serverId, newName, description, answer, Boolean.parseBoolean(isPublic));
+
+                if (oldName.equals(newName)) {
+                    respond(":white_check_mark: The **/" + newName + "** command was edited.", resp, true);
+                } else {
+                    respond(":white_check_mark: The **/" + oldName + "** command was edited, and is now called **/" + newName + "**.", resp, true);
+                }
+            } catch (StorageException e) {
+                if (e.getCode() == 404) {
+                    respond(":x: The command you tried to edit does not exist anymore!", resp, true);
+                } else {
+                    throw e;
+                }
+            } catch (MaximumCommandsReachedException e) {
+                // this error is not expected here.
+                throw new IOException(e);
+            }
+        }
+    }
+
+    /**
+     * Handles adding a slash command on Cloud Storage and Discord given all the information about it.
+     */
+    private void addSlashCommand(long serverId, String name, String description, String answer, boolean isPublic) throws IOException, MaximumCommandsReachedException {
+        String path = "custom_slash_commands/" + serverId + "/" + name + ".json";
+        logger.info("Adding " + path);
+
+        long commandId = CustomSlashCommandsManager.addSlashCommand(serverId, name, description);
+
+        JSONObject storedData = new JSONObject();
+        storedData.put("id", commandId);
+        storedData.put("answer", answer);
+        storedData.put("isPublic", isPublic);
+        CloudStorageUtils.sendBytesToCloudStorage(path, "application/json", storedData.toString().getBytes(StandardCharsets.UTF_8));
+    }
+
+    /**
+     * Handles removing a slash command from Cloud Storage and Discord given all the information about it.
+     */
+    private void removeSlashCommand(long serverId, String slashCommandPath, InputStream cloudStorageInputStream) throws IOException {
+        logger.info("Removing " + slashCommandPath);
+
+        JSONObject commandInfo = new JSONObject(IOUtils.toString(cloudStorageInputStream, StandardCharsets.UTF_8));
+        long commandId = commandInfo.getLong("id");
+
+        CustomSlashCommandsManager.removeSlashCommand(serverId, commandId);
+
+        storage.delete(BlobId.of("max480-random-stuff.appspot.com", slashCommandPath));
     }
 
     /**

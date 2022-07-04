@@ -87,6 +87,24 @@ public class CustomSlashCommandsManager {
         }
     }
 
+    /**
+     * Gives a slash command's description, given its ID.
+     */
+    public static String getSlashCommandDescription(long serverId, long commandId) throws IOException {
+        HttpURLConnection connection = (HttpURLConnection) new URL("https://discord.com/api/v10/applications/" + SecretConstants.CUSTOM_SLASH_COMMANDS_CLIENT_ID + "/guilds/" + serverId + "/commands/" + commandId).openConnection();
+        connection.setConnectTimeout(10000);
+        connection.setReadTimeout(30000);
+        connection.setRequestMethod("GET");
+        connection.setRequestProperty("Authorization", "Bearer " + authenticate());
+        connection.setRequestProperty("User-Agent", USER_AGENT);
+
+        try (InputStream is = connection.getInputStream()) {
+            String response = IOUtils.toString(is, StandardCharsets.UTF_8);
+            JSONObject o = new JSONObject(response);
+            return o.getString("description");
+        }
+    }
+
     private static String authenticate() throws IOException {
         if (tokenExpiresAt > System.currentTimeMillis()) {
             return accessToken;
