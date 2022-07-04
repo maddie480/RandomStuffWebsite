@@ -12,8 +12,8 @@ It contains the full source for:
 - [the #celeste_news_network subscription service](https://max480-random-stuff.appspot.com/celeste/news-network-subscription) - the Twitter update checking code is not part of the frontend and can be found [on the Random Backend Stuff repository](https://github.com/max4805/RandomBackendStuff/blob/main/src/celeste-backend-crontabs/TwitterUpdateChecker.java)
 - [the help page for the Mod Structure Verifier bot](https://max480-random-stuff.appspot.com/celeste/mod-structure-verifier-help?collabName=CollabName&collabMapName=CollabMapName&assets&xmls&nomap&multiplemaps&badmappath&badenglish&misplacedyaml&noyaml&yamlinvalid&missingassets&missingentities&missingfonts)
 - [the "Show Arbitrary Mods on Profile" GameBanana app](https://gamebanana.com/apps/752)
-- [the Discord Games Bot](https://max480-random-stuff.appspot.com/discord-bots/#games-bot) - the "bot" is actually a webhook that gets called by Discord
-- [the Discord Custom Slash Commands app](https://max480-random-stuff.appspot.com/discord-bots/#custom-slash-commands)
+- [the Discord Games Bot](https://max480-random-stuff.appspot.com/discord-bots#games-bot) - the "bot" is actually a webhook that gets called by Discord
+- [the Discord Custom Slash Commands app](https://max480-random-stuff.appspot.com/discord-bots#custom-slash-commands)
 - Some [GameBanana](https://gamebanana.com)-related APIs extending the official API, described below
 - ... and some other things of more limited use that are on the website.
 
