@@ -1,6 +1,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
-<%@ page import="java.util.List, com.max480.randomstuff.gae.EverestYamlValidatorService, static org.apache.commons.text.StringEscapeUtils.escapeHtml4, static org.apache.commons.text.StringEscapeUtils.escapeJava"%>
+<%@ page import="java.util.List, com.max480.randomstuff.gae.EverestYamlValidatorService, static org.apache.commons.text.StringEscapeUtils.escapeHtml4, static org.apache.commons.text.StringEscapeUtils.escapeEcmaScript"%>
 
 <%@page session="false"%>
 
@@ -161,7 +161,7 @@
         <% if (request.getAttribute("latestVersionsYaml") != null) { %>
             <script nonce="<%= request.getAttribute("nonce") %>">
                 document.getElementById("download-latest-versions-yaml").addEventListener("click", function() {
-                    const yamlContents = "<%= escapeJava((String) request.getAttribute("latestVersionsYaml")) %>";
+                    const yamlContents = "<%= escapeEcmaScript((String) request.getAttribute("latestVersionsYaml")) %>";
                     download(yamlContents, "everest.yaml", "text/yaml");
                 });
             </script>
