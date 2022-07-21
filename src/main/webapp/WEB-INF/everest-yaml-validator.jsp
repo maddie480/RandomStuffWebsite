@@ -1,6 +1,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
-<%@ page import="java.util.List, com.max480.randomstuff.gae.EverestYamlValidatorService, static org.apache.commons.text.StringEscapeUtils.escapeHtml4"%>
+<%@ page import="java.util.List, com.max480.randomstuff.gae.EverestYamlValidatorService, static org.apache.commons.text.StringEscapeUtils.escapeHtml4, static org.apache.commons.text.StringEscapeUtils.escapeJava"%>
 
 <%@page session="false"%>
 
@@ -22,6 +22,12 @@
         integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
+
+    <% if (request.getAttribute("latestVersionsYaml") != null) { %>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/downloadjs/1.4.8/download.min.js"
+            integrity="sha512-WiGQZv8WpmQVRUFXZywo7pHIO0G/o3RyiAJZj8YXNN4AV7ReR1RYWVmZJ6y3H06blPcjJmG/sBpOVZjTSFFlzQ=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <% } %>
 
     <link rel="stylesheet" href="/css/common.css">
     <link rel="stylesheet" href="/css/everest-yaml-validator.css">
@@ -132,6 +138,12 @@
                     </ul>
                 <% } %>
             </div>
+
+            <% if (request.getAttribute("latestVersionsYaml") != null) { %>
+                <button id="download-latest-versions-yaml" class="btn btn-outline-dark">
+                    &#x1F4E5; Download everest.yaml with updated dependencies
+                </button>
+            <% } %>
         <% } else { %>
             <div class="alert alert-success">
                 If you have difficulties writing your everest.yaml, the
@@ -144,6 +156,15 @@
                 If you want to validate the syntax of other YAML files (like map meta.yamls), use online tools like
                 <a href="https://jsonformatter.org/yaml-validator/" target="_blank" rel="noopener">this one</a>.
             </div>
+        <% } %>
+
+        <% if (request.getAttribute("latestVersionsYaml") != null) { %>
+            <script nonce="<%= request.getAttribute("nonce") %>">
+                document.getElementById("download-latest-versions-yaml").addEventListener("click", function() {
+                    const yamlContents = "<%= escapeJava((String) request.getAttribute("latestVersionsYaml")) %>";
+                    download(yamlContents, "everest.yaml", "text/yaml");
+                });
+            </script>
         <% } %>
 	</div>
 </body>

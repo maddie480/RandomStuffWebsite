@@ -1,8 +1,10 @@
 package com.max480.randomstuff.gae;
 
+import com.google.common.collect.ImmutableMap;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
 import javax.servlet.ServletException;
@@ -15,10 +17,8 @@ import javax.servlet.http.Part;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.security.SecureRandom;
+import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -33,6 +33,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 @MultipartConfig
 public class EverestYamlValidatorService extends HttpServlet {
     private final Logger logger = Logger.getLogger("EverestYamlValidatorService");
+    private final SecureRandom random = new SecureRandom();
 
     // these are the fields in Everest's EverestModuleMetadata that are most commonly used in everest.yaml.
     public static class EverestModuleMetadata {
@@ -239,6 +240,61 @@ public class EverestYamlValidatorService extends HttpServlet {
                     request.setAttribute("validationErrors", problems);
                 } else {
                     request.setAttribute("modInfo", metadatas);
+
+                    // check if all mods are in their latest versions...
+                    boolean allDependenciesAreUpToDate = true;
+                    for (EverestModuleMetadata metadata : metadatas) {
+                        for (EverestModuleMetadata dependency : metadata.Dependencies) {
+                            if (!dependency.Version.equals(dependency.LatestVersion)) {
+                                allDependenciesAreUpToDate = false;
+                                break;
+                            }
+                        }
+                        for (EverestModuleMetadata dependency : metadata.OptionalDependencies) {
+                            if (!dependency.Version.equals(dependency.LatestVersion)) {
+                                allDependenciesAreUpToDate = false;
+                                break;
+                            }
+                        }
+                    }
+
+                    // ... and if not, generate a yaml file with all the latest versions in it.
+                    if (!allDependenciesAreUpToDate) {
+                        final List<Map<String, Object>> latestVersionsYaml = metadatas.stream()
+                                .map(mod ->
+                                        ImmutableMap.of(
+                                                "Name", mod.Name,
+                                                "Version", mod.Version,
+                                                "Dependencies", mod.Dependencies.stream()
+                                                        .map(dependency -> ImmutableMap.of(
+                                                                "Name", dependency.Name,
+                                                                "Version", dependency.LatestVersion
+                                                        ))
+                                                        .collect(Collectors.toList()),
+                                                "OptionalDependencies", mod.OptionalDependencies.stream()
+                                                        .map(dependency -> ImmutableMap.of(
+                                                                "Name", dependency.Name,
+                                                                "Version", dependency.LatestVersion
+                                                        ))
+                                                        .collect(Collectors.toList())
+                                        ))
+                                .collect(Collectors.toList());
+
+                        request.setAttribute("latestVersionsYaml", new Yaml().dumpAs(latestVersionsYaml, null, DumperOptions.FlowStyle.BLOCK));
+
+                        // in order to allow the inline script without ruining the CSP, we need to generate a nonce.
+                        byte[] nonceBytes = new byte[128];
+                        random.nextBytes(nonceBytes);
+                        String nonce = Base64.getEncoder().encodeToString(nonceBytes);
+                        request.setAttribute("nonce", nonce);
+
+                        // then adjust the CSP to allow both accessing download.js and running the inline script powering the download button.
+                        response.setHeader("Content-Security-Policy", "default-src 'self'; " +
+                                "script-src 'self' 'nonce-" + nonce + "' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; " +
+                                "style-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; " +
+                                "frame-ancestors 'none'; " +
+                                "object-src 'none';");
+                    }
                 }
             }
         }
