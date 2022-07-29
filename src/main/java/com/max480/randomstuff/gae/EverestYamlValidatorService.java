@@ -2,7 +2,6 @@ package com.max480.randomstuff.gae;
 
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.io.IOUtils;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
@@ -15,14 +14,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 import java.io.IOException;
-import java.net.URL;
+import java.io.InputStream;
 import java.nio.file.Paths;
 import java.security.SecureRandom;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import static com.max480.randomstuff.gae.ConnectionUtils.openStreamWithTimeout;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
@@ -40,6 +38,7 @@ public class EverestYamlValidatorService extends HttpServlet {
         public String Name;
         public String Version;
         public String LatestVersion;
+        public String UpdatedVersion;
         public List<EverestModuleMetadata> Dependencies;
         public List<EverestModuleMetadata> OptionalDependencies;
     }
@@ -136,7 +135,7 @@ public class EverestYamlValidatorService extends HttpServlet {
 
             if (metadatas != null) {
                 // load the mod database to check if dependencies exist there.
-                Map<String, Object> databaseUnparsed = new Yaml().load(openStreamWithTimeout(new URL("https://max480-random-stuff.appspot.com/celeste/everest_update.yaml")));
+                Map<String, Object> databaseUnparsed = new Yaml().load(CloudStorageUtils.getCloudStorageInputStream("everest_update.yaml"));
                 List<EverestModuleMetadata> database = databaseUnparsed
                         .entrySet().stream()
                         .map(entry -> {
@@ -152,6 +151,11 @@ public class EverestYamlValidatorService extends HttpServlet {
                 // check everest.yaml names against names that are recognized by Everest and the mod updater.
                 if (fileName != null && !fileName.equals("everest.yaml") && !fileName.equals("everest.yml") && !fileName.equals("multimetadata.yaml")) {
                     problems.add("Your file is named \"" + fileName + "\", so it won't be recognized as an everest.yaml file. Rename it.");
+                }
+
+                JSONObject everestVersions;
+                try (InputStream is = CloudStorageUtils.getCloudStorageInputStream("everest_versions.json")) {
+                    everestVersions = new JSONObject(IOUtils.toString(is, UTF_8));
                 }
 
                 for (EverestModuleMetadata mod : metadatas) {
@@ -189,7 +193,7 @@ public class EverestYamlValidatorService extends HttpServlet {
                         // the Everest dependency has to be checked against Azure, not the mod database.
                         if (dependency.Name.equals("Everest")) {
                             databaseDependency = new EverestModuleMetadata();
-                            databaseDependency.Version = "1." + getEverestVersion() + ".0";
+                            databaseDependency.Version = "1." + getMaximumEverestVersion(everestVersions) + ".0";
                         }
                         // and Celeste exists, obviously
                         if (dependency.Name.equals("Celeste")) {
@@ -230,6 +234,13 @@ public class EverestYamlValidatorService extends HttpServlet {
                                     problems.add("The dependency downloader won't be able to get the version you requested for \"" + dependency.Name + "\": " + problem);
                                 } else {
                                     dependency.LatestVersion = databaseDependency.Version;
+
+                                    if (dependency.Name.equals("Everest")) {
+                                        // the most relevant version for Everest might be latest stable rather than latest dev.
+                                        dependency.UpdatedVersion = "1." + getUpdatedEverestVersion(everestVersions, requiredVersion.parts[1]) + ".0";
+                                    } else {
+                                        dependency.UpdatedVersion = databaseDependency.Version;
+                                    }
                                 }
                             }
                         }
@@ -245,13 +256,13 @@ public class EverestYamlValidatorService extends HttpServlet {
                     boolean allDependenciesAreUpToDate = true;
                     for (EverestModuleMetadata metadata : metadatas) {
                         for (EverestModuleMetadata dependency : metadata.Dependencies) {
-                            if (!dependency.Version.equals(dependency.LatestVersion)) {
+                            if (!dependency.Version.equals(dependency.UpdatedVersion)) {
                                 allDependenciesAreUpToDate = false;
                                 break;
                             }
                         }
                         for (EverestModuleMetadata dependency : metadata.OptionalDependencies) {
-                            if (!dependency.Version.equals(dependency.LatestVersion)) {
+                            if (!dependency.Version.equals(dependency.UpdatedVersion)) {
                                 allDependenciesAreUpToDate = false;
                                 break;
                             }
@@ -270,7 +281,7 @@ public class EverestYamlValidatorService extends HttpServlet {
                                         updatedYaml.put("Dependencies", mod.Dependencies.stream()
                                                 .map(dependency -> ImmutableMap.of(
                                                         "Name", dependency.Name,
-                                                        "Version", dependency.LatestVersion
+                                                        "Version", dependency.UpdatedVersion
                                                 ))
                                                 .collect(Collectors.toList()));
                                     }
@@ -279,7 +290,7 @@ public class EverestYamlValidatorService extends HttpServlet {
                                         updatedYaml.put("OptionalDependencies", mod.OptionalDependencies.stream()
                                                 .map(dependency -> ImmutableMap.of(
                                                         "Name", dependency.Name,
-                                                        "Version", dependency.LatestVersion
+                                                        "Version", dependency.UpdatedVersion
                                                 ))
                                                 .collect(Collectors.toList()));
                                     }
@@ -364,19 +375,32 @@ public class EverestYamlValidatorService extends HttpServlet {
     }
 
     /**
-     * Checks Azure to get the latest Everest version.
+     * Returns the latest Everest version across all branches.
      */
-    private static int getEverestVersion() throws IOException {
-        JSONObject object = new JSONObject(IOUtils.toString(openStreamWithTimeout(new URL("https://dev.azure.com/EverestAPI/Everest/_apis/build/builds?api-version=5.0")), UTF_8));
-        JSONArray versionList = object.getJSONArray("value");
-        int latest = 0;
-        for (Object version : versionList) {
-            JSONObject versionObj = (JSONObject) version;
-            String reason = versionObj.getString("reason");
-            if (Arrays.asList("manual", "individualCI").contains(reason)) {
-                latest = Math.max(latest, versionObj.getInt("id") + 700);
-            }
+    private static int getMaximumEverestVersion(JSONObject everestVersions) {
+        return Math.max(
+                Math.max(
+                        everestVersions.getInt("dev"),
+                        everestVersions.getInt("beta")
+                ),
+                everestVersions.getInt("stable")
+        ) + 700;
+    }
+
+    /**
+     * Updates the given Everest version, using the most relevant branch:
+     * - stable if the given version is older than (or same as) stable
+     * - otherwise beta if the given version is older than (or same as) beta
+     * - otherwise dev
+     */
+    private static int getUpdatedEverestVersion(JSONObject everestVersions, int currentVersion) {
+        currentVersion -= 700;
+        if (currentVersion <= everestVersions.getInt("stable")) {
+            return everestVersions.getInt("stable") + 700;
+        } else if (currentVersion <= everestVersions.getInt("beta")) {
+            return everestVersions.getInt("beta") + 700;
+        } else {
+            return everestVersions.getInt("dev") + 700;
         }
-        return latest;
     }
 }
