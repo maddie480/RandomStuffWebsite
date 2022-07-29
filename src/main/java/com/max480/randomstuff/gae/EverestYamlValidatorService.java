@@ -261,23 +261,31 @@ public class EverestYamlValidatorService extends HttpServlet {
                     // ... and if not, generate a yaml file with all the latest versions in it.
                     if (!allDependenciesAreUpToDate) {
                         final List<Map<String, Object>> latestVersionsYaml = metadatas.stream()
-                                .map(mod ->
-                                        ImmutableMap.of(
-                                                "Name", mod.Name,
-                                                "Version", mod.Version,
-                                                "Dependencies", mod.Dependencies.stream()
-                                                        .map(dependency -> ImmutableMap.of(
-                                                                "Name", dependency.Name,
-                                                                "Version", dependency.LatestVersion
-                                                        ))
-                                                        .collect(Collectors.toList()),
-                                                "OptionalDependencies", mod.OptionalDependencies.stream()
-                                                        .map(dependency -> ImmutableMap.of(
-                                                                "Name", dependency.Name,
-                                                                "Version", dependency.LatestVersion
-                                                        ))
-                                                        .collect(Collectors.toList())
-                                        ))
+                                .map(mod -> {
+                                    Map<String, Object> updatedYaml = new LinkedHashMap<>();
+                                    updatedYaml.put("Name", mod.Name);
+                                    updatedYaml.put("Version", mod.Version);
+
+                                    if (!mod.Dependencies.isEmpty()) {
+                                        updatedYaml.put("Dependencies", mod.Dependencies.stream()
+                                                .map(dependency -> ImmutableMap.of(
+                                                        "Name", dependency.Name,
+                                                        "Version", dependency.LatestVersion
+                                                ))
+                                                .collect(Collectors.toList()));
+                                    }
+
+                                    if (!mod.OptionalDependencies.isEmpty()) {
+                                        updatedYaml.put("OptionalDependencies", mod.OptionalDependencies.stream()
+                                                .map(dependency -> ImmutableMap.of(
+                                                        "Name", dependency.Name,
+                                                        "Version", dependency.LatestVersion
+                                                ))
+                                                .collect(Collectors.toList()));
+                                    }
+
+                                    return updatedYaml;
+                                })
                                 .collect(Collectors.toList());
 
                         request.setAttribute("latestVersionsYaml", new Yaml().dumpAs(latestVersionsYaml, null, DumperOptions.FlowStyle.BLOCK));
