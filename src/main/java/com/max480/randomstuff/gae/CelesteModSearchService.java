@@ -1,6 +1,7 @@
 package com.max480.randomstuff.gae;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
@@ -41,7 +42,7 @@ import static com.max480.discord.randombots.UpdateCheckerTracker.ModInfo;
  */
 @WebServlet(name = "CelesteModSearchService", loadOnStartup = 2, urlPatterns = {"/celeste/gamebanana-search",
         "/celeste/gamebanana-search-reload", "/celeste/gamebanana-list", "/celeste/gamebanana-categories", "/celeste/webp-to-png",
-        "/celeste/banana-mirror-image", "/celeste/random-map", "/celeste/gamebanana-featured"})
+        "/celeste/banana-mirror-image", "/celeste/random-map", "/celeste/gamebanana-featured", "/celeste/olympus-news", "/celeste/olympus-news-reload"})
 public class CelesteModSearchService extends HttpServlet {
 
     private final Logger logger = Logger.getLogger("CelesteModSearchService");
@@ -53,10 +54,13 @@ public class CelesteModSearchService extends HttpServlet {
 
     private static final String modIndexDirectoryLock = "lock";
 
+    private byte[] olympusNews;
+
     @Override
     public void init() {
         try {
             refreshModDatabase();
+            refreshOlympusNews();
         } catch (Exception e) {
             logger.log(Level.WARNING, "Warming up failed: " + e.toString());
         }
@@ -367,6 +371,23 @@ public class CelesteModSearchService extends HttpServlet {
                 response.setHeader("Location", "https://celestemodupdater.0x0a.de/banana-mirror-images/" + screenshotId);
             }
         }
+
+        if (request.getRequestURI().equals("/celeste/olympus-news-reload")) {
+            if (("key=" + SecretConstants.RELOAD_SHARED_SECRET).equals(request.getQueryString())) {
+                refreshOlympusNews();
+            } else {
+                // invalid secret
+                logger.warning("Invalid key");
+                response.setStatus(403);
+            }
+            return;
+        }
+
+        if ("/celeste/olympus-news".equals(request.getRequestURI())) {
+            // send olympus_news.json we downloaded earlier
+            response.setHeader("Content-Type", "application/json");
+            IOUtils.write(olympusNews, response.getOutputStream());
+        }
     }
 
     public static String formatGameBananaItemtype(String input, boolean pluralize) {
@@ -443,6 +464,11 @@ public class CelesteModSearchService extends HttpServlet {
         }
 
         logger.fine("Index directory contains " + modIndexDirectory.listAll().length + " files.");
+    }
+
+    private void refreshOlympusNews() throws IOException {
+        olympusNews = IOUtils.toByteArray(CloudStorageUtils.getCloudStorageInputStream("olympus_news.json"));
+        logger.fine("Reloaded Olympus news! " + olympusNews.length + " bytes preloaded.");
     }
 
     public static ModInfo getModInfoByTypeAndId(String itemtype, int itemid) {
