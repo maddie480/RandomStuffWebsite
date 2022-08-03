@@ -15,6 +15,7 @@ It contains the full source for:
 - [the Discord Games Bot](https://max480-random-stuff.appspot.com/discord-bots#games-bot) - the "bot" is actually a webhook that gets called by Discord
 - [the Discord Custom Slash Commands app](https://max480-random-stuff.appspot.com/discord-bots#custom-slash-commands)
 - Some [GameBanana](https://gamebanana.com)-related APIs extending the official API, described below
+- [the Olympus News API](https://max480-random-stuff.appspot.com/celeste/olympus-news)
 - ... and some other things of more limited use that are on the website.
 
 If you want to check how the update checker's everest_update.yaml file is generated, check [the Everest Update Checker Server repo](https://github.com/max4805/EverestUpdateCheckerServer) instead.
@@ -186,6 +187,36 @@ If the GameBanana API returns an error (for example if you pass an invalid param
 ## Random Celeste map button
 
 Click [here](https://max480-random-stuff.appspot.com/celeste/random-map) to get redirected to a random Celeste map.
+
+## Olympus News API
+
+This API returns the news to display in Olympus, in JSON format. For example:
+```json
+[
+  {
+    "preview": "Shattering Strawberries is a mod that lets you make your favourite collectable explode, and was created entirely by catapillie! Featuring customisable settings for amount of jooce and shards, you can check it out here:",
+    "image": "https://pbs.twimg.com/media/FRfYg5zUcAAIa1a.jpg",
+    "link": "https://gamebanana.com/mods/374294",
+    "title": "Shattering Strawberries"
+  }
+]
+```
+
+The fields are all optional, and are:
+- `title`: the title of the news
+- `preview`: the text directly displayed in the sidebar of Olympus
+- `image`: an image that will be displayed between the `title` and the `preview`
+- `link`: a link that can be opened by clicking an "Open in browser" button (links in the `preview` are not clickable)
+- `text`: longer text that can be viewed in a popup by clicking a button at the bottom of the news
+
+The contents of the API are based on:
+- The 10 most recent tweets of the [the @EverestAPI Twitter](https://twitter.com/EverestAPI)
+  - `preview` is filled with the tweet text, excluding non-ascii characters
+  - `image` is filled with the first image of the tweet. If there is none, the embed image of the first link that has one in the message will be taken instead.
+  - `title` is filled with the embed title of the first link that has one in the message. To accomodate GameBanana links better, `[Celeste] [Mods]` is also removed from it.
+  - `link` is filled with the first link in the tweet. This link is also removed from the `preview`.
+- [a static file from the RandomBackendStuff repository](https://github.com/max4805/RandomBackendStuff/blob/main/olympusnews.json)
+  - This file follows the same format as this API, with an extra field: `position` that is either `top` or `bottom`, and decides whether the news should be shown before or after the tweets.
 
 ## GameBanana Image Mirror API (deprecated)
 
