@@ -153,7 +153,6 @@ public class GameBananaArbitraryModAppService extends HttpServlet {
                 .collect(Collectors.toList());
 
         request.setAttribute("isMax480", "1698143".equals(request.getParameter("_idProfile")));
-        request.setAttribute("isLoggedOut", "0".equals(request.getParameter("_idMember")));
 
         response.setHeader("Content-Type", "application/json");
         request.setAttribute("title", name);
