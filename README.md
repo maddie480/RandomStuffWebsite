@@ -210,7 +210,7 @@ The fields are all optional, and are:
 - `text`: longer text that can be viewed in a popup by clicking a button at the bottom of the news
 
 The contents of the API are based on:
-- The 10 most recent tweets of the [the @EverestAPI Twitter](https://twitter.com/EverestAPI)
+- The 10 most recent tweets of [the @EverestAPI Twitter](https://twitter.com/EverestAPI)
   - `preview` is filled with the tweet text, excluding non-ascii characters
   - `image` is filled with the first image of the tweet. If there is none, the embed image of the first link that has one in the message will be taken instead.
   - `title` is filled with the embed title of the first link that has one in the message. To accomodate GameBanana links better, `[Celeste] [Mods]` is also removed from it.
