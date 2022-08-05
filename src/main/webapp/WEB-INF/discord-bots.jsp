@@ -70,10 +70,13 @@
         </ul>
     </div>
 
+    <div>
+        Check <a href="/discord-bots/terms-and-privacy.html">this page</a> for Terms of Service and more information about collected data.
+    </div>
+
     <div class="alert alert-info">
         If you need support on those bots or want to try them out, you can <a href="https://discord.gg/59ztc8QZQ7">join the bot testing server</a>!
     </div>
-
 
     <h1 class="botname" id="timezone-bot">
         <img src="/img/timezone-bot-logo.png" class="botlogo"> Timezone Bot
