@@ -373,18 +373,23 @@
     </div>
 
     <div>
+        You can then edit this command with <code>/editc</code>, remove it with <code>/removec</code>,
+        and list all defined commands with <code>/clist</code>.
+    </div>
+
+    <div>
         <b>Hints:</b>
         <ul>
             <li>
-                You can manage who can use commands (including <code>/addc</code> and <code>/removec</code>) and in which channels by going to
+                You can manage who can use commands (including the default ones like <code>/addc</code>) and in which channels by going to
                 <b>Server Settings &gt; Integrations &gt; Custom Slash Commands</b>.
-                By default, members with Administrator or Manage Server permissions can use <code>/addc</code> and <code>/removec</code>, and everyone can use the created custom commands.
-            </li>
-            <li>
-                If you want to update a command, create it again with the same name: the existing one will be replaced.
+                By default, members with Administrator or Manage Server permissions can use the default commands like <code>/addc</code>, and everyone can use the created custom commands.
             </li>
             <li>
                 You can include line breaks in answers by using <code>\n</code> (for example <code>line1\nline2</code>).
+            </li>
+            <li>
+                If you create a command with an already existing name, the existing command will be replaced.
             </li>
         </ul>
     </div>
