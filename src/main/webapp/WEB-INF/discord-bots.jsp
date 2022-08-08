@@ -394,6 +394,9 @@
             <li>
                 If you create a command with an already existing name, the existing command will be replaced.
             </li>
+            <li>
+                If you include a user mention in a slash command response, the person will not actually be pinged when the command is used.
+            </li>
         </ul>
     </div>
 
