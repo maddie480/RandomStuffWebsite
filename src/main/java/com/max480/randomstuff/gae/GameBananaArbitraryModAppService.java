@@ -112,7 +112,7 @@ public class GameBananaArbitraryModAppService extends HttpServlet {
                 // request all mods the user asked for.
                 .map(this::queryModById)
                 // take out the ones that errored or were withheld / trashed.
-                .filter(o -> o != null && !o.getBoolean("_bIsWithheld") && !o.getBoolean("_bIsTrashed") || o.getBoolean("_bIsPrivate"))
+                .filter(o -> o != null && !o.getBoolean("_bIsWithheld") && !o.getBoolean("_bIsTrashed") && !o.getBoolean("_bIsPrivate"))
                 // sort by descending updated date
                 .sorted((o1, o2) -> (int) Math.signum(o2.getLong("_tsDateUpdated") - o1.getLong("_tsDateUpdated")))
                 .map(object -> {
