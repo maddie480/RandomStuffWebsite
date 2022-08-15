@@ -1,5 +1,6 @@
 package com.max480.randomstuff.gae;
 
+import com.github.palindromicity.syslog.MapOfMaps5424MessageHandler;
 import com.github.palindromicity.syslog.SyslogParser;
 import com.github.palindromicity.syslog.SyslogParserBuilder;
 import com.github.palindromicity.syslog.SyslogSpecification;
@@ -19,6 +20,7 @@ import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 /**
@@ -29,7 +31,11 @@ import java.util.logging.Logger;
 public class HerokuLogger extends HttpServlet {
     private final Logger logger = Logger.getLogger("HerokuLogger");
     private final Logging logging = LoggingOptions.getDefaultInstance().getService();
-    private final SyslogParser parser = new SyslogParserBuilder().forSpecification(SyslogSpecification.HEROKU_HTTPS_LOG_DRAIN).build();
+
+    private final SyslogParser<Map<String, Object>> parser = new SyslogParserBuilder<Map<String, Object>>()
+            .forSpecification(SyslogSpecification.HEROKU_HTTPS_LOG_DRAIN)
+            .withSyslogBuilder(new MapOfMaps5424MessageHandler())
+            .build();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
