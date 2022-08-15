@@ -126,7 +126,7 @@
         <dependency>
             <groupId>com.github.palindromicity</groupId>
             <artifactId>simple-syslog</artifactId>
-            <version>0.0.6</version>
+            <version>1.0.0</version>
         </dependency>
 
         <dependency>
