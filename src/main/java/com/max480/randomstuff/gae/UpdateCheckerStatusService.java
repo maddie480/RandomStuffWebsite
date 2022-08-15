@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.text.DecimalFormat;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -87,7 +86,7 @@ public class UpdateCheckerStatusService extends HttpServlet {
                 request.setAttribute("lastUpdatedTimestamp", timeUtc.toEpochSecond());
                 request.setAttribute("lastUpdatedAt", date.getLeft());
                 request.setAttribute("lastUpdatedAgo", date.getRight());
-                request.setAttribute("duration", new DecimalFormat("0.0").format(lastCheckDuration / 1000.0));
+                request.setAttribute("duration", lastCheckDuration / 1000.0);
             }
         }
 

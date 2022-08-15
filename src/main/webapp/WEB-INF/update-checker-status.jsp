@@ -1,7 +1,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 
-<%@ page import="java.util.List, static org.apache.commons.text.StringEscapeUtils.escapeHtml4, static com.max480.randomstuff.gae.UpdateCheckerStatusService.LatestUpdatesEntry"%>
+<%@ page import="java.util.List, java.text.DecimalFormat, static org.apache.commons.text.StringEscapeUtils.escapeHtml4, static com.max480.randomstuff.gae.UpdateCheckerStatusService.LatestUpdatesEntry"%>
 
 <%@page session="false"%>
 
@@ -81,7 +81,12 @@
                     <%= request.getAttribute("lastUpdatedAt") %>
                 </span>
                 (<%= request.getAttribute("lastUpdatedAgo") %>)</b>.
-                The update check took <%= request.getAttribute("duration") %> seconds.
+
+                <% if (((double) request.getAttribute("duration")) >= 60) { %>
+                    The update check took <%= new DecimalFormat("0.0").format((double) request.getAttribute("duration") / 60.0) %> minutes.
+                <% } else { %>
+                    The update check took <%= new DecimalFormat("0.0").format((double) request.getAttribute("duration")) %> seconds.
+                <% } %>
             </p>
         <% } %>
 
