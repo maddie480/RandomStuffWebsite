@@ -54,6 +54,10 @@ img {
     h1.botname.margin {
         border-top: solid #444 1px;
     }
+
+    code {
+        color: #ff5c99;
+    }
 }
 
 .botlogo {

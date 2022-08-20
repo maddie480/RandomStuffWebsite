@@ -389,13 +389,21 @@
                 By default, members with Administrator or Manage Server permissions can use the management commands like <code>/addc</code>, and everyone can use the created custom commands.
             </li>
             <li>
+                You can customize the text of your links by writing something like this in the slash command response:
+                <br>
+                <code>You can invite the bot [here](https://discord.com/api/oauth2/authorize?client_id=992122149764608041&scope=applications.commands)!</code>
+                <br>
+                This will appear like this:
+                "You can invite the bot <a href="https://discord.com/api/oauth2/authorize?client_id=992122149764608041&scope=applications.commands" target="_blank">here</a>!"
+            </li>
+            <li>
+                If you include a user or role mention in a slash command response, nobody will actually be pinged when the command is used.
+            </li>
+            <li>
                 You can include line breaks in answers by using <code>\n</code> (for example <code>line1\nline2</code>).
             </li>
             <li>
                 If you create a command with an already existing name, the existing command will be replaced.
-            </li>
-            <li>
-                If you include a user mention in a slash command response, the person will not actually be pinged when the command is used.
             </li>
         </ul>
     </div>
