@@ -42,7 +42,8 @@ import static com.max480.discord.randombots.UpdateCheckerTracker.ModInfo;
  */
 @WebServlet(name = "CelesteModSearchService", loadOnStartup = 2, urlPatterns = {"/celeste/gamebanana-search",
         "/celeste/gamebanana-search-reload", "/celeste/gamebanana-list", "/celeste/gamebanana-categories", "/celeste/webp-to-png",
-        "/celeste/banana-mirror-image", "/celeste/random-map", "/celeste/gamebanana-featured", "/celeste/olympus-news", "/celeste/olympus-news-reload"})
+        "/celeste/banana-mirror-image", "/celeste/random-map", "/celeste/gamebanana-featured", "/celeste/olympus-news", "/celeste/olympus-news-reload",
+        "/celeste/everest-versions", "/celeste/everest-versions-reload"})
 public class CelesteModSearchService extends HttpServlet {
 
     private final Logger logger = Logger.getLogger("CelesteModSearchService");
@@ -55,12 +56,14 @@ public class CelesteModSearchService extends HttpServlet {
     private static final String modIndexDirectoryLock = "lock";
 
     private byte[] olympusNews;
+    private byte[] everestVersions;
 
     @Override
     public void init() {
         try {
             refreshModDatabase();
             refreshOlympusNews();
+            refreshEverestVersions();
         } catch (Exception e) {
             logger.log(Level.WARNING, "Warming up failed: " + e.toString());
         }
@@ -383,10 +386,27 @@ public class CelesteModSearchService extends HttpServlet {
             return;
         }
 
+        if (request.getRequestURI().equals("/celeste/everest-versions-reload")) {
+            if (("key=" + SecretConstants.RELOAD_SHARED_SECRET).equals(request.getQueryString())) {
+                refreshEverestVersions();
+            } else {
+                // invalid secret
+                logger.warning("Invalid key");
+                response.setStatus(403);
+            }
+            return;
+        }
+
         if ("/celeste/olympus-news".equals(request.getRequestURI())) {
             // send olympus_news.json we downloaded earlier
             response.setHeader("Content-Type", "application/json");
             IOUtils.write(olympusNews, response.getOutputStream());
+        }
+
+        if ("/celeste/everest-versions".equals(request.getRequestURI())) {
+            // send olympus_news.json we downloaded earlier
+            response.setHeader("Content-Type", "application/json");
+            IOUtils.write(everestVersions, response.getOutputStream());
         }
     }
 
@@ -469,6 +489,11 @@ public class CelesteModSearchService extends HttpServlet {
     private void refreshOlympusNews() throws IOException {
         olympusNews = IOUtils.toByteArray(CloudStorageUtils.getCloudStorageInputStream("olympus_news.json"));
         logger.fine("Reloaded Olympus news! " + olympusNews.length + " bytes preloaded.");
+    }
+
+    private void refreshEverestVersions() throws IOException {
+        everestVersions = IOUtils.toByteArray(CloudStorageUtils.getCloudStorageInputStream("everest_version_list.json"));
+        logger.fine("Reloaded Everest versions! " + everestVersions.length + " bytes preloaded.");
     }
 
     public static ModInfo getModInfoByTypeAndId(String itemtype, int itemid) {
