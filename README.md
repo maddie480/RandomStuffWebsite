@@ -16,6 +16,7 @@ It contains the full source for:
 - [the Discord Custom Slash Commands app](https://max480-random-stuff.appspot.com/discord-bots#custom-slash-commands)
 - Some [GameBanana](https://gamebanana.com)-related APIs extending the official API, described below
 - [the Olympus News API](https://max480-random-stuff.appspot.com/celeste/olympus-news)
+- [the Everest versions list API](https://max480-random-stuff.appspot.com/celeste/everest-versions)
 - ... and some other things of more limited use that are on the website.
 
 If you want to check how the update checker's everest_update.yaml file is generated, check [the Everest Update Checker Server repo](https://github.com/max4805/EverestUpdateCheckerServer) instead.
@@ -190,7 +191,7 @@ Click [here](https://max480-random-stuff.appspot.com/celeste/random-map) to get 
 
 ## Olympus News API
 
-This API returns the news to display in Olympus, in JSON format. For example:
+This API is available at `https://max480-random-stuff.appspot.com/celeste/olympus-news`, and returns the news to display in Olympus, in JSON format. For example:
 ```json
 [
   {
@@ -217,6 +218,34 @@ The contents of the API are based on:
   - `link` is filled with the first link in the tweet. This link is also removed from the `preview`.
 - [a static file from the RandomBackendStuff repository](https://github.com/max4805/RandomBackendStuff/blob/main/olympusnews.json)
   - This file follows the same format as this API, with an extra field: `position` that is either `top` or `bottom`, and decides whether the news should be shown before or after the tweets.
+  
+## Everest versions list API
+
+This API is available at `https://max480-random-stuff.appspot.com/celeste/everest-versions`, and returns all the Everest versions available, in JSON format.  For example:
+```json
+[
+    {
+        "version": 3520,
+        "branch": "dev",
+        "author": "bigkahuna443",
+        "description": "Handle duplicate room names",
+        "mainDownload": "https://dev.azure.com/EverestAPI/Everest/_apis/build/builds/2820/artifacts?artifactName=main&api-version=5.0&%24format=zip",
+        "olympusMetaDownload": "https://dev.azure.com/EverestAPI/Everest/_apis/build/builds/2820/artifacts?artifactName=olympus-meta&api-version=5.0&%24format=zip",
+        "olympusBuildDownload": "https://dev.azure.com/EverestAPI/Everest/_apis/build/builds/2820/artifacts?artifactName=olympus-build&api-version=5.0&%24format=zip"
+    },
+    [...]
+]
+```
+
+- `version` is the Everest version number.
+- `branch` is eiter `dev`, `beta` or `stable`. Other branches might be created to test specific features in the future.
+- `mainDownload` is the download for use by Everest to install an update.
+- `olympusMetaDownload` is the download that Olympus uses to get the build size.
+- `olympusBuildDownload` is the download for use by Olympus to install Everest.
+
+Two extra fields are specified for automatic builds made after a single change (commit or pull request merge):
+- `author` is the author of the change (GitHub username), either the author of the commit or the creator of the pull request.
+- `description` is the description of the change, either the message of the commit or the title of the pull request.
 
 ## GameBanana Image Mirror API (deprecated)
 
