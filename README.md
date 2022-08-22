@@ -229,6 +229,7 @@ This API is available at `https://max480-random-stuff.appspot.com/celeste/everes
         "branch": "dev",
         "author": "bigkahuna443",
         "description": "Handle duplicate room names",
+        "date": "2022-08-10T15:09:33.8105837Z",
         "mainDownload": "https://dev.azure.com/EverestAPI/Everest/_apis/build/builds/2820/artifacts?artifactName=main&api-version=5.0&%24format=zip",
         "olympusMetaDownload": "https://dev.azure.com/EverestAPI/Everest/_apis/build/builds/2820/artifacts?artifactName=olympus-meta&api-version=5.0&%24format=zip",
         "olympusBuildDownload": "https://dev.azure.com/EverestAPI/Everest/_apis/build/builds/2820/artifacts?artifactName=olympus-build&api-version=5.0&%24format=zip"
@@ -240,6 +241,7 @@ This API is available at `https://max480-random-stuff.appspot.com/celeste/everes
 - `version` is the Everest version number.
 - `branch` is eiter `dev`, `beta` or `stable`. Other branches might be created to test specific features in the future.
 - `mainDownload` is the download for use by Everest to install an update.
+- `date` is the date at which the version was published, in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format.
 - `olympusMetaDownload` is the download that Olympus uses to get the build size.
 - `olympusBuildDownload` is the download for use by Olympus to install Everest.
 
