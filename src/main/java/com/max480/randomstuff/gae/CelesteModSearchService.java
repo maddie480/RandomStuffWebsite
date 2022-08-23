@@ -84,7 +84,7 @@ public class CelesteModSearchService extends HttpServlet {
 
         if (request.getRequestURI().equals("/celeste/random-map")) {
             List<ModInfo> maps = modDatabaseForSorting.stream()
-                    .filter(i -> i.categoryId == 6800) // Map
+                    .filter(i -> "Mod".equals(i.type) && i.categoryId == 6800) // Map
                     .collect(Collectors.toList());
 
             // pick a map and redirect to it. that's it.
@@ -284,16 +284,14 @@ public class CelesteModSearchService extends HttpServlet {
         }
 
         if (request.getRequestURI().equals("/celeste/gamebanana-categories")) {
-            boolean v2 = "2".equals(request.getParameter("version"));
+            boolean v3 = "3".equals(request.getParameter("version"));
+            boolean v2 = v3 || "2".equals(request.getParameter("version"));
 
             // go across all mods and aggregate stats per category.
             HashMap<Object, Integer> categoriesAndCounts = new HashMap<>();
             for (ModInfo modInfo : modDatabaseForSorting) {
                 Object category = modInfo.type;
                 if (v2 && category.equals("Mod")) {
-                    // skip mods belonging to unapproved categories
-                    if (modInfo.categoryId == -1) continue;
-
                     category = modInfo.categoryId;
                 }
                 if (!categoriesAndCounts.containsKey(category)) {
@@ -315,6 +313,7 @@ public class CelesteModSearchService extends HttpServlet {
                             result.put("formatted", formatGameBananaItemtype(entry.getKey().toString(), true));
                         } else {
                             // mod category
+                            if (v3) result.put("itemtype", "Mod");
                             result.put("categoryid", entry.getKey());
                             result.put("formatted", modCategories.get(entry.getKey()));
                         }
@@ -326,7 +325,7 @@ public class CelesteModSearchService extends HttpServlet {
 
             // also add an "All" option to pass the total number of mods.
             Map<String, Object> all = new HashMap<>();
-            all.put("itemtype", "");
+            if (!v3) all.put("itemtype", "");
             all.put("formatted", "All");
             all.put("count", modDatabaseForSorting.size());
 

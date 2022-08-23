@@ -140,29 +140,33 @@ This API allows getting a list of GameBanana item types _that have at least one 
 
 The counts returned by this API might not match the numbers displayed on the GameBanana website; that's because GameBanana counts mods that do not show up in the list.
 
-Each entry has either an `itemtype` or a `categoryid` (for mods that have `itemtype` = `Mod`, so that they can be filtered by category instead). The "All" entry is special and has an empty `itemtype`, and carries the total number of mods.
+Each entry can have an `itemtype` and a `categoryid`, that can be used as `type` and `category` parameters on the [list API](#gamebanana-sorted-list-api).
 
-The URL is `https://max480-random-stuff.appspot.com/celeste/gamebanana-categories?version=2` and the result looks like:
+The URL is `https://max480-random-stuff.appspot.com/celeste/gamebanana-categories?version=3` and the result looks like:
 ```yaml
-- itemtype: ''
-  formatted: All
-  count: 541
-- itemtype: Effect
+- formatted: All
+  count: 1406
+- itemtype: Mod
+  categoryid: 15655
+  formatted: Assets
+  count: 26
+- itemtype: Mod
+  categoryid: 4633
+  formatted: Dialog
+  count: 20
+- itemtype: Mod
+  categoryid: 1501
   formatted: Effects
-  count: 2
-- itemtype: Gamefile
-  formatted: Game files
-  count: 114
-- itemtype: Gui
-  formatted: GUIs
-  count: 11
-- categoryid: 944
-  formatted: Textures
-  count: 2
+  count: 5
+- itemtype: Tool
+  formatted: Tools
+  count: 30
 ...
 ```
 
-Not passing `?version=2` will result in only `itemtype`s getting returned, with one of them being `Mod`. This is here for backwards compatibility.
+Older versions are available for backwards compatibility:
+- `?version=2` does not include `itemtype: Mod` for mods, and the "All" category has `itemtype: ''`
+- `?version=1` (or omitting entirely) only groups by itemtype (so all Mods end up in one big category)
 
 ## GameBanana category RSS feed API
 
