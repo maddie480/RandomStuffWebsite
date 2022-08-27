@@ -113,7 +113,7 @@ The URL is `https://max480-random-stuff.appspot.com/celeste/gamebanana-list?sort
 - `category` is the GameBanana mod category ID to filter on (optional), this is returned by [the GameBanana categories list API](#gamebanana-categories-list-api). For example `944`
 - `page` is the page to get, first page being 1 (optional, default is 1). Each page contains 20 elements.
 
-The output format is the same as the GameBanana search API, [see the previous section](#the-gamebanana-search-api).
+The output format is the same as the GameBanana search API, [see the previous section](#the-gamebanana-search-api). You also get the total amount of mods in the list, as a `X-Total-Count` header.
 
 You can pass `full=true` to the API to get the full info on mods instead of just their IDs, **in JSON**. The format is also the same as the GameBanana search API with `full=true`.
 

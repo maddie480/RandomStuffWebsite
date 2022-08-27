@@ -41,6 +41,18 @@ public class SecurityHeadersFilter extends HttpFilter {
                     "img-src 'self' https://cultofthepartyparrot.com; " +
                     "frame-ancestors 'none'; " +
                     "object-src 'none';");
+        } else if (req.getRequestURI().equals("/celeste/wipe-converter")) {
+            // web worker magic forces us to allow inline JS... ouch.
+            res.setHeader("Content-Security-Policy", "default-src 'self'; " +
+                    "script-src 'self' 'unsafe-eval' blob:; " +
+                    "frame-ancestors 'none'; " +
+                    "object-src 'none';");
+        } else if (req.getRequestURI().equals("/celeste/banana-mirror-browser")) {
+            // allow getting the images from Banana Mirror.
+            res.setHeader("Content-Security-Policy", "default-src 'self'; " +
+                    "img-src 'self' https://celestemodupdater.0x0a.de; " +
+                    "frame-ancestors 'none'; " +
+                    "object-src 'none';");
         } else {
             // default rules
             res.setHeader("Content-Security-Policy", "default-src 'self'; " +

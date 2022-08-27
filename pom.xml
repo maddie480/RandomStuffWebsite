@@ -205,19 +205,95 @@
     </dependencies>
 
     <build>
-        <!-- for hot reload of the web application-->
         <outputDirectory>${project.build.directory}/${project.build.finalName}/WEB-INF/classes</outputDirectory>
         <plugins>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>versions-maven-plugin</artifactId>
-                <version>2.11.0</version>
+                <groupId>com.github.eirslett</groupId>
+                <artifactId>frontend-maven-plugin</artifactId>
+                <version>1.12.1</version>
+
+                <executions>
+                    <!-- Install Node -->
+                    <execution>
+                        <id>install node and npm</id>
+                        <goals>
+                            <goal>install-node-and-npm</goal>
+                        </goals>
+                    </execution>
+
+                    <!-- Install dependencies of the Vue app -->
+                    <execution>
+                        <id>npm install</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+
+                        <configuration>
+                            <arguments>install</arguments>
+                        </configuration>
+                    </execution>
+
+                    <!-- Build the Vue app into the same target directory as the rest of the app -->
+                    <execution>
+                        <id>npm run build</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+
+                        <configuration>
+                            <arguments>run build -- --dest ../target/random-stuff-website-1.0.0/</arguments>
+                        </configuration>
+                    </execution>
+
+                    <!-- Check that the linter does not give any warnings -->
+                    <execution>
+                        <id>npm run lint</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+
+                        <configuration>
+                            <arguments>run lint -- --no-fix --max-warnings 0</arguments>
+                        </configuration>
+                    </execution>
+
+                    <!-- Run the frontend tests -->
+                    <execution>
+                        <id>npm run test</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+
+                        <configuration>
+                            <arguments>run test:unit</arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+
+                <configuration>
+                    <nodeVersion>v16.17.0</nodeVersion>
+                    <workingDirectory>front-vue</workingDirectory>
+                </configuration>
+            </plugin>
+
+            <!-- Move the index.html of the Vue app at a place where the Java app can grab it -->
+            <plugin>
+                <groupId>com.coderplus.maven.plugins</groupId>
+                <artifactId>copy-rename-maven-plugin</artifactId>
+                <version>1.0</version>
                 <executions>
                     <execution>
-                        <phase>compile</phase>
+                        <id>move vue index.html</id>
+                        <phase>generate-resources</phase>
                         <goals>
-                            <goal>display-dependency-updates</goal>
+                            <goal>rename</goal>
                         </goals>
+                        <configuration>
+                            <sourceFile>target/random-stuff-website-1.0.0/index.html</sourceFile>
+                            <destinationFile>target/random-stuff-website-1.0.0/WEB-INF/classes/vue-index.html</destinationFile>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -235,4 +311,58 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>no-front</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.github.eirslett</groupId>
+                        <artifactId>frontend-maven-plugin</artifactId>
+                        <version>1.12.1</version>
+
+                        <executions>
+                            <execution>
+                                <id>install node and npm</id>
+                                <phase>none</phase>
+                            </execution>
+
+                            <execution>
+                                <id>npm install</id>
+                                <phase>none</phase>
+                            </execution>
+
+                            <execution>
+                                <id>npm run build</id>
+                                <phase>none</phase>
+                            </execution>
+
+                            <execution>
+                                <id>npm run lint</id>
+                                <phase>none</phase>
+                            </execution>
+
+                            <execution>
+                                <id>npm run test</id>
+                                <phase>none</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>com.coderplus.maven.plugins</groupId>
+                        <artifactId>copy-rename-maven-plugin</artifactId>
+                        <version>1.0</version>
+                        <executions>
+                            <execution>
+                                <id>move vue index.html</id>
+                                <phase>none</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

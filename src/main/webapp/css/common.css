@@ -47,7 +47,7 @@
     .dropdown-menu .dropdown-item {
       color: #dee2e6;
     }
-    .dropdown-menu .dropdown-item:focus, .dropdown-menu .dropdown-item:hover {
+    .dropdown-menu .dropdown-item:focus:not(.active), .dropdown-menu .dropdown-item:hover:not(.active) {
       color: #fff;
       background-color: rgba(255,255,255,.15);
     }

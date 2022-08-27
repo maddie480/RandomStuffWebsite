@@ -31,3 +31,8 @@ target/
 .project
 .settings/*
 *.iml
+
+# Frontend stuff
+front-vue/node_modules/*
+front-vue/dist/*
+front-vue/node/*

@@ -251,6 +251,11 @@ public class CelesteModSearchService extends HttpServlet {
                         })
                         .collect(Collectors.toList());
 
+                // count the amount of results and put it as a header.
+                response.setHeader("X-Total-Count", Long.toString(modDatabaseForSorting.stream()
+                        .filter(typeFilter)
+                        .count()));
+
                 // send out the response.
                 if (fullInfo) {
                     response.setHeader("Content-Type", "application/json");
