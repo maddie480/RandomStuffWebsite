@@ -2,12 +2,7 @@
   <div>
     <h1>Banana Mirror Browser</h1>
 
-    <div class="loading" v-if="loading">Loading...</div>
-    <div class="error" v-else-if="error">
-      <div class="warning">An error occurred.</div>
-      <button class="btn btn-warning" v-on:click="reloadPage">Retry</button>
-    </div>
-    <div v-else>
+    <div>
       <div class="row mt-4 filters">
         <div class="mb-3 col-lg-4 combo-box">
           <label for="category" class="form-label">Mod category</label>
@@ -19,7 +14,7 @@
             :show-labels="false"
             :searchable="false"
             :allow-empty="false"
-            :disabled="query !== ''"
+            :disabled="query !== '' || loading"
             @select="searchOrFilterStuff"
             id="category"
           >
@@ -40,7 +35,7 @@
             :show-labels="false"
             :searchable="false"
             :allow-empty="false"
-            :disabled="query !== ''"
+            :disabled="query !== '' || loading"
             @select="searchOrFilterStuff"
             id="category"
           >
@@ -59,6 +54,7 @@
             :show-labels="false"
             :searchable="false"
             :allow-empty="false"
+            :disabled="loading"
             id="mirror"
           >
           </VueMultiselect>
@@ -70,47 +66,56 @@
           v-model="query"
           class="search form-control"
           placeholder="Search for a mod..."
+          :disabled="loading"
         />
       </form>
-      <div class="row">
-        <div
-          v-bind:key="mod.id"
-          v-for="mod in mods"
-          class="col-xl-4 col-md-6 col-sm-12"
-        >
-          <ModListItem :mod="mod" :mirror="mirror.id" />
-        </div>
+
+      <div class="loading" v-if="loading">Loading...</div>
+      <div class="error" v-else-if="error">
+        <div class="warning">An error occurred.</div>
+        <button class="btn btn-warning" v-on:click="reloadPage">Retry</button>
       </div>
-      <div class="paginator" v-if="this.totalCount > 0">
-        <button
-          class="btn btn-outline-secondary"
-          :disabled="page <= 1"
-          v-on:click="firstPage"
-        >
-          &lt;&lt;
-        </button>
-        <button
-          class="btn btn-outline-secondary"
-          :disabled="page <= 1"
-          v-on:click="previousPage"
-        >
-          &lt;
-        </button>
-        {{ page }} / {{ pageCount }}
-        <button
-          class="btn btn-outline-secondary"
-          :disabled="page >= pageCount"
-          v-on:click="nextPage"
-        >
-          &gt;
-        </button>
-        <button
-          class="btn btn-outline-secondary"
-          :disabled="page >= pageCount"
-          v-on:click="lastPage"
-        >
-          &gt;&gt;
-        </button>
+      <div v-else>
+        <div class="row">
+          <div
+            v-bind:key="mod.id"
+            v-for="mod in mods"
+            class="col-xl-4 col-md-6 col-sm-12"
+          >
+            <ModListItem :mod="mod" :mirror="mirror.id" />
+          </div>
+        </div>
+        <div class="paginator" v-if="this.totalCount > 0">
+          <button
+            class="btn btn-outline-secondary"
+            :disabled="page <= 1"
+            v-on:click="firstPage"
+          >
+            &lt;&lt;
+          </button>
+          <button
+            class="btn btn-outline-secondary"
+            :disabled="page <= 1"
+            v-on:click="previousPage"
+          >
+            &lt;
+          </button>
+          {{ page }} / {{ pageCount }}
+          <button
+            class="btn btn-outline-secondary"
+            :disabled="page >= pageCount"
+            v-on:click="nextPage"
+          >
+            &gt;
+          </button>
+          <button
+            class="btn btn-outline-secondary"
+            :disabled="page >= pageCount"
+            v-on:click="lastPage"
+          >
+            &gt;&gt;
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -282,6 +287,12 @@ export default vue;
 .search {
   margin-top: 20px;
   margin-bottom: 20px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .search[disabled] {
+    background-color: #444;
+  }
 }
 
 .filters {
