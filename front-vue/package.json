@@ -24,7 +24,7 @@
     "util": "^0.12.4",
     "vue": "^3.2.37",
     "vue-multiselect": "^3.0.0-alpha.2",
-    "vue-router": "^4.1.4",
+    "vue-router": "^4.1.5",
     "vuex": "^4.0.2"
   },
   "devDependencies": {
