@@ -1,6 +1,6 @@
 # max480-random-stuff website
 
-This is the source code for the max480-random-stuff.**appspot**.com website, a [Google App Engine](https://cloud.google.com/appengine/) app written in Java, with backend-rendered pages. If you're looking for max480-random-stuff.**herokuapp**.com, [check this repository](https://github.com/max4805/RandomStuffWebsiteJS).
+This is the source code for the [max480-random-stuff.appspot.com](https://max480-random-stuff.appspot.com/) website, a [Google App Engine](https://cloud.google.com/appengine/) app written in Java. The frontend part is made of backend-rendered pages and some pages made with [Vue.js](https://vuejs.org/).
 
 It contains the full source for:
 - [the Everest Update Checker frontend service](https://max480-random-stuff.appspot.com/celeste/everest_update.yaml), exposing files produced by the Update Checker
@@ -9,6 +9,8 @@ It contains the full source for:
 - [the Everest Update Checker status page](https://max480-random-stuff.appspot.com/celeste/update-checker-status)
 - [the Celeste font generator](https://max480-random-stuff.appspot.com/celeste/font-generator)
 - [the Celeste Mod Structure Verifier](https://max480-random-stuff.appspot.com/celeste/mod-structure-verifier)
+- [the Banana Mirror Browser](https://max480-random-stuff.appspot.com/banana-mirror-browser), a website that can substitute to [the GameBanana Celeste section](https://gamebanana.com/games/6460) if it is down. Files and images are [hosted on 0x0ade's server](https://celestemodupdater.0x0a.de/). Mod info and files on this server are kept up-to-date by [the Everest update checker](https://github.com/max4805/EverestUpdateCheckerServer).
+- [the Wipe Converter](https://max480-random-stuff.appspot.com/wipe-converter), a service to turn custom Celeste screen wipes into a format the game can use (with the [max480's Helping Hand](https://github.com/max4805/MaxHelpingHand) mod).
 - [the #celeste_news_network subscription service](https://max480-random-stuff.appspot.com/celeste/news-network-subscription) - the Twitter update checking code is not part of the frontend and can be found [on the Random Backend Stuff repository](https://github.com/max4805/RandomBackendStuff/blob/main/src/celeste-backend-crontabs/TwitterUpdateChecker.java)
 - [the help page for the Mod Structure Verifier bot](https://max480-random-stuff.appspot.com/celeste/mod-structure-verifier-help?collabName=CollabName&collabMapName=CollabMapName&assets&xmls&nomap&multiplemaps&badmappath&badenglish&misplacedyaml&noyaml&yamlinvalid&missingassets&missingentities&missingfonts)
 - [the "Show Arbitrary Mods on Profile" GameBanana app](https://gamebanana.com/apps/752)

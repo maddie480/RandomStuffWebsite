@@ -42,14 +42,14 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link active dropdown-toggle" href="#" id="celesteDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Celeste</a>
                     <ul class="dropdown-menu dropdown-menu-sm-end" aria-labelledby="celesteDropdown">
-                        <li><a class="dropdown-item" href="https://max480-random-stuff.herokuapp.com/celeste/banana-mirror-browser">Banana Mirror Browser</a></li>
+                        <li><a class="dropdown-item" href="/celeste/banana-mirror-browser">Banana Mirror Browser</a></li>
                         <li><a class="dropdown-item" href="/celeste/news-network-subscription">#celeste_news_network Subscription</a></li>
                         <li><a class="dropdown-item" href="/celeste/custom-entity-catalog">Custom Entity Catalog</a></li>
                         <li><a class="dropdown-item active" href="/celeste/everest-yaml-validator">everest.yaml validator</a></li>
                         <li><a class="dropdown-item" href="/celeste/font-generator">Font Generator</a></li>
                         <li><a class="dropdown-item" href="/celeste/mod-structure-verifier">Mod Structure Verifier</a></li>
                         <li><a class="dropdown-item" href="/celeste/update-checker-status">Update Checker status</a></li>
-                        <li><a class="dropdown-item" href="https://max480-random-stuff.herokuapp.com/celeste/wipe-converter">Wipe Converter</a></li>
+                        <li><a class="dropdown-item" href="/celeste/wipe-converter">Wipe Converter</a></li>
                     </ul>
                 </li>
                 <li class="nav-item">
