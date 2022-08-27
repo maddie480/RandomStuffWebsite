@@ -1,6 +1,6 @@
 # max480-random-stuff website
 
-This is the source code for the [max480-random-stuff.appspot.com](https://max480-random-stuff.appspot.com/) website, a [Google App Engine](https://cloud.google.com/appengine/) app written in Java.
+This is the source code for the [max480-random-stuff.appspot.com](https://max480-random-stuff.appspot.com/) website, a [Google App Engine](https://cloud.google.com/appengine/) app running on Java 8.
 
 The `src` folder contains the source for everything provided by the Java servlet:
 - [the Everest Update Checker frontend service](https://max480-random-stuff.appspot.com/celeste/everest_update.yaml), exposing files produced by the Update Checker
