@@ -70,6 +70,7 @@ public class SecurityHeadersFilter extends HttpFilter {
                 .contains(req.getRequestURI())) {
             // allow GameBanana APIs to be called from anywhere.
             res.setHeader("Access-Control-Allow-Origin", "*");
+            res.setHeader("Access-Control-Expose-Headers", "X-Total-Count");
         }
         if (req.getRequestURI().equals("/celeste/everest_update.yaml")) {
             // this one can be accessed from the Banana Mirror Browser mirror (... yeah, a mirror for a browser for a mirror, right).
