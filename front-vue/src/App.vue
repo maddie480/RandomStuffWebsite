@@ -246,5 +246,17 @@
     color: #dedad6;
     border-color: #125cc8;
   }
+
+  // better contrast for inline code
+  code {
+    color: #ff5c99;
+  }
+
+  // better contrast for links
+  @media (prefers-color-scheme: dark) {
+    a {
+      color: #47a0ff;
+    }
+  }
 }
 </style>

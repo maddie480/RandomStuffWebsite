@@ -470,6 +470,11 @@ export default {
   text-align: center;
   margin-top: 10px;
 }
+@media (prefers-color-scheme: dark) {
+  .text-danger {
+    color: rgb(240, 79, 94) !important;
+  }
+}
 
 // make Bootstrap not kill the download list in dark theme
 .table-striped > tbody > tr:nth-of-type(2n + 1) > td.first {
@@ -530,13 +535,6 @@ export default {
       &:hover {
         visibility: visible;
       }
-    }
-  }
-
-  // better contrast for links in dark mode
-  @media (prefers-color-scheme: dark) {
-    a {
-      color: #47a0ff;
     }
   }
 }
