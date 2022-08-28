@@ -179,7 +179,8 @@
                 ❌ This mod is not mirrored
               </div>
               <div class="not-mirrored-help">
-                Try downloading it
+                Only mods with a valid <code>everest.yaml</code> file are
+                available on this mirror.<br />Try downloading it
                 <a :href="mod.PageURL" target="_blank"
                   >from GameBanana directly</a
                 >
