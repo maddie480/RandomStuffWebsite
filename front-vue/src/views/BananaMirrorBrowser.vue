@@ -15,7 +15,7 @@
             :searchable="false"
             :allow-empty="false"
             :disabled="query !== '' || loading"
-            @select="searchOrFilterStuff"
+            @select="categoryFilterChanged"
             id="category"
           >
           </VueMultiselect>
@@ -24,19 +24,19 @@
           <label for="sort" class="form-label">Sort by</label>
           <VueMultiselect
             v-model="sort"
-            track-by="sortId"
+            track-by="id"
             label="name"
             :options="[
-              { sortId: 'latest', name: 'Creation date' },
-              { sortId: 'downloads', name: 'Downloads' },
-              { sortId: 'views', name: 'Views' },
-              { sortId: 'likes', name: 'Likes' },
+              { id: 'latest', name: 'Creation date' },
+              { id: 'downloads', name: 'Downloads' },
+              { id: 'views', name: 'Views' },
+              { id: 'likes', name: 'Likes' },
             ]"
             :show-labels="false"
             :searchable="false"
             :allow-empty="false"
             :disabled="query !== '' || loading"
-            @select="searchOrFilterStuff"
+            @select="sortChanged"
             id="category"
           >
           </VueMultiselect>
@@ -61,7 +61,7 @@
         </div>
       </div>
 
-      <form v-on:submit="searchOrFilterStuff">
+      <form v-on:submit="searchTriggered">
         <input
           v-model="query"
           class="search form-control"
@@ -137,7 +137,7 @@ const vue = {
     query: "",
     mods: [],
     mirror: { id: "jade", name: "0x0a.de (Germany)" },
-    sort: { sortId: "latest", name: "Creation date" },
+    sort: { id: "latest", name: "Creation date" },
     categoryFilter: { name: "All" },
     categories: [{ name: "All" }],
     loading: true,
@@ -160,24 +160,23 @@ const vue = {
       this.page = this.pageCount;
       this.reloadPage();
     },
-    searchOrFilterStuff: function (newComboBoxValue) {
+    searchTriggered: function (event) {
       this.page = 1;
-      this.reloadPage(newComboBoxValue);
+      this.reloadPage();
+      event.preventDefault();
     },
-    reloadPage: async function (newComboBoxValue) {
-      let categoryFilter = this.categoryFilter;
-      let sort = this.sort.sortId;
-
-      // when a combo box is changed, the object is not updated yet.
-      // we need to take the new value from the parameter Vue-Multiselect gives us!
-      if (newComboBoxValue !== undefined) {
-        if (newComboBoxValue.sortId !== undefined) {
-          sort = newComboBoxValue.sortId;
-        } else if (newComboBoxValue.formatted !== undefined) {
-          categoryFilter = newComboBoxValue;
-        }
-      }
-
+    categoryFilterChanged: function (newComboBoxValue) {
+      this.page = 1;
+      this.reload(newComboBoxValue, this.sort.id);
+    },
+    sortChanged: function (newComboBoxValue) {
+      this.page = 1;
+      this.reload(this.categoryFilter, newComboBoxValue.id);
+    },
+    reloadPage: function () {
+      this.reload(this.categoryFilter, this.sort.id);
+    },
+    reload: async function (categoryFilter, sort) {
       try {
         this.loading = true;
         this.error = false;
