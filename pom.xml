@@ -99,10 +99,6 @@
         </dependency>
         <dependency>
             <groupId>com.google.cloud</groupId>
-            <artifactId>google-cloud-logging</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.google.cloud</groupId>
             <artifactId>google-cloud-secretmanager</artifactId>
         </dependency>
         <dependency>
@@ -121,12 +117,6 @@
             <groupId>org.apache.lucene</groupId>
             <artifactId>lucene-queryparser</artifactId>
             <version>8.11.2</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.github.palindromicity</groupId>
-            <artifactId>simple-syslog</artifactId>
-            <version>1.0.0</version>
         </dependency>
 
         <dependency>

@@ -18,9 +18,6 @@ public class SecretConstants {
 
     public static String SRC_MOD_LIST_KEY = "";
 
-    public static String LOGGING_EXPECTED_AUTH_HEADER = "";
-
-
     public static String GAMES_BOT_CLIENT_ID = "";
     public static String GAMES_BOT_PUBLIC_KEY = "";
 
@@ -47,8 +44,6 @@ public class SecretConstants {
             CUSTOM_SLASH_COMMANDS_CLIENT_ID = secrets.getString("CUSTOM_SLASH_COMMANDS_CLIENT_ID");
             CUSTOM_SLASH_COMMANDS_CLIENT_SECRET = secrets.getString("CUSTOM_SLASH_COMMANDS_CLIENT_SECRET");
             CUSTOM_SLASH_COMMANDS_PUBLIC_KEY = secrets.getString("CUSTOM_SLASH_COMMANDS_PUBLIC_KEY");
-
-            LOGGING_EXPECTED_AUTH_HEADER = secrets.getString("LOGGING_EXPECTED_AUTH_HEADER");
 
             MATTERMOST_TOKEN_ABSENTS = secrets.getString("MATTERMOST_TOKEN_ABSENTS");
             MATTERMOST_TOKEN_CONSISTENCYCHECK = secrets.getString("MATTERMOST_TOKEN_CONSISTENCYCHECK");
