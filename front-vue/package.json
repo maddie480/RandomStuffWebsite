@@ -44,7 +44,7 @@
     "eslint-plugin-vue": "^9.4.0",
     "jest": "^27.1.0",
     "prettier": "^2.7.1",
-    "sass": "^1.54.5",
+    "sass": "^1.54.6",
     "sass-loader": "^13.0.2"
   },
   "overrides": {
