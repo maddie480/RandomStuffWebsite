@@ -1,13 +1,12 @@
 package com.max480.randomstuff.gae.discord.gamescommands;
 
 import com.max480.randomstuff.gae.SecretConstants;
-import com.max480.randomstuff.gae.discord.SodiumInstance;
+import com.max480.randomstuff.gae.discord.DiscordProtocolHandler;
 import com.max480.randomstuff.gae.discord.gamescommands.games.Connect4;
 import com.max480.randomstuff.gae.discord.gamescommands.games.Minesweeper;
 import com.max480.randomstuff.gae.discord.gamescommands.games.Reversi;
 import com.max480.randomstuff.gae.discord.gamescommands.games.TicTacToe;
 import com.max480.randomstuff.gae.discord.gamescommands.status.GameState;
-import org.apache.commons.io.IOUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPatch;
 import org.apache.http.entity.ContentType;
@@ -17,7 +16,6 @@ import org.apache.http.impl.client.HttpClients;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -25,7 +23,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -39,130 +36,102 @@ public class InteractionManager extends HttpServlet {
     private static final Logger logger = Logger.getLogger("InteractionManager");
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        // first, we want to check the Discord signature.
-        byte[] body = IOUtils.toByteArray(req.getInputStream());
-        String signature = req.getHeader("X-Signature-Ed25519");
-        String timestamp = req.getHeader("X-Signature-Timestamp");
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        JSONObject data = DiscordProtocolHandler.validateRequest(req, resp, SecretConstants.GAMES_BOT_PUBLIC_KEY);
+        if (data == null) return;
 
-        byte[] timestampBytes = timestamp == null ? new byte[0] : timestamp.getBytes(StandardCharsets.UTF_8);
-        byte[] signedStuff = new byte[timestampBytes.length + body.length];
-        System.arraycopy(timestampBytes, 0, signedStuff, 0, timestampBytes.length);
-        System.arraycopy(body, 0, signedStuff, timestampBytes.length, body.length);
+        if (data.getInt("type") == 2) {
+            // slash command
+            String gameName = data.getJSONObject("data").getString("name");
+            String selfId = getUserObject(data).getString("id");
+            String interactionToken = data.getString("token");
 
-        if (signature == null || timestamp == null ||
-                !SodiumInstance.sodium.cryptoSignVerifyDetached(
-                        hexStringToByteArray(signature),
-                        signedStuff, signedStuff.length,
-                        hexStringToByteArray(SecretConstants.GAMES_BOT_PUBLIC_KEY))) {
-
-            // signature bad!
-            logger.warning("Invalid or absent signature!");
-            resp.setStatus(401);
-        } else {
-            // we're good! we can go on.
-            // we know we're going to answer with JSON so slap the header now.
-            resp.setContentType("application/json");
-
-            JSONObject data = new JSONObject(new String(body, StandardCharsets.UTF_8));
-            logger.fine("Message contents: " + data.toString(2));
-            if (data.getInt("type") == 1) {
-                // ping => pong
-                logger.fine("Ping => Pong");
-                resp.getWriter().write("{\"type\": 1}");
-            } else if (data.getInt("type") == 2) {
-                // slash command
-                String gameName = data.getJSONObject("data").getString("name");
-                String selfId = getUserObject(data).getString("id");
-                String interactionToken = data.getString("token");
-
-                if (gameName.equals("minesweeper")) {
-                    // user wants to start a Minesweeper game, this needs special handling since it has a parameter.
-                    int bombCount = data.getJSONObject("data").getJSONArray("options").getJSONObject(0).getInt("value");
-                    if (bombCount <= 0 || bombCount > 81) {
-                        // generating no bomb, negative bombs or more bombs than there are spots to put bombs = trouble
-                        sendError(":x: Please specify a bomb count between 1 and 81!", resp);
-                    } else {
-                        // start a new game
-                        Minesweeper minesweeper = new Minesweeper(bombCount);
-                        Game newGame = new OnePlayerGame(minesweeper, Long.parseLong(selfId), resp,
-                                (thisGame, message, possibleActions, response) -> onAnswer(thisGame, message, possibleActions, interactionToken, response, true, false));
-                        newGame.startGame();
-                    }
+            if (gameName.equals("minesweeper")) {
+                // user wants to start a Minesweeper game, this needs special handling since it has a parameter.
+                int bombCount = data.getJSONObject("data").getJSONArray("options").getJSONObject(0).getInt("value");
+                if (bombCount <= 0 || bombCount > 81) {
+                    // generating no bomb, negative bombs or more bombs than there are spots to put bombs = trouble
+                    sendError(":x: Please specify a bomb count between 1 and 81!", resp);
                 } else {
-                    // 2-player game (for now Minesweeper is the only 1-player game)
-                    boolean isUserCommand = data.getJSONObject("data").getInt("type") == 2; // 1 = slash command, 2 = user command, 3 = message command
-                    boolean isAgainstBot = !data.getJSONObject("data").has("options") || data.getJSONObject("data").getJSONArray("options").isEmpty();
+                    // start a new game
+                    Minesweeper minesweeper = new Minesweeper(bombCount);
+                    Game newGame = new OnePlayerGame(minesweeper, Long.parseLong(selfId), resp,
+                            (thisGame, message, possibleActions, response) -> onAnswer(thisGame, message, possibleActions, interactionToken, response, true, false));
+                    newGame.startGame();
+                }
+            } else {
+                // 2-player game (for now Minesweeper is the only 1-player game)
+                boolean isUserCommand = data.getJSONObject("data").getInt("type") == 2; // 1 = slash command, 2 = user command, 3 = message command
+                boolean isAgainstBot = !data.getJSONObject("data").has("options") || data.getJSONObject("data").getJSONArray("options").isEmpty();
 
+                if (isUserCommand) {
+                    // for example turn "Play Connect 4" into "connect4".
+                    gameName = userCommandToSlashCommand(gameName);
+                }
+
+                if (!isUserCommand && isAgainstBot) {
+                    // player used a slash command with no parameter: they want to play against AI
+                    pickLevelAgainstBot(resp, gameName, selfId);
+                } else {
+                    // user pinged another user in the command, or used a user command.
+                    String userid;
                     if (isUserCommand) {
-                        // for example turn "Play Connect 4" into "connect4".
-                        gameName = userCommandToSlashCommand(gameName);
+                        // grab the user that was clicked on.
+                        userid = data.getJSONObject("data").getString("target_id");
+                    } else {
+                        // grab the option for the slash command.
+                        userid = data.getJSONObject("data").getJSONArray("options").getJSONObject(0).getString("value");
                     }
 
-                    if (!isUserCommand && isAgainstBot) {
-                        // player used a slash command with no parameter: they want to play against AI
+                    JSONObject resolvedUser = data.getJSONObject("data").getJSONObject("resolved").getJSONObject("users").getJSONObject(userid);
+                    if (userid.equals(SecretConstants.GAMES_BOT_CLIENT_ID)) {
+                        // the user picked Games Bot. :thinking: So they definitely want to play against CPU.
                         pickLevelAgainstBot(resp, gameName, selfId);
+                    } else if (resolvedUser.has("bot") && resolvedUser.getBoolean("bot")) {
+                        // the picked user... is a bot!
+                        sendError(":x: You cannot play against a bot other than Games Bot!\nTo play against CPU, "
+                                + (isUserCommand ? "use the slash command and " : "")
+                                + "do not mention anyone.", resp);
                     } else {
-                        // user pinged another user in the command, or used a user command.
-                        String userid;
-                        if (isUserCommand) {
-                            // grab the user that was clicked on.
-                            userid = data.getJSONObject("data").getString("target_id");
+                        if (userid.equals(selfId)) {
+                            // the user picked themselves, what?
+                            sendError(":x: You cannot play against yourself. :thinking:", resp);
                         } else {
-                            // grab the option for the slash command.
-                            userid = data.getJSONObject("data").getJSONArray("options").getJSONObject(0).getString("value");
-                        }
-
-                        JSONObject resolvedUser = data.getJSONObject("data").getJSONObject("resolved").getJSONObject("users").getJSONObject(userid);
-                        if (userid.equals(SecretConstants.GAMES_BOT_CLIENT_ID)) {
-                            // the user picked Games Bot. :thinking: So they definitely want to play against CPU.
-                            pickLevelAgainstBot(resp, gameName, selfId);
-                        } else if (resolvedUser.has("bot") && resolvedUser.getBoolean("bot")) {
-                            // the picked user... is a bot!
-                            sendError(":x: You cannot play against a bot other than Games Bot!\nTo play against CPU, "
-                                    + (isUserCommand ? "use the slash command and " : "")
-                                    + "do not mention anyone.", resp);
-                        } else {
-                            if (userid.equals(selfId)) {
-                                // the user picked themselves, what?
-                                sendError(":x: You cannot play against yourself. :thinking:", resp);
-                            } else {
-                                // start a game between two humans.
-                                onGameStartAgainstHuman(
-                                        gameName,
-                                        Long.parseLong(selfId),
-                                        Long.parseLong(userid),
-                                        interactionToken,
-                                        resp);
-                            }
+                            // start a game between two humans.
+                            onGameStartAgainstHuman(
+                                    gameName,
+                                    Long.parseLong(selfId),
+                                    Long.parseLong(userid),
+                                    interactionToken,
+                                    resp);
                         }
                     }
                 }
+            }
 
-            } else if (data.getInt("type") == 3) {
-                // clicked a button or used a combo box
-                String interactionToken = data.getString("token");
-                long selfId = Long.parseLong(getUserObject(data).getString("id"));
+        } else if (data.getInt("type") == 3) {
+            // clicked a button or used a combo box
+            String interactionToken = data.getString("token");
+            long selfId = Long.parseLong(getUserObject(data).getString("id"));
 
-                if (data.getJSONObject("data").getInt("component_type") == 3) {
-                    // this is a combo box! the only one we have is difficulty select.
-                    String[] dataCombo = data.getJSONObject("data").getString("custom_id").split("\\|");
-                    String game = dataCombo[0];
-                    long userId = Long.parseLong(dataCombo[1]);
+            if (data.getJSONObject("data").getInt("component_type") == 3) {
+                // this is a combo box! the only one we have is difficulty select.
+                String[] dataCombo = data.getJSONObject("data").getString("custom_id").split("\\|");
+                String game = dataCombo[0];
+                long userId = Long.parseLong(dataCombo[1]);
 
-                    if (selfId != userId) {
-                        // a user ran the slash command, and another tried to pick a difficulty!
-                        sendError(":x: You are not the one that asked to play! Use `/" + game + "` to start a game for yourself.", resp);
-                    } else {
-                        String valueSelected = data.getJSONObject("data").getJSONArray("values").getString(0);
-                        onGameStartAgainstCPU(game, selfId, Integer.parseInt(valueSelected), interactionToken, resp);
-                    }
-
-                } else if (data.getJSONObject("data").getInt("component_type") == 2) {
-                    // this is a button.
-                    String action = data.getJSONObject("data").getString("custom_id");
-                    onGameAction(action, selfId, interactionToken, resp);
+                if (selfId != userId) {
+                    // a user ran the slash command, and another tried to pick a difficulty!
+                    sendError(":x: You are not the one that asked to play! Use `/" + game + "` to start a game for yourself.", resp);
+                } else {
+                    String valueSelected = data.getJSONObject("data").getJSONArray("values").getString(0);
+                    onGameStartAgainstCPU(game, selfId, Integer.parseInt(valueSelected), interactionToken, resp);
                 }
+
+            } else if (data.getJSONObject("data").getInt("component_type") == 2) {
+                // this is a button.
+                String action = data.getJSONObject("data").getString("custom_id");
+                onGameAction(action, selfId, interactionToken, resp);
             }
         }
     }
@@ -195,22 +164,6 @@ public class InteractionManager extends HttpServlet {
             return data.getJSONObject("member").getJSONObject("user");
         }
         return data.getJSONObject("user");
-    }
-
-    /**
-     * Decodes a hex string ("28ba") to a byte array ([0x28, 0xBA]).
-     *
-     * @param string The string to decode
-     * @return The decoded string
-     */
-    private byte[] hexStringToByteArray(String string) {
-        byte[] bytes = new byte[string.length() / 2];
-        for (int i = 0; i < bytes.length; i++) {
-            String part = string.substring(i * 2, i * 2 + 2);
-            bytes[i] = (byte) Integer.parseInt(part, 16);
-        }
-
-        return bytes;
     }
 
     /**
@@ -535,14 +488,15 @@ public class InteractionManager extends HttpServlet {
                 logger.fine("Responding with: " + responseData.toString(2) + " to " + url);
 
                 // Apache HttpClient because PATCH does not exist according to HttpURLConnection
-                CloseableHttpClient httpClient = HttpClients.createDefault();
-                HttpPatch httpPatch = new HttpPatch(new URI(url));
-                httpPatch.setHeader("User-Agent", "DiscordBot (https://max480-random-stuff.appspot.com/discord-bots/#games-bot, 1.0)");
-                httpPatch.setEntity(new StringEntity(responseData.toString(), ContentType.APPLICATION_JSON));
-                CloseableHttpResponse httpResponse = httpClient.execute(httpPatch);
+                try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+                    HttpPatch httpPatch = new HttpPatch(new URI(url));
+                    httpPatch.setHeader("User-Agent", "DiscordBot (https://max480-random-stuff.appspot.com/discord-bots/#games-bot, 1.0)");
+                    httpPatch.setEntity(new StringEntity(responseData.toString(), ContentType.APPLICATION_JSON));
+                    CloseableHttpResponse httpResponse = httpClient.execute(httpPatch);
 
-                if (httpResponse.getStatusLine().getStatusCode() != 200) {
-                    logger.severe("Discord responded with " + httpResponse.getStatusLine().getStatusCode() + " to our edit request!");
+                    if (httpResponse.getStatusLine().getStatusCode() != 200) {
+                        logger.severe("Discord responded with " + httpResponse.getStatusLine().getStatusCode() + " to our edit request!");
+                    }
                 }
             }
         } catch (IOException | URISyntaxException e) {
