@@ -40,6 +40,8 @@ public class InteractionManager extends HttpServlet {
         JSONObject data = DiscordProtocolHandler.validateRequest(req, resp, SecretConstants.GAMES_BOT_PUBLIC_KEY);
         if (data == null) return;
 
+        String locale = data.getString("locale");
+
         if (data.getInt("type") == 2) {
             // slash command
             String gameName = data.getJSONObject("data").getString("name");
@@ -49,16 +51,10 @@ public class InteractionManager extends HttpServlet {
             if (gameName.equals("minesweeper")) {
                 // user wants to start a Minesweeper game, this needs special handling since it has a parameter.
                 int bombCount = data.getJSONObject("data").getJSONArray("options").getJSONObject(0).getInt("value");
-                if (bombCount <= 0 || bombCount > 81) {
-                    // generating no bomb, negative bombs or more bombs than there are spots to put bombs = trouble
-                    sendError(":x: Please specify a bomb count between 1 and 81!", resp);
-                } else {
-                    // start a new game
-                    Minesweeper minesweeper = new Minesweeper(bombCount);
-                    Game newGame = new OnePlayerGame(minesweeper, Long.parseLong(selfId), resp,
-                            (thisGame, message, possibleActions, response) -> onAnswer(thisGame, message, possibleActions, interactionToken, response, true, false));
-                    newGame.startGame();
-                }
+                Minesweeper minesweeper = new Minesweeper(bombCount);
+                Game newGame = new OnePlayerGame(minesweeper, Long.parseLong(selfId), resp,
+                        (thisGame, message, possibleActions, response) -> onAnswer(thisGame, message, possibleActions, interactionToken, response, true, false));
+                newGame.startGame();
             } else {
                 // 2-player game (for now Minesweeper is the only 1-player game)
                 boolean isUserCommand = data.getJSONObject("data").getInt("type") == 2; // 1 = slash command, 2 = user command, 3 = message command
@@ -89,13 +85,19 @@ public class InteractionManager extends HttpServlet {
                         pickLevelAgainstBot(resp, gameName, selfId);
                     } else if (resolvedUser.has("bot") && resolvedUser.getBoolean("bot")) {
                         // the picked user... is a bot!
-                        sendError(":x: You cannot play against a bot other than Games Bot!\nTo play against CPU, "
-                                + (isUserCommand ? "use the slash command and " : "")
-                                + "do not mention anyone.", resp);
+                        sendError(resp, localizeMessage(locale,
+                                ":x: You cannot play against a bot other than Games Bot!\nTo play against CPU, "
+                                        + (isUserCommand ? "use the slash command and " : "")
+                                        + "do not mention anyone.",
+                                ":x: Tu ne peux pas jouer contre un bot autre que Games Bot !\nPour jouer contre l'ordinateur, "
+                                        + (isUserCommand ? "utilise la commande slash et " : "")
+                                        + "ne mentionne personne."));
                     } else {
                         if (userid.equals(selfId)) {
                             // the user picked themselves, what?
-                            sendError(":x: You cannot play against yourself. :thinking:", resp);
+                            sendError(resp, localizeMessage(locale,
+                                    ":x: You cannot play against yourself. :thinking:",
+                                    ":x: Tu ne peux pas jouer contre toi-même. :thinking:"));
                         } else {
                             // start a game between two humans.
                             onGameStartAgainstHuman(
@@ -122,7 +124,9 @@ public class InteractionManager extends HttpServlet {
 
                 if (selfId != userId) {
                     // a user ran the slash command, and another tried to pick a difficulty!
-                    sendError(":x: You are not the one that asked to play! Use `/" + game + "` to start a game for yourself.", resp);
+                    sendError(resp, localizeMessage(locale,
+                            ":x: You are not the one that asked to play! Use `/" + game + "` to start a game for yourself.",
+                            ":x: Ce n'est pas toi qui as demandé de jouer ! Utilise les commandes slash pour commencer ta propre partie."));
                 } else {
                     String valueSelected = data.getJSONObject("data").getJSONArray("values").getString(0);
                     onGameStartAgainstCPU(game, selfId, Integer.parseInt(valueSelected), interactionToken, resp);
@@ -131,7 +135,7 @@ public class InteractionManager extends HttpServlet {
             } else if (data.getJSONObject("data").getInt("component_type") == 2) {
                 // this is a button.
                 String action = data.getJSONObject("data").getString("custom_id");
-                onGameAction(action, selfId, interactionToken, resp);
+                onGameAction(action, selfId, interactionToken, locale, resp);
             }
         }
     }
@@ -320,7 +324,7 @@ public class InteractionManager extends HttpServlet {
      * @param servletResponse  The stream to respond to Discord's request
      * @throws IOException In case an error occurs when communicating with Discord
      */
-    private void onGameAction(String action, Long callerId, String interactionToken, HttpServletResponse servletResponse) throws IOException {
+    private void onGameAction(String action, Long callerId, String interactionToken, String locale, HttpServletResponse servletResponse) throws IOException {
         // the form of the command is: [p or t][button action]|[serialized game state]
         String command = action.substring(1, action.indexOf("|"));
         if (action.startsWith("p")) {
@@ -330,7 +334,9 @@ public class InteractionManager extends HttpServlet {
                             onAnswer(thisGame, message, possibleActions, interactionToken, response, false, !command.isEmpty()));
 
             if (!Objects.equals(game.getCurrentTurnPlayer(), callerId)) {
-                sendError(":x: It's not your turn!", servletResponse);
+                sendError(servletResponse, localizeMessage(locale,
+                        ":x: It's not your turn!",
+                        ":x: Ce n'est pas ton tour !"));
             } else {
                 game.playerTurn(command);
             }
@@ -341,7 +347,9 @@ public class InteractionManager extends HttpServlet {
                             onAnswer(thisGame, message, possibleActions, interactionToken, response, false, false));
 
             if (!Objects.equals(game.getCurrentTurnPlayer(), callerId)) {
-                sendError(":x: It's not your turn!", servletResponse);
+                sendError(servletResponse, localizeMessage(locale,
+                        ":x: It's not your turn!",
+                        ":x: Ce n'est pas ton tour !"));
             } else {
                 game.applyCommand(command);
             }
@@ -355,7 +363,7 @@ public class InteractionManager extends HttpServlet {
      * @param responseStream The stream to respond to Discord's request
      * @throws IOException In case of communications error with Discord
      */
-    private void sendError(String errorMessage, HttpServletResponse responseStream) throws IOException {
+    private void sendError(HttpServletResponse responseStream, String errorMessage) throws IOException {
         JSONObject response = new JSONObject();
         response.put("type", 4); // response in channel
 
@@ -533,5 +541,13 @@ public class InteractionManager extends HttpServlet {
         }
 
         button.put("label", label);
+    }
+
+    private static String localizeMessage(String locale, String english, String french) {
+        if ("fr".equals(locale)) {
+            return french;
+        }
+
+        return english;
     }
 }

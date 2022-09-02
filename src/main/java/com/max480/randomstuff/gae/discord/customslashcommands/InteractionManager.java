@@ -41,16 +41,16 @@ public class InteractionManager extends HttpServlet {
         JSONObject data = DiscordProtocolHandler.validateRequest(req, resp, SecretConstants.CUSTOM_SLASH_COMMANDS_PUBLIC_KEY);
         if (data == null) return;
 
+        String locale = data.getString("locale");
+
         if (data.getInt("type") == 5) {
             // edit form submit
             String[] customIdCut = data.getJSONObject("data").getString("custom_id").split("\\|");
             long serverId = Long.parseLong(customIdCut[0]);
             String commandName = customIdCut[1];
 
-            editCommand(serverId, commandName, data.getJSONObject("data").getJSONArray("components"), data.getString("locale"), resp);
+            editCommand(serverId, commandName, data.getJSONObject("data").getJSONArray("components"), locale, resp);
         } else {
-            String locale = data.getString("locale");
-
             // slash command invocation
             try {
                 String commandName = data.getJSONObject("data").getString("name");
