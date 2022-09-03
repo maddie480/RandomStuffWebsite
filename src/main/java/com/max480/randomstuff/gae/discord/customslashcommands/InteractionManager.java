@@ -31,6 +31,7 @@ import static com.max480.randomstuff.gae.discord.customslashcommands.CustomSlash
 public class InteractionManager extends HttpServlet {
     private static final Logger logger = Logger.getLogger("InteractionManager");
     private static final Storage storage = StorageOptions.newBuilder().setProjectId("max480-random-stuff").build().getService();
+    public static final String COMMAND_NAME_REGEX = "[a-z0-9_-]{1,32}";
 
     @Override
     public void init() {
@@ -58,6 +59,10 @@ public class InteractionManager extends HttpServlet {
                 long serverId = Long.parseLong(interactionId);
                 addCommandWithForm(serverId, data.getJSONObject("data").getJSONArray("components"), locale, resp);
             }
+        } else if (data.getInt("type") == 4) {
+            // autocomplete
+            long serverId = Long.parseLong(data.getString("guild_id"));
+            commandAutocomplete(serverId, data, resp);
         } else {
             // slash command invocation
             try {
@@ -220,7 +225,7 @@ public class InteractionManager extends HttpServlet {
                         ":x: Tu ne peux pas appeler ta commande `addc`, `removec`, `editc` ou `clist` ! Ces noms sont déjà utilisés par les commandes d'administration.");
             }
 
-            if (!name.matches("[a-z0-9_-]{1,32}")) {
+            if (!name.matches(COMMAND_NAME_REGEX)) {
                 return localizeMessage(locale,
                         ":x: Slash command names can only contain lowercase letters, numbers, `_` or `-`.",
                         ":x: Les noms de commande slash ne peuvent contenir que des lettres minuscules, des chiffres, des `_` ou des `-`.");
@@ -246,10 +251,23 @@ public class InteractionManager extends HttpServlet {
                                 "Par exemple, tu peux utiliser le sélecteur de couleur de Google et copier la valeur \"HEX\" : <https://www.google.fr/search?q=color+picker>");
             }
 
-            if (answer == null && embedTitle == null && embedText == null && embedImage == null) {
+            boolean noEmbed = embedTitle == null && embedText == null && embedImage == null;
+            if (answer == null && noEmbed) {
                 return localizeMessage(locale,
                         ":x: Please specify what the slash command should answer!\nEither provide some text, or content to put in the embed.",
                         ":x: Tu dois préciser ce que la commande slash doit répondre !\nFournis du texte ou des informations pour construire une intégration.");
+            }
+
+            if (embedThumbnail != null && noEmbed) {
+                return localizeMessage(locale,
+                        ":x: You must not define an embed thumbnail alone! Use `embed_image` instead.",
+                        ":x: Tu ne peux pas utiliser seulement une miniature dans ton intégration ! Utilise `embed_image` à la place.");
+            }
+
+            if (embedColor != null && noEmbed) {
+                return localizeMessage(locale,
+                        ":x: You cannot have an embed color without having an embed!",
+                        ":x: Tu ne peux pas définir une couleur d'intégration sans avoir d'intégration !");
             }
 
             return null;
@@ -326,15 +344,7 @@ public class InteractionManager extends HttpServlet {
      * Handles listing the slash commands for a server.
      */
     private void listCommands(long serverId, String locale, HttpServletResponse resp) throws IOException {
-        String prefix = "custom_slash_commands/" + serverId + "/";
-
-        Set<String> commands = new TreeSet<>();
-        Page<Blob> blobs = storage.list("max480-random-stuff.appspot.com", Storage.BlobListOption.prefix(prefix));
-        for (Blob blob : blobs.iterateAll()) {
-            String commandName = blob.getName();
-            commandName = commandName.substring(prefix.length(), commandName.lastIndexOf("."));
-            commands.add(commandName);
-        }
+        Set<String> commands = listCommandsOnServer(serverId);
 
         if (commands.isEmpty()) {
             respond(resp, localizeMessage(locale,
@@ -349,6 +359,58 @@ public class InteractionManager extends HttpServlet {
             }
             respond(resp, message);
         }
+    }
+
+    private static Set<String> listCommandsOnServer(long serverId) {
+        String prefix = "custom_slash_commands/" + serverId + "/";
+
+        Set<String> commands = new TreeSet<>();
+        Page<Blob> blobs = storage.list("max480-random-stuff.appspot.com", Storage.BlobListOption.prefix(prefix));
+        for (Blob blob : blobs.iterateAll()) {
+            String commandName = blob.getName();
+            commandName = commandName.substring(prefix.length(), commandName.lastIndexOf("."));
+            commands.add(commandName);
+        }
+        return commands;
+    }
+
+    private void commandAutocomplete(long serverId, JSONObject interaction, HttpServletResponse resp) throws IOException {
+        String partialCommandName = null;
+        for (Object o : interaction.getJSONObject("data").getJSONArray("options")) {
+            JSONObject option = (JSONObject) o;
+            if ("name".equals(option.getString("name"))) {
+                partialCommandName = option.getString("value");
+            }
+        }
+
+        JSONObject response = new JSONObject();
+        response.put("type", 8); // autocomplete result
+
+        JSONObject responseData = new JSONObject();
+        JSONArray choices = new JSONArray();
+
+        // if the command name isn't valid, no need to bother checking if it exists.
+        if (partialCommandName.isEmpty() || partialCommandName.matches(COMMAND_NAME_REGEX)) {
+            final String prefix = partialCommandName;
+
+            listCommandsOnServer(serverId).stream()
+                    .filter(l -> l.startsWith(prefix))
+                    .sorted()
+                    .limit(25)
+                    .map(name -> {
+                        JSONObject choice = new JSONObject();
+                        choice.put("name", name);
+                        choice.put("value", name);
+                        return choice;
+                    })
+                    .forEach(choices::put);
+        }
+
+        responseData.put("choices", choices);
+        response.put("data", responseData);
+
+        logger.fine("Responding with: " + response.toString(2));
+        resp.getWriter().write(response.toString());
     }
 
     /**
@@ -442,9 +504,11 @@ public class InteractionManager extends HttpServlet {
             componentData.put(getComponentDataForTextInput("embed_thumbnail", localizeMessage(locale, "Embed thumbnail", "Miniature de l'intégration"), info.embedThumbnail, 2000, false, false));
             componentData.put(getComponentDataForTextInput("embed_color", localizeMessage(locale, "Embed color", "Couleur de l'intégration"), info.embedColor, 7, false, false));
         } else {
+            boolean answerMandatory = (info.embedImage == null && info.embedText == null && info.embedTitle == null);
+
             componentData.put(getComponentDataForTextInput("name", localizeMessage(locale, "Name", "Nom"), info.name, 32, true, false));
             componentData.put(getComponentDataForTextInput("description", localizeMessage(locale, "Description", "Description"), info.description, 100, true, false));
-            componentData.put(getComponentDataForTextInput("answer", localizeMessage(locale, "Answer", "Réponse"), info.answer, 2000, false, true));
+            componentData.put(getComponentDataForTextInput("answer", localizeMessage(locale, "Answer", "Réponse"), info.answer, 2000, answerMandatory, true));
             componentData.put(getComponentDataForTextInput("is_public_string",
                     localizeMessage(locale, "Response is public (true or false)", "Réponse publique (true = oui, false = non)"),
                     fillIsPublic ? (info.isPublic ? "true" : "false") : "", 5, true, false));
