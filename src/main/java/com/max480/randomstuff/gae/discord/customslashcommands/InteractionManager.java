@@ -450,19 +450,14 @@ public class InteractionManager extends HttpServlet {
     private void createCustomSlashCommandFromMessage(long serverId, JSONObject interactionData, String locale, HttpServletResponse resp) throws IOException {
         JSONObject messageData = interactionData.getJSONObject("resolved").getJSONObject("messages").getJSONObject(interactionData.getString("target_id"));
 
-        if (!messageData.getJSONArray("embeds").isEmpty()) {
-            respond(resp, localizeMessage(locale,
-                    ":x: Turning messages with embeds into custom slash commands is not supported.\nYou can do it yourself with the `/addc` command though!",
-                    ":x: Il est impossible de transformer automatiquement des messages contenant des intégrations en commandes slash personnalisées.\n" +
-                            "Mais tu peux le faire toi-même avec la commande `/addc` !"));
-        } else if (!messageData.getJSONArray("attachments").isEmpty()) {
+        if (!messageData.getJSONArray("attachments").isEmpty()) {
             respond(resp, localizeMessage(locale,
                     ":x: Custom slash command responses cannot contain attachments!\n" +
                             "You can upload them somewhere and link to them instead.\n" +
-                            "If you want to include an image and text without the image link being visible, consider using an embed!",
+                            "If you want to include an image and text without the image link being visible, you can add a command with an embed image using </addc:992450514929332264>!",
                     ":x: Les réponses aux commandes slash personnalisées ne peuvent pas contenir de pièces jointes !\n" +
                             "Tu peux les envoyer quelque part puis utiliser un lien à la place.\n" +
-                            "Si tu veux inclure une image et du texte sans que le lien de l'image soit visible, tu peux utiliser une intégration !"));
+                            "Si tu veux inclure une image et du texte sans que le lien de l'image soit visible, tu peux ajouter une commande avec une image intégrée en utilisant </addc:992450514929332264> !"));
         } else if (messageData.getString("content").isEmpty()) {
             respond(resp, localizeMessage(locale,
                     ":x: This message has no text!",
