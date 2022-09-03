@@ -20,7 +20,6 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Function;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static com.max480.randomstuff.gae.discord.customslashcommands.CustomSlashCommandsManager.MaximumCommandsReachedException;
@@ -248,9 +247,9 @@ public class InteractionManager extends HttpServlet {
             if (embedColor != null && !embedColor.matches("^[0-9A-F]{6}$")) {
                 return localizeMessage(locale,
                         ":x: The embed color must be a hex code (for instance `FF0000` for red)!\n" +
-                                "You can use Google's color picker and copy the \"HEX\" field for example: <https://www.google.com/search?q=color+picker>",
+                                "To figure out this code, you can use [Google's color picker](https://www.google.com/search?q=color+picker) and copy the \"HEX\" field for example.",
                         ":x: La couleur de l'intégration doit être un code héxadécimal (par exemple `FF0000` pour du rouge) !\n" +
-                                "Par exemple, tu peux utiliser le sélecteur de couleur de Google et copier la valeur \"HEX\" : <https://www.google.fr/search?q=color+picker>");
+                                "Pour déterminer ce code, tu peux utiliser [le sélecteur de couleur de Google](https://www.google.fr/search?q=color+picker) et copier la valeur \"HEX\" par exemple.");
             }
 
             boolean noEmbed = embedTitle == null && embedText == null && embedImage == null;
