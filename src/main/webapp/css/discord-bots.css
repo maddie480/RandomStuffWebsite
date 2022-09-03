@@ -87,3 +87,13 @@ img {
 .btn-primary {
     margin-right: 12px;
 }
+
+.framed img {
+    border: solid lightgray 2px;
+}
+
+@media(prefers-color-scheme: dark) {
+    .framed img {
+        border: solid #555 2px;
+    }
+}

@@ -74,6 +74,11 @@
         Check <a href="/discord-bots/terms-and-privacy.html">this page</a> for Terms of Service and more information about collected data.
     </div>
 
+    <div>
+        All bot command descriptions and private responses are available <b>in English and French</b>.
+        The language will be picked automatically depending on your Discord settings.
+    </div>
+
     <div class="alert alert-info">
         If you need support on those bots or want to try them out, you can <a href="https://discord.gg/59ztc8QZQ7">join the bot testing server</a>!
     </div>
@@ -275,21 +280,21 @@
     </p>
 
     <p>
-        A bot that allows you to play several 1- or 2-player games using slash commands and Discord interactions.
+        This bot allows you to play several 1- or 2-player games using slash commands and Discord interactions.
         You can play the 2-player games against a friend by pinging them in the command, or against the CPU.
     </p>
 
     <div class="row">
         <div class="col-md-6 col-xs-12">
             <p>
-                <b class="gametitle">Connect 4:</b>
+                <b class="gametitle">Connect 4 (<code>/puissance4</code> in French):</b>
                 <span class="lighttheme"><img src="/img/games_connect4_light.png"></span>
                 <span class="darktheme"><img src="/img/games_connect4_dark.png"></span>
             </p>
         </div>
         <div class="col-md-6 col-xs-12">
             <p>
-                <b class="gametitle">Minesweeper:</b>
+                <b class="gametitle">Minesweeper (<code>/d&eacute;mineur</code> in French):</b>
                 <span class="lighttheme"><img src="/img/games_minesweeper_light.png"></span>
                 <span class="darktheme"><img src="/img/games_minesweeper_dark.png"></span>
             </p>
@@ -303,7 +308,7 @@
         </div>
         <div class="col-md-6 col-xs-12">
             <p>
-                <b class="gametitle">Tic-Tac-Toe:</b>
+                <b class="gametitle">Tic-Tac-Toe (<code>/morpion</code> in French):</b>
                 <span class="lighttheme"><img src="/img/games_tictactoe_light.png"></span>
                 <span class="darktheme"><img src="/img/games_tictactoe_dark.png"></span>
             </p>
@@ -348,7 +353,7 @@
     </p>
 
     <p>
-        To set it up, use the <code>/addc</code> command:
+        To set it up, <b>use the <code>/addc</code> command</b>:
     </p>
 
     <p>
@@ -361,7 +366,7 @@
     </p>
 
     <p>
-        Then, anyone on the server can see and use the command:
+        Then, <b>anyone on the server can see and use the command</b>:
     </p>
 
     <div class="row">
@@ -376,9 +381,34 @@
     </div>
 
     <p>
-        You can then edit this command with <code>/editc</code>, remove it with <code>/removec</code>,
+        Alternatively, you can <b>write up a message and turn it into a custom slash command</b> by right-clicking on it:
+    </p>
+
+    <p>
+        <span class="lighttheme framed"><img src="/img/message_command_light.png"></span>
+        <span class="darktheme framed"><img src="/img/message_command_dark.png"></span>
+    </p>
+
+    <p>
+        Once created, you can edit commands with <code>/editc</code>, remove them with <code>/removec</code>,
         and list all defined commands with <code>/clist</code>.
     </p>
+
+    <p>
+        You can also set up custom slash commands that respond with <b>Discord embeds</b>:
+    </p>
+
+    <div class="row">
+        <div class="col-md-6 col-xs-12 mb-4">
+            <span class="lighttheme"><img src="/img/embed_setup_light.png"></span>
+            <span class="darktheme"><img src="/img/embed_setup_dark.png"></span>
+        </div>
+        <div class="col-md-6 col-xs-12 mb-4">
+            <b class="gametitle">Result:</b>
+            <span class="lighttheme"><img src="/img/embed_result_light.png"></span>
+            <span class="darktheme"><img src="/img/embed_result_dark.png"></span>
+        </div>
+    </div>
 
     <div>
         <b>Hints:</b>
