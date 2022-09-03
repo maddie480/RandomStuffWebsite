@@ -14,6 +14,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Base64;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -102,6 +103,14 @@ public class CustomSlashCommandsManager {
             String response = IOUtils.toString(is, StandardCharsets.UTF_8);
             JSONObject o = new JSONObject(response);
             return o.getString("description");
+        }
+    }
+
+    public static void warmupAuthentication() {
+        try {
+            authenticate();
+        } catch (IOException e) {
+            logger.log(Level.WARNING, "Discord authentication warmup failed! " + e);
         }
     }
 

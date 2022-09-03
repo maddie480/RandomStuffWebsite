@@ -20,6 +20,7 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Function;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static com.max480.randomstuff.gae.discord.customslashcommands.CustomSlashCommandsManager.MaximumCommandsReachedException;
@@ -36,6 +37,7 @@ public class InteractionManager extends HttpServlet {
     @Override
     public void init() {
         DiscordProtocolHandler.warmup();
+        CustomSlashCommandsManager.warmupAuthentication();
     }
 
     @Override
