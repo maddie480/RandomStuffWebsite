@@ -45,12 +45,19 @@ public class InteractionManager extends HttpServlet {
         String locale = data.getString("locale");
 
         if (data.getInt("type") == 5) {
-            // edit form submit
-            String[] customIdCut = data.getJSONObject("data").getString("custom_id").split("\\|");
-            long serverId = Long.parseLong(customIdCut[0]);
-            String commandName = customIdCut[1];
+            String interactionId = data.getJSONObject("data").getString("custom_id");
+            if (interactionId.contains("|")) {
+                // edit form submit
+                String[] customIdCut = interactionId.split("\\|");
+                long serverId = Long.parseLong(customIdCut[0]);
+                String commandName = customIdCut[1];
 
-            editCommand(serverId, commandName, data.getJSONObject("data").getJSONArray("components"), locale, resp);
+                editCommand(serverId, commandName, data.getJSONObject("data").getJSONArray("components"), locale, resp);
+            } else {
+                // create form submit
+                long serverId = Long.parseLong(interactionId);
+                addCommandWithForm(serverId, data.getJSONObject("data").getJSONArray("components"), locale, resp);
+            }
         } else {
             // slash command invocation
             try {
@@ -60,7 +67,7 @@ public class InteractionManager extends HttpServlet {
                 switch (commandName) {
                     case "addc":
                         // admin command: add a command to the server
-                        addCommand(serverId, data.getJSONObject("data").getJSONArray("options"), locale, resp);
+                        addCommandWithSlash(serverId, data.getJSONObject("data").getJSONArray("options"), locale, resp);
                         break;
 
                     case "removec":
@@ -76,6 +83,11 @@ public class InteractionManager extends HttpServlet {
                     case "clist":
                         // admin command: show the modal allowing to edit a command
                         listCommands(serverId, locale, resp);
+                        break;
+
+                    case "Turn into Custom Slash Command":
+                        // message command: create a custom slash command from a message
+                        createCustomSlashCommandFromMessage(serverId, data.getJSONObject("data"), locale, resp);
                         break;
 
                     default:
@@ -145,7 +157,7 @@ public class InteractionManager extends HttpServlet {
                         info.isPublic = itemObject.getBoolean("value");
                         break;
                     case "is_public_string":
-                        info.isPublic = Boolean.parseBoolean(itemObject.getString("value"));
+                        info.isPublic = Boolean.parseBoolean(itemObject.getString("value").toLowerCase(Locale.ROOT));
                         break;
                     case "embed_thumbnail":
                         info.embedThumbnail = itemObject.getString("value");
@@ -249,15 +261,33 @@ public class InteractionManager extends HttpServlet {
     }
 
     /**
-     * Handles adding a command to a server, based on the raw options values.
+     * Handles adding a command to a server, using the /addc command.
      */
-    private void addCommand(long serverId, JSONArray options, String locale, HttpServletResponse resp) throws IOException {
+    private void addCommandWithSlash(long serverId, JSONArray options, String locale, HttpServletResponse resp) throws IOException {
         // this is a slash command: each option simply has a name and a value.
         CustomSlashCommandInfo info = CustomSlashCommandInfo.buildFromInteraction(serverId, options, o -> o, "name");
 
         if (info.answer != null) info.answer = info.answer.replace("\\n", "\n");
         if (info.embedText != null) info.embedText = info.embedText.replace("\\n", "\n");
 
+        createCommandFromInfo(serverId, locale, resp, info);
+    }
+
+    /**
+     * Handles adding a command to a server, using the "create command" form.
+     */
+    private void addCommandWithForm(long serverId, JSONArray options, String locale, HttpServletResponse resp) throws IOException {
+        // this is a modal: each of the options is in a text input on an action row
+        CustomSlashCommandInfo info = CustomSlashCommandInfo.buildFromInteraction(serverId, options,
+                o -> o.getJSONArray("components").getJSONObject(0), "custom_id");
+
+        createCommandFromInfo(serverId, locale, resp, info);
+    }
+
+    /**
+     * Creates a command from information coming from an interaction.
+     */
+    private void createCommandFromInfo(long serverId, String locale, HttpServletResponse resp, CustomSlashCommandInfo info) throws IOException {
         if (info.getValidationError(locale) != null) {
             respond(resp, info.getValidationError(locale));
         } else {
@@ -346,38 +376,85 @@ public class InteractionManager extends HttpServlet {
             CustomSlashCommandInfo info = CustomSlashCommandInfo.buildFromCloudStorage(serverId, name, !isEmbed);
 
             // build the response
-            JSONObject response = new JSONObject();
-            response.put("type", 9); // modal
-
-            JSONObject responseData = new JSONObject();
-            responseData.put("custom_id", serverId + "|" + name);
-            responseData.put("title", localizeMessage(locale, "Edit – /" + name, "Modifier – /" + name));
-
-            JSONArray componentData = new JSONArray();
-
-            if (isEmbed) {
-                componentData.put(getComponentDataForTextInput("embed_title", localizeMessage(locale, "Embed title", "Titre de l'intégration"), info.embedTitle, 256, false, false));
-                componentData.put(getComponentDataForTextInput("embed_text", localizeMessage(locale, "Embed text", "Texte de l'intégration"), info.embedText, 4000, false, true));
-                componentData.put(getComponentDataForTextInput("embed_image", localizeMessage(locale, "Embed image", "Image de l'intégration"), info.embedImage, 2000, false, false));
-                componentData.put(getComponentDataForTextInput("embed_thumbnail", localizeMessage(locale, "Embed thumbnail", "Miniature de l'intégration"), info.embedThumbnail, 2000, false, false));
-                componentData.put(getComponentDataForTextInput("embed_color", localizeMessage(locale, "Embed color", "Couleur de l'intégration"), info.embedColor, 7, false, false));
-            } else {
-                componentData.put(getComponentDataForTextInput("name", localizeMessage(locale, "Name", "Nom"), info.name, 32, true, false));
-                componentData.put(getComponentDataForTextInput("description", localizeMessage(locale, "Description", "Description"), info.description, 100, true, false));
-                componentData.put(getComponentDataForTextInput("answer", localizeMessage(locale, "Answer", "Réponse"), info.answer, 2000, false, true));
-                componentData.put(getComponentDataForTextInput("is_public_string",
-                        localizeMessage(locale, "Response is public (true or false)", "Réponse publique (true = oui, false = non)"),
-                        info.isPublic ? "true" : "false", 5, true, false));
-            }
-
-            responseData.put("components", componentData);
-
-            response.put("data", responseData);
-            logger.fine("Responding with: " + response.toString(2));
-            resp.getWriter().write(response.toString());
+            sendEditOrCreateForm(serverId, locale, resp, name, isEmbed, info, true);
         } catch (StorageException e) {
             handleStorageException(locale, resp, e);
         }
+    }
+
+    /**
+     * Initiates the creation of a new custom slash command from a message.
+     */
+    private void createCustomSlashCommandFromMessage(long serverId, JSONObject interactionData, String locale, HttpServletResponse resp) throws IOException {
+        JSONObject messageData = interactionData.getJSONObject("resolved").getJSONObject("messages").getJSONObject(interactionData.getString("target_id"));
+
+        if (!messageData.getJSONArray("embeds").isEmpty()) {
+            respond(resp, localizeMessage(locale,
+                    ":x: Turning messages with embeds into custom slash commands is not supported.\nYou can do it yourself with the `/addc` command though!",
+                    ":x: Il est impossible de transformer automatiquement des messages contenant des intégrations en commandes slash personnalisées.\n" +
+                            "Mais tu peux le faire toi-même avec la commande `/addc` !"));
+        } else if (!messageData.getJSONArray("attachments").isEmpty()) {
+            respond(resp, localizeMessage(locale,
+                    ":x: Custom slash command responses cannot contain attachments!\n" +
+                            "You can upload them somewhere and link to them instead.\n" +
+                            "If you want to include an image and text without the image link being visible, consider using an embed!",
+                    ":x: Les réponses aux commandes slash personnalisées ne peuvent pas contenir de pièces jointes !\n" +
+                            "Tu peux les envoyer quelque part puis utiliser un lien à la place.\n" +
+                            "Si tu veux inclure une image et du texte sans que le lien de l'image soit visible, tu peux utiliser une intégration !"));
+        } else if (messageData.getString("content").isEmpty()) {
+            respond(resp, localizeMessage(locale,
+                    ":x: This message has no text!",
+                    ":x: Ce message n'a pas de texte !"));
+        } else if (messageData.getString("content").length() > 2000) {
+            respond(resp, localizeMessage(locale,
+                    ":x: This message is too long! Slash command responses cannot exceed 2000 characters.",
+                    ":x: Ce message est trop long ! Les réponses aux commandes slash ne peuvent pas dépasser 2000 caractères."));
+        } else {
+            CustomSlashCommandInfo partialInfo = new CustomSlashCommandInfo();
+            partialInfo.answer = messageData.getString("content");
+            sendEditOrCreateForm(serverId, locale, resp, null, false, partialInfo, false);
+        }
+    }
+
+    /**
+     * Displays the form allowing to edit or create a new command.
+     */
+    private static void sendEditOrCreateForm(long serverId, String locale, HttpServletResponse resp, String name, boolean isEmbed, CustomSlashCommandInfo info, boolean fillIsPublic) throws IOException {
+        JSONObject response = new JSONObject();
+        response.put("type", 9); // modal
+
+        JSONObject responseData = new JSONObject();
+
+        if (name == null) {
+            responseData.put("custom_id", serverId);
+            responseData.put("title", localizeMessage(locale, "New command", "Nouvelle commande"));
+        } else {
+            responseData.put("custom_id", serverId + "|" + name);
+            responseData.put("title", localizeMessage(locale, "Edit – /" + name, "Modifier – /" + name));
+        }
+
+        JSONArray componentData = new JSONArray();
+
+        if (isEmbed) {
+            componentData.put(getComponentDataForTextInput("embed_title", localizeMessage(locale, "Embed title", "Titre de l'intégration"), info.embedTitle, 256, false, false));
+            componentData.put(getComponentDataForTextInput("embed_text", localizeMessage(locale, "Embed text", "Texte de l'intégration"), info.embedText, 4000, false, true));
+            componentData.put(getComponentDataForTextInput("embed_image", localizeMessage(locale, "Embed image", "Image de l'intégration"), info.embedImage, 2000, false, false));
+            componentData.put(getComponentDataForTextInput("embed_thumbnail", localizeMessage(locale, "Embed thumbnail", "Miniature de l'intégration"), info.embedThumbnail, 2000, false, false));
+            componentData.put(getComponentDataForTextInput("embed_color", localizeMessage(locale, "Embed color", "Couleur de l'intégration"), info.embedColor, 7, false, false));
+        } else {
+            componentData.put(getComponentDataForTextInput("name", localizeMessage(locale, "Name", "Nom"), info.name, 32, true, false));
+            componentData.put(getComponentDataForTextInput("description", localizeMessage(locale, "Description", "Description"), info.description, 100, true, false));
+            componentData.put(getComponentDataForTextInput("answer", localizeMessage(locale, "Answer", "Réponse"), info.answer, 2000, false, true));
+            componentData.put(getComponentDataForTextInput("is_public_string",
+                    localizeMessage(locale, "Response is public (true or false)", "Réponse publique (true = oui, false = non)"),
+                    fillIsPublic ? (info.isPublic ? "true" : "false") : "", 5, true, false));
+        }
+
+        responseData.put("components", componentData);
+
+        response.put("data", responseData);
+        logger.fine("Responding with: " + response.toString(2));
+        resp.getWriter().write(response.toString());
     }
 
     /**
