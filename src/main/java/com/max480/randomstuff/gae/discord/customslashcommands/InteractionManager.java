@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Function;
@@ -69,7 +70,7 @@ public class InteractionManager extends HttpServlet {
 
                     case "editc":
                         // admin command: show the modal allowing to edit a command
-                        sendEditCommandForm(serverId, data.getJSONObject("data").getJSONArray("options").getJSONObject(0).getString("value"), locale, resp);
+                        sendEditCommandForm(serverId, data.getJSONObject("data").getJSONArray("options"), locale, resp);
                         break;
 
                     case "clist":
@@ -85,9 +86,9 @@ public class InteractionManager extends HttpServlet {
             } catch (Exception e) {
                 e.printStackTrace();
                 logger.severe("An unexpected error occurred: " + e);
-                respond(resp, true, localizeMessage(locale,
+                respond(resp, localizeMessage(locale,
                         ":x: An unexpected error occurred. Reach out at <https://discord.gg/59ztc8QZQ7> if this keeps happening!",
-                        ":x: Une erreur inattendue est survenue. Signale-le sur <https://discord.gg/59ztc8QZQ7> si ça continue à arriver !"));
+                        ":x: Une erreur inattendue est survenue. Signale-la sur <https://discord.gg/59ztc8QZQ7> si ça continue à arriver !"));
             }
         }
     }
@@ -96,9 +97,18 @@ public class InteractionManager extends HttpServlet {
      * Represents slash command info that was parsed from the add or edit commands.
      */
     private static class CustomSlashCommandInfo {
+        public Long id = null;
+        public long serverId = -1;
+
         public String name = null;
         public String description = null;
+
         public String answer = null;
+        public String embedThumbnail = null;
+        public String embedTitle = null;
+        public String embedText = null;
+        public String embedImage = null;
+        public String embedColor = null;
         public boolean isPublic = false;
 
         /**
@@ -108,11 +118,18 @@ public class InteractionManager extends HttpServlet {
          * @param optionExtractor The method to get an option from a list item
          * @param fieldName       The name of the field holding the ID in a list item
          */
-        public static CustomSlashCommandInfo buildFromInteraction(JSONArray options, Function<JSONObject, JSONObject> optionExtractor, String fieldName) {
+        public static CustomSlashCommandInfo buildFromInteraction(long serverId, JSONArray options, Function<JSONObject, JSONObject> optionExtractor, String fieldName) {
             CustomSlashCommandInfo info = new CustomSlashCommandInfo();
+
+            info.serverId = serverId;
 
             for (Object item : options) {
                 JSONObject itemObject = optionExtractor.apply((JSONObject) item);
+
+                // consider that empty fields do not exist at all.
+                if (itemObject.get("value") instanceof String && itemObject.getString("value").isEmpty()) {
+                    continue;
+                }
 
                 switch (itemObject.getString(fieldName)) {
                     case "name":
@@ -130,10 +147,58 @@ public class InteractionManager extends HttpServlet {
                     case "is_public_string":
                         info.isPublic = Boolean.parseBoolean(itemObject.getString("value"));
                         break;
+                    case "embed_thumbnail":
+                        info.embedThumbnail = itemObject.getString("value");
+                        break;
+                    case "embed_title":
+                        info.embedTitle = itemObject.getString("value");
+                        break;
+                    case "embed_text":
+                        info.embedText = itemObject.getString("value");
+                        break;
+                    case "embed_image":
+                        info.embedImage = itemObject.getString("value");
+                        break;
+                    case "embed_color":
+                        // we accept uppercase and lowercase hex, with or without #, but we standardize it to only keep uppercase without #.
+                        info.embedColor = itemObject.getString("value").toUpperCase(Locale.ROOT);
+                        if (info.embedColor.startsWith("#")) {
+                            info.embedColor = info.embedColor.substring(1);
+                        }
+                        break;
                 }
             }
 
             return info;
+        }
+
+        /**
+         * Reads custom slash command info from Google Cloud Storage.
+         */
+        public static CustomSlashCommandInfo buildFromCloudStorage(long serverId, String commandName, boolean fetchDescription) throws IOException {
+            CustomSlashCommandInfo info = new CustomSlashCommandInfo();
+
+            info.serverId = serverId;
+            info.name = commandName;
+
+            try (InputStream is = CloudStorageUtils.getCloudStorageInputStream(info.getCloudStoragePath())) {
+                JSONObject commandInfo = new JSONObject(IOUtils.toString(is, StandardCharsets.UTF_8));
+                info.id = commandInfo.getLong("id");
+                info.isPublic = commandInfo.getBoolean("isPublic");
+
+                if (fetchDescription) {
+                    info.description = CustomSlashCommandsManager.getSlashCommandDescription(serverId, info.id);
+                }
+
+                if (commandInfo.has("answer")) info.answer = commandInfo.getString("answer");
+                if (commandInfo.has("embedThumbnail")) info.embedThumbnail = commandInfo.getString("embedThumbnail");
+                if (commandInfo.has("embedText")) info.embedText = commandInfo.getString("embedText");
+                if (commandInfo.has("embedTitle")) info.embedTitle = commandInfo.getString("embedTitle");
+                if (commandInfo.has("embedImage")) info.embedImage = commandInfo.getString("embedImage");
+                if (commandInfo.has("embedColor")) info.embedColor = commandInfo.getString("embedColor");
+
+                return info;
+            }
         }
 
         public String getValidationError(String locale) {
@@ -141,13 +206,45 @@ public class InteractionManager extends HttpServlet {
                 return localizeMessage(locale,
                         ":x: You cannot name a command `addc`, `removec`, `editc` or `clist`! This would conflict with the built-in commands.",
                         ":x: Tu ne peux pas appeler ta commande `addc`, `removec`, `editc` ou `clist` ! Ces noms sont déjà utilisés par les commandes d'administration.");
-            } else if (!name.matches("[a-z0-9_-]{1,32}")) {
+            }
+
+            if (!name.matches("[a-z0-9_-]{1,32}")) {
                 return localizeMessage(locale,
                         ":x: Slash command names can only contain lowercase letters, numbers, `_` or `-`.",
-                        ":x: Les noms de commande slash ne peuvent contenir que des lettres minuscules, des chiffres, des `_` ou des `- .");
+                        ":x: Les noms de commande slash ne peuvent contenir que des lettres minuscules, des chiffres, des `_` ou des `-`.");
+            }
+
+            if (embedThumbnail != null && !embedThumbnail.matches("^https?://.*$")) {
+                return localizeMessage(locale,
+                        ":x: The embed thumbnail must be a link to an image!",
+                        ":x: La miniature de l'intégration doit être un lien vers une image !");
+            }
+
+            if (embedImage != null && !embedImage.matches("^https?://.*$")) {
+                return localizeMessage(locale,
+                        ":x: The embed image must be a link to an image!",
+                        ":x: L'image de l'intégration doit être un lien vers une image !");
+            }
+
+            if (embedColor != null && !embedColor.matches("^[0-9A-F]{6}$")) {
+                return localizeMessage(locale,
+                        ":x: The embed color must be a hex code (for instance `FF0000` for red)!\n" +
+                                "You can use Google's color picker and copy the \"HEX\" field for example: <https://www.google.com/search?q=color+picker>",
+                        ":x: La couleur de l'intégration doit être un code héxadécimal (par exemple `FF0000` pour du rouge) !\n" +
+                                "Par exemple, tu peux utiliser le sélecteur de couleur de Google et copier la valeur \"HEX\" : <https://www.google.fr/search?q=color+picker>");
+            }
+
+            if (answer == null && embedTitle == null && embedText == null && embedImage == null) {
+                return localizeMessage(locale,
+                        ":x: Please specify what the slash command should answer!\nEither provide some text, or content to put in the embed.",
+                        ":x: Tu dois préciser ce que la commande slash doit répondre !\nFournis du texte ou des informations pour construire une intégration.");
             }
 
             return null;
+        }
+
+        public String getCloudStoragePath() {
+            return "custom_slash_commands/" + serverId + "/" + name + ".json";
         }
     }
 
@@ -156,21 +253,22 @@ public class InteractionManager extends HttpServlet {
      */
     private void addCommand(long serverId, JSONArray options, String locale, HttpServletResponse resp) throws IOException {
         // this is a slash command: each option simply has a name and a value.
-        CustomSlashCommandInfo info = CustomSlashCommandInfo.buildFromInteraction(options, o -> o, "name");
+        CustomSlashCommandInfo info = CustomSlashCommandInfo.buildFromInteraction(serverId, options, o -> o, "name");
 
-        info.answer = info.answer.replace("\\n", "\n");
+        if (info.answer != null) info.answer = info.answer.replace("\\n", "\n");
+        if (info.embedText != null) info.embedText = info.embedText.replace("\\n", "\n");
 
         if (info.getValidationError(locale) != null) {
-            respond(resp, true, info.getValidationError(locale));
+            respond(resp, info.getValidationError(locale));
         } else {
             try {
                 addSlashCommand(serverId, info);
 
-                respond(resp, true, localizeMessage(locale,
+                respond(resp, localizeMessage(locale,
                         ":white_check_mark: The **/" + info.name + "** command was created.",
                         ":white_check_mark: La commande **/" + info.name + "** a été créée."));
             } catch (MaximumCommandsReachedException e) {
-                respond(resp, true, localizeMessage(locale,
+                respond(resp, localizeMessage(locale,
                         ":x: **You reached the maximum amount of commands you can create on this server!**\n" +
                                 "The limit set by Discord is 100 commands. Delete other commands to be able to create new ones!",
                         ":x: **Tu as atteint le nombre maximum de commandes que tu peux créer sur ce serveur !**\n" +
@@ -183,11 +281,10 @@ public class InteractionManager extends HttpServlet {
      * Handles removing a command from a server, based on a command name.
      */
     private void removeCommand(long serverId, String name, String locale, HttpServletResponse resp) throws IOException {
-        String slashCommandPath = "custom_slash_commands/" + serverId + "/" + name + ".json";
-
-        try (InputStream is = CloudStorageUtils.getCloudStorageInputStream(slashCommandPath)) {
-            removeSlashCommand(serverId, slashCommandPath, is);
-            respond(resp, true, localizeMessage(locale,
+        try {
+            CustomSlashCommandInfo info = CustomSlashCommandInfo.buildFromCloudStorage(serverId, name, false);
+            removeSlashCommand(serverId, info);
+            respond(resp, localizeMessage(locale,
                     ":white_check_mark: The **/" + name + "** command was deleted.",
                     ":white_check_mark: La commande **/" + name + "** a été supprimée."));
         } catch (StorageException e) {
@@ -210,7 +307,7 @@ public class InteractionManager extends HttpServlet {
         }
 
         if (commands.isEmpty()) {
-            respond(resp, true, localizeMessage(locale,
+            respond(resp, localizeMessage(locale,
                     "There is no custom slash command on this server yet.",
                     "Il n'y a pas encore de commande slash personnalisée sur ce serveur."));
         } else {
@@ -220,23 +317,33 @@ public class InteractionManager extends HttpServlet {
             if (message.length() > 2000) {
                 message = message.substring(0, 1995) + "[...]";
             }
-            respond(resp, true, message);
+            respond(resp, message);
         }
     }
 
     /**
      * Allows to display the "edit slash command" form.
      */
-    private void sendEditCommandForm(long serverId, String name, String locale, HttpServletResponse resp) throws IOException {
-        String slashCommandPath = "custom_slash_commands/" + serverId + "/" + name + ".json";
+    private void sendEditCommandForm(long serverId, JSONArray options, String locale, HttpServletResponse resp) throws IOException {
+        String name = null;
+        boolean isEmbed = false;
 
-        try (InputStream is = CloudStorageUtils.getCloudStorageInputStream(slashCommandPath)) {
+        for (Object item : options) {
+            JSONObject itemObject = (JSONObject) item;
+
+            switch (itemObject.getString("name")) {
+                case "name":
+                    name = itemObject.getString("value");
+                    break;
+                case "edit":
+                    isEmbed = "embed".equals(itemObject.getString("value"));
+                    break;
+            }
+        }
+
+        try {
             // get info on the current command
-            JSONObject commandInfo = new JSONObject(IOUtils.toString(is, StandardCharsets.UTF_8));
-            long commandId = commandInfo.getLong("id");
-            String description = CustomSlashCommandsManager.getSlashCommandDescription(serverId, commandId);
-            String answer = commandInfo.getString("answer");
-            boolean isPublic = commandInfo.getBoolean("isPublic");
+            CustomSlashCommandInfo info = CustomSlashCommandInfo.buildFromCloudStorage(serverId, name, !isEmbed);
 
             // build the response
             JSONObject response = new JSONObject();
@@ -247,12 +354,22 @@ public class InteractionManager extends HttpServlet {
             responseData.put("title", localizeMessage(locale, "Edit – /" + name, "Modifier – /" + name));
 
             JSONArray componentData = new JSONArray();
-            componentData.put(getComponentDataForTextInput("name", localizeMessage(locale, "Name", "Nom"), name, 32, false));
-            componentData.put(getComponentDataForTextInput("description", localizeMessage(locale, "Description", "Description"), description, 100, false));
-            componentData.put(getComponentDataForTextInput("answer", localizeMessage(locale, "Answer", "Réponse"), answer, 2000, true));
-            componentData.put(getComponentDataForTextInput("is_public_string",
-                    localizeMessage(locale, "Response is public (true or false)", "Réponse publique (true = oui, false = non)"),
-                    isPublic ? "true" : "false", 5, false));
+
+            if (isEmbed) {
+                componentData.put(getComponentDataForTextInput("embed_title", localizeMessage(locale, "Embed title", "Titre de l'intégration"), info.embedTitle, 256, false, false));
+                componentData.put(getComponentDataForTextInput("embed_text", localizeMessage(locale, "Embed text", "Texte de l'intégration"), info.embedText, 4000, false, true));
+                componentData.put(getComponentDataForTextInput("embed_image", localizeMessage(locale, "Embed image", "Image de l'intégration"), info.embedImage, 2000, false, false));
+                componentData.put(getComponentDataForTextInput("embed_thumbnail", localizeMessage(locale, "Embed thumbnail", "Miniature de l'intégration"), info.embedThumbnail, 2000, false, false));
+                componentData.put(getComponentDataForTextInput("embed_color", localizeMessage(locale, "Embed color", "Couleur de l'intégration"), info.embedColor, 7, false, false));
+            } else {
+                componentData.put(getComponentDataForTextInput("name", localizeMessage(locale, "Name", "Nom"), info.name, 32, true, false));
+                componentData.put(getComponentDataForTextInput("description", localizeMessage(locale, "Description", "Description"), info.description, 100, true, false));
+                componentData.put(getComponentDataForTextInput("answer", localizeMessage(locale, "Answer", "Réponse"), info.answer, 2000, false, true));
+                componentData.put(getComponentDataForTextInput("is_public_string",
+                        localizeMessage(locale, "Response is public (true or false)", "Réponse publique (true = oui, false = non)"),
+                        info.isPublic ? "true" : "false", 5, true, false));
+            }
+
             responseData.put("components", componentData);
 
             response.put("data", responseData);
@@ -269,7 +386,7 @@ public class InteractionManager extends HttpServlet {
      */
     private void handleStorageException(String locale, HttpServletResponse resp, StorageException e) throws IOException {
         if (e.getCode() == 404) {
-            respond(resp, true, localizeMessage(locale,
+            respond(resp, localizeMessage(locale,
                     ":x: The command you specified does not exist! Check that you spelled it correctly.",
                     ":x: La commande que tu as spécifiée n'existe pas ! Vérifie que tu as saisi le nom correctement."));
         } else {
@@ -280,7 +397,7 @@ public class InteractionManager extends HttpServlet {
     /**
      * Gives the JSON object describing a single text input.
      */
-    private static JSONObject getComponentDataForTextInput(String id, String name, String value, long maxLength, boolean isLong) {
+    private static JSONObject getComponentDataForTextInput(String id, String name, String value, long maxLength, boolean isRequired, boolean isLong) {
         JSONObject row = new JSONObject();
         row.put("type", 1); // ... action row
 
@@ -289,10 +406,10 @@ public class InteractionManager extends HttpServlet {
         component.put("custom_id", id);
         component.put("label", name);
         component.put("style", isLong ? 2 : 1);
-        component.put("min_length", 1);
+        component.put("min_length", isRequired ? 1 : 0);
         component.put("max_length", maxLength);
-        component.put("required", true);
-        component.put("value", value);
+        component.put("required", isRequired);
+        component.put("value", value == null ? "" : value);
 
         JSONArray rowContent = new JSONArray();
         rowContent.put(component);
@@ -306,36 +423,55 @@ public class InteractionManager extends HttpServlet {
      */
     private void editCommand(long serverId, String oldName, JSONArray options, String locale, HttpServletResponse resp) throws IOException {
         // this is a modal: each of the options is in a text input on an action row
-        CustomSlashCommandInfo info = CustomSlashCommandInfo.buildFromInteraction(options,
+        CustomSlashCommandInfo info = CustomSlashCommandInfo.buildFromInteraction(serverId, options,
                 o -> o.getJSONArray("components").getJSONObject(0), "custom_id");
 
-        if (info.getValidationError(locale) != null) {
-            respond(resp, true, info.getValidationError(locale));
-        } else {
-            String slashCommandPath = "custom_slash_commands/" + serverId + "/" + oldName + ".json";
-            try (InputStream is = CloudStorageUtils.getCloudStorageInputStream(slashCommandPath)) {
+        try {
+            // if the command name is absent from the submitted form, this means we are editing the embed.
+            boolean isEmbed = (info.name == null);
+
+            CustomSlashCommandInfo oldInfo = CustomSlashCommandInfo.buildFromCloudStorage(serverId, oldName, isEmbed);
+
+            if (isEmbed) {
+                // retrieve non-embed info to keep it
+                info.name = oldInfo.name;
+                info.description = oldInfo.description;
+                info.answer = oldInfo.answer;
+                info.isPublic = oldInfo.isPublic;
+            } else {
+                // retrieve embed info to keep it
+                info.embedTitle = oldInfo.embedTitle;
+                info.embedText = oldInfo.embedText;
+                info.embedImage = oldInfo.embedImage;
+                info.embedThumbnail = oldInfo.embedThumbnail;
+                info.embedColor = oldInfo.embedColor;
+            }
+
+            if (info.getValidationError(locale) != null) {
+                respond(resp, info.getValidationError(locale));
+            } else {
                 // since adding a command is an upsert, deleting first is only required if the name changed.
                 if (!oldName.equals(info.name)) {
-                    removeSlashCommand(serverId, slashCommandPath, is);
+                    removeSlashCommand(serverId, oldInfo);
                 }
 
                 addSlashCommand(serverId, info);
 
                 if (oldName.equals(info.name)) {
-                    respond(resp, true, localizeMessage(locale,
+                    respond(resp, localizeMessage(locale,
                             ":white_check_mark: The **/" + info.name + "** command was edited.",
                             ":white_check_mark: La commande **/" + info.name + "** a été modifiée."));
                 } else {
-                    respond(resp, true, localizeMessage(locale,
+                    respond(resp, localizeMessage(locale,
                             ":white_check_mark: The **/" + oldName + "** command was edited, and is now called **/" + info.name + "**.",
                             ":white_check_mark: La commande **/" + oldName + "** a été modifiée, et s'appelle maintenant **/" + info.name + "**."));
                 }
-            } catch (StorageException e) {
-                handleStorageException(locale, resp, e);
-            } catch (MaximumCommandsReachedException e) {
-                // this error is not expected here.
-                throw new IOException(e);
             }
+        } catch (StorageException e) {
+            handleStorageException(locale, resp, e);
+        } catch (MaximumCommandsReachedException e) {
+            // this error is not expected here.
+            throw new IOException(e);
         }
     }
 
@@ -343,57 +479,99 @@ public class InteractionManager extends HttpServlet {
      * Handles adding a slash command on Cloud Storage and Discord given all the information about it.
      */
     private void addSlashCommand(long serverId, CustomSlashCommandInfo info) throws IOException, MaximumCommandsReachedException {
-        String path = "custom_slash_commands/" + serverId + "/" + info.name + ".json";
-        logger.info("Adding " + path);
+        logger.info("Adding " + info.getCloudStoragePath());
 
         long commandId = CustomSlashCommandsManager.addSlashCommand(serverId, info.name, info.description);
 
         JSONObject storedData = new JSONObject();
         storedData.put("id", commandId);
-        storedData.put("answer", info.answer);
         storedData.put("isPublic", info.isPublic);
-        CloudStorageUtils.sendBytesToCloudStorage(path, "application/json", storedData.toString().getBytes(StandardCharsets.UTF_8));
+
+        if (info.answer != null) storedData.put("answer", info.answer);
+        if (info.embedTitle != null) storedData.put("embedTitle", info.embedTitle);
+        if (info.embedImage != null) storedData.put("embedImage", info.embedImage);
+        if (info.embedText != null) storedData.put("embedText", info.embedText);
+        if (info.embedColor != null) storedData.put("embedColor", info.embedColor);
+        if (info.embedThumbnail != null) storedData.put("embedThumbnail", info.embedThumbnail);
+
+        CloudStorageUtils.sendBytesToCloudStorage(info.getCloudStoragePath(), "application/json", storedData.toString().getBytes(StandardCharsets.UTF_8));
     }
 
     /**
      * Handles removing a slash command from Cloud Storage and Discord given all the information about it.
      */
-    private void removeSlashCommand(long serverId, String slashCommandPath, InputStream cloudStorageInputStream) throws IOException {
-        logger.info("Removing " + slashCommandPath);
+    private void removeSlashCommand(long serverId, CustomSlashCommandInfo info) throws IOException {
+        logger.info("Removing " + info.getCloudStoragePath());
 
-        JSONObject commandInfo = new JSONObject(IOUtils.toString(cloudStorageInputStream, StandardCharsets.UTF_8));
-        long commandId = commandInfo.getLong("id");
+        CustomSlashCommandsManager.removeSlashCommand(serverId, info.id);
 
-        CustomSlashCommandsManager.removeSlashCommand(serverId, commandId);
-
-        storage.delete(BlobId.of("max480-random-stuff.appspot.com", slashCommandPath));
+        storage.delete(BlobId.of("max480-random-stuff.appspot.com", info.getCloudStoragePath()));
     }
 
     /**
      * Handles responding to one of the custom slash commands.
      */
     private void handleCommand(long serverId, String name, HttpServletResponse resp) throws IOException {
-        try (InputStream is = CloudStorageUtils.getCloudStorageInputStream("custom_slash_commands/" + serverId + "/" + name + ".json")) {
-            JSONObject commandInfo = new JSONObject(IOUtils.toString(is, StandardCharsets.UTF_8));
-            String answer = commandInfo.getString("answer");
-            boolean isPublic = commandInfo.getBoolean("isPublic");
-            respond(resp, !isPublic, answer);
+        CustomSlashCommandInfo info = CustomSlashCommandInfo.buildFromCloudStorage(serverId, name, false);
+
+        JSONObject response = new JSONObject();
+        response.put("type", 4); // response in channel
+
+        JSONObject responseData = new JSONObject();
+
+        responseData.put("allowed_mentions", new JSONObject("{\"parse\": []}"));
+
+        if (info.answer != null) responseData.put("content", info.answer);
+
+        if (!info.isPublic) {
+            responseData.put("flags", 1 << 6); // ephemeral
         }
+
+        JSONObject embed = new JSONObject();
+
+        if (info.embedTitle != null) embed.put("title", info.embedTitle);
+        if (info.embedText != null) embed.put("description", info.embedText);
+
+        if (info.embedColor != null) {
+            embed.put("color", Integer.parseInt(info.embedColor, 16));
+        }
+
+        if (info.embedImage != null) {
+            JSONObject image = new JSONObject();
+            image.put("url", info.embedImage);
+            embed.put("image", image);
+        }
+
+        if (info.embedThumbnail != null) {
+            JSONObject thumb = new JSONObject();
+            thumb.put("url", info.embedThumbnail);
+            embed.put("thumbnail", thumb);
+        }
+
+        if (!embed.isEmpty()) {
+            JSONArray embeds = new JSONArray();
+            embeds.put(embed);
+
+            responseData.put("embeds", embeds);
+        }
+
+        response.put("data", responseData);
+
+        logger.fine("Responding with: " + response.toString(2));
+        resp.getWriter().write(response.toString());
     }
 
     /**
-     * Responds to a slash command, in response to the HTTP request.
+     * Responds privately to a slash command, in response to the HTTP request.
      */
-    private void respond(HttpServletResponse responseStream, boolean isPrivate, String message) throws IOException {
+    private void respond(HttpServletResponse responseStream, String message) throws IOException {
         JSONObject response = new JSONObject();
         response.put("type", 4); // response in channel
 
         JSONObject responseData = new JSONObject();
         responseData.put("content", message);
         responseData.put("allowed_mentions", new JSONObject("{\"parse\": []}"));
-        if (isPrivate) {
-            responseData.put("flags", 1 << 6); // ephemeral
-        }
+        responseData.put("flags", 1 << 6); // ephemeral
         response.put("data", responseData);
 
         logger.fine("Responding with: " + response.toString(2));
