@@ -41,6 +41,7 @@
                         <li><a class="dropdown-item active" href="/celeste/custom-entity-catalog">Custom Entity Catalog</a></li>
                         <li><a class="dropdown-item" href="/celeste/everest-yaml-validator">everest.yaml validator</a></li>
                         <li><a class="dropdown-item" href="/celeste/font-generator">Font Generator</a></li>
+                        <li><a class="dropdown-item" href="/celeste/map-tree-viewer">Map Tree Viewer</a></li>
                         <li><a class="dropdown-item" href="/celeste/mod-structure-verifier">Mod Structure Verifier</a></li>
                         <li><a class="dropdown-item" href="/celeste/update-checker-status">Update Checker status</a></li>
                         <li><a class="dropdown-item" href="/celeste/wipe-converter">Wipe Converter</a></li>

@@ -61,6 +61,18 @@
                 >
               </li>
               <li>
+                <a
+                  :class="
+                    'dropdown-item ' +
+                    (this.$route.path === '/celeste/map-tree-viewer'
+                      ? 'active'
+                      : '')
+                  "
+                  href="/celeste/map-tree-viewer"
+                  >Map Tree Viewer</a
+                >
+              </li>
+              <li>
                 <a class="dropdown-item" href="/celeste/mod-structure-verifier"
                   >Mod Structure Verifier</a
                 >

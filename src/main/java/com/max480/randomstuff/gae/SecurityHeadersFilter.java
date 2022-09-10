@@ -53,6 +53,11 @@ public class SecurityHeadersFilter extends HttpFilter {
                     "img-src 'self' https://celestemodupdater.0x0a.de; " +
                     "frame-ancestors 'none'; " +
                     "object-src 'none';");
+        } else if (req.getRequestURI().equals("/celeste/map-tree-viewer")) {
+            // default policy for the Vue app
+            res.setHeader("Content-Security-Policy", "default-src 'self'; " +
+                    "frame-ancestors 'none'; " +
+                    "object-src 'none';");
         } else {
             // default rules
             res.setHeader("Content-Security-Policy", "default-src 'self'; " +

@@ -20,8 +20,9 @@ The `src` folder contains the source for everything provided by the Java servlet
 - ... and some other things of more limited use that are on the website.
 
 The `front-vue` folder contains the source for more dynamic frontend parts made in [Vue.js](https://vuejs.org/):
-- [the Banana Mirror Browser](https://max480-random-stuff.appspot.com/banana-mirror-browser), a website that can substitute to [the GameBanana Celeste section](https://gamebanana.com/games/6460) if it is down. Files and images are [hosted on 0x0ade's server](https://celestemodupdater.0x0a.de/). Mod info and files on this server are kept up-to-date by [the Everest update checker](https://github.com/max4805/EverestUpdateCheckerServer).
-- [the Wipe Converter](https://max480-random-stuff.appspot.com/wipe-converter), a service to turn custom Celeste screen wipes into a format the game can use (with the [max480's Helping Hand](https://github.com/max4805/MaxHelpingHand) mod).
+- [the Banana Mirror Browser](https://max480-random-stuff.appspot.com/celeste/banana-mirror-browser), a website that can substitute to [the GameBanana Celeste section](https://gamebanana.com/games/6460) if it is down. Files and images are [hosted on 0x0ade's server](https://celestemodupdater.0x0a.de/). Mod info and files on this server are kept up-to-date by [the Everest update checker](https://github.com/max4805/EverestUpdateCheckerServer).
+- [the Celeste Map Tree Viewer](https://max480-random-stuff.appspot.com/celeste/map-tree-viewer), a tool allowing you to see the raw contents of your map .bin as a tree, in order to find out what it is or search for a specific entity, trigger, decal or styleground.
+- [the Celeste Wipe Converter](https://max480-random-stuff.appspot.com/celeste/wipe-converter), a service to turn custom Celeste screen wipes into a format the game can use (with the [max480's Helping Hand](https://github.com/max4805/MaxHelpingHand) mod).
 
 If you want to check how the update checker's everest_update.yaml file is generated, check [the Everest Update Checker Server repo](https://github.com/max4805/EverestUpdateCheckerServer) instead.
 

@@ -8,7 +8,10 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.logging.Logger;
@@ -68,7 +71,7 @@ public class BinToJSONService extends HttpServlet {
             root.put("attributes", new JSONObject());
             root.put("children", new JSONArray());
 
-            readString(bin); // skip "CELESTE MAP"
+            root.getJSONObject("attributes").put("Header", readString(bin));
             root.getJSONObject("attributes").put("Package", readString(bin));
 
             int lookupTableSize = readShort(bin);

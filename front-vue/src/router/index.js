@@ -28,7 +28,15 @@ const routes = [
     name: "WipeConverter",
     component: () => import("../views/WipeConverter.vue"),
     meta: {
-      title: "Wipe Converter",
+      title: "Celeste Wipe Converter",
+    },
+  },
+  {
+    path: "/celeste/map-tree-viewer",
+    name: "MapTreeViewer",
+    component: () => import("../views/MapTreeViewer.vue"),
+    meta: {
+      title: "Celeste Map Tree Viewer",
     },
   },
   {
