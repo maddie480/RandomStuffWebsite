@@ -54,18 +54,18 @@
 
 <script>
 const isHighlighted = function (item, parent, highlight) {
-  if (
-    parent !== null &&
-    ["entities", "triggers", "Foregrounds", "Backgrounds"].includes(parent.name)
-  ) {
-    if (item.name.toLowerCase().indexOf(highlight) >= 0) {
-      return true;
-    }
-  } else if (["decal", "parallax"].includes(item.name)) {
+  if (["decal", "parallax"].includes(item.name)) {
     if (
       item.attributes.texture !== undefined &&
       item.attributes.texture.toLowerCase().indexOf(highlight) >= 0
     ) {
+      return true;
+    }
+  } else if (
+    parent !== null &&
+    ["entities", "triggers", "Foregrounds", "Backgrounds"].includes(parent.name)
+  ) {
+    if (item.name.toLowerCase().indexOf(highlight) >= 0) {
       return true;
     }
   }
