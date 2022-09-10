@@ -86,6 +86,8 @@ const vue = {
         this.loading = true;
         this.error = false;
         this.mapContents = null;
+        this.highlight = "";
+        this.highlightLive = "";
 
         const contents = (
           await axios.post(
