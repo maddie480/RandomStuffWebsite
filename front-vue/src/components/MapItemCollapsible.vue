@@ -1,7 +1,7 @@
 <template>
   <div class="collapsible">
     <div class="line">
-      <span
+      <div
         v-on:click="expandOrCollapse"
         :class="
           'tree-item ' +
@@ -11,13 +11,19 @@
         "
       >
         <span class="arrow" v-if="item.children.length === 0">–</span>
-        <span
-          :class="'arrow pointer' + (expanded ? '' : ' collapsed')"
-          v-else
-        ></span>
+        <span v-else>
+          <img
+            :class="'arrow pointer dark' + (expanded ? '' : ' collapsed')"
+            src="../assets/img/arrow-white.svg"
+          />
+          <img
+            :class="'arrow pointer light' + (expanded ? '' : ' collapsed')"
+            src="../assets/img/arrow-black.svg"
+          />
+        </span>
 
         <span class="item-name">{{ item.name }}</span>
-      </span>
+      </div>
     </div>
     <div class="attributes">
       <span
@@ -136,7 +142,6 @@ export default {
 .tree-item {
   margin-top: 2px;
   margin-bottom: 2px;
-  display: inline-block;
 }
 
 .highlight {
@@ -155,17 +160,29 @@ export default {
 
 .arrow {
   display: inline-block;
-  width: 20px;
-  height: 20px;
+  width: 1.25rem;
+  height: 1.25rem;
   margin-right: 5px;
+
+  &.dark {
+    display: none;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    &.dark {
+      display: inline-block;
+    }
+    &.light {
+      display: none;
+    }
+  }
 
   &:not(.pointer) {
     text-align: center;
   }
 
   &.pointer {
-    background: no-repeat center url("../assets/img/arrow-black.svg");
-    vertical-align: bottom;
+    margin-bottom: 2px; // I don't get vertical alignment in CSS and gave up on trying
     transition: transform 0.2s ease-in-out;
 
     @media (prefers-reduced-motion: reduce) {
