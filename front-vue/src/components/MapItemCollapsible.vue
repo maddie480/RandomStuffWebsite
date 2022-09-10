@@ -1,7 +1,7 @@
 <template>
   <div class="collapsible">
     <div class="line">
-      <div
+      <span
         v-on:click="expandOrCollapse"
         :class="
           'tree-item ' +
@@ -14,16 +14,16 @@
         <span v-else>
           <img
             :class="'arrow pointer dark' + (expanded ? '' : ' collapsed')"
-            src="../assets/img/arrow-white.svg"
+            src="/img/arrow-white.svg"
           />
           <img
             :class="'arrow pointer light' + (expanded ? '' : ' collapsed')"
-            src="../assets/img/arrow-black.svg"
+            src="/img/arrow-black.svg"
           />
         </span>
 
         <span class="item-name">{{ item.name }}</span>
-      </div>
+      </span>
     </div>
     <div class="attributes">
       <span
@@ -142,6 +142,7 @@ export default {
 .tree-item {
   margin-top: 2px;
   margin-bottom: 2px;
+  display: inline-block;
 }
 
 .highlight {
@@ -192,12 +193,6 @@ export default {
     &.collapsed {
       transform: rotate(-90deg);
     }
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  .arrow.pointer {
-    background: no-repeat center url("../assets/img/arrow-white.svg");
   }
 }
 

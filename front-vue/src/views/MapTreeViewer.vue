@@ -35,12 +35,11 @@
 
     <div class="loading" v-if="loading">Loading...</div>
 
-    <form v-on:submit="searchTriggered">
+    <form v-on:submit="searchTriggered" v-if="mapContents !== null">
       <input
         v-model="highlightLive"
         class="search form-control"
         placeholder="Search for an entity, trigger, decal or stylegrounds..."
-        v-if="mapContents !== null"
       />
     </form>
 
