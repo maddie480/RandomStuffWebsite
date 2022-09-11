@@ -2,8 +2,8 @@
     "mirrors": [
         {
             "id": "jade",
-            "name": "0x0a.de (Germany)",
-            "pattern": "https://celestemodupdater.0x0a.de/banana-mirror/%id%.zip"
+            "name": "0x0ade.io (Germany)",
+            "pattern": "https://celestemodupdater.0x0ade.io/banana-mirror/%id%.zip"
         },
         {
             "id": "wegfan",

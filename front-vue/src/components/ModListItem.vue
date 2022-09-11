@@ -264,7 +264,7 @@ export default {
       }
 
       if ("EverestYamlId" in file) {
-        return `https://celestemodupdater.0x0a.de/banana-mirror/${file.GameBananaFileId}.zip`;
+        return `https://celestemodupdater.0x0ade.io/banana-mirror/${file.GameBananaFileId}.zip`;
       }
 
       return null;

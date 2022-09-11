@@ -50,7 +50,7 @@ public class SecurityHeadersFilter extends HttpFilter {
         } else if (req.getRequestURI().equals("/celeste/banana-mirror-browser")) {
             // allow getting the images from Banana Mirror.
             res.setHeader("Content-Security-Policy", "default-src 'self'; " +
-                    "img-src 'self' https://celestemodupdater.0x0a.de; " +
+                    "img-src 'self' https://celestemodupdater.0x0ade.io; " +
                     "frame-ancestors 'none'; " +
                     "object-src 'none';");
         } else if (req.getRequestURI().equals("/celeste/map-tree-viewer")) {
