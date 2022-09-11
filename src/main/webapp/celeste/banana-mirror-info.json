@@ -2,12 +2,12 @@
     "mirrors": [
         {
             "id": "jade",
-            "name": "0x0ade.io (Germany)",
+            "name": "Germany (0x0ade.io)",
             "pattern": "https://celestemodupdater.0x0ade.io/banana-mirror/%id%.zip"
         },
         {
             "id": "wegfan",
-            "name": "weg.fan (China)",
+            "name": "China (weg.fan)",
             "pattern": "https://celeste.weg.fan/api/v1/mirror/download?type=mod&fileName=%id%.zip"
         }
     ],
