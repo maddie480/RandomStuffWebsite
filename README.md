@@ -20,7 +20,7 @@ The `src` folder contains the source for everything provided by the Java servlet
 - ... and some other things of more limited use that are on the website.
 
 The `front-vue` folder contains the source for more dynamic frontend parts made in [Vue.js](https://vuejs.org/):
-- [the Banana Mirror Browser](https://max480-random-stuff.appspot.com/celeste/banana-mirror-browser), a website that can substitute to [the GameBanana Celeste section](https://gamebanana.com/games/6460) if it is down. Files and images are [hosted on 0x0ade's server](https://celestemodupdater.0x0ade.io/). Mod info and files on this server are kept up-to-date by [the Everest update checker](https://github.com/max4805/EverestUpdateCheckerServer).
+- [the Banana Mirror Browser](https://max480-random-stuff.appspot.com/celeste/banana-mirror-browser), a website that can substitute to [the GameBanana Celeste section](https://gamebanana.com/games/6460) if it is down. Files and images are [hosted on 0x0ade's server](https://celestemodupdater.0x0a.de/). Mod info and files on this server are kept up-to-date by [the Everest update checker](https://github.com/max4805/EverestUpdateCheckerServer).
 - [the Celeste Map Tree Viewer](https://max480-random-stuff.appspot.com/celeste/map-tree-viewer), a tool allowing you to see the raw contents of your map .bin as a tree, in order to find out what it is or search for a specific entity, trigger, decal or styleground.
 - [the Celeste Wipe Converter](https://max480-random-stuff.appspot.com/celeste/wipe-converter), a service to turn custom Celeste screen wipes into a format the game can use (with the [max480's Helping Hand](https://github.com/max4805/MaxHelpingHand) mod).
 
@@ -82,8 +82,8 @@ $ curl "https://max480-random-stuff.appspot.com/celeste/gamebanana-search?q=spri
     "Name": "2020 Spring Collab Randomizer (v0.1)",
     "PageURL": "https://gamebanana.com/mods/53717",
     "MirroredScreenshots": [
-      "https://celestemodupdater.0x0ade.io/banana-mirror-images/img_ss_mods_5fcaf5f6990f6.png",
-      "https://celestemodupdater.0x0ade.io/banana-mirror-images/img_ss_mods_5fcaf5ffe2893.png"
+      "https://celestemodupdater.0x0a.de/banana-mirror-images/img_ss_mods_5fcaf5f6990f6.png",
+      "https://celestemodupdater.0x0a.de/banana-mirror-images/img_ss_mods_5fcaf5ffe2893.png"
     ],
     "CreatedDate": 1607137213,
     "Author": "KawaiiDawn",
@@ -264,7 +264,7 @@ Two extra fields are specified for automatic builds made after a single change (
 
 --------
 
-This API redirects to a mirror of a GameBanana image on [Banana Mirror](https://celestemodupdater.0x0ade.io/banana-mirror-images), hosted by 0x0ade.
+This API redirects to a mirror of a GameBanana image on [Banana Mirror](https://celestemodupdater.0x0a.de/banana-mirror-images), hosted by 0x0ade.
 
 This contains every 1st and 2nd screenshot of Celeste submissions on GameBanana, downscaled to 220x220, and converted to PNG.
 

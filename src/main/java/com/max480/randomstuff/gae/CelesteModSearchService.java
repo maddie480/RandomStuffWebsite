@@ -375,7 +375,7 @@ public class CelesteModSearchService extends HttpServlet {
                 }
 
                 response.setStatus(302);
-                response.setHeader("Location", "https://celestemodupdater.0x0ade.io/banana-mirror-images/" + screenshotId);
+                response.setHeader("Location", "https://celestemodupdater.0x0a.de/banana-mirror-images/" + screenshotId);
             }
         }
 

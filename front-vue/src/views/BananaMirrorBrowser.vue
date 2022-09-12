@@ -48,7 +48,7 @@
             track-by="id"
             label="name"
             :options="[
-              { id: 'jade', name: 'Germany (0x0ade.io)' },
+              { id: 'jade', name: 'Germany (0x0a.de)' },
               { id: 'wegfan', name: 'China (weg.fan)' },
             ]"
             :show-labels="false"
@@ -136,7 +136,7 @@ const vue = {
     totalCount: 0,
     query: "",
     mods: [],
-    mirror: { id: "jade", name: "Germany (0x0ade.io)" },
+    mirror: { id: "jade", name: "Germany (0x0a.de)" },
     sort: { id: "latest", name: "Creation date" },
     categoryFilter: { name: "All" },
     categories: [{ name: "All" }],
