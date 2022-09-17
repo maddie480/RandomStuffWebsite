@@ -245,7 +245,7 @@ The contents of the API are based on the 10 most recent tweets of [the @EverestA
 All `entry` JSON objects follow the format of news entries (`title`, `preview`, etc).
 - The entries in `add_before` will be added before the 10 tweets in the news feed
 - The entries in `add_after` will be added after the 10 tweets in the news feed
-- The entries in `replace` overwrite the tweets with the given Twitter IDs in the feed
+- The entries in `replace` will overwrite the tweets with the given Twitter IDs in the feed
 - The tweets with the IDs listed in `delete` will be deleted from the feed, and older tweets will be taken instead to reach 10 tweets
 
 ## Everest versions list API
