@@ -54,8 +54,9 @@ public class SecurityHeadersFilter extends HttpFilter {
                     "frame-ancestors 'none'; " +
                     "object-src 'none';");
         } else if (req.getRequestURI().equals("/celeste/map-tree-viewer")) {
-            // default policy for the Vue app
+            // allow displaying checkboxes that use SVG as data URLs
             res.setHeader("Content-Security-Policy", "default-src 'self'; " +
+                    "img-src 'self' data:; " +
                     "frame-ancestors 'none'; " +
                     "object-src 'none';");
         } else {

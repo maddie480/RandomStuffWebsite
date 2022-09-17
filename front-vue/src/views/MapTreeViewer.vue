@@ -47,11 +47,40 @@
       Currently searching: <span class="search">{{ highlight }}</span>
     </div>
 
+    <div class="search-options" v-if="mapContents !== null">
+      <div class="form-check">
+        <input
+          class="form-check-input"
+          type="checkbox"
+          v-model="onlyShowHighlight"
+          id="only-show-highlight"
+        />
+        <label class="form-check-label" for="only-show-highlight">
+          Only show search results
+        </label>
+      </div>
+
+      <div class="form-check">
+        <input
+          class="form-check-input"
+          type="checkbox"
+          v-model="outOfBoundsOnly"
+          id="highlight-oob"
+        />
+        <label class="form-check-label" for="highlight-oob">
+          Out-of-bounds only
+        </label>
+      </div>
+    </div>
+
     <MapItemCollapsible
       class="map-tree"
       :item="mapContents"
       :parent="{ name: 'none' }"
+      :grandparent="{ name: 'none' }"
       :highlight="highlight"
+      :onlyShowHighlight="onlyShowHighlight"
+      :outOfBoundsOnly="outOfBoundsOnly"
       v-if="mapContents !== null"
     />
   </div>
@@ -72,6 +101,8 @@ const vue = {
     mapContents: null,
     highlight: "",
     highlightLive: "",
+    onlyShowHighlight: false,
+    outOfBoundsOnly: false,
   }),
   methods: {
     selectFile: function (e) {
@@ -133,18 +164,29 @@ h1 {
 
 input.search {
   margin-top: 30px;
-  margin-bottom: 20px;
 }
 
 .searching {
   text-align: left;
-  margin-top: -10px;
-  margin-bottom: 20px;
+  margin-top: 5px;
   font-style: italic;
   color: gray;
 
   .search {
     font-weight: bold;
+  }
+}
+
+.search-options {
+  text-align: left;
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+@media (min-width: 576px) {
+  .form-check {
+    display: inline-block;
+    margin-right: 20px;
   }
 }
 

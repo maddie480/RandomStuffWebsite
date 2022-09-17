@@ -1,5 +1,5 @@
 <template>
-  <div class="collapsible">
+  <div class="collapsible" v-if="shown">
     <div class="line">
       <span
         v-on:click="expandOrCollapse"
@@ -52,14 +52,18 @@
         v-for="child in item.children"
         :item="child"
         :parent="item"
+        :grandparent="parent"
         :highlight="highlight"
+        :onlyShowHighlight="onlyShowHighlight"
+        :outOfBoundsOnly="outOfBoundsOnly"
       />
     </div>
   </div>
 </template>
 
 <script>
-const isHighlighted = function (item, parent, highlight) {
+const isSearchResult = function (item, parent, highlight) {
+  // decals and parallax stylegrounds match based on their texture path
   if (["decal", "parallax"].includes(item.name)) {
     if (
       item.attributes.texture !== undefined &&
@@ -67,7 +71,10 @@ const isHighlighted = function (item, parent, highlight) {
     ) {
       return true;
     }
-  } else if (
+  }
+
+  // entities, triggers and effects match based on their node name
+  if (
     parent !== null &&
     ["entities", "triggers", "Foregrounds", "Backgrounds"].includes(parent.name)
   ) {
@@ -76,17 +83,93 @@ const isHighlighted = function (item, parent, highlight) {
     }
   }
 
-  for (const child of item.children) {
-    if (isHighlighted(child, item, highlight)) {
+  return false;
+};
+
+const isOutOfBounds = function (item, parent, grandparent) {
+  if (!["entities", "triggers"].includes(parent.name)) {
+    return false;
+  }
+
+  if (
+    typeof item.attributes.x !== "number" ||
+    typeof item.attributes.y !== "number"
+  ) {
+    return false;
+  }
+
+  if (
+    typeof grandparent.attributes.width !== "number" ||
+    typeof grandparent.attributes.height !== "number"
+  ) {
+    return false;
+  }
+
+  const left = item.attributes.x;
+  const top = item.attributes.y;
+  const bottom =
+    typeof item.attributes.height === "number"
+      ? top + item.attributes.height
+      : top;
+  const right =
+    typeof item.attributes.width === "number"
+      ? left + item.attributes.width
+      : left;
+
+  return (
+    right < 0 ||
+    bottom < 0 ||
+    top >= grandparent.attributes.height ||
+    left >= grandparent.attributes.width
+  );
+};
+
+const isHighlighted = function (
+  item,
+  parent,
+  grandparent,
+  highlight,
+  outOfBoundsOnly
+) {
+  // check if this should be highlighted due to being OOB only
+  if (
+    outOfBoundsOnly &&
+    highlight === "" &&
+    isOutOfBounds(item, parent, grandparent)
+  ) {
+    return true;
+  }
+
+  // check if this should be highlighted due to being a search result
+  if (
+    highlight !== "" &&
+    (!outOfBoundsOnly || isOutOfBounds(item, parent, grandparent))
+  ) {
+    if (isSearchResult(item, parent, highlight)) {
       return true;
     }
   }
 
+  // check if any child is highlighted, so we should be too
+  for (const child of item.children) {
+    if (isHighlighted(child, item, parent, highlight, outOfBoundsOnly)) {
+      return true;
+    }
+  }
+
+  // all checks failed!
   return false;
 };
 
 export default {
-  props: ["item", "highlight", "parent"],
+  props: [
+    "item",
+    "highlight",
+    "parent",
+    "grandparent",
+    "onlyShowHighlight",
+    "outOfBoundsOnly",
+  ],
   data: () => ({
     expanded: false,
   }),
@@ -118,11 +201,23 @@ export default {
       return specials;
     },
     highlighted() {
-      if (this.highlight === "") return false;
+      if (this.onlyShowHighlight) return false;
       return isHighlighted(
         this.item,
         this.parent,
-        this.highlight.toLowerCase()
+        this.grandparent,
+        this.highlight.toLowerCase(),
+        this.outOfBoundsOnly
+      );
+    },
+    shown() {
+      if (!this.onlyShowHighlight) return true;
+      return isHighlighted(
+        this.item,
+        this.parent,
+        this.grandparent,
+        this.highlight.toLowerCase(),
+        this.outOfBoundsOnly
       );
     },
   },
