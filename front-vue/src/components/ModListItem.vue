@@ -492,6 +492,11 @@ export default {
     margin: 2px;
   }
 }
+
+// prevent text from overflowing if it is too long
+.gamebanana-description-html {
+  overflow-wrap: break-word;
+}
 </style>
 
 <style lang="scss">
