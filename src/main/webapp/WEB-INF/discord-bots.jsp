@@ -86,60 +86,50 @@
 
     <h1 class="botname" id="timezone-bot">
         <img src="/img/timezone-bot-logo.png" class="botlogo"> Timezone Bot
-
-        <span class="badge bg-secondary big-badge">
-            <%= request.getAttribute("timezoneBotServerCount") %>
-            server<%= ((int) request.getAttribute("timezoneBotServerCount")) == 1 ? "" : "s" %>
-        </span>
     </h1>
+
+    <h2>
+        Without timezone roles
+        <span class="badge bg-secondary big-badge">
+            <%= request.getAttribute("timezoneBotLiteServerCount") %>
+            server<%= ((int) request.getAttribute("timezoneBotLiteServerCount")) == 1 ? "" : "s" %>
+        </span>
+    </h2>
 
     <p class="small-badge">
         <span class="badge bg-secondary">
-            <%= request.getAttribute("timezoneBotServerCount") %>
-            server<%= ((int) request.getAttribute("timezoneBotServerCount")) == 1 ? "" : "s" %>
+            <%= request.getAttribute("timezoneBotLiteServerCount") %>
+            server<%= ((int) request.getAttribute("timezoneBotLiteServerCount")) == 1 ? "" : "s" %>
         </span>
     </p>
 
     <p>
-        This bot allows server members to grab timezone roles on your server, using slash commands. Here is the list of commands:
+        This bot allows you to get Discord timestamps and check the time it is in other parts of the world and for other members of your server!
+    </p>
+
+    <p>
+        Here is a list of commands:
     </p>
 
     <ul>
         <li><code>/detect-timezone</code> - gives a link to <a href="/detect-timezone.html" target="_blank">a page</a> to figure out your timezone</li>
         <li>
-            <code>/timezone [tz_name]</code> - sets your timezone role. You can use the following formats:
-            <ul>
-                <li><a href="https://en.wikipedia.org/wiki/Tz_database" target="_blank">tz database</a> time zones, like <code>Europe/Paris</code>: that's the one the <code>/detect-timezone</code> command gives you, and it will make your role change automatically when you switch between summer and winter time.</li>
-                <li>timezone names, for example <code>PST</code> or <code>Pacific Standard Time</code></li>
-                <li>UTC offsets, for example <code>UTC+3</code></li>
-            </ul>
+            <code>/set-timezone [tz_name]</code> - saves your timezone for other commands. You should use the format given to you by <code>/detect-timezone</code>
+            (for example <code>Europe/Paris</code>) because it handles daylight saving nicely, but you can use "UTC+3" or "EST" as well.
         </li>
-        <li><code>/remove-timezone</code> - removes your timezone role</li>
+        <li><code>/remove-timezone</code> - deletes your timezone from the bot's database</li>
         <li><code>/discord-timestamp [date_time]</code> - gives a <a href="https://discord.com/developers/docs/reference#message-formatting-timestamp-styles" target="_blank">Discord timestamp</a>, to tell a date/time to other people regardless of their timezone</li>
-        <li><code>/time-for [member]</code> - gives the time it is now for another member of the server, if they have a timezone role</li>
-        <li><code>/list-timezones [visibility] [names]</code> - lists the timezones of all members in the server that have timezone roles. You can pass <code>visibility = public</code> in order to have the bot response be visible to everyone in the channel.</li>
+        <li><code>/time-for [member]</code> - gives the time it is now for another member of the server, if they have a timezone configured</li>
+        <li><code>/world-clock [place]</code> - gives the time it is in another place in the world (a city or a country)</li>
     </ul>
 
     <p>
-        Two more commands allow admins to set the bot up, and are only accessible to members with the "Administrator" or "Manage Server" permission by default:
-    </p>
-
-    <ul>
-        <li><code>/toggle-times</code> - sets whether timezone roles should show the time it is in the timezone (for example <code>Timezone UTC+01:00 (2pm)</code>) or not (for example <code>Timezone UTC+01:00</code>). Enabling this causes "role update" events to be logged hourly. This is disabled by default.</li>
-        <li><code>/timezone-dropdown</code> - creates a dropdown that lets users pick a timezone role. This is useful if most members in your server have the same timezone roles. An admin can set this up in a fixed <code>#roles</code> channel, similarly to reaction roles. <a href="/discord-bots/timezone-bot/timezone-dropdown-help.html">Check this page for help with the syntax and examples.</a></li>
-    </ul>
-
-    <p>
-        These slash commands issue private responses by default, so they can be used from anywhere without cluttering a channel with commands.
-    </p>
-
-    <p>
-        This bot <b>requires the Manage Roles permission</b> as it creates, deletes and updates timezone roles itself as needed. No other permission is required.
+        These slash commands issue private responses, so they can be used from anywhere without cluttering a channel with commands.
     </p>
 
     <div class="row">
         <div class="col-md-6 col-xs-12">
-            <b class="gametitle">/timezone usage:</b>
+            <b class="gametitle">/set-timezone usage:</b>
             <p class="lighttheme"><img src="/img/example_timezone_bot_lighttheme.png"></p>
             <p class="darktheme"><img src="/img/example_timezone_bot.png"></p>
 
@@ -154,6 +144,53 @@
             <p class="darktheme"><img src="/img/discord_timestamp_dark.png"></p>
         </div>
     </div>
+
+    <p class="credits">
+        The timezone names recognized by <code>/set-timezone</code> are provided by <a href="https://en.wikipedia.org/wiki/Tz_database" target="_blank">the tz database</a>
+        and <a href="https://www.timeanddate.com/time/zones/" target="_blank">timeanddate.com</a>.
+        The <code>/world-clock</code> command uses <a href="https://nominatim.openstreetmap.org/" target="_blank">Nominatim from OpenStreetMap</a> for geocoding,
+        and <a href="https://timezonedb.com/" target="_blank">TimeZoneDB.com</a> to turn the resulting position into a timezone.
+    </p>
+
+    <a class="btn btn-primary" href="https://discord.com/api/oauth2/authorize?client_id=1021154491040534649&scope=applications.commands" target="_blank">Invite</a>
+
+    <h2 class="space">
+        With timezone roles
+        <span class="badge bg-secondary big-badge">
+            <%= request.getAttribute("timezoneBotFullServerCount") %>
+            server<%= ((int) request.getAttribute("timezoneBotFullServerCount")) == 1 ? "" : "s" %>
+        </span>
+    </h2>
+
+    <p class="small-badge">
+        <span class="badge bg-secondary">
+            <%= request.getAttribute("timezoneBotFullServerCount") %>
+            server<%= ((int) request.getAttribute("timezoneBotFullServerCount")) == 1 ? "" : "s" %>
+        </span>
+    </p>
+
+    <p>
+        In addition to the above, this bot assigns <b>timezone roles</b> to the users on your server.
+        As such, it <b>requires the Manage Roles permission</b> as it creates, deletes and updates timezone roles itself as needed.
+        It is also limited to 100 servers due to Discord having denied verification to exceed that.
+    </p>
+
+    <p>
+        It has an extra command:
+    </p>
+
+    <ul>
+        <li><code>/list-timezones [visibility] [names]</code> - lists the timezones of all members in the server that have timezone roles. You can pass <code>visibility = public</code> in order to have the bot response be visible to everyone in the channel.</li>
+    </ul>
+
+    <p>
+        Two more commands allow admins to set the bot up, and are only accessible to members with the "Administrator" or "Manage Server" permission by default:
+    </p>
+
+    <ul>
+        <li><code>/toggle-times</code> - sets whether timezone roles should show the time it is in the timezone (for example <code>Timezone UTC+01:00 (2pm)</code>) or not (for example <code>Timezone UTC+01:00</code>). Enabling this causes "role update" events to be logged hourly. This is disabled by default.</li>
+        <li><code>/timezone-dropdown</code> - creates a dropdown that lets users pick a timezone role. This is useful if most members in your server have the same timezone roles. An admin can set this up in a fixed <code>#roles</code> channel, similarly to reaction roles. <a href="/discord-bots/timezone-bot/timezone-dropdown-help.html">Check this page for help with the syntax and examples.</a></li>
+    </ul>
 
     <p>
         Here is what the timezone roles look like:
@@ -173,7 +210,7 @@
         </div>
     </div>
 
-    <% if(((int) request.getAttribute("timezoneBotServerCount")) >= 100) { %>
+    <% if(((int) request.getAttribute("timezoneBotFullServerCount")) >= 100) { %>
         <p>
             <b>This bot cannot be invited because it hit the limit of 100 servers applied by Discord to all non-verified bots.</b>
         </p>

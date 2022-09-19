@@ -97,3 +97,12 @@ img {
         border: solid #555 2px;
     }
 }
+
+.space {
+    margin-top: 30px;
+}
+
+.credits {
+    font-size: 10pt;
+    font-style: italic;
+}

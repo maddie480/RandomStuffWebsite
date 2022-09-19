@@ -47,17 +47,19 @@
     </p>
 
     <p>
-        Bot-specific information and their respective stored data is listed below.
+        Data stored by each bot is listed below.
     </p>
 
     <h2>Timezone Bot</h2>
 
+    <h3>Without roles</h3>
+
     <p>
-        Timezone information comes from <a href="https://en.wikipedia.org/wiki/Tz_database" target="_blank">the tz database</a>
-        (for timezones like <code>Europe/Paris</code>)
-        and <a href="https://www.timeanddate.com/time/zones/" target="_blank">timeanddate.com</a>
-        (for timezones like <code>EST</code>).
+        When you set your timezone, the bot saves <b>your user ID, the server ID, and the name of your timezone</b>.
+        This information is deleted whenever you run <code>/remove-timezone</code>, or after 6 months if you do not use any commands and no one mentions you in <code>/time-for</code>.
     </p>
+
+    <h3>With roles</h3>
 
     <p>
         When you grab a timezone role, the bot saves <b>your user ID, the server ID, and the name of your timezone</b>.
@@ -70,12 +72,6 @@
     </p>
 
     <h2>Mod Structure Verifier</h2>
-
-    <p>
-        Information used to verify the mods come from <a href="https://github.com/max4805/EverestUpdateCheckerServer" target="_blank">the Everest Update Checker</a>
-        which is based on <a href="https://gamebanana.com/games/6460" target="_blank">Celeste mods on GameBanana</a>.
-        <a href="/celeste/everest-yaml-validator" target="_blank">The everest.yaml validator</a> service from this website is also used.
-    </p>
 
     <p>
         The mods you send for verification are <b>not</b> stored.

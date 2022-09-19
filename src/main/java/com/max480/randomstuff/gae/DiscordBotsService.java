@@ -25,7 +25,8 @@ public class DiscordBotsService extends HttpServlet {
         Map<String, Integer> serverCounts = new Yaml().load(
                 IOUtils.toString(CloudStorageUtils.getCloudStorageInputStream("bot_server_counts.yaml"), StandardCharsets.UTF_8));
 
-        request.setAttribute("timezoneBotServerCount", serverCounts.get("TimezoneBot"));
+        request.setAttribute("timezoneBotLiteServerCount", serverCounts.get("TimezoneBotLite"));
+        request.setAttribute("timezoneBotFullServerCount", serverCounts.get("TimezoneBotFull"));
         request.setAttribute("modStructureVerifierServerCount", serverCounts.get("ModStructureVerifier"));
         request.setAttribute("gamesBotServerCount", serverCounts.get("GamesBot"));
         request.setAttribute("customSlashCommandsServerCount", serverCounts.get("CustomSlashCommands"));
