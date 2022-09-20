@@ -14,6 +14,7 @@ The `src` folder contains the source for everything provided by the Java servlet
 - [the "Show Arbitrary Mods on Profile" GameBanana app](https://gamebanana.com/apps/752)
 - [the Discord Games Bot](https://max480-random-stuff.appspot.com/discord-bots#games-bot) - the "bot" is actually a webhook that gets called by Discord
 - [the Discord Custom Slash Commands app](https://max480-random-stuff.appspot.com/discord-bots#custom-slash-commands)
+- [the Discord Timezone Bot](https://max480-random-stuff.appspot.com/discord-bots#timzeone-bot) - this repository only includes the "without timezone roles" variant; the one with timezone roles needs a bot user to work, and as such is [part of the backend](https://github.com/max4805/RandomBackendStuff/tree/main/src/timezone-bot)
 - Some [GameBanana](https://gamebanana.com)-related APIs extending the official API, described below
 - [the Olympus News API](https://max480-random-stuff.appspot.com/celeste/olympus-news)
 - [the Everest versions list API](https://max480-random-stuff.appspot.com/celeste/everest-versions)
