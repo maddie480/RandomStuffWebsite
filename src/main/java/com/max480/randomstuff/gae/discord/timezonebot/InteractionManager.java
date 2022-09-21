@@ -98,7 +98,7 @@ public class InteractionManager extends HttpServlet {
                 logger.fine("Responding with: " + response.toString(2));
                 resp.getWriter().write(response.toString());
             } else {
-                // slash command invocation
+                // slash command invocation OR user command
                 String commandName = data.getJSONObject("data").getString("name");
                 long serverId = Long.parseLong(data.getString("guild_id"));
                 long memberId = Long.parseLong(data.getJSONObject("member").getJSONObject("user").getString("id"));
@@ -126,6 +126,10 @@ public class InteractionManager extends HttpServlet {
 
                     case "world-clock":
                         giveTimeForOtherPlace(resp, serverId, memberId, data.getJSONObject("data").getJSONArray("options").getJSONObject(0).getString("value"), locale);
+                        break;
+
+                    case "Get Local Time":
+                        giveTimeForOtherUser(resp, serverId, memberId, data.getJSONObject("data").getLong("target_id"), locale);
                         break;
                 }
             }
