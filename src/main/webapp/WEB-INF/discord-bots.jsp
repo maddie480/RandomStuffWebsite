@@ -115,11 +115,14 @@
         <li><code>/detect-timezone</code> - gives a link to <a href="/detect-timezone.html" target="_blank">a page</a> to figure out your timezone</li>
         <li>
             <code>/set-timezone [tz_name]</code> - saves your timezone for other commands. You should use the format given to you by <code>/detect-timezone</code>
-            (for example <code>Europe/Paris</code>) because it handles daylight saving nicely, but you can use "UTC+3" or "EST" as well.
+            (for example <code>Europe/Paris</code>) because it handles switching between summer and winter time nicely, but you can use "UTC+3" or "EST" as well.
         </li>
         <li><code>/remove-timezone</code> - deletes your timezone from the bot's database</li>
         <li><code>/discord-timestamp [date_time]</code> - gives a <a href="https://discord.com/developers/docs/reference#message-formatting-timestamp-styles" target="_blank">Discord timestamp</a>, to tell a date/time to other people regardless of their timezone</li>
-        <li><code>/time-for [member]</code> - gives the time it is now for another member of the server, if they have a timezone configured</li>
+        <li>
+            <code>/time-for [member]</code> - gives the time it is now for another member of the server, if they have a timezone configured.
+            You can also see someone's local time by <b>right-clicking on them</b> (or tapping them on mobile), then selecting <b>Apps &gt; Get Local Time</b>.
+        </li>
         <li><code>/world-clock [place]</code> - gives the time it is in another place in the world (a city or a country)</li>
     </ul>
 
