@@ -35,7 +35,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  */
 @WebServlet(name = "MattermostService", urlPatterns = {
         "/mattermost/exploit", "/mattermost/absents", "/mattermost/lock", "/mattermost/unlock",
-        "/mattermost/planning-reload", "/mattermost/consistencycheck"})
+        "/mattermost/planning-reload", "/mattermost/consistencycheck"}, loadOnStartup = 7)
 public class MattermostService extends HttpServlet {
 
     private final Logger logger = Logger.getLogger("MattermostService");
@@ -45,6 +45,15 @@ public class MattermostService extends HttpServlet {
     private final List<String> resources = Arrays.asList("integ1", "integ2");
 
     private PlanningExploit cachedPlanningExploit;
+
+    @Override
+    public void init() {
+        try {
+            cachedPlanningExploit = retrievePlanningExploit();
+        } catch (Exception e) {
+            logger.log(Level.WARNING, "Warming up failed: " + e);
+        }
+    }
 
     private PlanningExploit retrievePlanningExploit() throws IOException {
         PlanningExploit exploit;
