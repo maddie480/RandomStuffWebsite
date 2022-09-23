@@ -106,7 +106,6 @@
     $(".BananaTip").joUninited("joBindBananaTip").joBindBananaTip();
 
     <% if ((boolean) request.getAttribute("isMax480")) { %>
-        $('#SubmissionsListModule record:has(spriteicon.App)').hide();
         fetch('https://max480-random-stuff.appspot.com/celeste/update-checker-status?widget=true')
             .then(r => r.text())
             .then(r => {
