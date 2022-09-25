@@ -82,6 +82,10 @@ public class SecurityHeadersFilter extends HttpFilter {
             // this one can be accessed from the Banana Mirror Browser mirror (... yeah, a mirror for a browser for a mirror, right).
             res.setHeader("Access-Control-Allow-Origin", "https://max4805.github.io");
         }
+        if (req.getRequestURI().equals("/celeste/everest-versions")) {
+            // this one can be accessed from the Everest website to determine the link to the latest version of Everest.
+            res.setHeader("Access-Control-Allow-Origin", "https://everestapi.github.io");
+        }
 
         chain.doFilter(req, res);
     }
