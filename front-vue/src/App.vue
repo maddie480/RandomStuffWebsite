@@ -56,6 +56,18 @@
                 >
               </li>
               <li>
+                <a
+                  :class="
+                    'dropdown-item ' +
+                    (this.$route.path === '/celeste/file-searcher'
+                      ? 'active'
+                      : '')
+                  "
+                  href="/celeste/file-searcher"
+                  >File Searcher</a
+                >
+              </li>
+              <li>
                 <a class="dropdown-item" href="/celeste/font-generator"
                   >Font Generator</a
                 >

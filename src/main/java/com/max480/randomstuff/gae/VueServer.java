@@ -18,7 +18,7 @@ import java.nio.charset.StandardCharsets;
  * into a vue-index.html within the project's classpath. So we just need to send that!
  */
 @WebServlet(name = "VueServer", urlPatterns = {"/celeste/wipe-converter", "/celeste/banana-mirror-browser",
-        "/celeste/map-tree-viewer"})
+        "/celeste/map-tree-viewer", "/celeste/file-searcher"})
 public class VueServer extends HttpServlet {
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
@@ -37,6 +37,12 @@ public class VueServer extends HttpServlet {
                         .replace("${page_title}", StringEscapeUtils.escapeHtml4("Celeste Wipe Converter"))
                         .replace("${page_description}", StringEscapeUtils.escapeHtml4(
                                 "Upload the frames of a custom Celeste screen wipe here, and you will be able to use it in-game with the \"max480's Helping Hand\" mod."));
+            } else if (request.getRequestURI().equals("/celeste/file-searcher")) {
+                contents = contents
+                        .replace("${favicon}", StringEscapeUtils.escapeHtml4("/celeste/favicon.ico"))
+                        .replace("${page_title}", StringEscapeUtils.escapeHtml4("Celeste File Searcher"))
+                        .replace("${page_description}", StringEscapeUtils.escapeHtml4(
+                                "Use this tool to find in which Celeste mod(s) a file is on GameBanana, based on its path in the zip."));
             } else {
                 contents = contents
                         .replace("${favicon}", StringEscapeUtils.escapeHtml4("/celeste/favicon.ico"))

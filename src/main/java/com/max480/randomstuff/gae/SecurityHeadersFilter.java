@@ -53,7 +53,7 @@ public class SecurityHeadersFilter extends HttpFilter {
                     "img-src 'self' https://celestemodupdater.0x0a.de; " +
                     "frame-ancestors 'none'; " +
                     "object-src 'none';");
-        } else if (req.getRequestURI().equals("/celeste/map-tree-viewer")) {
+        } else if (Arrays.asList("/celeste/map-tree-viewer", "/celeste/file-searcher").contains(req.getRequestURI())) {
             // allow displaying checkboxes that use SVG as data URLs
             res.setHeader("Content-Security-Policy", "default-src 'self'; " +
                     "img-src 'self' data:; " +

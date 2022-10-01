@@ -128,9 +128,8 @@ const vue = {
         ).data;
 
         this.mapContents = contents;
-      } catch (e) {
+      } catch {
         this.error = true;
-        console.error(e);
       }
       this.loading = false;
     },

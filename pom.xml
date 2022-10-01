@@ -354,5 +354,20 @@
                 </plugins>
             </build>
         </profile>
+        <profile>
+            <id>local</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.google.cloud.tools</groupId>
+                        <artifactId>appengine-maven-plugin</artifactId>
+                        <version>2.4.4</version>
+                        <configuration>
+                            <cloudSdkHome>D:\Program Files (x86)\Google\Cloud SDK\google-cloud-sdk</cloudSdkHome>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
 </project>

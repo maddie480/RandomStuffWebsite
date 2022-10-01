@@ -40,6 +40,14 @@ const routes = [
     },
   },
   {
+    path: "/celeste/file-searcher",
+    name: "FileSearcher",
+    component: () => import("../views/FileSearcher.vue"),
+    meta: {
+      title: "Celeste File Searcher",
+    },
+  },
+  {
     path: "/:pathMatch(.*)*",
     component: () => import("../views/RouteNotFound.vue"),
   },

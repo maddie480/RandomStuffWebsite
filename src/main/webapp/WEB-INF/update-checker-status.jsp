@@ -42,6 +42,7 @@
                         <li><a class="dropdown-item" href="/celeste/news-network-subscription">#celeste_news_network Subscription</a></li>
                         <li><a class="dropdown-item" href="/celeste/custom-entity-catalog">Custom Entity Catalog</a></li>
                         <li><a class="dropdown-item" href="/celeste/everest-yaml-validator">everest.yaml validator</a></li>
+                        <li><a class="dropdown-item" href="/celeste/file-searcher">File Searcher</a></li>
                         <li><a class="dropdown-item" href="/celeste/font-generator">Font Generator</a></li>
                         <li><a class="dropdown-item" href="/celeste/map-tree-viewer">Map Tree Viewer</a></li>
                         <li><a class="dropdown-item" href="/celeste/mod-structure-verifier">Mod Structure Verifier</a></li>
