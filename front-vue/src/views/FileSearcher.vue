@@ -57,13 +57,16 @@
 
       <ul v-if="results.length > 0">
         <li v-for="result in results" v-bind:key="result.fileid">
-          <b
-            ><a :href="result.url" target="_blank">{{ result.name }}</a></b
-          >
-          ➡ <a :href="result.fileUrl" target="_blank">{{ result.fileName }}</a>
-          <span v-if="result.fileDescription.trim().length !== 0">
-            ({{ result.fileDescription }})</span
-          >
+          <b>
+            <a :href="result.url" target="_blank">{{ result.name }}</a>
+          </b>
+          <div v-for="file in result.files" v-bind:key="file.id" class="result">
+            ➡
+            <a :href="file.url" target="_blank">{{ file.name }}</a>
+            <span v-if="file.description.trim().length !== 0">
+              ({{ file.description }})
+            </span>
+          </div>
         </li>
       </ul>
       <div class="no-results" v-else>
@@ -94,11 +97,13 @@ const fetchResultInfo = async (result) => {
   result.name = info[0].Name;
   result.url = info[0].PageURL;
 
-  for (const file of info[0].Files) {
-    if (file.URL === "https://gamebanana.com/dl/" + result.fileid) {
-      result.fileName = file.Name;
-      result.fileUrl = file.URL;
-      result.fileDescription = file.Description;
+  for (const file of result.files) {
+    for (const retrievedFile of info[0].Files) {
+      if (retrievedFile.URL === "https://gamebanana.com/dl/" + file.id) {
+        file.name = retrievedFile.Name;
+        file.url = retrievedFile.URL;
+        file.description = retrievedFile.Description;
+      }
     }
   }
 
@@ -117,8 +122,28 @@ const vue = {
   }),
   methods: {
     setResults: async function (results) {
-      const promises = [];
+      // group results by mod
+      const groupedResults = [];
+      let current = {};
       for (const result of results) {
+        if (
+          result.itemtype === current.itemtype &&
+          result.itemid === current.itemid
+        ) {
+          current.files.push({ id: result.fileid });
+        } else {
+          current = {
+            itemtype: result.itemtype,
+            itemid: result.itemid,
+            files: [{ id: result.fileid }],
+          };
+          groupedResults.push(current);
+        }
+      }
+
+      // for each result, retrieve mod name and file names
+      const promises = [];
+      for (const result of groupedResults) {
         // only display up to 100 results...
         if (promises.length >= 100) {
           this.truncated = true;
@@ -220,5 +245,9 @@ input.search {
   .no-results {
     text-align: center;
   }
+}
+
+.result {
+  margin-left: 20px;
 }
 </style>
