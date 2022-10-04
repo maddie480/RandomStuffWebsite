@@ -14,7 +14,7 @@
     "bootstrap": "^5.2.2",
     "browserify-zlib": "^0.2.0",
     "buffer": "^6.0.3",
-    "core-js": "^3.25.4",
+    "core-js": "^3.25.5",
     "downloadjs": "^1.4.7",
     "jimp": "^0.16.2",
     "js-yaml": "^4.1.0",
