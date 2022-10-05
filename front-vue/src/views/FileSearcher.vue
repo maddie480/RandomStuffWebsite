@@ -62,10 +62,13 @@
           </b>
           <div v-for="file in result.files" v-bind:key="file.id" class="result">
             ➡
-            <a :href="file.url" target="_blank">{{ file.name }}</a>
-            <span v-if="file.description.trim().length !== 0">
-              ({{ file.description }})
+            <span v-if="file.url !== undefined">
+              <a :href="file.url" target="_blank">{{ file.name }}</a>
+              <span v-if="file.description.trim().length !== 0">
+                ({{ file.description }})
+              </span>
             </span>
+            <span v-else>[deleted file]</span>
           </div>
         </li>
       </ul>
