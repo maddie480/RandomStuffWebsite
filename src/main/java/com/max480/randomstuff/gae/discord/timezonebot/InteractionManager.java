@@ -1,6 +1,6 @@
 package com.max480.randomstuff.gae.discord.timezonebot;
 
-import com.google.cloud.storage.*;
+import com.google.appengine.api.datastore.*;
 import com.max480.randomstuff.gae.CloudStorageUtils;
 import com.max480.randomstuff.gae.ConnectionUtils;
 import com.max480.randomstuff.gae.SecretConstants;
@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 @WebServlet(name = "TimezoneBot", urlPatterns = {"/discord/timezone-bot"}, loadOnStartup = 6)
 public class InteractionManager extends HttpServlet {
     private static final Logger logger = Logger.getLogger("InteractionManager");
-    private static final Storage storage = StorageOptions.newBuilder().setProjectId("max480-random-stuff").build().getService();
+    private static final DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
     // offset timezone database
     private static Map<String, String> TIMEZONE_MAP;
@@ -143,35 +143,33 @@ public class InteractionManager extends HttpServlet {
     }
 
     private static String getTimezoneFor(long serverId, long memberId) {
-        String path = serverId + "/" + memberId + ".txt";
-
         try {
-            BlobId blobId = BlobId.of("max480-timezone-bot-data", path);
-            String tz = new String(storage.readAllBytes(blobId), StandardCharsets.UTF_8);
-            setTimezoneFor(serverId, memberId, tz);
-            return tz;
-        } catch (StorageException e) {
-            if (e.getCode() == 404) {
-                return null;
-            }
-            throw e;
+            Entity entity = datastore.get(KeyFactory.createKey("timezoneBotData", serverId + "/" + memberId));
+            entity.setProperty("expiresAt", new Date(ZonedDateTime.now().plusYears(1).toEpochSecond() * 1000L));
+            datastore.put(entity);
+            return (String) entity.getProperty("timezoneName");
+        } catch (EntityNotFoundException e) {
+            return null;
         }
     }
 
     private static void setTimezoneFor(long serverId, long memberId, String timezone) {
-        String path = serverId + "/" + memberId + ".txt";
-        BlobId blobId = BlobId.of("max480-timezone-bot-data", path);
-        BlobInfo blobInfo = BlobInfo.newBuilder(blobId)
-                .setContentType("text/plain")
-                .setCacheControl("no-store")
-                .build();
-        storage.create(blobInfo, timezone.getBytes(StandardCharsets.UTF_8));
+        Entity entity = new Entity("timezoneBotData", serverId + "/" + memberId);
+        entity.setProperty("serverId", serverId);
+        entity.setProperty("memberId", memberId);
+        entity.setProperty("timezoneName", timezone);
+        entity.setProperty("expiresAt", new Date(ZonedDateTime.now().plusYears(1).toEpochSecond() * 1000L));
+        datastore.put(entity);
     }
 
     private static boolean deleteTimezoneFor(long serverId, long memberId) {
-        String path = serverId + "/" + memberId + ".txt";
-        BlobId blobId = BlobId.of("max480-timezone-bot-data", path);
-        return storage.delete(blobId);
+        try {
+            Entity entity = datastore.get(KeyFactory.createKey("timezoneBotData", serverId + "/" + memberId));
+            datastore.delete(entity.getKey());
+            return true;
+        } catch (EntityNotFoundException e) {
+            return false;
+        }
     }
 
     private void commandAutocomplete(JSONObject interaction, String locale, HttpServletResponse resp) throws IOException {
