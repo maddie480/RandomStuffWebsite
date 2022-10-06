@@ -8,9 +8,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -339,27 +336,27 @@ public class GameBananaArbitraryModAppService extends HttpServlet {
         int page = 1;
         Set<String> result = new HashSet<>();
         while (true) {
-            final Elements members = Jsoup.connect("https://gamebanana.com/apps/users/752?vl[page]=" + page + "&mid=UsersList").get()
-                    .select("recordcell.Member a.Avatar");
+            JSONObject userList;
+            try (InputStream is = ConnectionUtils.openStreamWithTimeout(new URL("https://gamebanana.com/apiv10/App/752/Users?_nPerpage=50&_nPage=" + page))) {
+                userList = new JSONObject(IOUtils.toString(is, UTF_8));
+            }
 
-            if (members.size() == 0) {
+            JSONArray members = userList.getJSONArray("_aRecords");
+
+            if (members.length() == 0) {
                 // we reached the end of the pages!
                 logger.info("User list: [" + String.join(", ", result) + "]");
 
-                if (result.isEmpty()) {
-                    // if we got no user, it's probably a bug (maybe the page changed and the selector does not work anymore)
-                    // since I (max480) will be using the app regardless.
-                    throw new RuntimeException("The user list is empty!");
+                if (!result.contains("1698143")) {
+                    // failsafe: max480 should be in the list, otherwise this means the listing does not work
+                    throw new RuntimeException("The user list does not have max480 in it!");
                 }
 
                 return result;
             }
 
-            for (Element member : members) {
-                if (!member.select("img").attr("data-src").equals("https://images.gamebanana.com/img/av/banned.gif")) {
-                    // this is a member and they're not banned!
-                    result.add(member.attr("href").substring(member.attr("href").lastIndexOf("/") + 1));
-                }
+            for (Object member : members) {
+                result.add(Integer.toString(((JSONObject) member).getJSONObject("_aUser").getInt("_idRow")));
             }
 
             page++;
