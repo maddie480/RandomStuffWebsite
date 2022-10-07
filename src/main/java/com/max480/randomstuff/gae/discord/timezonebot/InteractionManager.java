@@ -21,6 +21,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.text.DecimalFormat;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -83,20 +84,32 @@ public class InteractionManager extends HttpServlet {
                 // autocomplete
                 commandAutocomplete(data, locale, resp);
             } else if (data.getInt("type") == 3) {
-                // used a combo box
-                String timezoneFormat = data.getJSONObject("data").getJSONArray("values").getString(0);
+                if (data.getJSONObject("data").getInt("component_type") == 2) {
+                    int page = Integer.parseInt(data.getJSONObject("data").getString("custom_id").split("\\|")[0]);
+                    String action = data.getJSONObject("data").getString("custom_id").split("\\|")[1];
 
-                JSONObject response = new JSONObject();
-                response.put("type", 7); // edit the original response
+                    long serverId = Long.parseLong(data.getString("guild_id"));
+                    if ("list".equals(action)) {
+                        listTimezones(resp, serverId, page, locale, true);
+                    } else {
+                        cleanupInvalidUsers(data.getJSONObject("message"), resp, serverId, page, locale);
+                    }
+                } else {
+                    // used a combo box
+                    String timezoneFormat = data.getJSONObject("data").getJSONArray("values").getString(0);
 
-                JSONObject responseData = new JSONObject();
-                responseData.put("content", timezoneFormat);
-                responseData.put("allowed_mentions", new JSONObject("{\"parse\": []}"));
-                responseData.put("flags", 1 << 6); // ephemeral
-                response.put("data", responseData);
+                    JSONObject response = new JSONObject();
+                    response.put("type", 7); // edit the original response
 
-                logger.fine("Responding with: " + response.toString(2));
-                resp.getWriter().write(response.toString());
+                    JSONObject responseData = new JSONObject();
+                    responseData.put("content", timezoneFormat);
+                    responseData.put("allowed_mentions", new JSONObject("{\"parse\": []}"));
+                    responseData.put("flags", 1 << 6); // ephemeral
+                    response.put("data", responseData);
+
+                    logger.fine("Responding with: " + response.toString(2));
+                    resp.getWriter().write(response.toString());
+                }
             } else {
                 // slash command invocation OR user command
                 String commandName = data.getJSONObject("data").getString("name");
@@ -126,6 +139,10 @@ public class InteractionManager extends HttpServlet {
 
                     case "world-clock":
                         giveTimeForOtherPlace(resp, serverId, memberId, data.getJSONObject("data").getJSONArray("options").getJSONObject(0).getString("value"), locale);
+                        break;
+
+                    case "list-timezones":
+                        listTimezones(resp, serverId, 0, locale, false);
                         break;
 
                     case "Get Local Time":
@@ -613,6 +630,200 @@ public class InteractionManager extends HttpServlet {
         // no format matched!
         return null;
     }
+
+    private void listTimezones(HttpServletResponse event, long serverId, int page, String locale, boolean edit) throws IOException {
+        // list all members from the server
+        final PreparedQuery query = datastore.prepare(new Query("timezoneBotData")
+                .setFilter(new Query.FilterPredicate("serverId", Query.FilterOperator.EQUAL, serverId)));
+
+        // group them by UTC offset
+        Map<Integer, Set<Long>> peopleByUtcOffset = new TreeMap<>();
+        for (Entity member : query.asIterable()) {
+            ZoneId zone = ZoneId.of(member.getProperty("timezoneName").toString());
+            ZonedDateTime now = ZonedDateTime.now(zone);
+            int offset = now.getOffset().getTotalSeconds() / 60;
+
+            Set<Long> peopleInUtcOffset = peopleByUtcOffset.computeIfAbsent(offset, k -> new TreeSet<>());
+            peopleInUtcOffset.add((long) member.getProperty("memberId"));
+        }
+
+        if (peopleByUtcOffset.isEmpty()) {
+            respondPrivately(event, localizeMessage(locale,
+                    ":x: Nobody set up their timezone with `/set-timezone` on this server!",
+                    ":x: Personne n'a configuré son fuseau horaire avec `/set-timezone` sur ce serveur !"));
+        } else {
+            List<String> timezonesList = generateTimezonesList(peopleByUtcOffset, locale);
+            page = Math.min(page, timezonesList.size() - 1);
+
+            JSONObject response = new JSONObject();
+            response.put("type", edit ? 7 : 4);
+
+            JSONObject responseData = new JSONObject();
+            responseData.put("content", timezonesList.get(page));
+            responseData.put("flags", 1 << 6); // ephemeral
+            response.put("data", responseData);
+
+            JSONArray components = new JSONArray();
+            responseData.put("components", components);
+
+            if (timezonesList.size() > 1) {
+                JSONObject actionRow = new JSONObject();
+                components.put(actionRow);
+                actionRow.put("type", 1);
+
+                JSONArray rowComponents = new JSONArray();
+                actionRow.put("components", rowComponents);
+
+                // previous page
+                JSONObject previousPage = new JSONObject();
+                rowComponents.put(previousPage);
+
+                previousPage.put("type", 2);
+                previousPage.put("style", 1);
+                previousPage.put("disabled", page == 0);
+                previousPage.put("custom_id", (page - 1) + "|list");
+
+                JSONObject arrowLeftEmoji = new JSONObject("{\"id\": null}");
+                previousPage.put("emoji", arrowLeftEmoji);
+                arrowLeftEmoji.put("name", "⬅");
+
+                // next page
+                JSONObject nextPage = new JSONObject();
+                rowComponents.put(nextPage);
+
+                nextPage.put("type", 2);
+                nextPage.put("style", 1);
+                nextPage.put("disabled", page == timezonesList.size() - 1);
+                nextPage.put("custom_id", (page + 1) + "|list");
+
+                JSONObject arrowRightEmoji = new JSONObject("{\"id\": null}");
+                nextPage.put("emoji", arrowRightEmoji);
+                arrowRightEmoji.put("name", "➡");
+            }
+
+            {
+                JSONObject actionRow = new JSONObject();
+                components.put(actionRow);
+                actionRow.put("type", 1);
+
+                JSONArray rowComponents = new JSONArray();
+                actionRow.put("components", rowComponents);
+
+                JSONObject button = new JSONObject();
+                rowComponents.put(button);
+
+                button.put("type", 2);
+                button.put("style", 2);
+                button.put("label", localizeMessage(locale, "Clean up invalid users", "Nettoyer utilisateurs invalides"));
+                button.put("custom_id", page + "|cleanup");
+
+                JSONObject emojiObject = new JSONObject("{\"id\": null}");
+                button.put("emoji", emojiObject);
+                emojiObject.put("name", "\uD83E\uDDF9"); // broom
+            }
+
+            logger.fine("Responding with: " + response.toString(2));
+            event.getWriter().write(response.toString());
+        }
+    }
+
+    private static List<String> generateTimezonesList(Map<Integer, Set<Long>> people, String locale) {
+        List<String> pages = new ArrayList<>();
+
+        StringBuilder currentPage = new StringBuilder();
+        for (Map.Entry<Integer, Set<Long>> peopleInTimezone : people.entrySet()) {
+            int offsetMinutes = peopleInTimezone.getKey();
+
+            OffsetDateTime now = OffsetDateTime.now().withOffsetSameInstant(ZoneOffset.ofTotalSeconds(offsetMinutes * 60));
+
+            StringBuilder header = new StringBuilder();
+
+            // Discord has nice emoji for every 30 minutes, so let's use them :p
+            int hour = now.getHour();
+            if (hour == 0) hour = 12;
+            if (hour > 12) hour -= 12;
+
+            header.append("**:clock").append(hour);
+
+            if (now.getMinute() >= 30) {
+                header.append("30");
+            }
+
+            header.append(": ");
+
+            header.append(formatTimezoneName(offsetMinutes))
+                    .append(" (").append(now.format(DateTimeFormatter.ofPattern("fr".equals(locale) ? "H:mm" : "h:mma")).toLowerCase(Locale.ROOT)).append(")");
+
+            header.append("**");
+            header.append("\n");
+
+            if (currentPage.length() + header.length() + 25 > 2000) {
+                // we cannot fit the new header and at least one user in the current page! create a new one.
+                pages.add(currentPage.toString().trim());
+                currentPage = new StringBuilder();
+            }
+
+            currentPage.append(header);
+
+            for (Long member : peopleInTimezone.getValue()) {
+                if (currentPage.length() + 25 > 2000) {
+                    // create a new page and repeat the header on it!
+                    pages.add(currentPage.toString().trim());
+                    currentPage = new StringBuilder();
+                    currentPage.append(header);
+                }
+
+                currentPage.append("<@").append(member).append(">\n");
+            }
+
+            currentPage.append("\n");
+        }
+
+        if (currentPage.toString().trim().length() > 0) {
+            pages.add(currentPage.toString().trim());
+        }
+
+        return pages;
+    }
+
+    private static String formatTimezoneName(int zoneOffset) {
+        int hours = zoneOffset / 60;
+        int minutes = Math.abs(zoneOffset) % 60;
+        DecimalFormat twoDigits = new DecimalFormat("00");
+        return "UTC" + (hours < 0 ? "-" : "+") + twoDigits.format(Math.abs(hours)) + ":" + twoDigits.format(minutes);
+    }
+
+    private void cleanupInvalidUsers(JSONObject message, HttpServletResponse resp, long serverId, int page, String locale) throws IOException {
+        boolean deletedUsers = false;
+
+        for (String line : message.getString("content").split("\n")) {
+            if (line.startsWith("<@")) {
+                long id = Long.parseLong(line.substring(2, line.length() - 1));
+
+                boolean found = false;
+                for (Object o : message.getJSONArray("mentions")) {
+                    if (Long.parseLong(((JSONObject) o).getString("id")) == id) {
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (!found) {
+                    deleteTimezoneFor(serverId, id);
+                    deletedUsers = true;
+                }
+            }
+        }
+
+        if (deletedUsers) {
+            listTimezones(resp, serverId, page, locale, true);
+        } else {
+            respondPrivately(resp, localizeMessage(locale,
+                    "All users seem valid to me. :thinking:",
+                    "Tous les utilisateurs m'ont l'air valides. :thinking:"));
+        }
+    }
+
 
     /**
      * Equivalent to Map.get(key), except the key is case-insensitive.
