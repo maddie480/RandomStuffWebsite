@@ -121,10 +121,11 @@
         <li><code>/remove-timezone</code> - deletes your timezone from the bot's database</li>
         <li><code>/discord-timestamp [date_time]</code> - gives a <a href="https://discord.com/developers/docs/reference#message-formatting-timestamp-styles" target="_blank">Discord timestamp</a>, to tell a date/time to other people regardless of their timezone</li>
         <li>
-            <code>/time-for [member]</code> - gives the time it is now for another member of the server, if they have a timezone configured.
+            <code>/time-for [member]</code> - gives the time it is now for another member of the server (if they have a timezone configured) and the difference with the time it is for you.
             You can also see someone's local time by <b>right-clicking on them</b> (or tapping them on mobile), then selecting <b>Apps &gt; Get Local Time</b>.
         </li>
-        <li><code>/world-clock [place]</code> - gives the time it is in another place in the world (a city or a country)</li>
+        <li><code>/world-clock [place]</code> - gives the time it is in another place in the world (a city or a country) and the difference with the time it is for you</li>
+        <li><code>/list-timezones</code> - lists all members on the server with a timezone configured, sorting them by timezone with local time for each</li>
     </ul>
 
     <p>
@@ -178,14 +179,6 @@
         As such, it <b>requires the Manage Roles permission</b> as it creates, deletes and updates timezone roles itself as needed.
         It is also limited to 100 servers due to Discord having denied verification to exceed that.
     </p>
-
-    <p>
-        It has an extra command:
-    </p>
-
-    <ul>
-        <li><code>/list-timezones [visibility] [names]</code> - lists the timezones of all members in the server that have timezone roles. You can pass <code>visibility = public</code> in order to have the bot response be visible to everyone in the channel.</li>
-    </ul>
 
     <p>
         Two more commands allow admins to set the bot up, and are only accessible to members with the "Administrator" or "Manage Server" permission by default:
