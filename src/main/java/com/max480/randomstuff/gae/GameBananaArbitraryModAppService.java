@@ -1,6 +1,6 @@
 package com.max480.randomstuff.gae;
 
-import com.google.appengine.api.datastore.*;
+import com.google.cloud.datastore.*;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
@@ -31,10 +31,11 @@ import static java.nio.charset.StandardCharsets.UTF_8;
         "/gamebanana/arbitrary-mod-app-settings", "/gamebanana/arbitrary-mod-app-housekeep", "/gamebanana/arbitrary-mod-app-modlist"})
 public class GameBananaArbitraryModAppService extends HttpServlet {
     private static final Logger logger = Logger.getLogger("GameBananaArbitraryModAppService");
-    private final DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    private static final Datastore datastore = DatastoreOptions.newBuilder().setProjectId("max480-random-stuff").build().getService();
+    private static final KeyFactory keyFactory = datastore.newKeyFactory().setKind("arbitraryModAppConfiguration");
     private final Storage storage = StorageOptions.newBuilder().setProjectId("max480-random-stuff").build().getService();
 
-    private static DateTimeFormatter format = DateTimeFormatter.ofPattern("MMM d yyyy @ h:mm a O", Locale.ENGLISH);
+    private static final DateTimeFormatter format = DateTimeFormatter.ofPattern("MMM d yyyy @ h:mm a O", Locale.ENGLISH);
 
     public static class ModInfo {
         public String url; // _sProfileUrl
@@ -93,17 +94,17 @@ public class GameBananaArbitraryModAppService extends HttpServlet {
             return;
         }
 
-        String name, list;
-        try {
-            Entity dbEntity = datastore.get(KeyFactory.createKey("arbitraryModAppConfiguration", memberId));
-            name = (String) dbEntity.getProperty("title");
-            list = (String) dbEntity.getProperty("modList");
-        } catch (EntityNotFoundException e) {
+        Entity dbEntity = datastore.get(keyFactory.newKey(memberId));
+
+        if (dbEntity == null) {
             // whoops, user doesn't exist yet.
             response.setHeader("Content-Type", "text/html");
             response.getWriter().write("<b>Arbitrary Mod App was not configured!</b>");
             return;
         }
+
+        String name = dbEntity.getString("title");
+        String list = dbEntity.getString("modList");
 
         List<ModInfo> modList = Arrays.stream(list.split(",")).parallel()
                 // request all mods the user asked for.
@@ -167,12 +168,12 @@ public class GameBananaArbitraryModAppService extends HttpServlet {
             return new JSONObject(new String(storage.readAllBytes(blobId), UTF_8));
         } catch (Exception ex) {
             // if this is not possible, read from GameBanana directly instead
-            logger.info("Could not retrieve mod by ID from cache, querying GameBanana directly: " + ex.toString());
+            logger.info("Could not retrieve mod by ID from cache, querying GameBanana directly: " + ex);
             try (InputStream is = openStreamWithTimeout(new URL("https://gamebanana.com/apiv8/Mod/" + modId +
                     "?_csvProperties=_sProfileUrl,_sName,_aPreviewMedia,_tsDateAdded,_tsDateUpdated,_aGame,_aSubmitter,_bIsWithheld,_bIsTrashed,_bIsPrivate"))) {
                 return new JSONObject(IOUtils.toString(is, UTF_8));
             } catch (IOException e) {
-                logger.severe("Could not retrieve mod by ID! " + e.toString());
+                logger.severe("Could not retrieve mod by ID! " + e);
                 e.printStackTrace();
                 return null;
             }
@@ -196,16 +197,16 @@ public class GameBananaArbitraryModAppService extends HttpServlet {
         request.setAttribute("typedKey", "");
         request.setAttribute("initialKey", "");
 
-        try {
-            Entity dbEntity = datastore.get(KeyFactory.createKey("arbitraryModAppConfiguration", memberId));
-            request.setAttribute("title", dbEntity.getProperty("title"));
-            request.setAttribute("modList", dbEntity.getProperty("modList"));
-            request.setAttribute("isInDatabase", true);
-        } catch (EntityNotFoundException e) {
+        Entity dbEntity = datastore.get(keyFactory.newKey(memberId));
+        if (dbEntity == null) {
             // whoops, user doesn't exist yet.
             request.setAttribute("title", "");
             request.setAttribute("modList", "");
             request.setAttribute("isInDatabase", false);
+        } else {
+            request.setAttribute("title", dbEntity.getString("title"));
+            request.setAttribute("modList", dbEntity.getString("modList"));
+            request.setAttribute("isInDatabase", true);
         }
 
         request.getRequestDispatcher("/WEB-INF/gamebanana-modlist-settings.jsp").forward(request, response);
@@ -258,23 +259,26 @@ public class GameBananaArbitraryModAppService extends HttpServlet {
             return;
         }
 
-        Entity dbEntity;
-        String newKey = null;
-        try {
-            dbEntity = datastore.get(KeyFactory.createKey("arbitraryModAppConfiguration", memberId));
+        Entity.Builder dbEntityBuilder;
+        String key;
+
+        Entity existingDbEntity = datastore.get(keyFactory.newKey(memberId));
+        if (existingDbEntity == null) {
+            // we must create the user with a random key.
+            key = UUID.randomUUID().toString();
+            dbEntityBuilder = Entity.newBuilder(keyFactory.newKey(memberId))
+                    .set("key", key);
+            request.setAttribute("isInDatabase", false);
+        } else {
+            key = existingDbEntity.getString("key");
+            dbEntityBuilder = Entity.newBuilder(existingDbEntity);
             request.setAttribute("initialKey", "");
             request.setAttribute("isInDatabase", true);
-        } catch (EntityNotFoundException e) {
-            // we must create the user with a random key.
-            newKey = UUID.randomUUID().toString();
-            dbEntity = new Entity(KeyFactory.createKey("arbitraryModAppConfiguration", memberId));
-            dbEntity.setProperty("key", newKey);
-            request.setAttribute("isInDatabase", false);
         }
 
         // never trust the frontend.
         if (StringUtils.isEmpty(request.getParameter("title")) ||
-                (newKey == null && StringUtils.isEmpty(request.getParameter("key"))) ||
+                (existingDbEntity != null && StringUtils.isEmpty(request.getParameter("key"))) ||
                 request.getParameter("modlist") == null ||
                 !request.getParameter("modlist").matches("([0-9]+,)*[0-9]+")) {
 
@@ -293,11 +297,11 @@ public class GameBananaArbitraryModAppService extends HttpServlet {
         request.setAttribute("initialKey", "");
 
         // fill the form with the values previously typed in
-        request.setAttribute("typedKey", newKey == null ? request.getParameter("key") : "");
+        request.setAttribute("typedKey", existingDbEntity != null ? request.getParameter("key") : "");
         request.setAttribute("title", request.getParameter("title"));
         request.setAttribute("modList", request.getParameter("modlist"));
 
-        if (newKey == null && !request.getParameter("key").equals(dbEntity.getProperty("key"))) {
+        if (existingDbEntity != null && !request.getParameter("key").equals(key)) {
             logger.warning("Invalid key");
             request.setAttribute("invalidKey", true);
         } else if (request.getParameter("modlist").split(",").length > 50) {
@@ -314,15 +318,17 @@ public class GameBananaArbitraryModAppService extends HttpServlet {
             request.setAttribute("invalidMods", true);
         } else {
             // finally save!
-            dbEntity.setProperty("title", request.getParameter("title"));
-            dbEntity.setProperty("modList", request.getParameter("modlist"));
-            datastore.put(dbEntity);
+            dbEntityBuilder
+                    .set("title", request.getParameter("title"))
+                    .set("modList", request.getParameter("modlist"));
+            datastore.put(dbEntityBuilder.build());
             request.setAttribute("saved", true);
             request.setAttribute("isInDatabase", true);
             logger.info("Save successful");
-            if (newKey != null) {
+
+            if (existingDbEntity == null) {
                 logger.info("Key newly generated");
-                request.setAttribute("initialKey", newKey);
+                request.setAttribute("initialKey", key);
             }
         }
 
@@ -370,21 +376,34 @@ public class GameBananaArbitraryModAppService extends HttpServlet {
     private void housekeep() throws IOException {
         // delete all non-users from the database
         Set<String> users = getAllUsers();
-        final Query query = new Query("arbitraryModAppConfiguration").setKeysOnly();
-        for (Entity entity : datastore.prepare(query).asIterable()) {
-            if (!users.contains(entity.getKey().getName())) {
-                logger.info("Deleting key " + entity.getKey().toString() + " from the database because they're not an app user.");
-                datastore.delete(entity.getKey());
+        final QueryResults<Key> query = datastore.run(Query.newKeyQueryBuilder()
+                .setKind("arbitraryModAppConfiguration")
+                .build());
+
+        List<Key> keysToDelete = new ArrayList<>();
+        while (query.hasNext()) {
+            Key key = query.next();
+            if (!users.contains(key.getName())) {
+                logger.info("Deleting key " + key + " from the database because they're not an app user.");
+                keysToDelete.add(key);
             }
+        }
+
+        for (Key key : keysToDelete) {
+            datastore.delete(key);
         }
     }
 
     private Set<String> getModList() {
         Set<String> result = new HashSet<>();
 
-        final Query query = new Query("arbitraryModAppConfiguration");
-        for (Entity entity : datastore.prepare(query).asIterable()) {
-            String list = (String) entity.getProperty("modList");
+        final QueryResults<Entity> query = datastore.run(Query.newEntityQueryBuilder()
+                .setKind("arbitraryModAppConfiguration")
+                .build());
+
+        while (query.hasNext()) {
+            Entity entity = query.next();
+            String list = entity.getString("modList");
             result.addAll(Arrays.asList(list.split(",")));
         }
 

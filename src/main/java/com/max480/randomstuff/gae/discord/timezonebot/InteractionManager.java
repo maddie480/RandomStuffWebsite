@@ -1,11 +1,18 @@
 package com.max480.randomstuff.gae.discord.timezonebot;
 
-import com.google.appengine.api.datastore.*;
+import com.google.cloud.Timestamp;
+import com.google.cloud.datastore.*;
 import com.max480.randomstuff.gae.CloudStorageUtils;
 import com.max480.randomstuff.gae.ConnectionUtils;
 import com.max480.randomstuff.gae.SecretConstants;
 import com.max480.randomstuff.gae.discord.DiscordProtocolHandler;
 import org.apache.commons.io.IOUtils;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPatch;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,9 +24,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLEncoder;
+import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.time.*;
@@ -38,7 +43,8 @@ import java.util.stream.Collectors;
 @WebServlet(name = "TimezoneBot", urlPatterns = {"/discord/timezone-bot"}, loadOnStartup = 6)
 public class InteractionManager extends HttpServlet {
     private static final Logger logger = Logger.getLogger("InteractionManager");
-    private static final DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    private static final Datastore datastore = DatastoreOptions.newBuilder().setProjectId("max480-random-stuff").build().getService();
+    private static final KeyFactory keyFactory = datastore.newKeyFactory().setKind("timezoneBotData");
 
     // offset timezone database
     private static Map<String, String> TIMEZONE_MAP;
@@ -90,9 +96,9 @@ public class InteractionManager extends HttpServlet {
 
                     long serverId = Long.parseLong(data.getString("guild_id"));
                     if ("list".equals(action)) {
-                        listTimezones(resp, serverId, page, locale, true);
+                        listTimezones(response -> resp.getWriter().write(response), serverId, page, locale, true);
                     } else {
-                        cleanupInvalidUsers(data.getJSONObject("message"), resp, serverId, page, locale);
+                        cleanupInvalidUsers(data, resp, serverId, page, locale);
                     }
                 } else {
                     // used a combo box
@@ -142,7 +148,7 @@ public class InteractionManager extends HttpServlet {
                         break;
 
                     case "list-timezones":
-                        listTimezones(resp, serverId, 0, locale, false);
+                        listTimezones(response -> resp.getWriter().write(response), serverId, 0, locale, false);
                         break;
 
                     case "Get Local Time":
@@ -160,33 +166,34 @@ public class InteractionManager extends HttpServlet {
     }
 
     private static String getTimezoneFor(long serverId, long memberId) {
-        try {
-            Entity entity = datastore.get(KeyFactory.createKey("timezoneBotData", serverId + "/" + memberId));
-            entity.setProperty("expiresAt", new Date(ZonedDateTime.now().plusYears(1).toEpochSecond() * 1000L));
-            datastore.put(entity);
-            return (String) entity.getProperty("timezoneName");
-        } catch (EntityNotFoundException e) {
-            return null;
-        }
+        Entity entity = datastore.get(keyFactory.newKey(serverId + "/" + memberId));
+        if (entity == null) return null;
+
+        entity = Entity.newBuilder(entity)
+                .set("expiresAt", Timestamp.ofTimeSecondsAndNanos(ZonedDateTime.now().plusYears(1).toEpochSecond(), 0))
+                .build();
+        datastore.put(entity);
+
+        return entity.getString("timezoneName");
     }
 
     private static void setTimezoneFor(long serverId, long memberId, String timezone) {
-        Entity entity = new Entity("timezoneBotData", serverId + "/" + memberId);
-        entity.setProperty("serverId", serverId);
-        entity.setProperty("memberId", memberId);
-        entity.setProperty("timezoneName", timezone);
-        entity.setProperty("expiresAt", new Date(ZonedDateTime.now().plusYears(1).toEpochSecond() * 1000L));
+        Entity entity = Entity.newBuilder(keyFactory.newKey(serverId + "/" + memberId))
+                .set("serverId", serverId)
+                .set("memberId", memberId)
+                .set("timezoneName", timezone)
+                .set("expiresAt", Timestamp.ofTimeSecondsAndNanos(ZonedDateTime.now().plusYears(1).toEpochSecond(), 0))
+                .build();
+
         datastore.put(entity);
     }
 
     private static boolean deleteTimezoneFor(long serverId, long memberId) {
-        try {
-            Entity entity = datastore.get(KeyFactory.createKey("timezoneBotData", serverId + "/" + memberId));
-            datastore.delete(entity.getKey());
-            return true;
-        } catch (EntityNotFoundException e) {
-            return false;
-        }
+        Entity entity = datastore.get(keyFactory.newKey(serverId + "/" + memberId));
+        if (entity == null) return false;
+
+        datastore.delete(entity.getKey());
+        return true;
     }
 
     private void commandAutocomplete(JSONObject interaction, String locale, HttpServletResponse resp) throws IOException {
@@ -509,7 +516,7 @@ public class InteractionManager extends HttpServlet {
      * Handles the /time-for command: gives the time it is for another server member.
      */
     private static void giveTimeForOtherUser(HttpServletResponse event, long serverId, long memberId, long otherMemberId, String locale) throws IOException {
-        getTimezoneFor(serverId, memberId);
+        String userTimezone = getTimezoneFor(serverId, memberId);
 
         // find the target user's timezone.
         String timezoneName = getTimezoneFor(serverId, otherMemberId);
@@ -526,13 +533,15 @@ public class InteractionManager extends HttpServlet {
             DateTimeFormatter formatFr = DateTimeFormatter.ofPattern("dd MMM, HH:mm", Locale.FRENCH);
 
             respondPrivately(event, localizeMessage(locale,
-                    "The current time for <@" + otherMemberId + "> is **" + nowForUser.format(format) + "**.",
-                    "Pour <@" + otherMemberId + ">, l'horloge affiche **" + nowForUser.format(formatFr) + "**."));
+                    "The current time for <@" + otherMemberId + "> is **" + nowForUser.format(format) + "** " +
+                            "(" + getOffsetAndDifference(timezoneName, userTimezone, locale) + ").",
+                    "Pour <@" + otherMemberId + ">, l'horloge affiche **" + nowForUser.format(formatFr) + "** " +
+                            "(" + getOffsetAndDifference(timezoneName, userTimezone, locale) + ")."));
         }
     }
 
     private static void giveTimeForOtherPlace(HttpServletResponse event, long serverId, long memberId, String place, String locale) throws IOException {
-        getTimezoneFor(serverId, memberId);
+        String userTimezone = getTimezoneFor(serverId, memberId);
 
         try {
             // rate limit: 1 request per second
@@ -593,8 +602,10 @@ public class InteractionManager extends HttpServlet {
                     DateTimeFormatter formatFr = DateTimeFormatter.ofPattern("dd MMM, HH:mm", Locale.FRENCH);
 
                     respondPrivately(event, localizeMessage(locale,
-                            "The current time in **" + name + "** is **" + nowAtPlace.format(format) + "**.",
-                            "A **" + name + "**, l'horloge affiche **" + nowAtPlace.format(formatFr) + "**."));
+                            "The current time in **" + name + "** is **" + nowAtPlace.format(format) + "** " +
+                                    "(" + getOffsetAndDifference(zoneId.toString(), userTimezone, locale) + ").",
+                            "A **" + name + "**, l'horloge affiche **" + nowAtPlace.format(formatFr) + "** " +
+                                    "(" + getOffsetAndDifference(zoneId.toString(), userTimezone, locale) + ")."));
                 } else {
                     logger.info("Coordinates (" + latitude + ", " + longitude + ") were not found by TimeZoneDB!");
                     respondPrivately(event, localizeMessage(locale,
@@ -631,26 +642,42 @@ public class InteractionManager extends HttpServlet {
         return null;
     }
 
-    private void listTimezones(HttpServletResponse event, long serverId, int page, String locale, boolean edit) throws IOException {
+    private interface NetworkingOperation<T> {
+        void accept(T parameter) throws IOException;
+    }
+
+    private void listTimezones(NetworkingOperation<String> respond, long serverId, int page, String locale, boolean edit) throws IOException {
         // list all members from the server
-        final PreparedQuery query = datastore.prepare(new Query("timezoneBotData")
-                .setFilter(new Query.FilterPredicate("serverId", Query.FilterOperator.EQUAL, serverId)));
+        final QueryResults<Entity> query = datastore.run(Query.newEntityQueryBuilder()
+                .setKind("timezoneBotData")
+                .setFilter(StructuredQuery.PropertyFilter.eq("serverId", serverId))
+                .build());
 
         // group them by UTC offset
         Map<Integer, Set<Long>> peopleByUtcOffset = new TreeMap<>();
-        for (Entity member : query.asIterable()) {
-            ZoneId zone = ZoneId.of(member.getProperty("timezoneName").toString());
+        while (query.hasNext()) {
+            Entity member = query.next();
+            ZoneId zone = ZoneId.of(member.getString("timezoneName"));
             ZonedDateTime now = ZonedDateTime.now(zone);
             int offset = now.getOffset().getTotalSeconds() / 60;
 
             Set<Long> peopleInUtcOffset = peopleByUtcOffset.computeIfAbsent(offset, k -> new TreeSet<>());
-            peopleInUtcOffset.add((long) member.getProperty("memberId"));
+            peopleInUtcOffset.add(member.getLong("memberId"));
         }
 
         if (peopleByUtcOffset.isEmpty()) {
-            respondPrivately(event, localizeMessage(locale,
+            JSONObject response = new JSONObject();
+            response.put("type", 4); // response in channel
+
+            JSONObject responseData = new JSONObject();
+            responseData.put("content", localizeMessage(locale,
                     ":x: Nobody set up their timezone with `/set-timezone` on this server!",
                     ":x: Personne n'a configuré son fuseau horaire avec `/set-timezone` sur ce serveur !"));
+            responseData.put("allowed_mentions", new JSONObject("{\"parse\": []}"));
+            responseData.put("flags", 1 << 6); // ephemeral
+            response.put("data", responseData);
+
+            respond.accept(response.toString());
         } else {
             List<String> timezonesList = generateTimezonesList(peopleByUtcOffset, locale);
             page = Math.min(page, timezonesList.size() - 1);
@@ -723,7 +750,7 @@ public class InteractionManager extends HttpServlet {
             }
 
             logger.fine("Responding with: " + response.toString(2));
-            event.getWriter().write(response.toString());
+            respond.accept(response.toString());
         }
     }
 
@@ -793,15 +820,15 @@ public class InteractionManager extends HttpServlet {
         return "UTC" + (hours < 0 ? "-" : "+") + twoDigits.format(Math.abs(hours)) + ":" + twoDigits.format(minutes);
     }
 
-    private void cleanupInvalidUsers(JSONObject message, HttpServletResponse resp, long serverId, int page, String locale) throws IOException {
-        boolean deletedUsers = false;
+    private void cleanupInvalidUsers(JSONObject data, HttpServletResponse resp, long serverId, int page, String locale) throws IOException {
+        final List<Long> usersToCleanUp = new ArrayList<>();
 
-        for (String line : message.getString("content").split("\n")) {
+        for (String line : data.getJSONObject("message").getString("content").split("\n")) {
             if (line.startsWith("<@")) {
                 long id = Long.parseLong(line.substring(2, line.length() - 1));
 
                 boolean found = false;
-                for (Object o : message.getJSONArray("mentions")) {
+                for (Object o : data.getJSONObject("message").getJSONArray("mentions")) {
                     if (Long.parseLong(((JSONObject) o).getString("id")) == id) {
                         found = true;
                         break;
@@ -809,21 +836,85 @@ public class InteractionManager extends HttpServlet {
                 }
 
                 if (!found) {
-                    deleteTimezoneFor(serverId, id);
-                    deletedUsers = true;
+                    usersToCleanUp.add(id);
                 }
             }
         }
 
-        if (deletedUsers) {
-            listTimezones(resp, serverId, page, locale, true);
-        } else {
+        if (usersToCleanUp.isEmpty()) {
             respondPrivately(resp, localizeMessage(locale,
                     "All users seem valid to me. :thinking:",
                     "Tous les utilisateurs m'ont l'air valides. :thinking:"));
+        } else {
+            // respond now with a loading message (Discord only displays loading if responding in a new message aaaa)
+            JSONObject response = new JSONObject();
+            response.put("type", 7); // update message
+
+            JSONObject responseData = new JSONObject();
+            responseData.put("content", localizeMessage(locale,
+                    ":broom: Cleaning up invalid users, please wait...",
+                    ":broom: Nettoyage des utilisateurs invalides en cours, veuillez patienter..."));
+            responseData.put("components", new JSONArray());
+            response.put("data", responseData);
+
+            logger.fine("Responding with: " + response.toString(2));
+            resp.getWriter().write(response.toString());
+
+            // delete the invalid users asynchronously, and call Discord when this is done
+            new Thread(() -> {
+                try {
+                    for (long userId : usersToCleanUp) {
+                        deleteTimezoneFor(serverId, userId);
+                    }
+
+                    listTimezones(r -> {
+                        JSONObject responseParsed = new JSONObject(r);
+                        respondDeferred(data.getString("token"), responseParsed.getJSONObject("data").toString());
+                    }, serverId, page, locale, true);
+                } catch (Exception e) {
+                    logger.severe("Failed to asynchronously clean up user ids! " + e);
+                }
+            }).start();
         }
     }
 
+    private static String getOffsetAndDifference(String consideredTimezone, String userTimezone, String locale) {
+        ZoneId zone = ZoneId.of(consideredTimezone);
+        ZonedDateTime now = ZonedDateTime.now(zone);
+        int consideredTimezoneOffset = now.getOffset().getTotalSeconds() / 60;
+
+        if (userTimezone == null) {
+            return formatTimezoneName(consideredTimezoneOffset);
+        } else {
+            zone = ZoneId.of(userTimezone);
+            now = ZonedDateTime.now(zone);
+            int userTimezoneOffset = now.getOffset().getTotalSeconds() / 60;
+
+            int timeDifference = consideredTimezoneOffset - userTimezoneOffset;
+
+            if (timeDifference == 0) {
+                return formatTimezoneName(consideredTimezoneOffset) + ", " + localizeMessage(locale, "same time as you", "même heure que toi");
+            } else {
+                String comment;
+                int hours = Math.abs(timeDifference / 60);
+                int minutes = Math.abs(timeDifference % 60);
+
+                if (minutes == 0) {
+                    comment = hours + " " + localizeMessage(locale, "hour", "heure") + (hours == 1 ? "" : "s");
+                } else {
+                    comment = hours + ":" + new DecimalFormat("00").format(minutes);
+                }
+
+                if (timeDifference < 0) {
+                    comment += " " + localizeMessage(locale, "behind you", "de retard sur toi");
+                } else {
+                    comment += " " + localizeMessage(locale, "ahead of you", "d'avance sur toi");
+                }
+
+                return formatTimezoneName(consideredTimezoneOffset) + ", " + comment;
+            }
+        }
+    }
 
     /**
      * Equivalent to Map.get(key), except the key is case-insensitive.
@@ -856,6 +947,24 @@ public class InteractionManager extends HttpServlet {
 
         logger.fine("Responding with: " + response.toString(2));
         responseStream.getWriter().write(response.toString());
+    }
+
+    private static void respondDeferred(String interactionToken, String message) throws IOException {
+        String url = "https://discord.com/api/v10/webhooks/" + SecretConstants.TIMEZONE_BOT_CLIENT_ID + "/" + interactionToken + "/messages/@original";
+
+        // Apache HttpClient because PATCH does not exist according to HttpURLConnection
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+            HttpPatch httpPatch = new HttpPatch(new URI(url));
+            httpPatch.setHeader("User-Agent", "DiscordBot (https://max480-random-stuff.appspot.com/discord-bots/#timezone-bot, 1.0)");
+            httpPatch.setEntity(new StringEntity(message, ContentType.APPLICATION_JSON));
+            CloseableHttpResponse httpResponse = httpClient.execute(httpPatch);
+
+            if (httpResponse.getStatusLine().getStatusCode() != 200) {
+                logger.severe("Discord responded with " + httpResponse.getStatusLine().getStatusCode() + " to our edit request!");
+            }
+        } catch (URISyntaxException e) {
+            throw new IOException(e);
+        }
     }
 
     private static String localizeMessage(String locale, String english, String french) {

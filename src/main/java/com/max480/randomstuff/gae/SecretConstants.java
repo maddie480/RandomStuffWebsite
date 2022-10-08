@@ -25,6 +25,7 @@ public class SecretConstants {
     public static String CUSTOM_SLASH_COMMANDS_CLIENT_SECRET = "";
     public static String CUSTOM_SLASH_COMMANDS_PUBLIC_KEY = "";
 
+    public static String TIMEZONE_BOT_CLIENT_ID = "";
     public static String TIMEZONE_BOT_PUBLIC_KEY = "";
     public static String TIMEZONEDB_API_KEY = "";
 
@@ -48,6 +49,7 @@ public class SecretConstants {
             CUSTOM_SLASH_COMMANDS_CLIENT_SECRET = secrets.getString("CUSTOM_SLASH_COMMANDS_CLIENT_SECRET");
             CUSTOM_SLASH_COMMANDS_PUBLIC_KEY = secrets.getString("CUSTOM_SLASH_COMMANDS_PUBLIC_KEY");
 
+            TIMEZONE_BOT_CLIENT_ID = secrets.getString("TIMEZONE_BOT_CLIENT_ID");
             TIMEZONE_BOT_PUBLIC_KEY = secrets.getString("TIMEZONE_BOT_PUBLIC_KEY");
             TIMEZONEDB_API_KEY = secrets.getString("TIMEZONEDB_API_KEY");
 

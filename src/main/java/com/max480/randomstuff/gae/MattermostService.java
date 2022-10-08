@@ -1,6 +1,9 @@
 package com.max480.randomstuff.gae;
 
-import com.google.appengine.api.datastore.*;
+import com.google.cloud.datastore.Datastore;
+import com.google.cloud.datastore.DatastoreOptions;
+import com.google.cloud.datastore.Entity;
+import com.google.cloud.datastore.KeyFactory;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -39,7 +42,8 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 public class MattermostService extends HttpServlet {
 
     private final Logger logger = Logger.getLogger("MattermostService");
-    private final DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    private static final Datastore datastore = DatastoreOptions.newBuilder().setProjectId("max480-random-stuff").build().getService();
+    private static final KeyFactory keyFactory = datastore.newKeyFactory().setKind("resources");
 
     // those are the resources that can be locked or unlocked through /lock and /unlock
     private final List<String> resources = Arrays.asList("integ1", "integ2");
@@ -196,9 +200,10 @@ public class MattermostService extends HttpServlet {
             }
         } else {
             // all good, lock the resource
-            Entity datastoreThing = new Entity("ressources", resource);
-            datastoreThing.setProperty("lockedBy", user);
-            datastoreThing.setProperty("lockTime", System.currentTimeMillis());
+            Entity datastoreThing = Entity.newBuilder(keyFactory.newKey(resource))
+                    .set("lockedBy", user)
+                    .set("lockTime", System.currentTimeMillis())
+                    .build();
             datastore.put(datastoreThing);
 
             jsonObject.put("text", ":lock: @" + user + " a verrouillé la ressource **" + resource + "**.");
@@ -223,7 +228,7 @@ public class MattermostService extends HttpServlet {
         if (lockedBy != null) {
             if (lockedBy.equals(user)) {
                 // all good, unlock the resource
-                datastore.delete(KeyFactory.createKey("ressources", resource));
+                datastore.delete(keyFactory.newKey(resource));
                 jsonObject.put("text", ":unlock: @" + user + " a déverrouillé la ressource **" + resource + "**.");
             } else {
                 // resource is locked... by someone else
@@ -238,18 +243,13 @@ public class MattermostService extends HttpServlet {
     }
 
     private String figureOutWhoLocked(String resource) {
-        String lockedBy = null;
-        try {
-            Entity datastoreEntity = datastore.get(KeyFactory.createKey("ressources", resource));
+        Entity datastoreEntity = datastore.get(keyFactory.newKey(resource));
 
-            // locks expire after 12 hours.
-            if ((long) datastoreEntity.getProperty("lockTime") > System.currentTimeMillis() - (12 * 3600 * 1000)) {
-                lockedBy = (String) datastoreEntity.getProperty("lockedBy");
-            }
-        } catch (EntityNotFoundException e) {
-            // oops, in that case lockedBy will stay null.
+        // locks expire after 12 hours.
+        if (datastoreEntity != null && datastoreEntity.getLong("lockTime") > System.currentTimeMillis() - (12 * 3600 * 1000)) {
+            return datastoreEntity.getString("lockedBy");
         }
-        return lockedBy;
+        return null;
     }
 
     private String commandExploit() {
@@ -257,7 +257,7 @@ public class MattermostService extends HttpServlet {
         try {
             exploit = getPlanningExploitCached();
         } catch (IOException e) {
-            logger.log(Level.SEVERE, "Problem while getting exploit planning: " + e.toString());
+            logger.log(Level.SEVERE, "Problem while getting exploit planning: " + e);
 
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("text", "Désolé, la récupération du planning d'exploit a échoué. :ckc:");
@@ -286,7 +286,7 @@ public class MattermostService extends HttpServlet {
         try {
             exploit = getPlanningExploitCached();
         } catch (IOException e) {
-            logger.log(Level.SEVERE, "Problem while getting exploit planning: " + e.toString());
+            logger.log(Level.SEVERE, "Problem while getting exploit planning: " + e);
 
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("text", "Désolé, la récupération du planning d'exploit a échoué. :ckc:");
@@ -312,8 +312,8 @@ public class MattermostService extends HttpServlet {
     }
 
     private String joinAll(Collection<String> strings) {
-        long left = strings.stream().count();
-        StringBuilder b = new StringBuilder("");
+        long left = strings.size();
+        StringBuilder b = new StringBuilder();
         for (String string : strings) {
             left--;
             b.append(string).append(left == 0 ? "" : (left == 1 ? "** et **" : "**, **"));
@@ -332,7 +332,7 @@ public class MattermostService extends HttpServlet {
         try {
             exploit = getPlanningExploitCached();
         } catch (IOException e) {
-            logger.log(Level.SEVERE, "Problem while getting exploit planning: " + e.toString());
+            logger.log(Level.SEVERE, "Problem while getting exploit planning: " + e);
 
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("text", "Désolé, la récupération du planning d'exploit a échoué. :ckc:");
