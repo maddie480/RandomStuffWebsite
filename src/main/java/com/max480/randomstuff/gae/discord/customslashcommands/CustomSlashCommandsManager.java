@@ -1,5 +1,6 @@
 package com.max480.randomstuff.gae.discord.customslashcommands;
 
+import com.max480.randomstuff.gae.ConnectionUtils;
 import com.max480.randomstuff.gae.SecretConstants;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
@@ -8,7 +9,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -39,9 +39,8 @@ public class CustomSlashCommandsManager {
         commandObject.put("name", name);
         commandObject.put("description", description);
 
-        HttpURLConnection connection = (HttpURLConnection) new URL("https://discord.com/api/v10/applications/" + SecretConstants.CUSTOM_SLASH_COMMANDS_CLIENT_ID + "/guilds/" + serverId + "/commands").openConnection();
-        connection.setConnectTimeout(10000);
-        connection.setReadTimeout(30000);
+        HttpURLConnection connection = ConnectionUtils.openConnectionWithTimeout(
+                "https://discord.com/api/v10/applications/" + SecretConstants.CUSTOM_SLASH_COMMANDS_CLIENT_ID + "/guilds/" + serverId + "/commands");
         connection.setRequestMethod("POST");
         connection.setRequestProperty("Authorization", "Bearer " + authenticate());
         connection.setRequestProperty("Content-Type", "application/json");
@@ -76,9 +75,8 @@ public class CustomSlashCommandsManager {
      * Removes a slash command from a server, given its ID.
      */
     public static void removeSlashCommand(long serverId, long commandId) throws IOException {
-        HttpURLConnection connection = (HttpURLConnection) new URL("https://discord.com/api/v10/applications/" + SecretConstants.CUSTOM_SLASH_COMMANDS_CLIENT_ID + "/guilds/" + serverId + "/commands/" + commandId).openConnection();
-        connection.setConnectTimeout(10000);
-        connection.setReadTimeout(30000);
+        HttpURLConnection connection = ConnectionUtils.openConnectionWithTimeout(
+                "https://discord.com/api/v10/applications/" + SecretConstants.CUSTOM_SLASH_COMMANDS_CLIENT_ID + "/guilds/" + serverId + "/commands/" + commandId);
         connection.setRequestMethod("DELETE");
         connection.setRequestProperty("Authorization", "Bearer " + authenticate());
         connection.setRequestProperty("User-Agent", USER_AGENT);
@@ -92,9 +90,8 @@ public class CustomSlashCommandsManager {
      * Gives a slash command's description, given its ID.
      */
     public static String getSlashCommandDescription(long serverId, long commandId) throws IOException {
-        HttpURLConnection connection = (HttpURLConnection) new URL("https://discord.com/api/v10/applications/" + SecretConstants.CUSTOM_SLASH_COMMANDS_CLIENT_ID + "/guilds/" + serverId + "/commands/" + commandId).openConnection();
-        connection.setConnectTimeout(10000);
-        connection.setReadTimeout(30000);
+        HttpURLConnection connection = ConnectionUtils.openConnectionWithTimeout(
+                "https://discord.com/api/v10/applications/" + SecretConstants.CUSTOM_SLASH_COMMANDS_CLIENT_ID + "/guilds/" + serverId + "/commands/" + commandId);
         connection.setRequestMethod("GET");
         connection.setRequestProperty("Authorization", "Bearer " + authenticate());
         connection.setRequestProperty("User-Agent", USER_AGENT);
@@ -122,9 +119,7 @@ public class CustomSlashCommandsManager {
         String basicAuth = Base64.getEncoder().encodeToString(
                 (SecretConstants.CUSTOM_SLASH_COMMANDS_CLIENT_ID + ":" + SecretConstants.CUSTOM_SLASH_COMMANDS_CLIENT_SECRET).getBytes(StandardCharsets.UTF_8));
 
-        HttpURLConnection connection = (HttpURLConnection) new URL("https://discord.com/api/oauth2/token").openConnection();
-        connection.setConnectTimeout(10000);
-        connection.setReadTimeout(30000);
+        HttpURLConnection connection = ConnectionUtils.openConnectionWithTimeout("https://discord.com/api/oauth2/token");
         connection.setRequestMethod("POST");
         connection.setRequestProperty("Authorization", "Basic " + basicAuth);
         connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");

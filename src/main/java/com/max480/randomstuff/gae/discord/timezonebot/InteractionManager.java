@@ -24,7 +24,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
-import java.net.*;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.time.*;
@@ -554,13 +557,10 @@ public class InteractionManager extends HttpServlet {
             }
 
             // query OpenStreetMap
-            HttpURLConnection osm = (HttpURLConnection) new URL("https://nominatim.openstreetmap.org/search.php?" +
+            HttpURLConnection osm = ConnectionUtils.openConnectionWithTimeout("https://nominatim.openstreetmap.org/search.php?" +
                     "q=" + URLEncoder.encode(place, "UTF-8") +
                     "&accept-language=" + ("fr".equals(locale) ? "fr" : "en") +
-                    "&limit=1&format=jsonv2")
-                    .openConnection();
-            osm.setConnectTimeout(10000);
-            osm.setReadTimeout(30000);
+                    "&limit=1&format=jsonv2");
             osm.setRequestProperty("User-Agent", "TimezoneBot/1.0 (+https://max480-random-stuff.appspot.com/discord-bots#timezone-bot)");
 
             JSONArray osmResults;
@@ -581,8 +581,8 @@ public class InteractionManager extends HttpServlet {
                 logger.fine("Result for place '" + place + "': '" + name + "', latitude " + latitude + ", longitude " + longitude);
 
                 JSONObject timezoneDBResult;
-                try (InputStream is = ConnectionUtils.openStreamWithTimeout(new URL("https://api.timezonedb.com/v2.1/get-time-zone?key="
-                        + SecretConstants.TIMEZONEDB_API_KEY + "&format=json&by=position&lat=" + latitude + "&lng=" + longitude))) {
+                try (InputStream is = ConnectionUtils.openStreamWithTimeout("https://api.timezonedb.com/v2.1/get-time-zone?key="
+                        + SecretConstants.TIMEZONEDB_API_KEY + "&format=json&by=position&lat=" + latitude + "&lng=" + longitude)) {
 
                     timezoneDBResult = new JSONObject(IOUtils.toString(is, StandardCharsets.UTF_8));
                 }

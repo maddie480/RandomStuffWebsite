@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -35,10 +34,8 @@ public class GameBananaAPIExtensions extends HttpServlet {
             pubDateField = "_tsDateUpdated";
         }
 
-        HttpURLConnection connection = (HttpURLConnection) new URL("https://gamebanana.com/apiv8/Mod/ByCategory?_csvProperties=_sName,_sProfileUrl,_aPreviewMedia," + pubDateField + "&"
-                + request.getQueryString()).openConnection();
-        connection.setConnectTimeout(10000);
-        connection.setReadTimeout(30000);
+        HttpURLConnection connection = ConnectionUtils.openConnectionWithTimeout(
+                "https://gamebanana.com/apiv8/Mod/ByCategory?_csvProperties=_sName,_sProfileUrl,_aPreviewMedia," + pubDateField + "&" + request.getQueryString());
 
         if (connection.getResponseCode() != 200) {
             // pass the answer through

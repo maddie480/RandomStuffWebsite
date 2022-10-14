@@ -16,7 +16,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -169,8 +168,8 @@ public class GameBananaArbitraryModAppService extends HttpServlet {
         } catch (Exception ex) {
             // if this is not possible, read from GameBanana directly instead
             logger.info("Could not retrieve mod by ID from cache, querying GameBanana directly: " + ex);
-            try (InputStream is = openStreamWithTimeout(new URL("https://gamebanana.com/apiv8/Mod/" + modId +
-                    "?_csvProperties=_sProfileUrl,_sName,_aPreviewMedia,_tsDateAdded,_tsDateUpdated,_aGame,_aSubmitter,_bIsWithheld,_bIsTrashed,_bIsPrivate"))) {
+            try (InputStream is = openStreamWithTimeout("https://gamebanana.com/apiv8/Mod/" + modId +
+                    "?_csvProperties=_sProfileUrl,_sName,_aPreviewMedia,_tsDateAdded,_tsDateUpdated,_aGame,_aSubmitter,_bIsWithheld,_bIsTrashed,_bIsPrivate")) {
                 return new JSONObject(IOUtils.toString(is, UTF_8));
             } catch (IOException e) {
                 logger.severe("Could not retrieve mod by ID! " + e);
@@ -343,7 +342,7 @@ public class GameBananaArbitraryModAppService extends HttpServlet {
         Set<String> result = new HashSet<>();
         while (true) {
             JSONObject userList;
-            try (InputStream is = ConnectionUtils.openStreamWithTimeout(new URL("https://gamebanana.com/apiv10/App/752/Users?_nPerpage=50&_nPage=" + page))) {
+            try (InputStream is = ConnectionUtils.openStreamWithTimeout("https://gamebanana.com/apiv10/App/752/Users?_nPerpage=50&_nPage=" + page)) {
                 userList = new JSONObject(IOUtils.toString(is, UTF_8));
             }
 
