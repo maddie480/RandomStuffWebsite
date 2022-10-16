@@ -62,7 +62,7 @@ public class UpdateCheckerStatusService extends HttpServlet {
         try (InputStream is = CloudStorageUtils.getCloudStorageInputStream("update_checker_status.json")) {
             JSONObject object = new JSONObject(IOUtils.toString(is, StandardCharsets.UTF_8));
 
-            lastCheckTimestamp = object.getLong("lastCheckTimestamp");
+            lastCheckTimestamp = object.getLong("lastFullCheckTimestamp");
             lastCheckDuration = object.getInt("lastCheckDuration");
             latestUpdatesEntries = new ArrayList<>();
             for (Object o : object.getJSONArray("latestUpdatesEntries")) {
