@@ -26,7 +26,7 @@ import java.util.List;
  * A status page for the Update Checker, that determines the status by reading the Google Cloud Logging logs
  * of the backend server.
  */
-@WebServlet(name = "UpdateCheckerStatus", urlPatterns = {"/celeste/update-checker-status"})
+@WebServlet(name = "UpdateCheckerStatus", urlPatterns = {"/celeste/update-checker-status", "/celeste/update-checker-status.json"})
 @MultipartConfig
 public class UpdateCheckerStatusService extends HttpServlet {
     public static class LatestUpdatesEntry {
@@ -57,19 +57,20 @@ public class UpdateCheckerStatusService extends HttpServlet {
         long lastCheckTimestamp;
         int lastCheckDuration;
         List<LatestUpdatesEntry> latestUpdatesEntries;
+        JSONObject updaterStatusJson;
 
         // retrieve the update checker status from Cloud Storage!
         try (InputStream is = CloudStorageUtils.getCloudStorageInputStream("update_checker_status.json")) {
-            JSONObject object = new JSONObject(IOUtils.toString(is, StandardCharsets.UTF_8));
+            updaterStatusJson = new JSONObject(IOUtils.toString(is, StandardCharsets.UTF_8));
 
-            lastCheckTimestamp = object.getLong("lastFullCheckTimestamp");
-            lastCheckDuration = object.getInt("lastCheckDuration");
+            lastCheckTimestamp = updaterStatusJson.getLong("lastFullCheckTimestamp");
+            lastCheckDuration = updaterStatusJson.getInt("lastCheckDuration");
             latestUpdatesEntries = new ArrayList<>();
-            for (Object o : object.getJSONArray("latestUpdatesEntries")) {
+            for (Object o : updaterStatusJson.getJSONArray("latestUpdatesEntries")) {
                 latestUpdatesEntries.add(new LatestUpdatesEntry((JSONObject) o));
             }
 
-            request.setAttribute("modCount", object.getInt("modCount"));
+            request.setAttribute("modCount", updaterStatusJson.getInt("modCount"));
         }
 
         if (lastCheckTimestamp > 0) {
@@ -90,12 +91,18 @@ public class UpdateCheckerStatusService extends HttpServlet {
             }
         }
 
-        if (!isWidget) {
-            request.setAttribute("latestUpdates", latestUpdatesEntries);
-        }
+        if ("/celeste/update-checker-status.json".equals(request.getRequestURI())) {
+            updaterStatusJson.put("up", request.getAttribute("up"));
+            response.setHeader("Content-Type", "application/json");
+            response.getWriter().write(updaterStatusJson.toString());
+        } else {
+            if (!isWidget) {
+                request.setAttribute("latestUpdates", latestUpdatesEntries);
+            }
 
-        request.getRequestDispatcher(isWidget ? "/WEB-INF/update-checker-status-widget.jsp" : "/WEB-INF/update-checker-status.jsp")
-                .forward(request, response);
+            request.getRequestDispatcher(isWidget ? "/WEB-INF/update-checker-status-widget.jsp" : "/WEB-INF/update-checker-status.jsp")
+                    .forward(request, response);
+        }
     }
 
     private Pair<String, String> formatDate(ZonedDateTime date) {

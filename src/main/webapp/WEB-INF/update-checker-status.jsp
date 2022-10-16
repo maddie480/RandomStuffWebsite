@@ -93,6 +93,10 @@
         <% } %>
 
         <p>
+            This status page is also available <a href="/celeste/update-checker-status.json" target="_blank">in JSON format</a>.
+        </p>
+
+        <p>
             <b><%= request.getAttribute("modCount") %></b> mods are currently registered.
         </p>
 
