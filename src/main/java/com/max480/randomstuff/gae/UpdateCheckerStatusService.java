@@ -54,6 +54,7 @@ public class UpdateCheckerStatusService extends HttpServlet {
         // the service is down until proven otherwise.
         request.setAttribute("up", false);
 
+        long lastFullCheckTimestamp;
         long lastCheckTimestamp;
         int lastCheckDuration;
         List<LatestUpdatesEntry> latestUpdatesEntries;
@@ -63,7 +64,9 @@ public class UpdateCheckerStatusService extends HttpServlet {
         try (InputStream is = CloudStorageUtils.getCloudStorageInputStream("update_checker_status.json")) {
             updaterStatusJson = new JSONObject(IOUtils.toString(is, StandardCharsets.UTF_8));
 
-            lastCheckTimestamp = updaterStatusJson.getLong("lastFullCheckTimestamp");
+            lastFullCheckTimestamp = updaterStatusJson.getLong("lastFullCheckTimestamp");
+            lastCheckTimestamp = Math.max(updaterStatusJson.getLong("lastFullCheckTimestamp"),
+                    updaterStatusJson.getLong("lastIncrementalCheckTimestamp"));
             lastCheckDuration = updaterStatusJson.getInt("lastCheckDuration");
             latestUpdatesEntries = new ArrayList<>();
             for (Object o : updaterStatusJson.getJSONArray("latestUpdatesEntries")) {
@@ -73,10 +76,11 @@ public class UpdateCheckerStatusService extends HttpServlet {
             request.setAttribute("modCount", updaterStatusJson.getInt("modCount"));
         }
 
-        if (lastCheckTimestamp > 0) {
-            ZonedDateTime timeUtc = Instant.ofEpochMilli(lastCheckTimestamp).atZone(ZoneId.of("UTC"));
+        if (lastFullCheckTimestamp > 0) {
+            ZonedDateTime timeUtc = Instant.ofEpochMilli(lastFullCheckTimestamp).atZone(ZoneId.of("UTC"));
+            ZonedDateTime timeUtcLast = Instant.ofEpochMilli(lastCheckTimestamp).atZone(ZoneId.of("UTC"));
 
-            if (timeUtc.isAfter(ZonedDateTime.now().minusMinutes(30))) {
+            if (timeUtcLast.isAfter(ZonedDateTime.now().minusMinutes(30))) {
                 // consider the service to be up if the latest successful update was less than 30 minutes ago.
                 request.setAttribute("up", true);
             }
