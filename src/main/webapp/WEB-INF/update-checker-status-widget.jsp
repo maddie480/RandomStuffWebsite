@@ -9,9 +9,9 @@
         </b>
     </li>
 
-    <% if (request.getAttribute("lastUpdatedAgo") != null) { %>
+    <% if (request.getAttribute("lastCheckTimeAgo") != null) { %>
         <li>
-            Last updated <b><%= request.getAttribute("lastUpdatedAgo") %></b>
+            Last updated <b><%= request.getAttribute("lastCheckTimeAgo") %></b>
         </li>
     <% } %>
 

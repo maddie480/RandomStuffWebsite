@@ -54,8 +54,10 @@ public class UpdateCheckerStatusService extends HttpServlet {
         // the service is down until proven otherwise.
         request.setAttribute("up", false);
 
-        long lastCheckTimestamp;
-        int lastCheckDuration;
+        long lastFullCheckTimestamp;
+        long lastIncrementalCheckTimestamp;
+        int lastFullCheckDuration;
+        int lastIncrementalCheckDuration;
         List<LatestUpdatesEntry> latestUpdatesEntries;
         JSONObject updaterStatusJson;
 
@@ -63,9 +65,11 @@ public class UpdateCheckerStatusService extends HttpServlet {
         try (InputStream is = CloudStorageUtils.getCloudStorageInputStream("update_checker_status.json")) {
             updaterStatusJson = new JSONObject(IOUtils.toString(is, StandardCharsets.UTF_8));
 
-            lastCheckTimestamp = Math.max(updaterStatusJson.getLong("lastFullCheckTimestamp"),
-                    updaterStatusJson.getLong("lastIncrementalCheckTimestamp"));
-            lastCheckDuration = updaterStatusJson.getInt("lastCheckDuration");
+            lastFullCheckTimestamp = updaterStatusJson.getLong("lastFullCheckTimestamp");
+            lastIncrementalCheckTimestamp = updaterStatusJson.getLong("lastIncrementalCheckTimestamp");
+            lastFullCheckDuration = updaterStatusJson.getInt("lastFullCheckDuration");
+            lastIncrementalCheckDuration = updaterStatusJson.getInt("lastIncrementalCheckDuration");
+
             latestUpdatesEntries = new ArrayList<>();
             for (Object o : updaterStatusJson.getJSONArray("latestUpdatesEntries")) {
                 latestUpdatesEntries.add(new LatestUpdatesEntry((JSONObject) o));
@@ -74,23 +78,17 @@ public class UpdateCheckerStatusService extends HttpServlet {
             request.setAttribute("modCount", updaterStatusJson.getInt("modCount"));
         }
 
-        if (lastCheckTimestamp > 0) {
-            ZonedDateTime timeUtc = Instant.ofEpochMilli(lastCheckTimestamp).atZone(ZoneId.of("UTC"));
+        ZonedDateTime lastUpdateTime = Instant.ofEpochMilli(Math.max(lastFullCheckTimestamp, lastIncrementalCheckTimestamp))
+                .atZone(ZoneId.of("UTC"));
 
-            if (timeUtc.isAfter(ZonedDateTime.now().minusMinutes(30))) {
-                // consider the service to be up if the latest successful update was less than 30 minutes ago.
-                request.setAttribute("up", true);
-            }
-
-            if (lastCheckDuration > 0) {
-                // pass the latest check timestamp and duration to the webpage
-                Pair<String, String> date = formatDate(timeUtc);
-                request.setAttribute("lastUpdatedTimestamp", timeUtc.toEpochSecond());
-                request.setAttribute("lastUpdatedAt", date.getLeft());
-                request.setAttribute("lastUpdatedAgo", date.getRight());
-                request.setAttribute("duration", lastCheckDuration / 1000.0);
-            }
+        if (lastUpdateTime.isAfter(ZonedDateTime.now().minusMinutes(30))) {
+            // consider the service to be up if the latest successful update was less than 30 minutes ago.
+            request.setAttribute("up", true);
         }
+
+        fillLastCheckAttributes(request, lastFullCheckTimestamp, lastFullCheckDuration, "Full");
+        fillLastCheckAttributes(request, lastIncrementalCheckTimestamp, lastIncrementalCheckDuration, "Incremental");
+        fillLastCheckAttributes(request, Math.max(lastIncrementalCheckTimestamp, lastFullCheckTimestamp), 1, "");
 
         if ("/celeste/update-checker-status.json".equals(request.getRequestURI())) {
             updaterStatusJson.put("up", request.getAttribute("up"));
@@ -103,6 +101,21 @@ public class UpdateCheckerStatusService extends HttpServlet {
 
             request.getRequestDispatcher(isWidget ? "/WEB-INF/update-checker-status-widget.jsp" : "/WEB-INF/update-checker-status.jsp")
                     .forward(request, response);
+        }
+    }
+
+    private void fillLastCheckAttributes(HttpServletRequest request, long lastCheckTimestamp, int lastCheckDuration, String name) {
+        if (lastCheckTimestamp > 0) {
+            ZonedDateTime timeUtc = Instant.ofEpochMilli(lastCheckTimestamp).atZone(ZoneId.of("UTC"));
+
+            if (lastCheckDuration > 0) {
+                // pass the latest check timestamp and duration to the webpage
+                Pair<String, String> date = formatDate(timeUtc);
+                request.setAttribute("last" + name + "CheckTimestamp", timeUtc.toEpochSecond());
+                request.setAttribute("last" + name + "CheckAt", date.getLeft());
+                request.setAttribute("last" + name + "CheckTimeAgo", date.getRight());
+                request.setAttribute("last" + name + "CheckDuration", lastCheckDuration / 1000.0);
+            }
         }
     }
 

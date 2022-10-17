@@ -76,18 +76,39 @@
             </div>
         <% } %>
 
-        <% if (request.getAttribute("lastUpdatedAt") != null) { %>
+        <% if (request.getAttribute("lastIncrementalCheckAt") != null) { %>
             <p>
-                The database was last updated successfully on
-                <b><span class="timestamp-long" data-timestamp="<%= request.getAttribute("lastUpdatedTimestamp") %>">
-                    <%= request.getAttribute("lastUpdatedAt") %>
+                The database does <i>fast updates</i> <b>every 2 minutes</b>. It only goes through mods that were modified since the last update.
+                <br>
+                The last <i>fast update</i> happened on
+                <b><span class="timestamp-long" data-timestamp="<%= request.getAttribute("lastIncrementalCheckTimestamp") %>">
+                    <%= request.getAttribute("lastIncrementalCheckAt") %>
                 </span>
-                (<%= request.getAttribute("lastUpdatedAgo") %>)</b>.
+                (<%= request.getAttribute("lastIncrementalCheckTimeAgo") %>)</b>, and took
 
-                <% if (((double) request.getAttribute("duration")) >= 60) { %>
-                    The update check took <%= new DecimalFormat("0.0").format((double) request.getAttribute("duration") / 60.0) %> minutes.
+                <% if (((double) request.getAttribute("lastIncrementalCheckDuration")) >= 60) { %>
+                    <%= new DecimalFormat("0.0").format((double) request.getAttribute("lastIncrementalCheckDuration") / 60.0) %> minutes.
                 <% } else { %>
-                    The update check took <%= new DecimalFormat("0.0").format((double) request.getAttribute("duration")) %> seconds.
+                    <%= new DecimalFormat("0.0").format((double) request.getAttribute("lastIncrementalCheckDuration")) %> seconds.
+                <% } %>
+            </p>
+        <% } %>
+
+        <% if (request.getAttribute("lastFullCheckAt") != null) { %>
+            <p>
+                The database <i>fully updates</i> <b>every hour</b>, when the minute hits 0. It goes through all Celeste mods,
+                allowing to detect mod deletions.
+                <br>
+                The last <i>full update</i> happened on
+                <b><span class="timestamp-long" data-timestamp="<%= request.getAttribute("lastFullCheckTimestamp") %>">
+                    <%= request.getAttribute("lastFullCheckAt") %>
+                </span>
+                (<%= request.getAttribute("lastFullCheckTimeAgo") %>)</b>, and took
+
+                <% if (((double) request.getAttribute("lastFullCheckDuration")) >= 60) { %>
+                    <%= new DecimalFormat("0.0").format((double) request.getAttribute("lastFullCheckDuration") / 60.0) %> minutes.
+                <% } else { %>
+                    <%= new DecimalFormat("0.0").format((double) request.getAttribute("lastFullCheckDuration")) %> seconds.
                 <% } %>
             </p>
         <% } %>
