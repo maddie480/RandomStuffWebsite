@@ -384,7 +384,7 @@ public class EverestYamlValidatorService extends HttpServlet {
                         everestVersions.getInt("beta")
                 ),
                 everestVersions.getInt("stable")
-        ) + 700;
+        );
     }
 
     /**
@@ -394,13 +394,12 @@ public class EverestYamlValidatorService extends HttpServlet {
      * - otherwise dev
      */
     private static int getUpdatedEverestVersion(JSONObject everestVersions, int currentVersion) {
-        currentVersion -= 700;
         if (currentVersion <= everestVersions.getInt("stable")) {
-            return everestVersions.getInt("stable") + 700;
+            return everestVersions.getInt("stable");
         } else if (currentVersion <= everestVersions.getInt("beta")) {
-            return everestVersions.getInt("beta") + 700;
+            return everestVersions.getInt("beta");
         } else {
-            return everestVersions.getInt("dev") + 700;
+            return everestVersions.getInt("dev");
         }
     }
 }
