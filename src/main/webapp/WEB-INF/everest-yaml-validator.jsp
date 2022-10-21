@@ -79,6 +79,7 @@
 
         <form method="POST" enctype="multipart/form-data">
             <input type="file" accept=".yaml,.yml" id="file" name="file" required>
+            <input type="hidden" name="outputFormat" value="html">
             <input type="submit" class="btn btn-primary" value="Validate!">
         </form>
 

@@ -41,6 +41,22 @@ public class EverestYamlValidatorService extends HttpServlet {
         public String UpdatedVersion;
         public List<EverestModuleMetadata> Dependencies;
         public List<EverestModuleMetadata> OptionalDependencies;
+
+        public Map<String, Object> toMap() {
+            Map<String, Object> result = new HashMap<>();
+            result.put("Name", Name);
+            result.put("Version", Version);
+            result.put("LatestVersion", LatestVersion);
+
+            if (Dependencies != null) {
+                result.put("Dependencies", Dependencies.stream().map(EverestModuleMetadata::toMap).collect(Collectors.toList()));
+            }
+            if (OptionalDependencies != null) {
+                result.put("OptionalDependencies", OptionalDependencies.stream().map(EverestModuleMetadata::toMap).collect(Collectors.toList()));
+            }
+
+            return result;
+        }
     }
 
     /**
@@ -115,7 +131,20 @@ public class EverestYamlValidatorService extends HttpServlet {
             logger.warning("Failed to get file part: " + e.toString());
         }
 
-        if (filePart != null) {
+        // output format can be either "html" or "json".
+        String outputFormat = null;
+        try {
+            Part outputFormatPart = request.getPart("outputFormat");
+            if (outputFormatPart != null) {
+                outputFormat = IOUtils.toString(outputFormatPart.getInputStream(), UTF_8);
+            }
+        } catch (ServletException e) {
+            logger.warning("Failed to get output format part: " + e);
+        }
+
+        if (filePart != null && Arrays.asList("json", "html").contains(outputFormat)) {
+            Map<String, Object> attributes = new HashMap<>();
+
             String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
             String fileContent = IOUtils.toString(filePart.getInputStream(), UTF_8);
 
@@ -130,7 +159,7 @@ public class EverestYamlValidatorService extends HttpServlet {
 
                 metadatas = recursiveCast(metadatasUnparsed);
             } catch (Exception e) {
-                request.setAttribute("parseError", e.getMessage());
+                attributes.put("parseError", e.getMessage());
             }
 
             if (metadatas != null) {
@@ -248,9 +277,13 @@ public class EverestYamlValidatorService extends HttpServlet {
                 }
 
                 if (!problems.isEmpty()) {
-                    request.setAttribute("validationErrors", problems);
+                    attributes.put("validationErrors", problems);
                 } else {
-                    request.setAttribute("modInfo", metadatas);
+                    if ("json".equals(outputFormat)) {
+                        attributes.put("modInfo", metadatas.stream().map(EverestModuleMetadata::toMap).collect(Collectors.toList()));
+                    } else {
+                        attributes.put("modInfo", metadatas);
+                    }
 
                     // check if all mods are in their latest versions...
                     boolean allDependenciesAreUpToDate = true;
@@ -299,21 +332,33 @@ public class EverestYamlValidatorService extends HttpServlet {
                                 })
                                 .collect(Collectors.toList());
 
-                        request.setAttribute("latestVersionsYaml", new Yaml().dumpAs(latestVersionsYaml, null, DumperOptions.FlowStyle.BLOCK));
+                        attributes.put("latestVersionsYaml", new Yaml().dumpAs(latestVersionsYaml, null, DumperOptions.FlowStyle.BLOCK));
 
-                        // in order to allow the inline script without ruining the CSP, we need to generate a nonce.
-                        byte[] nonceBytes = new byte[128];
-                        random.nextBytes(nonceBytes);
-                        String nonce = Base64.getEncoder().encodeToString(nonceBytes);
-                        request.setAttribute("nonce", nonce);
+                        if ("html".equals(outputFormat)) {
+                            // in order to allow the inline script without ruining the CSP, we need to generate a nonce.
+                            byte[] nonceBytes = new byte[128];
+                            random.nextBytes(nonceBytes);
+                            String nonce = Base64.getEncoder().encodeToString(nonceBytes);
+                            request.setAttribute("nonce", nonce);
 
-                        // then adjust the CSP to allow both accessing download.js and running the inline script powering the download button.
-                        response.setHeader("Content-Security-Policy", "default-src 'self'; " +
-                                "script-src 'self' 'nonce-" + nonce + "' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; " +
-                                "style-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; " +
-                                "frame-ancestors 'none'; " +
-                                "object-src 'none';");
+                            // then adjust the CSP to allow both accessing download.js and running the inline script powering the download button.
+                            response.setHeader("Content-Security-Policy", "default-src 'self'; " +
+                                    "script-src 'self' 'nonce-" + nonce + "' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; " +
+                                    "style-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; " +
+                                    "frame-ancestors 'none'; " +
+                                    "object-src 'none';");
+                        }
                     }
+                }
+            }
+
+            if ("json".equals(outputFormat)) {
+                response.setContentType("application/json");
+                response.getWriter().write(new JSONObject(attributes).toString());
+                return;
+            } else {
+                for (Map.Entry<String, Object> attribute : attributes.entrySet()) {
+                    request.setAttribute(attribute.getKey(), attribute.getValue());
                 }
             }
         }
