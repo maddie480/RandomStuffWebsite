@@ -4,7 +4,6 @@ import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.text.StringEscapeUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -34,7 +33,6 @@ public class TaskTrackerService extends HttpServlet {
 
     private final Pattern trackerPageUrlPattern = Pattern.compile("^/celeste/task-tracker/([a-z-]+)/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/?$");
     private final Pattern downloadPageUrlPattern = Pattern.compile("^/celeste/task-tracker/([a-z-]+)/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/download/([0-9]+)/?$");
-    private final Pattern modStructureVerifierHelpPattern = Pattern.compile("^Click here for more help: https://max480-random-stuff.appspot.com/celeste/mod-structure-verifier-help\\?([A-Za-z0-9&;=]+)$");
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
@@ -86,7 +84,7 @@ public class TaskTrackerService extends HttpServlet {
                     try (InputStream is = getCloudStorageInputStream(report)) {
                         result = new JSONObject(IOUtils.toString(is, StandardCharsets.UTF_8));
                     }
-                    request.setAttribute("taskResult", toHtml(result.getString("responseText")));
+                    request.setAttribute("taskResult", result.getString("responseText"));
                     request.setAttribute("taskResultType", getResultType(result.getString("responseText")));
                     request.setAttribute("attachments", getAttachmentsFor(type, result));
                 }
@@ -189,78 +187,10 @@ public class TaskTrackerService extends HttpServlet {
         }
     }
 
-    private String toHtml(String responseText) {
-        // escape HTML and handle emojis
-        String escapedHtml = StringEscapeUtils.escapeHtml4(responseText
-                .replace(":white_check_mark:", "✅")
-                .replace(":warning:", "⚠")
-                .replace(":x:", "❌")
-                .replace(":thinking:", "\uD83E\uDD14")
-                .replace(":bomb:", "\uD83D\uDCA3"));
-
-        // handle links
-        escapedHtml = escapedHtml
-                .replace("&lt;https://max480-random-stuff.appspot.com/celeste/everest-yaml-validator&gt;",
-                        "<a href=\"/celeste/everest-yaml-validator\" target=\"_blank\">the everest.yaml validator</a>")
-                .replace("&lt;https://max480-random-stuff.appspot.com/celeste/font-generator&gt;",
-                        "<a href=\"/celeste/font-generator\" target=\"_blank\">the Font Generator</a>")
-                .replace("&lt;https://gamebanana.com/tools/6908&gt;",
-                        "<a href=\"https://gamebanana.com/tools/6908\" target=\"_blank\">Dependency Generator</a>");
-
-        // handle bold text
-        while (escapedHtml.contains("**") && escapedHtml.replaceFirst("\\*\\*", "").contains("**")) {
-            escapedHtml = escapedHtml
-                    .replaceFirst("\\*\\*", "<b>")
-                    .replaceFirst("\\*\\*", "</b>");
-        }
-
-        // handle inline code
-        while (escapedHtml.contains("`") && escapedHtml.replaceFirst("`", "").contains("`")) {
-            escapedHtml = escapedHtml
-                    .replaceFirst("`", "<code>")
-                    .replaceFirst("`", "</code>");
-        }
-
-        // handle lists
-        boolean ulOpen = false;
-
-        StringBuilder newHtml = new StringBuilder();
-        while (!escapedHtml.isEmpty()) {
-            String line = escapedHtml;
-            if (line.contains("\n")) {
-                line = escapedHtml.substring(0, escapedHtml.indexOf("\n") + 1);
-            }
-
-            escapedHtml = escapedHtml.substring(line.length());
-
-            // turn "click here for more help" into an actual link as well!
-            Matcher helpMatch = modStructureVerifierHelpPattern.matcher(line);
-            if (helpMatch.matches()) {
-                line = "<a href=\"/celeste/mod-structure-verifier-help?" + helpMatch.group(1) + "\" target=\"_blank\">Click here for more help.</a>";
-            }
-
-            if (line.startsWith("- ")) {
-                if (!ulOpen) {
-                    newHtml.append("<ul>");
-                    ulOpen = true;
-                }
-                newHtml.append("<li>").append(line.substring(2)).append("</li>");
-            } else {
-                if (ulOpen) {
-                    newHtml.append("</ul>");
-                    ulOpen = false;
-                }
-                newHtml.append(line.replace("\n", "<br>"));
-            }
-        }
-
-        return newHtml.toString();
-    }
-
     private String getResultType(String responseText) {
-        if (responseText.startsWith(":white_check_mark:")) {
+        if (responseText.startsWith("✅")) {
             return "success";
-        } else if (responseText.startsWith(":warning:")) {
+        } else if (responseText.startsWith("⚠")) {
             return "warning";
         } else {
             return "danger";
