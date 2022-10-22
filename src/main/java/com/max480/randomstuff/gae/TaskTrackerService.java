@@ -200,6 +200,8 @@ public class TaskTrackerService extends HttpServlet {
     private String getContentType(String fileName) {
         if (fileName.endsWith(".txt")) {
             return "text/plain; charset=UTF-8";
+        } else if (fileName.endsWith(".yaml")) {
+            return "text/yaml";
         } else if (fileName.endsWith(".zip")) {
             return "application/zip";
         } else {
@@ -221,9 +223,13 @@ public class TaskTrackerService extends HttpServlet {
             List<String> attachmentList = new ArrayList<>();
             for (Object o : result.getJSONArray("attachments")) {
                 String attachmentName = (String) o;
-                attachmentName = attachmentName.substring(attachmentName.lastIndexOf("-") + 1, attachmentName.indexOf("_"));
-                attachmentName = attachmentName.substring(0, 1).toUpperCase(Locale.ROOT) + attachmentName.substring(1);
-                attachmentList.add("Missing characters in " + attachmentName);
+                if (attachmentName.endsWith(".yaml")) {
+                    attachmentList.add("everest.yaml with added dependencies");
+                } else {
+                    attachmentName = attachmentName.substring(attachmentName.lastIndexOf("-") + 1, attachmentName.indexOf("_"));
+                    attachmentName = attachmentName.substring(0, 1).toUpperCase(Locale.ROOT) + attachmentName.substring(1);
+                    attachmentList.add("Missing characters in " + attachmentName);
+                }
             }
             return attachmentList;
         }
