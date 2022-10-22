@@ -149,6 +149,43 @@
             </div>
         <% } %>
 
+        <% if (request.getParameter("multiyaml") != null) { %>
+            <h2>Your everest.yaml declares multiple mods</h2>
+
+            <div>
+                Your <pre>everest.yaml</pre> gives multiple IDs to your mod. You should avoid this, since it causes issues with mod loading and updating, and the only reason why you
+                would want to do this is having multiple DLLs in the same mod zip (which you can usually also avoid &#x1f605;).
+            </div>
+
+            <div>
+                This can also happen when the indentation of your <pre>everest.yaml</pre> file is wrong:
+            </div>
+            <pre class="codeblock">
+- Name: MyMod
+  Version: 1.0.0
+  Dependencies:
+  - Name: Everest
+    Version: 1.2803.0
+- Name: MaxHelpingHand
+  Version: 1.21.1</pre>
+            <div>
+                &#x2b06; This <pre>everest.yaml</pre> declares that there are 2 mods in this zip: <pre>MyMod</pre> (depending on <pre>Everest</pre>) and <pre>MaxHelpingHand</pre>.
+                In order to have a mod that depends on <pre>MaxHelpingHand</pre> instead, align it properly to have it inside <pre>Dependencies</pre>:
+            </div>
+            <pre class="codeblock">
+- Name: MyMod
+  Version: 1.0.0
+  Dependencies:
+  - Name: Everest
+    Version: 1.2803.0
+  - Name: MaxHelpingHand
+    Version: 1.21.1</pre>
+            <div>
+                You can send your <pre>everest.yaml</pre> to <a target="_blank" href="https://max480-random-stuff.appspot.com/celeste/everest-yaml-validator">the validator</a>
+                to have more details about how it is interpreted!
+            </div>
+        <% } %>
+
         <% if (request.getParameter("missingassets") != null) { %>
             <h2>You use missing decals / parallax stylegrounds in your map</h2>
 
@@ -203,8 +240,8 @@
             </div>
 
             <div>
-                You can also run the <code>--generate-font [language]</code> command with your dialog file attached to have the Mod Structure Verifier generate those files.
-                <code>language</code> should be one of <code>chinese</code>, <code>japanese</code>, <code>korean</code>, <code>renogare</code> or <code>russian</code>.
+                You can also run the <pre>--generate-font [language]</pre> command with your dialog file attached to have the Mod Structure Verifier generate those files.
+                <pre>language</pre> should be one of <pre>chinese</pre>, <pre>japanese</pre>, <pre>korean</pre>, <pre>renogare</pre> or <pre>russian</pre>.
             </div>
 
             <div>
