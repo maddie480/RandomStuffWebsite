@@ -2,6 +2,7 @@ package com.max480.randomstuff.gae;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
+import org.jsoup.Jsoup;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -9,8 +10,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * This servlet caches and provides the everest_update.yaml Everest downloads to check for updates.
@@ -18,12 +21,15 @@ import java.util.logging.Logger;
  */
 @WebServlet(name = "CelesteModUpdateService", loadOnStartup = 1, urlPatterns = {"/celeste/everest_update.yaml",
         "/celeste/file_ids.yaml", "/celeste/everest-update-reload", "/celeste/mod_search_database.yaml",
-        "/celeste/mod_files_database.zip", "/celeste/mod_dependency_graph.yaml"})
+        "/celeste/mod_files_database.zip", "/celeste/mod_dependency_graph.yaml", "/celeste/rich-presence-icons/*", "/celeste/rich-presence-icons-reload"})
 public class CelesteModUpdateService extends HttpServlet {
     private final Logger logger = Logger.getLogger("CelesteModUpdateService");
 
     private byte[] everestYaml;
     private String everestYamlEtag;
+
+    private Set<String> richPresenceIcons;
+    private Set<String> richPresenceIconsStatic;
 
     @Override
     public void init() {
@@ -31,6 +37,7 @@ public class CelesteModUpdateService extends HttpServlet {
             logger.fine("Downloading everest_update.yaml from Cloud Storage");
             everestYaml = IOUtils.toByteArray(CloudStorageUtils.getCloudStorageInputStream("everest_update.yaml"));
             everestYamlEtag = "\"" + DigestUtils.sha512Hex(everestYaml) + "\"";
+            refreshRichPresenceIcons();
         } catch (Exception e) {
             logger.log(Level.WARNING, "Warming up failed: " + e.toString());
         }
@@ -79,9 +86,36 @@ public class CelesteModUpdateService extends HttpServlet {
                     everestYamlFormat ? "mod_dependency_graph_everest.yaml" : "mod_dependency_graph.yaml")) {
                 IOUtils.copy(is, response.getOutputStream());
             }
+        } else if (request.getRequestURI().equals("/celeste/rich-presence-icons-reload")
+                && ("key=" + SecretConstants.RELOAD_SHARED_SECRET).equals(request.getQueryString())) {
+            refreshRichPresenceIcons();
+        } else if (request.getRequestURI().startsWith("/celeste/rich-presence-icons/")) {
+            String icon = request.getRequestURI().substring(29);
+            if (richPresenceIcons.contains(icon)) {
+                response.sendRedirect("https://celestemodupdater.0x0a.de/rich-presence-icons/" + icon);
+            } else if (richPresenceIconsStatic.contains(icon)) {
+                response.sendRedirect("https://celestemodupdater.0x0a.de/rich-presence-icons-static/" + icon);
+            } else {
+                response.sendRedirect("https://celestemodupdater.0x0a.de/rich-presence-icons-static/everest.png");
+            }
         } else {
             logger.warning("Invalid key");
             response.setStatus(403);
         }
+    }
+
+    private void refreshRichPresenceIcons() throws IOException {
+        richPresenceIcons = getRichPresenceIcons("https://celestemodupdater.0x0a.de/rich-presence-icons/");
+        richPresenceIconsStatic = getRichPresenceIcons("https://celestemodupdater.0x0a.de/rich-presence-icons-static/");
+        logger.fine("Got " + richPresenceIcons.size() + " dynamic and " + richPresenceIconsStatic.size() + " static Rich Presence icons.");
+    }
+
+    private Set<String> getRichPresenceIcons(String url) throws IOException {
+        return Jsoup.connect(url).get()
+                .select("td.indexcolname a")
+                .stream()
+                .map(a -> a.attr("href"))
+                .filter(item -> !item.equals(url + "/"))
+                .collect(Collectors.toSet());
     }
 }
