@@ -2,6 +2,7 @@ package com.max480.randomstuff.gae;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
+import org.jsoup.Jsoup;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -9,10 +10,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ObjectInputStream;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * This servlet caches and provides the everest_update.yaml Everest downloads to check for updates.
@@ -104,13 +105,17 @@ public class CelesteModUpdateService extends HttpServlet {
     }
 
     private void refreshRichPresenceIcons() throws IOException {
-        try (ObjectInputStream is = new ObjectInputStream(CloudStorageUtils.getCloudStorageInputStream("rich_presence_icons.ser"))) {
-            richPresenceIcons = (Set<String>) is.readObject();
-            richPresenceIconsStatic = (Set<String>) is.readObject();
-        } catch (ClassNotFoundException e) {
-            throw new IOException(e);
-        }
-
+        richPresenceIcons = getRichPresenceIcons("https://celestemodupdater.0x0a.de/rich-presence-icons/");
+        richPresenceIconsStatic = getRichPresenceIcons("https://celestemodupdater.0x0a.de/rich-presence-icons-static/");
         logger.fine("Got " + richPresenceIcons.size() + " dynamic and " + richPresenceIconsStatic.size() + " static Rich Presence icons.");
+    }
+
+    private Set<String> getRichPresenceIcons(String url) throws IOException {
+        return Jsoup.connect(url).get()
+                .select("td.indexcolname a")
+                .stream()
+                .map(a -> a.attr("href"))
+                .filter(item -> !item.equals(url + "/"))
+                .collect(Collectors.toSet());
     }
 }
