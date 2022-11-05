@@ -57,7 +57,7 @@
             <% for (ModInfo modInfo : (List<ModInfo>) request.getAttribute("modList")) { %>
                 <div class="Record Flow ModRecord record-<%= index++ %> ">
                     <div class="Preview">
-                        <a href="https://gamebanana.com/mods/53687" class="Preview ModPreview">
+                        <a href="<%= escapeHtml4(modInfo.url) %>" class="Preview ModPreview">
                             <img loading="lazy" class="PreviewImage" alt="<%= escapeHtml4(modInfo.name) %>" src="<%= escapeHtml4(modInfo.image) %>" decoding="async" width="220" height="90">
                         </a>
 
