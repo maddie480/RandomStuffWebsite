@@ -3,6 +3,7 @@ package com.max480.randomstuff.gae;
 import com.google.cloud.datastore.*;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.Storage;
+import com.google.cloud.storage.StorageException;
 import com.google.cloud.storage.StorageOptions;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -16,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.DecimalFormat;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -34,7 +36,7 @@ public class GameBananaArbitraryModAppService extends HttpServlet {
     private static final KeyFactory keyFactory = datastore.newKeyFactory().setKind("arbitraryModAppConfiguration");
     private final Storage storage = StorageOptions.newBuilder().setProjectId("max480-random-stuff").build().getService();
 
-    private static final DateTimeFormatter format = DateTimeFormatter.ofPattern("MMM d yyyy @ h:mm a O", Locale.ENGLISH);
+    private static final DateTimeFormatter format = DateTimeFormatter.ofPattern("EE, MMM d yyyy h:mm a O", Locale.ENGLISH);
 
     public static class ModInfo {
         public String url; // _sProfileUrl
@@ -49,9 +51,15 @@ public class GameBananaArbitraryModAppService extends HttpServlet {
         public String gameName; // _aGame._sName
         public String gameIcon; // _aGame._sIconUrl
         public String gameUrl; // _aGame._sProfileUrl
+        public String categoryName; // _aRootCategory._sName
+        public String categoryIcon; // _aRootCategory._sIconUrl
+        public String categoryUrl; // _aRootCategory._sProfileUrl
         public String submitterAvatar; // _aSubmitter._sAvatarUrl
         public String submitterUrl; // _aSubmitter._sProfileUrl
         public String submitterName; // _aSubmitter._sName
+        public String likeCount; // _nLikeCount
+        public String viewCount; // _nViewCount
+        public String postCount; // _nPostCount
     }
 
     @Override
@@ -141,15 +149,33 @@ public class GameBananaArbitraryModAppService extends HttpServlet {
                     info.gameIcon = object.getJSONObject("_aGame").getString("_sIconUrl");
                     info.gameUrl = object.getJSONObject("_aGame").getString("_sProfileUrl");
 
+                    info.categoryName = object.getJSONObject("_aRootCategory").getString("_sName");
+                    info.categoryIcon = object.getJSONObject("_aRootCategory").getString("_sIconUrl");
+                    info.categoryUrl = object.getJSONObject("_aRootCategory").getString("_sProfileUrl");
+
                     info.submitterName = object.getJSONObject("_aSubmitter").getString("_sName");
                     info.submitterAvatar = object.getJSONObject("_aSubmitter").getString("_sAvatarUrl");
                     info.submitterUrl = object.getJSONObject("_aSubmitter").getString("_sProfileUrl");
+
+                    info.likeCount = bigNumberToString(object.getInt("_nLikeCount"));
+                    info.viewCount = bigNumberToString(object.getInt("_nViewCount"));
+                    info.postCount = bigNumberToString(object.getInt("_nPostCount"));
 
                     return info;
                 })
                 .collect(Collectors.toList());
 
-        request.setAttribute("isMax480", "1698143".equals(request.getParameter("_idProfile")));
+        boolean isMax480 = "1698143".equals(request.getParameter("_idProfile"));
+        request.setAttribute("isMax480", isMax480);
+        request.setAttribute("avatarEnabled", false);
+        if (isMax480) {
+            try {
+                CloudStorageUtils.getCloudStorageInputStream("avatar_enabled.txt");
+                request.setAttribute("avatarEnabled", true);
+            } catch (StorageException e) {
+                logger.fine("Avatar is disabled!");
+            }
+        }
 
         response.setHeader("Content-Type", "application/json");
         request.setAttribute("title", name);
@@ -169,7 +195,7 @@ public class GameBananaArbitraryModAppService extends HttpServlet {
             // if this is not possible, read from GameBanana directly instead
             logger.info("Could not retrieve mod by ID from cache, querying GameBanana directly: " + ex);
             try (InputStream is = openStreamWithTimeout("https://gamebanana.com/apiv8/Mod/" + modId +
-                    "?_csvProperties=_sProfileUrl,_sName,_aPreviewMedia,_tsDateAdded,_tsDateUpdated,_aGame,_aSubmitter,_bIsWithheld,_bIsTrashed,_bIsPrivate")) {
+                    "?_csvProperties=_sProfileUrl,_sName,_aPreviewMedia,_tsDateAdded,_tsDateUpdated,_aGame,_aRootCategory,_aSubmitter,_bIsWithheld,_bIsTrashed,_bIsPrivate,_nViewCount,_nLikeCount,_nPostCount")) {
                 return new JSONObject(IOUtils.toString(is, UTF_8));
             } catch (IOException e) {
                 logger.severe("Could not retrieve mod by ID! " + e);
@@ -238,6 +264,16 @@ public class GameBananaArbitraryModAppService extends HttpServlet {
             return (secondsAgo / 2592000) + "mo";
         } else {
             return (secondsAgo / 31536000) + "y";
+        }
+    }
+
+    private String bigNumberToString(int number) {
+        if (number < 1000) {
+            return Integer.toString(number);
+        } else if (number < 1_000_000) {
+            return new DecimalFormat("0.#").format(number / 1000.) + "k";
+        } else {
+            return new DecimalFormat("0.#").format(number / 1_000_000.) + "m";
         }
     }
 
