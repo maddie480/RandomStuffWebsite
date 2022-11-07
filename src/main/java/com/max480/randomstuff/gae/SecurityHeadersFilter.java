@@ -72,19 +72,14 @@ public class SecurityHeadersFilter extends HttpFilter {
             // allow those to be accessed from GameBanana.
             res.setHeader("Access-Control-Allow-Origin", "https://gamebanana.com");
         }
-        if (Arrays.asList("/celeste/gamebanana-search", "/celeste/gamebanana-list", "/celeste/gamebanana-featured", "/celeste/gamebanana-categories")
+        if (Arrays.asList("/celeste/gamebanana-search", "/celeste/gamebanana-list", "/celeste/gamebanana-featured", "/celeste/gamebanana-categories",
+                        "/celeste/bin-to-json", "/celeste/custom-entity-catalog.json", "/celeste/olympus-news", "/celeste/everest-versions",
+                        "/celeste/update-checker-status.json", "/celeste/everest_update.yaml", "/celeste/file_ids.yaml", "/celeste/mod_search_database.yaml",
+                        "/celeste/mod_dependency_graph.yaml")
                 .contains(req.getRequestURI())) {
-            // allow GameBanana APIs to be called from anywhere.
+            // allow most JSON and YAML APIs to be called from anywhere.
             res.setHeader("Access-Control-Allow-Origin", "*");
             res.setHeader("Access-Control-Expose-Headers", "X-Total-Count");
-        }
-        if (req.getRequestURI().equals("/celeste/everest_update.yaml")) {
-            // this one can be accessed from the Banana Mirror Browser mirror (... yeah, a mirror for a browser for a mirror, right).
-            res.setHeader("Access-Control-Allow-Origin", "https://max4805.github.io");
-        }
-        if (req.getRequestURI().equals("/celeste/everest-versions")) {
-            // this one can be accessed from the Everest website to determine the link to the latest version of Everest.
-            res.setHeader("Access-Control-Allow-Origin", "https://everestapi.github.io");
         }
 
         chain.doFilter(req, res);
