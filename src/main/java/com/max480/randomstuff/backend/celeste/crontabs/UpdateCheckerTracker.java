@@ -1,4 +1,4 @@
-package com.max480.discord.randombots;
+package com.max480.randomstuff.backend.celeste.crontabs;
 
 import java.io.Serializable;
 import java.util.Map;

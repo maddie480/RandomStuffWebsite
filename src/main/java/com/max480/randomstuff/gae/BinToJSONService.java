@@ -17,7 +17,7 @@ import java.util.Arrays;
 import java.util.logging.Logger;
 
 /**
- * Based on https://github.com/max4805/RandomBackendStuff/blob/main/src/mod-structure-verifier/BinToXML.java,
+ * Based on https://github.com/max4805/RandomBackendStuff/blob/main/src/main/java/com/max480/randomstuff/backend/discord/modstructureverifier/BinToXML.java,
  * except this outputs JSON instead of outputting XML, for ease of use by the frontend.
  */
 @WebServlet(name = "BinToJSONService", urlPatterns = {"/celeste/bin-to-json"})

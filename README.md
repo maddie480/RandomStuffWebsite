@@ -9,12 +9,12 @@ The `src` folder contains the source for everything provided by the Java servlet
 - [the Everest Update Checker status page](https://max480-random-stuff.appspot.com/celeste/update-checker-status)
 - [the Celeste font generator](https://max480-random-stuff.appspot.com/celeste/font-generator)
 - [the Celeste Mod Structure Verifier](https://max480-random-stuff.appspot.com/celeste/mod-structure-verifier)
-- [the #celeste_news_network subscription service](https://max480-random-stuff.appspot.com/celeste/news-network-subscription) - the Twitter update checking code is not part of the frontend and can be found [on the Random Backend Stuff repository](https://github.com/max4805/RandomBackendStuff/blob/main/src/celeste-backend-crontabs/TwitterUpdateChecker.java)
+- [the #celeste_news_network subscription service](https://max480-random-stuff.appspot.com/celeste/news-network-subscription) - the Twitter update checking code is not part of the frontend and can be found [on the Random Backend Stuff repository](https://github.com/max4805/RandomBackendStuff/blob/main/src/main/java/com/max480/randomstuff/backend/celeste/crontabs/TwitterUpdateChecker.java)
 - [the help page for the Mod Structure Verifier bot](https://max480-random-stuff.appspot.com/celeste/mod-structure-verifier-help?collabName=CollabName&collabMapName=CollabMapName&assets&xmls&nomap&multiplemaps&badmappath&badenglish&misplacedyaml&noyaml&yamlinvalid&multiyaml&missingassets&missingentities&missingfonts)
 - [the "Show Arbitrary Mods on Profile" GameBanana app](https://gamebanana.com/apps/752)
 - [the Discord Games Bot](https://max480-random-stuff.appspot.com/discord-bots#games-bot) - the "bot" is actually a webhook that gets called by Discord
 - [the Discord Custom Slash Commands app](https://max480-random-stuff.appspot.com/discord-bots#custom-slash-commands)
-- [the Discord Timezone Bot](https://max480-random-stuff.appspot.com/discord-bots#timzeone-bot) - this repository only includes the "without timezone roles" variant; the one with timezone roles needs a bot user to work, and as such is [part of the backend](https://github.com/max4805/RandomBackendStuff/tree/main/src/timezone-bot)
+- [the Discord Timezone Bot](https://max480-random-stuff.appspot.com/discord-bots#timzeone-bot) - this repository only includes the "without timezone roles" variant; the one with timezone roles needs a bot user to work, and as such is [part of the backend](https://github.com/max4805/RandomBackendStuff/tree/main/src/main/java/com/max480/randomstuff/backend/discord/timezonebot)
 - Some [GameBanana](https://gamebanana.com)-related APIs extending the official API, described below
 - [the Olympus News API](https://max480-random-stuff.appspot.com/celeste/olympus-news)
 - [the Everest versions list API](https://max480-random-stuff.appspot.com/celeste/everest-versions)

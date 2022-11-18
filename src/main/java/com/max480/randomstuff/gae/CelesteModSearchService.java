@@ -35,7 +35,7 @@ import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import static com.max480.discord.randombots.UpdateCheckerTracker.ModInfo;
+import static com.max480.randomstuff.backend.celeste.crontabs.UpdateCheckerTracker.ModInfo;
 
 /**
  * This servlet provides the GameBanana search API, and other APIs that are used by Olympus or the Banana Mirror Browser.

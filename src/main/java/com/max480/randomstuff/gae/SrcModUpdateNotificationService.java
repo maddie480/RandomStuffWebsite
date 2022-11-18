@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import static com.max480.discord.randombots.UpdateCheckerTracker.ModInfo;
+import static com.max480.randomstuff.backend.celeste.crontabs.UpdateCheckerTracker.ModInfo;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**

@@ -188,7 +188,7 @@ public class GameBananaArbitraryModAppService extends HttpServlet {
     private JSONObject queryModById(String modId) {
         try {
             // try reading from the Cloud Storage cache, that is fed daily by the backend:
-            // see https://github.com/max4805/RandomBackendStuff/blob/main/src/celeste-backend-crontabs/ArbitraryModAppCacher.java
+            // see https://github.com/max4805/RandomBackendStuff/blob/main/src/main/java/com/max480/randomstuff/backend/celeste/crontabs/ArbitraryModAppCacher.java
             BlobId blobId = BlobId.of("staging.max480-random-stuff.appspot.com", "arbitrary-mod-app-cache/" + modId + ".json");
             return new JSONObject(new String(storage.readAllBytes(blobId), UTF_8));
         } catch (Exception ex) {
