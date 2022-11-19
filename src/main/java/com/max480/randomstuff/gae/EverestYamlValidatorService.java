@@ -173,18 +173,46 @@ public class EverestYamlValidatorService extends HttpServlet {
                             metadata.Version = ((Map<String, String>) entry.getValue()).get("Version");
                             return metadata;
                         })
-                        .collect(Collectors.toList());
-
-                List<String> problems = new ArrayList<>();
-
-                // check everest.yaml names against names that are recognized by Everest and the mod updater.
-                if (fileName != null && !fileName.equals("everest.yaml") && !fileName.equals("everest.yml") && !fileName.equals("multimetadata.yaml")) {
-                    problems.add("Your file is named \"" + fileName + "\", so it won't be recognized as an everest.yaml file. Rename it.");
-                }
+                        .collect(Collectors.toCollection(ArrayList::new));
 
                 JSONObject everestVersions;
                 try (InputStream is = CloudStorageUtils.getCloudStorageInputStream("everest_versions.json")) {
                     everestVersions = new JSONObject(IOUtils.toString(is, UTF_8));
+                }
+
+                // add entries that don't come from the database: Celeste, Everest, and things declared by the yaml itself.
+                {
+                    EverestModuleMetadata metadata = new EverestModuleMetadata();
+                    metadata.Name = "Celeste";
+                    metadata.Version = "1.4.0.0";
+                    database.add(metadata);
+                }
+                {
+                    EverestModuleMetadata metadata = new EverestModuleMetadata();
+                    metadata.Name = "Everest";
+                    metadata.Version = "1." + getMaximumEverestVersion(everestVersions) + ".0";
+                    database.add(metadata);
+                }
+                for (EverestModuleMetadata mod : metadatas) {
+                    try {
+                        new Version(mod.Version);
+                        database.add(mod);
+                    } catch (IllegalArgumentException e) {
+                        // skip! we don't want mods with an invalid Version in our database.
+                    }
+                }
+                { // delete when SJ is out
+                    EverestModuleMetadata metadata = new EverestModuleMetadata();
+                    metadata.Name = "StrawberryJam2021";
+                    metadata.Version = "1.0.0";
+                    database.add(metadata);
+                }
+
+                List<String> problems = new ArrayList<>();
+
+                // check everest.yaml names against names that are recognized by Everest and the mod updater.
+                if (!fileName.equals("everest.yaml") && !fileName.equals("everest.yml") && !fileName.equals("multimetadata.yaml")) {
+                    problems.add("Your file is named \"" + fileName + "\", so it won't be recognized as an everest.yaml file. Rename it.");
                 }
 
                 for (EverestModuleMetadata mod : metadatas) {
@@ -218,23 +246,6 @@ public class EverestYamlValidatorService extends HttpServlet {
                         // look for the dependency in the mod database.
                         EverestModuleMetadata databaseDependency = database.stream()
                                 .filter(entry -> entry.Name.equals(dependency.Name)).findFirst().orElse(null);
-
-                        // the Everest dependency has to be checked against Azure, not the mod database.
-                        if (dependency.Name.equals("Everest")) {
-                            databaseDependency = new EverestModuleMetadata();
-                            databaseDependency.Version = "1." + getMaximumEverestVersion(everestVersions) + ".0";
-                        }
-                        // and Celeste exists, obviously
-                        if (dependency.Name.equals("Celeste")) {
-                            databaseDependency = new EverestModuleMetadata();
-                            databaseDependency.Version = "1.4.0.0";
-                        }
-
-                        // unreleased mods that have to be checked independently
-                        if (dependency.Name.equals("StrawberryJam2021")) {
-                            databaseDependency = new EverestModuleMetadata();
-                            databaseDependency.Version = "1.0.0";
-                        }
 
                         if (databaseDependency == null) {
                             problems.add("One of your dependencies, \"" + dependency.Name + "\", does not exist in the database." +
