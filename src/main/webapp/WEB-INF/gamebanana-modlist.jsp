@@ -136,7 +136,7 @@
             interactive: true
         });
 
-        tippy('#tpm__sArbitraryModsModule .record-<%= thisIndex %> .Ownership', {
+        tippy('#tpm__sArbitraryModsModule .record-<%= thisIndex %> .Ownership .Avatar', {
             content: '<div class="BananaTip">'
                 + '<div class="Title">Submitter</div>'
                 + '<a href="<%= escapeEcmaScript(escapeHtml4(modInfo.submitterUrl)) %>"><%= escapeEcmaScript(escapeHtml4(modInfo.submitterName)) %></a>'
