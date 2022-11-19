@@ -202,7 +202,7 @@ Click [here](https://max480-random-stuff.appspot.com/celeste/random-map) to get 
 
 ## Olympus News API
 
-This API is available at `https://max480-random-stuff.appspot.com/celeste/olympus-news`, and returns the news to display in Olympus, in JSON format. For example:
+This API is available at `https://max480-random-stuff.appspot.com/celeste/olympus-news`, and returns the news that are displayed in Olympus, in JSON format. For example:
 ```json
 [
   {
@@ -221,34 +221,7 @@ The fields are all optional, and are:
 - `link`: a link that can be opened by clicking an "Open in browser" button (links in the `preview` are not clickable)
 - `text`: longer text that can be viewed in a popup by clicking a button at the bottom of the news
 
-The contents of the API are based on the 10 most recent tweets of [the @EverestAPI Twitter](https://twitter.com/EverestAPI):
-- `preview` is filled with the tweet text, excluding non-ascii characters
-- `image` is filled with the first image of the tweet. If there is none, the embed image of the first link that has one in the message will be taken instead.
-- `title` is filled with the embed title of the first link that has one in the message. To accomodate GameBanana links better, `[Celeste] [Mods]` is also removed from it.
-- `link` is filled with the first link in the tweet. This link is also removed from the `preview`.
-
-[A file from the RandomBackendStuff repository](https://github.com/max4805/RandomBackendStuff/blob/main/olympusnews.json) allows to edit this feed, in order to keep control over it. The format is the following:
-```json
-{
-    "add_before": [
-        { "entry1" },
-        { "entry2" }
-    ],
-    "add_after": [
-        { "entry3" },
-        { "entry4" }
-    ],
-    "replace": {
-        "tweetID1": { "entry5" }
-    },
-    "delete": ["tweetID2", "tweetID3"]
-}
-```
-All `entry` JSON objects follow the format of news entries (`title`, `preview`, etc).
-- The entries in `add_before` will be added before the 10 tweets in the news feed
-- The entries in `add_after` will be added after the 10 tweets in the news feed
-- The entries in `replace` will overwrite the tweets with the given Twitter IDs in the feed
-- The tweets with the IDs listed in `delete` will be deleted from the feed, and older tweets will be taken instead to reach 10 tweets
+The contents returned by the API are, like Olympus, based on [the `olympusnews` folder of the EverestAPI.github.io repository](https://github.com/EverestAPI/EverestAPI.github.io/tree/main/olympusnews).
 
 ## Everest versions list API
 
