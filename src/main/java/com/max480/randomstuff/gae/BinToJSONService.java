@@ -1,5 +1,6 @@
 package com.max480.randomstuff.gae;
 
+import org.apache.commons.io.EndianUtils;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -74,7 +75,7 @@ public class BinToJSONService extends HttpServlet {
             root.getJSONObject("attributes").put("Header", readString(bin));
             root.getJSONObject("attributes").put("Package", readString(bin));
 
-            int lookupTableSize = readShort(bin);
+            int lookupTableSize = EndianUtils.readSwappedShort(bin);
             String[] stringLookupTable = new String[lookupTableSize];
             for (int i = 0; i < lookupTableSize; i++) {
                 stringLookupTable[i] = readString(bin);
@@ -110,44 +111,23 @@ public class BinToJSONService extends HttpServlet {
         return new String(stringBytes, StandardCharsets.UTF_8);
     }
 
-    // we need our own readShort() and readInt() methods because Java's ones don't have the endianness we want.
-    // in other words, we want to read the bytes backwards.
-
-    private static short readShort(DataInputStream bin) throws Exception {
-        int byte1 = bin.readUnsignedByte();
-        int byte2 = bin.readUnsignedByte();
-
-        // just swap the bytes and we'll be fine lol
-        return (short) ((byte2 << 8) + byte1);
-    }
-
-    private static int readInt(DataInputStream bin) throws Exception {
-        int byte1 = bin.readUnsignedByte();
-        int byte2 = bin.readUnsignedByte();
-        int byte3 = bin.readUnsignedByte();
-        int byte4 = bin.readUnsignedByte();
-
-        // reading numbers backwards is fun!
-        return (byte4 << 24) + (byte3 << 16) + (byte2 << 8) + byte1;
-    }
-
     private static void recursiveConvert(DataInputStream bin, JSONObject current, String[] stringLookupTable, boolean first) throws Exception {
         JSONObject element;
         if (!first) {
             element = new JSONObject();
-            element.put("name", stringLookupTable[readShort(bin)]);
+            element.put("name", stringLookupTable[EndianUtils.readSwappedShort(bin)]);
             element.put("attributes", new JSONObject());
             element.put("children", new JSONArray());
 
             current.getJSONArray("children").put(element);
         } else {
             element = current;
-            readShort(bin);
+            EndianUtils.readSwappedShort(bin);
         }
 
         recursiveConvertAttributes(bin, element, stringLookupTable, bin.readUnsignedByte());
 
-        short childrenCount = readShort(bin);
+        short childrenCount = EndianUtils.readSwappedShort(bin);
         for (int i = 0; i < childrenCount; i++) {
             recursiveConvert(bin, element, stringLookupTable, false);
         }
@@ -155,7 +135,7 @@ public class BinToJSONService extends HttpServlet {
 
     private static void recursiveConvertAttributes(DataInputStream bin, JSONObject element, String[] stringLookupTable, int count) throws Exception {
         for (byte b = 0; b < count; b = (byte) (b + 1)) {
-            String localName = stringLookupTable[readShort(bin)];
+            String localName = stringLookupTable[EndianUtils.readSwappedShort(bin)];
             AttributeValueType attributeValueType = AttributeValueType.fromValue(bin.readUnsignedByte());
             Object obj = null;
             switch (attributeValueType) {
@@ -166,13 +146,13 @@ public class BinToJSONService extends HttpServlet {
                     obj = bin.readUnsignedByte();
                     break;
                 case Float:
-                    obj = Float.intBitsToFloat(readInt(bin));
+                    obj = EndianUtils.readSwappedFloat(bin);
                     break;
                 case Integer:
-                    obj = readInt(bin);
+                    obj = EndianUtils.readSwappedInteger(bin);
                     break;
                 case LengthEncodedString: {
-                    short length = readShort(bin);
+                    short length = EndianUtils.readSwappedShort(bin);
                     byte[] array = new byte[length];
                     if (bin.read(array) != length) throw new IOException("Missing characters in string!");
 
@@ -193,13 +173,13 @@ public class BinToJSONService extends HttpServlet {
                     break;
                 }
                 case Short:
-                    obj = readShort(bin);
+                    obj = EndianUtils.readSwappedShort(bin);
                     break;
                 case String:
                     obj = readString(bin);
                     break;
                 case FromLookup:
-                    obj = stringLookupTable[readShort(bin)];
+                    obj = stringLookupTable[EndianUtils.readSwappedShort(bin)];
                     break;
             }
 
