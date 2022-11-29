@@ -7,6 +7,7 @@ import com.max480.randomstuff.gae.ConnectionUtils;
 import com.max480.randomstuff.gae.SecretConstants;
 import com.max480.randomstuff.gae.discord.DiscordProtocolHandler;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.function.IOConsumer;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPatch;
 import org.apache.http.entity.ContentType;
@@ -642,11 +643,7 @@ public class InteractionManager extends HttpServlet {
         return null;
     }
 
-    private interface NetworkingOperation<T> {
-        void accept(T parameter) throws IOException;
-    }
-
-    private void listTimezones(NetworkingOperation<String> respond, long serverId, int page, String locale, boolean edit) throws IOException {
+    private void listTimezones(IOConsumer<String> respond, long serverId, int page, String locale, boolean edit) throws IOException {
         // list all members from the server
         final QueryResults<Entity> query = datastore.run(Query.newEntityQueryBuilder()
                 .setKind("timezoneBotData")
