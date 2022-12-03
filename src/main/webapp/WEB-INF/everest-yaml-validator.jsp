@@ -8,13 +8,13 @@
 
 <html lang="en">
 <head>
-	<title>everest.yaml validator</title>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<meta name="author" content="max480">
-	<meta name="description" content="Check if your everest.yaml is valid by sending it on this page.">
-	<meta property="og:title" content="everest.yaml validator">
-	<meta property="og:description" content="Check if your everest.yaml is valid by sending it on this page.">
+    <title>everest.yaml validator</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="max480">
+    <meta name="description" content="Check if your everest.yaml is valid by sending it on this page.">
+    <meta property="og:title" content="everest.yaml validator">
+    <meta property="og:description" content="Check if your everest.yaml is valid by sending it on this page.">
 
     <link rel="shortcut icon" href="/celeste/favicon.ico">
 
@@ -68,7 +68,7 @@
         </div>
     </nav>
 
-	<div class="container">
+    <div class="container">
         <h1>everest.yaml validator</h1>
 
         Want to know if your everest.yaml is valid? Send it here, and this service will check:
@@ -169,6 +169,6 @@
                 });
             </script>
         <% } %>
-	</div>
+    </div>
 </body>
 </html>

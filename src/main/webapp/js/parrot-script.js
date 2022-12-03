@@ -28,14 +28,14 @@ $('.target').click(function(object) {
 $('#recherche').keyup(function() {
   const recherche = $('#recherche').val();
   const parrots = $('.target');
-  
+
   for(let i = 0; i < parrots.length; i++) {
     const parrot = $(parrots[i]);
     if(parrot.attr('title').toLowerCase().includes(recherche.toLowerCase())) {
-      parrot.show();  
+      parrot.show();
     } else {
-	  parrot.hide();
-	}
+      parrot.hide();
+    }
   }
 });
 

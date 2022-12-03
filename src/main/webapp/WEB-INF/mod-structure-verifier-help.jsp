@@ -8,13 +8,13 @@
 
 <html lang="en">
 <head>
-	<title>Mod Structure Verifier Help</title>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<meta name="author" content="max480">
-	<meta name="description" content="Do you have mod structure issues? Here are some steps to solve them.">
-	<meta property="og:title" content="Mod Structure Verifier Help">
-	<meta property="og:description" content="Do you have mod structure issues? Here are some steps to solve them.">
+    <title>Mod Structure Verifier Help</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="max480">
+    <meta name="description" content="Do you have mod structure issues? Here are some steps to solve them.">
+    <meta property="og:title" content="Mod Structure Verifier Help">
+    <meta property="og:description" content="Do you have mod structure issues? Here are some steps to solve them.">
 
     <link rel="shortcut icon" href="/celeste/favicon.ico">
 
@@ -27,7 +27,7 @@
 </head>
 
 <body>
-	<div class="container">
+    <div class="container">
         <h1 class="mt-4">Mod Structure Verifier Help</h1>
 
         <div>Here is some help to solve your errors.</div>
@@ -253,6 +253,6 @@
         <% } %>
 
         <div style="height: 30px"/>
-	</div>
+    </div>
 </body>
 </html>
