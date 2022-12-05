@@ -38,7 +38,7 @@
     #tpm__sArbitraryModsModule .Stats span {
         font-size: 12.8px;
     }
-    #tpm__sArbitraryModsModule .Record .Ownership img {
+    #tpm__sArbitraryModsModule .Record .IdentityWrapper img {
         height: 32px;
         width: 32px;
         max-width: 32px;
@@ -61,7 +61,7 @@
                             <img loading="lazy" class="PreviewImage" alt="<%= escapeHtml4(modInfo.name) %>" src="<%= escapeHtml4(modInfo.image) %>" decoding="async" width="220" height="90">
                         </a>
 
-                        <div class="Ownership">
+                        <div class="IdentityWrapper Cluster">
                             <a class="Avatar" href="<%= escapeHtml4(modInfo.submitterUrl) %>">
                                 <img loading="lazy" src="<%= escapeHtml4(modInfo.submitterAvatar) %>" alt="<%= escapeHtml4(modInfo.submitterName) %> avatar" width="32" height="32">
                             </a>
@@ -136,7 +136,7 @@
             interactive: true
         });
 
-        tippy('#tpm__sArbitraryModsModule .record-<%= thisIndex %> .Ownership .Avatar', {
+        tippy('#tpm__sArbitraryModsModule .record-<%= thisIndex %> .IdentityWrapper .Avatar', {
             content: '<div class="BananaTip">'
                 + '<div class="Title">Submitter</div>'
                 + '<a href="<%= escapeEcmaScript(escapeHtml4(modInfo.submitterUrl)) %>"><%= escapeEcmaScript(escapeHtml4(modInfo.submitterName)) %></a>'
