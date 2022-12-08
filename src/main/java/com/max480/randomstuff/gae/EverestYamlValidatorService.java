@@ -211,7 +211,7 @@ public class EverestYamlValidatorService extends HttpServlet {
                 List<String> problems = new ArrayList<>();
 
                 // check everest.yaml names against names that are recognized by Everest and the mod updater.
-                if (!fileName.equals("everest.yaml") && !fileName.equals("everest.yml") && !fileName.equals("multimetadata.yaml")) {
+                if (!fileName.equals("everest.yaml") && !fileName.equals("everest.yml")) {
                     problems.add("Your file is named \"" + fileName + "\", so it won't be recognized as an everest.yaml file. Rename it.");
                 }
 
