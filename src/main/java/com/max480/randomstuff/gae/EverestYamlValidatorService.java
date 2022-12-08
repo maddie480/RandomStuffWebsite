@@ -157,7 +157,7 @@ public class EverestYamlValidatorService extends HttpServlet {
                     throw new Exception("The everest.yaml file is empty.");
                 }
 
-                metadatas = recursiveCast(metadatasUnparsed);
+                metadatas = recursiveCast(metadatasUnparsed, true);
             } catch (Exception e) {
                 attributes.put("parseError", e.getMessage());
             }
@@ -381,7 +381,7 @@ public class EverestYamlValidatorService extends HttpServlet {
      * Converts a raw List of Maps to a list of EverestModuleMetadata objects recursively
      * (the Dependencies and OptionalDependencies will be converted as well).
      */
-    private static List<EverestModuleMetadata> recursiveCast(List<Map<String, Object>> list) {
+    private static List<EverestModuleMetadata> recursiveCast(List<Map<String, Object>> list, boolean parseDependencies) {
         List<EverestModuleMetadata> castedList = new ArrayList<>(list.size());
         for (Map<String, Object> object : list) {
             EverestModuleMetadata metadata = new EverestModuleMetadata();
@@ -407,18 +407,18 @@ public class EverestYamlValidatorService extends HttpServlet {
             }
 
             // parse Dependencies recursively
-            if (object.containsKey("Dependencies")) {
+            if (object.containsKey("Dependencies") && parseDependencies) {
                 try {
-                    metadata.Dependencies = recursiveCast((List<Map<String, Object>>) object.get("Dependencies"));
+                    metadata.Dependencies = recursiveCast((List<Map<String, Object>>) object.get("Dependencies"), false);
                 } catch (Exception e) {
                     throw new IllegalArgumentException("Cannot parse Dependencies for " + metadata.Name + ": " + e.getMessage());
                 }
             }
 
             // parse OptionalDependencies recursively
-            if (object.containsKey("OptionalDependencies")) {
+            if (object.containsKey("OptionalDependencies") && parseDependencies) {
                 try {
-                    metadata.OptionalDependencies = recursiveCast((List<Map<String, Object>>) object.get("OptionalDependencies"));
+                    metadata.OptionalDependencies = recursiveCast((List<Map<String, Object>>) object.get("OptionalDependencies"), false);
                 } catch (Exception e) {
                     throw new IllegalArgumentException("Cannot parse OptionalDependencies for " + metadata.Name + ": " + e.getMessage());
                 }
