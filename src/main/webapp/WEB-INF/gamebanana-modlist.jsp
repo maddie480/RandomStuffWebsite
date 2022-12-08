@@ -55,21 +55,23 @@
         <div class="RecordsGrid">
             <% int index = 0; %>
             <% for (ModInfo modInfo : (List<ModInfo>) request.getAttribute("modList")) { %>
-                <div class="Record Flow ModRecord record-<%= index++ %> ">
+                <div class="Record Flow ModRecord HasPreview record-<%= index++ %> ">
                     <div class="PreviewWrapper">
                         <a href="<%= escapeHtml4(modInfo.url) %>" class="Preview ModPreview">
                             <img loading="lazy" class="PreviewImage" alt="<%= escapeHtml4(modInfo.name) %>" src="<%= escapeHtml4(modInfo.image) %>" decoding="async" width="220" height="90">
                         </a>
 
-                        <div class="IdentityWrapper Cluster">
-                            <a class="Avatar" href="<%= escapeHtml4(modInfo.submitterUrl) %>">
-                                <img loading="lazy" src="<%= escapeHtml4(modInfo.submitterAvatar) %>" alt="<%= escapeHtml4(modInfo.submitterName) %> avatar" width="32" height="32">
-                            </a>
-                        </div>
+                        <div class="PreviewOverlayWrapper">
+                            <div class="IdentityWrapper Cluster">
+                                <a class="Avatar" href="<%= escapeHtml4(modInfo.submitterUrl) %>">
+                                    <img loading="lazy" src="<%= escapeHtml4(modInfo.submitterAvatar) %>" alt="<%= escapeHtml4(modInfo.submitterName) %> avatar" width="32" height="32">
+                                </a>
+                            </div>
 
-                        <div class="CategoryWrapper">
-                            <img loading="lazy" alt="<%= escapeHtml4(modInfo.categoryName) %> icon" class="RootCategoryIcon" src="<%= escapeHtml4(modInfo.categoryIcon) %>" width="32" height="32">
-                            <spriteicon class="SubmissionType Mod"></spriteicon><img loading="lazy" alt="<%= escapeHtml4(modInfo.gameName) %> icon" class="GameIcon" src="<%= escapeHtml4(modInfo.gameIcon) %>" width="32" height="32">
+                            <div class="CategoryWrapper">
+                                <img loading="lazy" alt="<%= escapeHtml4(modInfo.categoryName) %> icon" class="RootCategoryIcon" src="<%= escapeHtml4(modInfo.categoryIcon) %>" width="32" height="32">
+                                <spriteicon class="SubmissionType Mod"></spriteicon><img loading="lazy" alt="<%= escapeHtml4(modInfo.gameName) %> icon" class="GameIcon" src="<%= escapeHtml4(modInfo.gameIcon) %>" width="32" height="32">
+                            </div>
                         </div>
                     </div>
 
