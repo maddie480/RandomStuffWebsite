@@ -105,8 +105,8 @@ public class InteractionManager extends HttpServlet {
                 e.printStackTrace();
                 logger.severe("An unexpected error occurred: " + e);
                 respond(resp, localizeMessage(locale,
-                        ":x: An unexpected error occurred. Reach out at <https://discord.gg/59ztc8QZQ7> if this keeps happening!",
-                        ":x: Une erreur inattendue est survenue. Signale-la sur <https://discord.gg/59ztc8QZQ7> si ça continue à arriver !"));
+                        ":x: An unexpected error occurred. Reach out at <https://discord.gg/PdyfMaq9Vq> if this keeps happening!",
+                        ":x: Une erreur inattendue est survenue. Signale-la sur <https://discord.gg/PdyfMaq9Vq> si ça continue à arriver !"));
             }
         }
     }

@@ -82,7 +82,7 @@
     </div>
 
     <div class="alert alert-info">
-        If you need support on those bots or want to try them out, you can <a href="https://discord.gg/59ztc8QZQ7">join the bot testing server</a>!
+        If you need support on those bots or want to try them out, you can <a href="https://discord.gg/PdyfMaq9Vq">join the bot testing server</a>!
     </div>
 
     <h1 class="botname" id="timezone-bot">
