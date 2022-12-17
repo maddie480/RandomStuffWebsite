@@ -1,19 +1,8 @@
 package com.max480.randomstuff.gae;
 
-import org.apache.commons.io.FileUtils;
+import com.google.common.collect.ImmutableMap;
 import org.apache.commons.io.IOUtils;
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.index.DirectoryReader;
-import org.apache.lucene.queryparser.classic.ParseException;
-import org.apache.lucene.queryparser.classic.QueryParser;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.FSDirectory;
-import org.apache.lucene.util.QueryBuilder;
+import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.json.JSONArray;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
@@ -22,18 +11,14 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 import static com.max480.randomstuff.backend.celeste.crontabs.UpdateCheckerTracker.ModInfo;
 
@@ -48,12 +33,8 @@ public class CelesteModSearchService extends HttpServlet {
 
     private final Logger logger = Logger.getLogger("CelesteModSearchService");
 
-    private final Analyzer analyzer = new StandardAnalyzer();
-    private Directory modIndexDirectory = null;
     private static List<ModInfo> modDatabaseForSorting = Collections.emptyList();
     private Map<Integer, String> modCategories;
-
-    private static final String modIndexDirectoryLock = "lock";
 
     private byte[] olympusNews;
     private byte[] everestVersions;
@@ -105,69 +86,32 @@ public class CelesteModSearchService extends HttpServlet {
                 response.setStatus(400);
                 response.getWriter().write("\"q\" query parameter expected");
             } else {
-                // let's prepare a request through Lucene.
-                synchronized (modIndexDirectoryLock) {
-                    try (DirectoryReader reader = DirectoryReader.open(modIndexDirectory)) {
-                        IndexSearcher searcher = new IndexSearcher(reader);
-                        Query query;
-                        try {
-                            // try parsing the query.
-                            query = new QueryParser("name", analyzer).parse(queryParam);
-                            logger.fine("Query we are going to run: " + query.toString());
-                        } catch (ParseException e) {
-                            // query could not be parsed! aaaaa
-                            // we will give up on trying to parse it and just interpret everything as search terms.
-                            logger.info("Query could not be parsed!");
+                final String[] tokenizedRequest = tokenize(queryParam);
 
-                            query = new QueryBuilder(analyzer).createBooleanQuery("name", queryParam);
+                Stream<ModInfo> searchStream = modDatabaseForSorting.stream()
+                        .filter(mod -> scoreMod(tokenizedRequest, (String[]) mod.fullInfo.get("TokenizedName")) > 0.2f * tokenizedRequest.length)
+                        .sorted(Comparator.comparing(mod -> -scoreMod(tokenizedRequest, (String[]) mod.fullInfo.get("TokenizedName"))));
 
-                            if (query == null) {
-                                // invalid request is invalid! (for example "*")
-                                logger.warning("Could not generate fallback request!");
-                                response.setHeader("Content-Type", "text/yaml");
-                                response.getWriter().write(new Yaml().dump(Collections.emptyList()));
-                                return;
-                            }
 
-                            logger.fine("Fallback query we are going to run: " + query.toString());
-                        }
+                // send out the response
+                if (fullInfo) {
+                    List<Map<String, Object>> responseBody = searchStream
+                            .map(mod -> mod.fullInfo)
+                            .limit(20)
+                            .collect(Collectors.toList());
 
-                        ScoreDoc[] hits = searcher.search(query, 20).scoreDocs;
+                    response.setHeader("Content-Type", "application/json");
+                    response.getWriter().write(new JSONArray(responseBody).toString());
+                } else {
+                    List<Map<String, Object>> responseBody = searchStream
+                            .map(mod -> ImmutableMap.<String, Object>of(
+                                    "itemtype", mod.type,
+                                    "itemid", mod.id))
+                            .limit(20)
+                            .collect(Collectors.toList());
 
-                        // convert the results to yaml
-                        List<Map<String, Object>> responseBody;
-                        responseBody = Arrays.stream(hits).map(hit -> {
-                            try {
-                                Document doc = searcher.doc(hit.doc);
-                                if (fullInfo) {
-                                    return modDatabaseForSorting.stream()
-                                            .filter(m -> m.type.equals(doc.get("type")) && m.id == Integer.parseInt(doc.get("id")))
-                                            .findFirst().map(m -> m.fullInfo)
-                                            .orElseThrow(() -> new RuntimeException("Found mod that's not in the database!"));
-                                } else {
-                                    Map<String, Object> result = new LinkedHashMap<>();
-                                    result.put("itemtype", doc.get("type"));
-                                    result.put("itemid", Integer.parseInt(doc.get("id")));
-
-                                    logger.fine("Result: " + doc.get("type") + " " + doc.get("id")
-                                            + " (" + doc.get("name") + ") with " + hit.score + " pt(s)");
-                                    return result;
-                                }
-                            } catch (IOException e) {
-                                // how would we have an I/O exception on a memory stream?
-                                throw new RuntimeException(e);
-                            }
-                        }).collect(Collectors.toList());
-
-                        // send out the response
-                        if (fullInfo) {
-                            response.setHeader("Content-Type", "application/json");
-                            response.getWriter().write(new JSONArray(responseBody).toString());
-                        } else {
-                            response.setHeader("Content-Type", "text/yaml");
-                            response.getWriter().write(new Yaml().dump(responseBody));
-                        }
-                    }
+                    response.setHeader("Content-Type", "text/yaml");
+                    response.getWriter().write(new Yaml().dump(responseBody));
                 }
             }
         }
@@ -414,6 +358,38 @@ public class CelesteModSearchService extends HttpServlet {
         }
     }
 
+    private static String[] tokenize(String string) {
+        string = string.toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9* ]", "");
+        while (string.contains("  ")) string = string.replace("  ", " ");
+        return string.split(" ");
+    }
+
+    private static double scoreMod(String[] query, String[] modName) {
+        double score = 0;
+
+        for (String tokenSearch : query) {
+            if (tokenSearch.endsWith("*")) {
+                // "starts with" search: add 1 if there's a word starting with the prefix
+                String tokenSearchStart = tokenSearch.substring(0, tokenSearch.length() - 1);
+                for (String tokenModName : modName) {
+                    if (tokenModName.startsWith(tokenSearchStart)) {
+                        score++;
+                        break;
+                    }
+                }
+            } else {
+                // "equals" search: take the score of the word that is closest to the token
+                double tokenScore = 0;
+                for (String tokenModName : modName) {
+                    tokenScore = Math.max(tokenScore, Math.pow(0.5, LevenshteinDistance.getDefaultInstance().apply(tokenSearch, tokenModName)));
+                }
+                score += tokenScore;
+            }
+        }
+
+        return score;
+    }
+
     public static String formatGameBananaItemtype(String input, boolean pluralize) {
         // specific formatting for a few categories
         if (input.equals("Gamefile")) {
@@ -463,31 +439,6 @@ public class CelesteModSearchService extends HttpServlet {
         } catch (ClassNotFoundException e) {
             throw new IOException(e);
         }
-
-        synchronized (modIndexDirectoryLock) {
-            // throw away the existing directory.
-            if (modIndexDirectory != null) {
-                modIndexDirectory.close();
-                modIndexDirectory = null;
-            }
-
-            // get the index directory from Cloud Storage. if it exists, wipe it.
-            File dir = new File("/tmp/mod_index");
-            if (dir.exists()) {
-                FileUtils.deleteDirectory(dir);
-            }
-            dir.mkdir();
-            try (ZipInputStream zipInputStream = new ZipInputStream(CloudStorageUtils.getCloudStorageInputStream("mod_index.zip"))) {
-                ZipEntry entry;
-                while ((entry = zipInputStream.getNextEntry()) != null) {
-                    FileUtils.copyToFile(zipInputStream, new File("/tmp/mod_index/" + entry.getName()));
-                }
-            }
-
-            modIndexDirectory = FSDirectory.open(Paths.get("/tmp/mod_index"));
-        }
-
-        logger.fine("Index directory contains " + modIndexDirectory.listAll().length + " files.");
     }
 
     private void refreshOlympusNews() throws IOException {

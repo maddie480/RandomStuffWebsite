@@ -51,20 +51,6 @@ $ curl https://max480-random-stuff.appspot.com/celeste/gamebanana-search?q=sprin
 
 Here the top 2 results are https://gamebanana.com/maps/211745 (The 2020 Celeste Spring Community Collab) and https://gamebanana.com/gamefiles/13452 (2020 Spring Collab Randomizer).
 
-The search engine is powered by [Apache Lucene](https://lucene.apache.org/). It supports, among other things:
-- searching for a **phrase**: `"Spring Collab"`
-- **OR** and **NOT** keywords: `Spring Collab NOT Randomizer`
-- searching for other fields in GameBanana submissions:
-  - the **name** (default): `name: (Spring Collab 2020)`
-  - the GameBanana **type**: `type: gamefile`, `type: map`, etc.
-  - the GameBanana **ID**: `id: 9486` (those can be found at the end of links to mods)
-  - the GameBanana **category**: `category: Textures`
-  - one of the **authors**: `author: max480`
-  - the **summary** (line that appears first on the page): `summary: (grab bag)`
-  - the **description**: `description: "flag touch switches"`
-
-For a full list of supported syntax, check [the Lucene documentation](https://lucene.apache.org/core/8_7_0/queryparser/org/apache/lucene/queryparser/classic/package-summary.html#package.description).
-
 You can pass `full=true` to the API to get the full info on mods instead of just their IDs, **in JSON instead of YAML**:
 
 ```yaml
