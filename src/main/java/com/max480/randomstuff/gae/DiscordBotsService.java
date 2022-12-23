@@ -1,8 +1,5 @@
 package com.max480.randomstuff.gae;
 
-import org.apache.commons.io.IOUtils;
-import org.yaml.snakeyaml.Yaml;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
@@ -10,7 +7,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import java.io.InputStream;
 import java.util.Map;
 
 /**
@@ -22,8 +19,10 @@ import java.util.Map;
 public class DiscordBotsService extends HttpServlet {
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        Map<String, Integer> serverCounts = new Yaml().load(
-                IOUtils.toString(CloudStorageUtils.getCloudStorageInputStream("bot_server_counts.yaml"), StandardCharsets.UTF_8));
+        Map<String, Integer> serverCounts;
+        try (InputStream is = CloudStorageUtils.getCloudStorageInputStream("bot_server_counts.yaml")) {
+            serverCounts = YamlUtil.load(is);
+        }
 
         request.setAttribute("timezoneBotLiteServerCount", serverCounts.get("TimezoneBotLite"));
         request.setAttribute("timezoneBotFullServerCount", serverCounts.get("TimezoneBotFull"));

@@ -4,8 +4,6 @@ import com.google.common.collect.ImmutableMap;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.json.JSONArray;
-import org.yaml.snakeyaml.DumperOptions;
-import org.yaml.snakeyaml.Yaml;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -111,7 +109,7 @@ public class CelesteModSearchService extends HttpServlet {
                             .collect(Collectors.toList());
 
                     response.setHeader("Content-Type", "text/yaml");
-                    response.getWriter().write(new Yaml().dump(responseBody));
+                    YamlUtil.dump(responseBody, response.getOutputStream());
                 }
             }
         }
@@ -206,7 +204,7 @@ public class CelesteModSearchService extends HttpServlet {
                     response.getWriter().write(new JSONArray(responseBody).toString());
                 } else {
                     response.setHeader("Content-Type", "text/yaml");
-                    response.getWriter().write(new Yaml().dump(responseBody));
+                    YamlUtil.dump(responseBody, response.getOutputStream());
                 }
             }
         }
@@ -285,7 +283,7 @@ public class CelesteModSearchService extends HttpServlet {
 
             // send out the response (the "block" flow style works better with Olympus).
             response.setHeader("Content-Type", "text/yaml");
-            response.getWriter().write(new Yaml().dumpAs(responseBody, null, DumperOptions.FlowStyle.BLOCK));
+            YamlUtil.dump(responseBody, response.getOutputStream());
         }
 
         // "redirect to matching image on Banana Mirror" service, that also responds to /celeste/webp-to-png for backwards compatibility

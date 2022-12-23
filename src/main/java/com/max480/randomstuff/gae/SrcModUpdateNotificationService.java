@@ -2,7 +2,6 @@ package com.max480.randomstuff.gae;
 
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
-import org.yaml.snakeyaml.Yaml;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -135,7 +134,7 @@ public class SrcModUpdateNotificationService extends HttpServlet {
 
         Map<String, Map<String, Object>> modUpdateDatabase;
         try (InputStream is = CloudStorageUtils.getCloudStorageInputStream("everest_update.yaml")) {
-            modUpdateDatabase = new Yaml().load(is);
+            modUpdateDatabase = YamlUtil.load(is);
         }
 
         request.setAttribute("modList", modList.stream()
@@ -160,7 +159,7 @@ public class SrcModUpdateNotificationService extends HttpServlet {
 
     private boolean doesModExist(String modName) throws IOException {
         try (InputStream is = CloudStorageUtils.getCloudStorageInputStream("everest_update.yaml")) {
-            Map<String, Object> database = new Yaml().load(is);
+            Map<String, Object> database = YamlUtil.load(is);
             return database.containsKey(modName);
         }
     }

@@ -5,14 +5,13 @@ import com.google.common.collect.ImmutableMap;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.json.JSONObject;
-import org.yaml.snakeyaml.DumperOptions;
-import org.yaml.snakeyaml.Yaml;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.ZoneId;
@@ -79,18 +78,21 @@ public class CelesteModCatalogService extends HttpServlet {
         }
     }
 
-    public static String getSampleEverestYaml(QueriedModInfo mod) {
-        return new Yaml().dumpAs(ImmutableList.of(
-                ImmutableMap.of(
-                        "Name", "YourModName",
-                        "Version", "1.0.0",
-                        "Dependencies", ImmutableList.of(
-                                ImmutableMap.of(
-                                        "Name", mod.modEverestYamlId,
-                                        "Version", mod.latestVersion
-                                )
-                        ))
-        ), null, DumperOptions.FlowStyle.BLOCK);
+    public static String getSampleEverestYaml(QueriedModInfo mod) throws IOException {
+        try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
+            YamlUtil.dump(ImmutableList.of(
+                    ImmutableMap.of(
+                            "Name", "YourModName",
+                            "Version", "1.0.0",
+                            "Dependencies", ImmutableList.of(
+                                    ImmutableMap.of(
+                                            "Name", mod.modEverestYamlId,
+                                            "Version", mod.latestVersion
+                                    )
+                            ))
+            ), os);
+            return new String(os.toByteArray(), UTF_8);
+        }
     }
 
     private Pair<List<QueriedModInfo>, ZonedDateTime> loadList() throws IOException {

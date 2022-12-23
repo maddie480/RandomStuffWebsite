@@ -3,8 +3,6 @@ package com.max480.randomstuff.gae;
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
-import org.yaml.snakeyaml.DumperOptions;
-import org.yaml.snakeyaml.Yaml;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -13,6 +11,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Paths;
@@ -146,12 +145,11 @@ public class EverestYamlValidatorService extends HttpServlet {
             Map<String, Object> attributes = new HashMap<>();
 
             String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
-            String fileContent = IOUtils.toString(filePart.getInputStream(), UTF_8);
 
             // try parsing given everest.yaml as YAML, and catch any exception that could happen.
             List<EverestModuleMetadata> metadatas = null;
-            try {
-                List<Map<String, Object>> metadatasUnparsed = new Yaml().load(fileContent);
+            try (InputStream is = filePart.getInputStream()) {
+                List<Map<String, Object>> metadatasUnparsed = YamlUtil.load(is);
 
                 if (metadatasUnparsed == null || metadatasUnparsed.isEmpty()) {
                     throw new Exception("The everest.yaml file is empty.");
@@ -164,7 +162,7 @@ public class EverestYamlValidatorService extends HttpServlet {
 
             if (metadatas != null) {
                 // load the mod database to check if dependencies exist there.
-                Map<String, Object> databaseUnparsed = new Yaml().load(CloudStorageUtils.getCloudStorageInputStream("everest_update.yaml"));
+                Map<String, Object> databaseUnparsed = YamlUtil.load(CloudStorageUtils.getCloudStorageInputStream("everest_update.yaml"));
                 List<EverestModuleMetadata> database = databaseUnparsed
                         .entrySet().stream()
                         .map(entry -> {
@@ -343,7 +341,10 @@ public class EverestYamlValidatorService extends HttpServlet {
                                 })
                                 .collect(Collectors.toList());
 
-                        attributes.put("latestVersionsYaml", new Yaml().dumpAs(latestVersionsYaml, null, DumperOptions.FlowStyle.BLOCK));
+                        try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
+                            YamlUtil.dump(latestVersionsYaml, os);
+                            attributes.put("latestVersionsYaml", new String(os.toByteArray(), UTF_8));
+                        }
 
                         if ("html".equals(outputFormat)) {
                             // in order to allow the inline script without ruining the CSP, we need to generate a nonce.
