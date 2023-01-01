@@ -10,12 +10,9 @@
 
         <link rel="shortcut icon" href="https://cultofthepartyparrot.com/still/parrots/parrot.png">
 
-        <script src="https://code.jquery.com/jquery-3.6.0.slim.min.js"
-                integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI="
-                crossorigin="anonymous">
-        </script>
+        <script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
 
-    <link rel="stylesheet" href="/css/parrot-quick-importer.css">
+        <link rel="stylesheet" href="/css/parrot-quick-importer.css">
     </head>
 
     <body>
