@@ -12,6 +12,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="author" content="max480">
     <meta name="description" content="<%= escapeHtml4((String) request.getAttribute("pageDescription")) %>">
+    <meta property="og:site_name" content="max480's Random Stuff">
     <meta property="og:title" content="<%= escapeHtml4((String) request.getAttribute("pageTitle")) %>">
     <meta property="og:description" content="<%= escapeHtml4((String) request.getAttribute("pageDescription")) %>">
 
