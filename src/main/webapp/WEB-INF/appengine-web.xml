@@ -17,11 +17,7 @@
     <static-files>
         <!-- Static HTML file, that should have a Content-Security-Policy -->
         <include path="/estcequeckc.html">
-            <http-header name="Content-Security-Policy" value="default-src 'self';
-                script-src 'self' https://cdn.jsdelivr.net;
-                style-src 'self' https://cdn.jsdelivr.net 'unsafe-inline';
-                frame-ancestors 'none';
-                object-src 'none';"/>
+            <http-header name="Content-Security-Policy" value="default-src 'self'; frame-ancestors 'none'; object-src 'none';"/>
         </include>
 
         <!-- Static images, CSS and JS, that don't need anything -->
