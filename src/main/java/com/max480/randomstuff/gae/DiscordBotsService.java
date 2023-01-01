@@ -30,6 +30,7 @@ public class DiscordBotsService extends HttpServlet {
         request.setAttribute("gamesBotServerCount", serverCounts.get("GamesBot"));
         request.setAttribute("customSlashCommandsServerCount", serverCounts.get("CustomSlashCommands"));
 
-        request.getRequestDispatcher("/WEB-INF/discord-bots.jsp").forward(request, response);
+        PageRenderer.render(request, response, "discord-bots", "Discord Bots",
+                "Read more about the Mod Structure Verifier, the Timezone Bot, the Games Bot and the Custom Slash Commands application here.");
     }
 }

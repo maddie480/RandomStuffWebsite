@@ -40,7 +40,8 @@ public class CelesteNewsNetworkSubscriptionService extends HttpServlet {
         request.setAttribute("unsubscribe_success", false);
 
         request.setAttribute("sub_count", countSubscribers());
-        request.getRequestDispatcher("/WEB-INF/celeste-news-network-subscription.jsp").forward(request, response);
+        PageRenderer.render(request, response, "celeste-news-network-subscription", "#celeste_news_network Subscription Service",
+                "If you want the #celeste_news_network channel from Mt. Celeste Climbing Association on your server, register your Discord webhook URL on this page!");
     }
 
     @Override
@@ -109,7 +110,8 @@ public class CelesteNewsNetworkSubscriptionService extends HttpServlet {
         }
 
         request.setAttribute("sub_count", countSubscribers());
-        request.getRequestDispatcher("/WEB-INF/celeste-news-network-subscription.jsp").forward(request, response);
+        PageRenderer.render(request, response, "celeste-news-network-subscription", "#celeste_news_network Subscription Service",
+                "If you want the #celeste_news_network channel from Mt. Celeste Climbing Association on your server, register your Discord webhook URL on this page!");
     }
 
     /**

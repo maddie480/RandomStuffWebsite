@@ -13,8 +13,6 @@
     <artifactId>quest-community-bot-website</artifactId>
 
     <properties>
-        <appengine.maven.plugin.version>1.9.84</appengine.maven.plugin.version>
-        <appengine.api.sdk.version>1.9.71</appengine.api.sdk.version>
         <project.build.sourceEncoding>windows-1252</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -106,28 +104,11 @@
             </plugin>
 
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>versions-maven-plugin</artifactId>
-                <version>2.14.2</version>
-                <executions>
-                    <execution>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>display-dependency-updates</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>com.google.appengine</groupId>
+                <groupId>com.google.cloud.tools</groupId>
                 <artifactId>appengine-maven-plugin</artifactId>
-                <version>${appengine.maven.plugin.version}</version>
+                <version>2.4.4</version>
                 <configuration>
-                    <jvmFlags>
-                        <jvmFlag>-Xdebug</jvmFlag>
-                        <jvmFlag>-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005</jvmFlag>
-                    </jvmFlags>
+                    <cloudSdkHome>C:\Users\csouc\AppData\Local\Google\Cloud SDK\google-cloud-sdk</cloudSdkHome>
                 </configuration>
             </plugin>
 

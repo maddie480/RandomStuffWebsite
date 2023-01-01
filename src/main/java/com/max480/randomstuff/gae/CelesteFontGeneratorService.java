@@ -86,7 +86,9 @@ public class CelesteFontGeneratorService extends HttpServlet {
         request.setAttribute("badrequest", false);
         request.setAttribute("allmissing", false);
         request.setAttribute("nothingToDo", false);
-        request.getRequestDispatcher("/WEB-INF/font-generator.jsp").forward(request, response);
+
+        PageRenderer.render(request, response, "font-generator", "Celeste Font Generator",
+                "This tool allows you to generate bitmap fonts in a format appropriate for Celeste mods.");
     }
 
     @Override
@@ -205,7 +207,8 @@ public class CelesteFontGeneratorService extends HttpServlet {
 
         if (!sentZip) {
             // render the HTML page.
-            request.getRequestDispatcher("/WEB-INF/font-generator.jsp").forward(request, response);
+            PageRenderer.render(request, response, "font-generator", "Celeste Font Generator",
+                    "This tool allows you to generate bitmap fonts in a format appropriate for Celeste mods.");
         }
     }
 

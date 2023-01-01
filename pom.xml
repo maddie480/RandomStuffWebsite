@@ -11,8 +11,6 @@
     <artifactId>random-stuff-website</artifactId>
 
     <properties>
-        <appengine.maven.plugin.version>1.9.84</appengine.maven.plugin.version>
-        <appengine.api.sdk.version>1.9.90</appengine.api.sdk.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>

@@ -307,8 +307,8 @@ public class InteractionManager extends HttpServlet {
         getTimezoneFor(serverId, memberId);
 
         respondPrivately(event, localizeMessage(locale,
-                "To figure out your timezone, visit <https://max480-random-stuff.appspot.com/detect-timezone.html>.",
-                "Pour déterminer ton fuseau horaire, consulte <https://max480-random-stuff.appspot.com/detect-timezone.html>."));
+                "To figure out your timezone, visit <https://max480-random-stuff.appspot.com/discord-bots/timezone-bot/detect-timezone>.",
+                "Pour déterminer ton fuseau horaire, consulte <https://max480-random-stuff.appspot.com/discord-bots/timezone-bot/detect-timezone>."));
     }
 
     /**
@@ -354,9 +354,9 @@ public class InteractionManager extends HttpServlet {
             } else {
                 respondPrivately(event, localizeMessage(locale,
                         ":x: The given timezone was not recognized.\n" +
-                                "To figure out your timezone, visit <https://max480-random-stuff.appspot.com/detect-timezone.html>.",
+                                "To figure out your timezone, visit <https://max480-random-stuff.appspot.com/discord-bots/timezone-bot/detect-timezone>.",
                         ":x: Le fuseau horaire que tu as donné n'a pas été reconnu.\n" +
-                                "Pour déterminer ton fuseau horaire, consulte <https://max480-random-stuff.appspot.com/detect-timezone.html>."));
+                                "Pour déterminer ton fuseau horaire, consulte <https://max480-random-stuff.appspot.com/discord-bots/timezone-bot/detect-timezone>."));
             }
         }
     }

@@ -15,22 +15,8 @@
     </system-properties>
 
     <static-files>
-        <!-- Static HTML files, that should have a Content-Security-Policy -->
-        <include path="/*.html">
-            <http-header name="Content-Security-Policy" value="default-src 'self';
-                script-src 'self' https://cdn.jsdelivr.net;
-                style-src 'self' https://cdn.jsdelivr.net 'unsafe-inline';
-                frame-ancestors 'none';
-                object-src 'none';"/>
-        </include>
-        <include path="/discord-bots/timezone-bot/*.html">
-            <http-header name="Content-Security-Policy" value="default-src 'self';
-                script-src 'self' https://cdn.jsdelivr.net;
-                style-src 'self' https://cdn.jsdelivr.net 'unsafe-inline';
-                frame-ancestors 'none';
-                object-src 'none';"/>
-        </include>
-        <include path="/discord-bots/*.html">
+        <!-- Static HTML file, that should have a Content-Security-Policy -->
+        <include path="/estcequeckc.html">
             <http-header name="Content-Security-Policy" value="default-src 'self';
                 script-src 'self' https://cdn.jsdelivr.net;
                 style-src 'self' https://cdn.jsdelivr.net 'unsafe-inline';

@@ -17,6 +17,7 @@ import java.io.IOException;
 public class ModStructureVerifierHelpService extends HttpServlet {
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        request.getRequestDispatcher("/WEB-INF/mod-structure-verifier-help.jsp").forward(request, response);
+        PageRenderer.render(request, response, "mod-structure-verifier-help", "mod-structure-verifier",
+                "Mod Structure Verifier Help", "Do you have mod structure issues? Here are some steps to solve them.");
     }
 }

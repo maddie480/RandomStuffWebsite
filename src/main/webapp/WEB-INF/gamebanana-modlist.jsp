@@ -1,6 +1,4 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
-<%@ page import="java.util.List, java.util.Map, com.max480.randomstuff.gae.GameBananaArbitraryModAppService.ModInfo, static org.apache.commons.text.StringEscapeUtils.escapeHtml4, static org.apache.commons.text.StringEscapeUtils.escapeEcmaScript"%>
+<%@ page import="java.util.List, com.max480.randomstuff.gae.GameBananaArbitraryModAppService.ModInfo, static org.apache.commons.text.StringEscapeUtils.escapeHtml4, static org.apache.commons.text.StringEscapeUtils.escapeEcmaScript"%>
 
 <%@page session="false"%>
 

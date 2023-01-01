@@ -71,10 +71,13 @@ public class CelesteModCatalogService extends HttpServlet {
                         .mapToLong(info -> info.effectList.size())
                         .sum());
             }
-            request.getRequestDispatcher("/WEB-INF/mod-catalog.jsp").forward(request, response);
+            PageRenderer.render(request, response, "mod-catalog", "Celeste Custom Entity and Trigger List",
+                    "A big list containing all custom entities and triggers from mods published on GameBanana.");
         } else {
             logger.warning("Not found");
             response.setStatus(404);
+            PageRenderer.render(request, response, "page-not-found", "Page Not Found",
+                    "Oops, this link seems invalid. Please try again!");
         }
     }
 

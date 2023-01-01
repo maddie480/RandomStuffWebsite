@@ -56,7 +56,8 @@ public class ModStructureVerifierService extends HttpServlet {
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         request.setAttribute("badrequest", false);
-        request.getRequestDispatcher("/WEB-INF/mod-structure-verifier.jsp").forward(request, response);
+        PageRenderer.render(request, response, "mod-structure-verifier", "Celeste Mod Structure Verifier",
+                "This tool allows you to check the structure and dependencies of your Celeste mods.");
     }
 
     @Override
@@ -163,7 +164,8 @@ public class ModStructureVerifierService extends HttpServlet {
             }
         }
 
-        request.getRequestDispatcher("/WEB-INF/mod-structure-verifier.jsp").forward(request, response);
+        PageRenderer.render(request, response, "mod-structure-verifier", "Celeste Mod Structure Verifier",
+                "This tool allows you to check the structure and dependencies of your Celeste mods.");
     }
 
     private void runModStructureVerifyTask(String id, String chunkId, String assetsFolderName, String mapsFolderName) throws IOException {

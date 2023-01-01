@@ -96,11 +96,13 @@ public class MattermostService extends HttpServlet {
         } else {
             logger.warning("Route not found");
             response.setStatus(404);
+            PageRenderer.render(request, response, "page-not-found", "Page Not Found",
+                    "Oops, this link seems invalid. Please try again!");
         }
     }
 
     @Override
-    public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         switch (request.getRequestURI()) {
             case "/mattermost/lock": {
                 if (!SecretConstants.MATTERMOST_TOKEN_LOCK.equals(request.getParameter("token"))) {
@@ -172,6 +174,8 @@ public class MattermostService extends HttpServlet {
             default: {
                 logger.warning("Route not found");
                 response.setStatus(404);
+                PageRenderer.render(request, response, "page-not-found", "Page Not Found",
+                        "Oops, this link seems invalid. Please try again!");
                 break;
             }
         }

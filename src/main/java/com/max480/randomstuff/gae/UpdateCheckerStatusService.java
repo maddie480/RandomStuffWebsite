@@ -95,12 +95,13 @@ public class UpdateCheckerStatusService extends HttpServlet {
             response.setHeader("Content-Type", "application/json");
             response.getWriter().write(updaterStatusJson.toString());
         } else {
-            if (!isWidget) {
+            if (isWidget) {
+                request.getRequestDispatcher("/WEB-INF/update-checker-status-widget.jsp").forward(request, response);
+            } else {
                 request.setAttribute("latestUpdates", latestUpdatesEntries);
+                PageRenderer.render(request, response, "update-checker-status", "Everest Update Checker status page",
+                        "Check the status of the Everest Update Checker here.", 60);
             }
-
-            request.getRequestDispatcher(isWidget ? "/WEB-INF/update-checker-status-widget.jsp" : "/WEB-INF/update-checker-status.jsp")
-                    .forward(request, response);
         }
     }
 

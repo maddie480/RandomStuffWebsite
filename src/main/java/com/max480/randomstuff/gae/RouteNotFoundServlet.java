@@ -1,5 +1,6 @@
 package com.max480.randomstuff.gae;
 
+import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -16,19 +17,15 @@ public class RouteNotFoundServlet extends HttpServlet {
     private static final Logger logger = Logger.getLogger("RouteNotFoundServlet");
 
     @Override
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         if (request.getRequestURI().equals("/")) {
-            // redirect to home
-            response.setStatus(302);
-            response.setHeader("Location", "/home.html");
+            PageRenderer.render(request, response, "home", "max480's Random Stuff",
+                    "A website with a bunch of Celeste tools and Discord bots.");
         } else {
             // display a simple 404 page
             response.setStatus(404);
-            response.setHeader("Content-Type", "text/html; charset=UTF-8");
-            response.getWriter().write("<html>" +
-                    "<link rel=\"stylesheet\" href=\"/css/common.css\">" +
-                    "<link rel=\"stylesheet\" href=\"/css/page-not-found.css\">" +
-                    "<h1>\u274C Not Found</h1><a href=\"/\">\u2B05 Back to Home Page</a></html>");
+            PageRenderer.render(request, response, "page-not-found", "Page Not Found",
+                    "Oops, this link seems invalid. Please try again!");
             logger.warning("Route not found!");
         }
     }

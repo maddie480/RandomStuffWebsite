@@ -118,7 +118,8 @@ public class EverestYamlValidatorService extends HttpServlet {
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        request.getRequestDispatcher("/WEB-INF/everest-yaml-validator.jsp").forward(request, response);
+        PageRenderer.render(request, response, "everest-yaml-validator", "everest.yaml validator",
+                "Check if your everest.yaml is valid by sending it on this page.");
     }
 
     @Override
@@ -375,7 +376,8 @@ public class EverestYamlValidatorService extends HttpServlet {
             }
         }
 
-        request.getRequestDispatcher("/WEB-INF/everest-yaml-validator.jsp").forward(request, response);
+        PageRenderer.render(request, response, "everest-yaml-validator", "everest.yaml validator",
+                "Check if your everest.yaml is valid by sending it on this page.", request.getAttribute("latestVersionsYaml") != null);
     }
 
     /**

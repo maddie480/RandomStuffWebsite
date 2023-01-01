@@ -38,6 +38,8 @@ public class GameBananaAssetsServlet extends HttpServlet {
         } else {
             logger.warning("Not found");
             resp.setStatus(404);
+            PageRenderer.render(req, resp, "page-not-found", "Page Not Found",
+                    "Oops, this link seems invalid. Please try again!");
         }
     }
 }

@@ -41,13 +41,14 @@ public class SrcModUpdateNotificationService extends HttpServlet {
 
         if (("key=" + SecretConstants.SRC_MOD_LIST_KEY).equals(request.getQueryString())) {
             populateModList(request);
+            PageRenderer.render(request, response, "src-mod-update-notifications", "speedrun.com mod update notifications",
+                    "This page allows speedrun.com moderators to pick the mods they want to be notified about when they are updated.");
         } else {
             logger.warning("Invalid key");
-            response.setStatus(403);
-            request.setAttribute("access_forbidden", true);
+            response.setStatus(404);
+            PageRenderer.render(request, response, "page-not-found", "Page Not Found",
+                    "Oops, this link seems invalid. Please try again!");
         }
-
-        request.getRequestDispatcher("/WEB-INF/src-mod-update-notifications.jsp").forward(request, response);
     }
 
     @Override
@@ -114,13 +115,14 @@ public class SrcModUpdateNotificationService extends HttpServlet {
             }
 
             populateModList(request);
+            PageRenderer.render(request, response, "src-mod-update-notifications", "speedrun.com mod update notifications",
+                    "This page allows speedrun.com moderators to pick the mods they want to be notified about when they are updated.");
         } else {
             logger.warning("Invalid key");
-            response.setStatus(403);
-            request.setAttribute("access_forbidden", true);
+            response.setStatus(404);
+            PageRenderer.render(request, response, "page-not-found", "Page Not Found",
+                    "Oops, this link seems invalid. Please try again!");
         }
-
-        request.getRequestDispatcher("/WEB-INF/src-mod-update-notifications.jsp").forward(request, response);
     }
 
     private void populateModList(HttpServletRequest request) throws IOException {

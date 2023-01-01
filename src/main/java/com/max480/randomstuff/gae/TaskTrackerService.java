@@ -43,6 +43,8 @@ public class TaskTrackerService extends HttpServlet {
         request.setAttribute("taskOngoing", false);
         request.setAttribute("fileNotFound", false);
 
+        int refreshDelay = 0;
+
         // 1/ tracking page: /celeste/task-tracker/[type]/[id]
         Matcher trackerPageUrlMatch = trackerPageUrlPattern.matcher(request.getRequestURI());
         if (trackerPageUrlMatch.matches()) {
@@ -71,9 +73,8 @@ public class TaskTrackerService extends HttpServlet {
                     request.setAttribute("taskOngoing", true);
 
                     // we will refresh in a bit.
-                    int waitTime = getWaitTime(taskCreateTimestamp);
-                    logger.fine("Task is not finished yet, waiting for " + waitTime + " seconds before checking again.");
-                    request.setAttribute("refreshIn", waitTime);
+                    refreshDelay = getWaitTime(taskCreateTimestamp);
+                    logger.fine("Task is not finished yet, waiting for " + refreshDelay + " seconds before checking again.");
                     request.setAttribute("taskCreatedAgo", formatTimeAgo(taskCreateTimestamp));
                 } else {
                     // task is done!
@@ -141,7 +142,13 @@ public class TaskTrackerService extends HttpServlet {
             request.setAttribute("type", request.getRequestURI().startsWith("/celeste/task-tracker/font-generate") ? "font-generate" : "mod-structure-verify");
         }
 
-        request.getRequestDispatcher("/WEB-INF/task-tracker.jsp").forward(request, response);
+        if (request.getRequestURI().startsWith("/celeste/task-tracker/font-generate")) {
+            PageRenderer.render(request, response, "task-tracker", "font-generator", "Celeste Font Generator – Result",
+                    "This is a direct link to a Font Generator result. It will stay valid for 1 day after the generation ends.", refreshDelay);
+        } else {
+            PageRenderer.render(request, response, "task-tracker", "mod-structure-verifier", "Celeste Mod Structure Verifier – Result",
+                    "This is a direct link to a Mod Structure Verifier result. It will stay valid for 1 day after the verification ends.", refreshDelay);
+        }
     }
 
     private InputStream getCloudStorageInputStream(String filename) {
