@@ -82,7 +82,7 @@
     </nav>
 
     <div class="container">
-		<c:import url="/WEB-INF/${pageId}.jsp" />
+        <c:import url="/WEB-INF/${pageId}.jsp" />
     </div>
 </body>
 </html>
