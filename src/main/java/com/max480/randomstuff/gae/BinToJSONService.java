@@ -18,8 +18,8 @@ import java.util.Arrays;
 import java.util.logging.Logger;
 
 /**
- * Based on https://github.com/max4805/RandomBackendStuff/blob/main/src/main/java/com/max480/randomstuff/backend/discord/modstructureverifier/BinToXML.java,
- * except this outputs JSON instead of outputting XML, for ease of use by the frontend.
+ * A port of iSkLz's BinToXML tool to Java, made to output JSON instead of XML.
+ * For use by the Mod Structure Verifier and by the Map Tree Viewer.
  */
 @WebServlet(name = "BinToJSONService", urlPatterns = {"/celeste/bin-to-json"})
 public class BinToJSONService extends HttpServlet {
