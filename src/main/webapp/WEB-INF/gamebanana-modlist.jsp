@@ -184,10 +184,5 @@
                 $('#UpdateCheckerStatusTitle').removeClass('hidden');
                 $('#UpdateCheckerStatus').removeClass('hidden');
             });
-
-        <% if ((boolean) request.getAttribute("avatarEnabled")) { %>
-            $('#IdentityModule .Avatar img').attr('style', 'width: 128px; height: 128px;');
-            $('#IdentityModule .Avatar img').attr('src', 'https://cdn.discordapp.com/attachments/445236692136230943/1009398906381140070/46407af28c31a3157f860a3357537de8.png');
-        <% } %>
     <% } %>
 </script>
