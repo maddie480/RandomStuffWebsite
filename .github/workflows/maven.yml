@@ -44,3 +44,10 @@ jobs:
 
     - name: Dependency Check on Extra
       run: mvn -B dependency-check:check --file .github/extra/pom.xml
+
+    - name: Upload artifacts
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: target
+        path: target
