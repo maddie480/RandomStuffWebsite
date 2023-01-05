@@ -15,4 +15,11 @@
         <packageUrl regex="true">^pkg:maven/com\.google\.http\-client/google\-http\-client\-protobuf@.*$</packageUrl>
         <cpe>cpe:/a:google:protobuf-java</cpe>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+           gdx-jnigen-loader misidentified as a screenshot upload bash script available on GitHub that had an URL predictability vulnerability
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/com\.badlogicgames\.gdx/gdx\-jnigen\-loader@.*$</packageUrl>
+        <cpe>cpe:/a:utils_project:utils</cpe>
+    </suppress>
 </suppressions>
