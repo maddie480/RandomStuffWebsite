@@ -50,4 +50,6 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: target
-        path: target
+        path: |
+            target
+            .github/extra/target
