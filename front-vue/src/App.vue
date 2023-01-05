@@ -130,7 +130,7 @@
                   class="dropdown-item"
                   href="https://gamebanana.com/members/1698143"
                   target="_blank"
-                  >&#x1F34C; GameBanana &#x2013; Celeste mods</a
+                  >&#x1F34C;&nbsp;&nbsp;GameBanana &#x2013; Mods</a
                 >
               </li>
               <li>
@@ -138,7 +138,7 @@
                   class="dropdown-item"
                   href="https://github.com/max4805"
                   target="_blank"
-                  >&#x1F4BB; GitHub &#x2013; Source code</a
+                  >&#x1F4BB;&nbsp;&nbsp;GitHub &#x2013; Source code</a
                 >
               </li>
               <li>
@@ -146,7 +146,7 @@
                   class="dropdown-item"
                   href="https://ko-fi.com/max480"
                   target="_blank"
-                  >&#x2615; Buy me a coffee</a
+                  >&#x2615;&nbsp;&nbsp;Buy me a coffee</a
                 >
               </li>
             </ul>
