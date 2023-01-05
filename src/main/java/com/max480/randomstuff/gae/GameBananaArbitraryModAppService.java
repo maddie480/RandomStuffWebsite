@@ -165,17 +165,7 @@ public class GameBananaArbitraryModAppService extends HttpServlet {
                 })
                 .collect(Collectors.toList());
 
-        boolean isMax480 = "1698143".equals(request.getParameter("_idProfile"));
-        request.setAttribute("isMax480", isMax480);
-        request.setAttribute("avatarEnabled", false);
-        if (isMax480) {
-            try {
-                CloudStorageUtils.getCloudStorageInputStream("avatar_enabled.txt");
-                request.setAttribute("avatarEnabled", true);
-            } catch (StorageException e) {
-                logger.fine("Avatar is disabled!");
-            }
-        }
+        request.setAttribute("isMax480", "1698143".equals(request.getParameter("_idProfile"));
 
         response.setHeader("Content-Type", "application/json");
         request.setAttribute("title", name);
