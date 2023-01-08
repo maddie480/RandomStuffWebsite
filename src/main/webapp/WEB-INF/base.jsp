@@ -76,7 +76,7 @@
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="linksDropdown">
                         <li><a class="dropdown-item" href="https://gamebanana.com/members/1698143" target="_blank">&#x1F34C;&nbsp;&nbsp;GameBanana &#x2013; Mods</a></li>
                         <li><a class="dropdown-item" href="https://github.com/max4805" target="_blank">&#x1F4BB;&nbsp;&nbsp;GitHub &#x2013; Source code</a></li>
-                        <li><a class="dropdown-item" href="https://ko-fi.com/max480" target="_blank">&#x2615;&nbsp;&nbsp;Buy me a coffee</a></li>
+                        <li><a class="dropdown-item" href="https://ko-fi.com/max480" target="_blank">&#x2615;&#xFE0F;&nbsp;&nbsp;Buy me a coffee</a></li>
                     </ul>
                 </li>
             </ul>

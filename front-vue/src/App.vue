@@ -146,7 +146,7 @@
                   class="dropdown-item"
                   href="https://ko-fi.com/max480"
                   target="_blank"
-                  >&#x2615;&nbsp;&nbsp;Buy me a coffee</a
+                  >&#x2615;&#xFE0F;&nbsp;&nbsp;Buy me a coffee</a
                 >
               </li>
             </ul>
