@@ -89,19 +89,19 @@ const sleep = (ms) => {
 
 const fetchResultInfo = async (result) => {
   const info = (
-    await axios.get(`${config.backendUrl}/celeste/gamebanana-search`, {
+    await axios.get(`${config.backendUrl}/celeste/gamebanana-info`, {
       params: {
-        q: `+type: ${result.itemtype} +id: ${result.itemid}`,
-        full: true,
+        itemtype: result.itemtype,
+        itemid: result.itemid,
       },
     })
   ).data;
 
-  result.name = info[0].Name;
-  result.url = info[0].PageURL;
+  result.name = info.Name;
+  result.url = info.PageURL;
 
   for (const file of result.files) {
-    for (const retrievedFile of info[0].Files) {
+    for (const retrievedFile of info.Files) {
       if (retrievedFile.URL === "https://gamebanana.com/dl/" + file.id) {
         file.name = retrievedFile.Name;
         file.url = retrievedFile.URL;

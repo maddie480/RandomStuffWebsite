@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -24,9 +25,9 @@ import static com.max480.randomstuff.backend.celeste.crontabs.UpdateCheckerTrack
  * This servlet provides the GameBanana search API, and other APIs that are used by Olympus or the Banana Mirror Browser.
  */
 @WebServlet(name = "CelesteModSearchService", loadOnStartup = 2, urlPatterns = {"/celeste/gamebanana-search",
-        "/celeste/gamebanana-search-reload", "/celeste/gamebanana-list", "/celeste/gamebanana-categories", "/celeste/webp-to-png",
-        "/celeste/banana-mirror-image", "/celeste/random-map", "/celeste/gamebanana-featured", "/celeste/olympus-news", "/celeste/olympus-news-reload",
-        "/celeste/everest-versions", "/celeste/everest-versions-reload"})
+        "/celeste/gamebanana-search-reload", "/celeste/gamebanana-list", "/celeste/gamebanana-categories", "/celeste/gamebanana-info",
+        "/celeste/webp-to-png", "/celeste/banana-mirror-image", "/celeste/random-map", "/celeste/gamebanana-featured",
+        "/celeste/olympus-news", "/celeste/olympus-news-reload", "/celeste/everest-versions", "/celeste/everest-versions-reload"})
 public class CelesteModSearchService extends HttpServlet {
 
     private final Logger logger = Logger.getLogger("CelesteModSearchService");
@@ -205,6 +206,45 @@ public class CelesteModSearchService extends HttpServlet {
                 } else {
                     response.setHeader("Content-Type", "text/yaml");
                     YamlUtil.dump(responseBody, response.getOutputStream());
+                }
+            }
+        }
+
+        if (request.getRequestURI().equals("/celeste/gamebanana-info")) {
+            String itemtype = request.getParameter("itemtype");
+
+            Integer itemid = null;
+            try {
+                if (request.getParameter("itemid") != null) {
+                    itemid = Integer.parseInt(request.getParameter("itemid"));
+                }
+            } catch (NumberFormatException e) {
+                logger.warning("Cannot parse itemid as number: " + e);
+            }
+
+            if (itemtype == null || itemid == null) {
+                // missing parameter
+                logger.warning("Bad request");
+                response.setHeader("Content-Type", "text/plain");
+                response.setStatus(400);
+                response.getWriter().write("'itemtype' and 'itemid' query params should both be specified, and itemid should be a valid number");
+            } else {
+                final int itemId = itemid;
+                String responseBody = modDatabaseForSorting.stream()
+                        .filter(mod -> itemtype.equals(mod.type) && itemId == mod.id)
+                        .findFirst()
+                        .map(mod -> new JSONObject(mod.fullInfo).toString())
+                        .orElse(null);
+
+                // send out the response.
+                if (responseBody != null) {
+                    response.setHeader("Content-Type", "application/json");
+                    response.getWriter().write(responseBody);
+                } else {
+                    logger.warning("Not found");
+                    response.setHeader("Content-Type", "text/plain");
+                    response.setStatus(404);
+                    response.getWriter().write("Not Found");
                 }
             }
         }

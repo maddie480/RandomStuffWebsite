@@ -127,6 +127,83 @@ Each mod has a `Featured` key if it is featured. The `Category` is one of the fo
 
 This API sorts the mods in the same order as they are on the website: by `Category` (following the order above) then by `Position`.
 
+## GameBanana mod info API
+
+This API provides info on a mod, based on its `itemtype` and `itemid`, in the same format as the search and list APIs with the `full=true` option.
+
+The URL is `https://max480-random-stuff.appspot.com/celeste/gamebanana-info?itemtype=[itemtype]&itemid=[itemid]`:
+```
+$ curl "https://max480-random-stuff.appspot.com/celeste/gamebanana-info?itemtype=Mod&itemid=150813"
+```
+```json
+{
+   "CategoryId":6800,
+   "Screenshots":[
+      "https://images.gamebanana.com/img/ss/mods/5f590aced2b97.jpg",
+      "https://images.gamebanana.com/img/ss/mods/5f46e9ee53c9b.jpg"
+   ],
+   "Description":"A collaboration involving 100+ people to commemorate Celeste",
+   "Views":511063,
+   "GameBananaType":"Mod",
+   "TokenizedName":[
+      "the",
+      "2020",
+      "celeste",
+      "spring",
+      "community",
+      "collab"
+   ],
+   "UpdatedDate":1668375864,
+   "GameBananaId":150813,
+   "Featured":{
+      "Position":0,
+      "Category":"alltime"
+   },
+   "Text":"<span class=\"GreenColor\"><b>The 2020 Celeste Spring Collab is a project that has been in the making for over 8 months with 100+ people involved. <\/b>After waiting patiently for so long, we're proud to present you the final product!<br><\/span> [...]",
+   "ModifiedDate":1668375829,
+   "Name":"The 2020 Celeste Spring Community Collab",
+   "PageURL":"https://gamebanana.com/mods/150813",
+   "MirroredScreenshots":[
+      "https://celestemodupdater.0x0a.de/banana-mirror-images/img_ss_mods_5f590aced2b97.png",
+      "https://celestemodupdater.0x0a.de/banana-mirror-images/img_ss_mods_5f46e9ee53c9b.png"
+   ],
+   "CreatedDate":1599670994,
+   "Author":"Spring Collab 2020 Team",
+   "CategoryName":"Maps",
+   "Downloads":100049,
+   "Likes":154,
+   "Files":[
+      {
+         "Description":"v1.7.5",
+         "HasEverestYaml":true,
+         "Size":56290503,
+         "CreatedDate":1668375774,
+         "Downloads":12687,
+         "URL":"https://gamebanana.com/dl/890982",
+         "Name":"springcollab2020_bdf5e.zip"
+      },
+      {
+         "Description":"Audio v1.0.0",
+         "HasEverestYaml":true,
+         "Size":513411848,
+         "CreatedDate":1599575103,
+         "Downloads":26737,
+         "URL":"https://gamebanana.com/dl/484937",
+         "Name":"springcollab2020audio_135a4.zip"
+      },
+      {
+         "Description":"Outdated - Old Grandmaster HS",
+         "HasEverestYaml":true,
+         "Size":159602,
+         "CreatedDate":1616693898,
+         "Downloads":918,
+         "URL":"https://gamebanana.com/dl/539975",
+         "Name":"springcollab2020oldgmhs_ee692.zip"
+      }
+   ]
+}
+```
+
 ## GameBanana categories list API
 
 This API allows getting a list of GameBanana item types _that have at least one Celeste mod in it_ (contrary to [the official GameBanana v2 API for this](https://api.gamebanana.com/Core/Item/Data/AllowedItemTypes?&help)), along with how many mods there are for each category.
