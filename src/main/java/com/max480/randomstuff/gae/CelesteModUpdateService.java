@@ -32,7 +32,7 @@ public class CelesteModUpdateService extends HttpServlet {
             everestYaml = IOUtils.toByteArray(CloudStorageUtils.getCloudStorageInputStream("everest_update.yaml"));
             everestYamlEtag = "\"" + DigestUtils.sha512Hex(everestYaml) + "\"";
         } catch (Exception e) {
-            logger.log(Level.WARNING, "Warming up failed: " + e.toString());
+            logger.log(Level.WARNING, "Warming up failed: " + e);
         }
     }
 

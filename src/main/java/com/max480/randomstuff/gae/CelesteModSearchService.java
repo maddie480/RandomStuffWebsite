@@ -45,7 +45,7 @@ public class CelesteModSearchService extends HttpServlet {
             refreshOlympusNews();
             refreshEverestVersions();
         } catch (Exception e) {
-            logger.log(Level.WARNING, "Warming up failed: " + e.toString());
+            logger.log(Level.WARNING, "Warming up failed: " + e);
         }
     }
 
@@ -430,12 +430,13 @@ public class CelesteModSearchService extends HttpServlet {
 
     public static String formatGameBananaItemtype(String input, boolean pluralize) {
         // specific formatting for a few categories
-        if (input.equals("Gamefile")) {
-            return pluralize ? "Game files" : "Game file";
-        } else if (input.equals("Wip")) {
-            return pluralize ? "WiPs" : "WiP";
-        } else if (input.equals("Gui")) {
-            return pluralize ? "GUIs" : "GUI";
+        switch (input) {
+            case "Gamefile":
+                return pluralize ? "Game files" : "Game file";
+            case "Wip":
+                return pluralize ? "WiPs" : "WiP";
+            case "Gui":
+                return pluralize ? "GUIs" : "GUI";
         }
 
         // apply the spaced pascal case from Everest

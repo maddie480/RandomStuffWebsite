@@ -117,18 +117,18 @@ public class CelesteModCatalogService extends HttpServlet {
      * A small object to hold an itemtype/itemid pair (this identifies a mod uniquely on GameBanana).
      */
     public static class QueriedModInfo {
-        public String itemtype;
-        public int itemid;
-        public int categoryId;
-        public String categoryName;
-        public String modName;
-        public String modEverestYamlId;
-        public String latestVersion;
-        public int dependentCount;
-        public Map<String, List<String>> entityList;
-        public Map<String, List<String>> triggerList;
-        public Map<String, List<String>> effectList;
-        public Map<String, String> documentationLinks;
+        public final String itemtype;
+        public final int itemid;
+        public final int categoryId;
+        public final String categoryName;
+        public final String modName;
+        public final String modEverestYamlId;
+        public final String latestVersion;
+        public final int dependentCount;
+        public final Map<String, List<String>> entityList;
+        public final Map<String, List<String>> triggerList;
+        public final Map<String, List<String>> effectList;
+        public final Map<String, String> documentationLinks;
 
         public QueriedModInfo(HashMap<String, Object> object) {
             itemtype = (String) object.get("itemtype");

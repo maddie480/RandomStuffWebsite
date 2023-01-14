@@ -43,7 +43,7 @@ public class ParrotQuickImporterService extends HttpServlet {
             logger.log(Level.INFO, "There are " + parrots.size() + " parrots in my database :parrot_parrot:");
             return parrots;
         } catch (IOException e) {
-            logger.log(Level.WARNING, "Parrot retrieval failed: " + e.toString());
+            logger.log(Level.WARNING, "Parrot retrieval failed: " + e);
             throw e;
         }
     }

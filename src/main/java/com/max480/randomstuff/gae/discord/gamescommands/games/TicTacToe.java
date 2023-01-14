@@ -11,7 +11,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class TicTacToe extends GameState {
-    private Boolean[][] board;
+    private final Boolean[][] board;
 
     // size should be 3 or 4 (4 already doesn't work as a game so don't even try 5)
     public TicTacToe(boolean player1Starts, int size) {

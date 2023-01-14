@@ -73,7 +73,7 @@ public class CelesteFontGeneratorService extends HttpServlet {
                     .setBatchingSettings(BatchingSettings.newBuilder().setIsEnabled(false).build())
                     .build();
         } catch (IOException e) {
-            logger.log(Level.WARNING, "Building the Pub/Sub publisher for Font Generator failed: " + e.toString());
+            logger.log(Level.WARNING, "Building the Pub/Sub publisher for Font Generator failed: " + e);
         }
     }
 
@@ -272,7 +272,7 @@ public class CelesteFontGeneratorService extends HttpServlet {
 
         // write the font to that folder.
         final File fontFile = tempDirectory.resolve(uploadedFontFileName).toFile();
-        try (OutputStream os = new FileOutputStream(fontFile)) {
+        try (OutputStream os = Files.newOutputStream(fontFile.toPath())) {
             IOUtils.copy(font, os);
         }
 
@@ -323,7 +323,7 @@ public class CelesteFontGeneratorService extends HttpServlet {
         // extract the font from classpath to that folder.
         final File fontFile = tempDirectory.resolve(fontName).toFile();
         try (InputStream is = CelesteFontGeneratorService.class.getClassLoader().getResourceAsStream("font-generator/fonts/" + fontName);
-             OutputStream os = new FileOutputStream(fontFile)) {
+             OutputStream os = Files.newOutputStream(fontFile.toPath())) {
 
             IOUtils.copy(is, os);
         }
@@ -331,7 +331,7 @@ public class CelesteFontGeneratorService extends HttpServlet {
         // extract the font XML from classpath to that folder.
         final File fontXml = tempDirectory.resolve(vanillaFntName).toFile();
         try (InputStream is = CelesteFontGeneratorService.class.getClassLoader().getResourceAsStream("font-generator/vanilla/" + vanillaFntName);
-             OutputStream os = new FileOutputStream(fontXml)) {
+             OutputStream os = Files.newOutputStream(fontXml.toPath())) {
 
             IOUtils.copy(is, os);
         }

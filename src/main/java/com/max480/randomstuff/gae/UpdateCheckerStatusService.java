@@ -30,12 +30,12 @@ import java.util.List;
 @MultipartConfig
 public class UpdateCheckerStatusService extends HttpServlet {
     public static class LatestUpdatesEntry {
-        public boolean isAddition;
-        public String name;
-        public String version;
-        public String url;
-        public String date;
-        public long timestamp;
+        public final boolean isAddition;
+        public final String name;
+        public final String version;
+        public final String url;
+        public final String date;
+        public final long timestamp;
 
         public LatestUpdatesEntry(JSONObject object) {
             this.isAddition = object.getBoolean("isAddition");

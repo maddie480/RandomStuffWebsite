@@ -63,7 +63,7 @@ public class SecretConstants {
 
             SRC_MOD_LIST_KEY = secrets.getString("SRC_MOD_LIST_KEY");
         } catch (IOException e) {
-            logger.severe("Could not load application secrets! " + e.toString());
+            logger.severe("Could not load application secrets! " + e);
         }
     }
 }

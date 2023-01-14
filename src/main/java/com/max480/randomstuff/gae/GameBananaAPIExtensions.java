@@ -5,7 +5,6 @@ import org.apache.commons.text.StringEscapeUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -27,7 +26,7 @@ public class GameBananaAPIExtensions extends HttpServlet {
     private static final Logger logger = Logger.getLogger("GameBananaAPIExtensions");
 
     @Override
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         // if sorting by "last updated", <pubDate> should be the last updated date rather than the created date.
         String pubDateField = "_tsDateAdded";
         if (request.getQueryString().contains("_sOrderBy=_tsDateUpdated,")) {

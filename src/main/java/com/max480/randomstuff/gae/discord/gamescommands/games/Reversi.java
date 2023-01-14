@@ -17,7 +17,7 @@ public class Reversi extends GameState {
     private boolean invertedColors;
 
     // 1 = Player 1, -1 = Player 2
-    private int[][] board;
+    private final int[][] board;
 
     public Reversi(boolean player1Starts) {
         super(player1Starts);
@@ -142,7 +142,7 @@ public class Reversi extends GameState {
     public GameState applyCommand(String command) {
         Reversi status = copyStatus(command);
 
-        if (!command.toLowerCase().equals("skip")) {
+        if (!command.equalsIgnoreCase("skip")) {
             command = command.toUpperCase();
             int y = command.charAt(0) - 'A';
             int x = command.charAt(1) - '1'; // this is how you parse a number

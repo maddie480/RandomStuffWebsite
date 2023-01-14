@@ -3,7 +3,6 @@ package com.max480.randomstuff.gae;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.text.StringEscapeUtils;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -21,7 +20,7 @@ import java.nio.charset.StandardCharsets;
         "/celeste/map-tree-viewer", "/celeste/file-searcher"})
 public class VueServer extends HttpServlet {
     @Override
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         try (InputStream is = VueServer.class.getClassLoader().getResourceAsStream("vue-index.html")) {
             String contents = IOUtils.toString(is, StandardCharsets.UTF_8);
 

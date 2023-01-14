@@ -22,19 +22,19 @@ public class Game {
 
     private final Logger logger = Logger.getLogger("Game");
 
-    private boolean player1IsPC = false;
-    private boolean player2IsPC = false;
+    private final boolean player1IsPC;
+    private final boolean player2IsPC;
 
-    private long player1Id = 0L;
-    private long player2Id = 0L;
+    private final long player1Id;
+    private final long player2Id;
 
-    private int cpuLevel;
+    private final int cpuLevel;
 
     private GameState currentGameState;
 
-    private long waitingInputFrom = 0L;
+    private long waitingInputFrom;
 
-    private MultiConsumer<Game, String, List<String>, HttpServletResponse> actionCallback;
+    private final MultiConsumer<Game, String, List<String>, HttpServletResponse> actionCallback;
     private HttpServletResponse httpResponse;
 
     /**
@@ -115,7 +115,7 @@ public class Game {
         } else if (currentGameState.scoreSituation() == null) {
             refreshStatus("Draw!");
         } else {
-            Long winnerId = (currentGameState.scoreSituation() == Integer.MAX_VALUE ? player1Id : player2Id);
+            long winnerId = (currentGameState.scoreSituation() == Integer.MAX_VALUE ? player1Id : player2Id);
             refreshStatus("And the winner is... <@" + winnerId + ">!");
         }
     }

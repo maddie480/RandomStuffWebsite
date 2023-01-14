@@ -63,7 +63,7 @@ public class EverestYamlValidatorService extends HttpServlet {
      */
     private static class Version {
         public int[] parts;
-        public String versionString;
+        public final String versionString;
 
         public Version(String versionString) {
             this.versionString = versionString;
@@ -128,7 +128,7 @@ public class EverestYamlValidatorService extends HttpServlet {
         try {
             filePart = request.getPart("file");
         } catch (ServletException e) {
-            logger.warning("Failed to get file part: " + e.toString());
+            logger.warning("Failed to get file part: " + e);
         }
 
         // output format can be either "html" or "json".

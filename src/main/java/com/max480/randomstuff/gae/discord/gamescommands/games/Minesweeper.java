@@ -17,8 +17,8 @@ import java.util.regex.Pattern;
 public class Minesweeper extends OnePlayerGameState {
     private static final Logger logger = Logger.getLogger("Minesweeper");
 
-    private int[][] map = new int[9][9]; // -1 = bomb, other = amount of bombs around
-    private int[][] reveal = new int[9][9]; // 0 = nothing, 1 = revealed, 2 = marked
+    private final int[][] map = new int[9][9]; // -1 = bomb, other = amount of bombs around
+    private final int[][] reveal = new int[9][9]; // 0 = nothing, 1 = revealed, 2 = marked
 
     private long beginning;
 

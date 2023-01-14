@@ -12,7 +12,7 @@ import java.util.List;
 
 public class Connect4 extends GameState {
 
-    private Boolean[][] columns = new Boolean[7][6];
+    private final Boolean[][] columns = new Boolean[7][6];
 
     public Connect4(boolean player1Starts) {
         super(player1Starts);
