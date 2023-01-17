@@ -17,8 +17,8 @@ import java.util.logging.Logger;
  * It also provides file_ids.yaml, that can be used to get all GameBanana file IDs that belong to Celeste mods.
  */
 @WebServlet(name = "CelesteModUpdateService", loadOnStartup = 1, urlPatterns = {"/celeste/everest_update.yaml",
-        "/celeste/file_ids.yaml", "/celeste/everest-update-reload", "/celeste/mod_search_database.yaml",
-        "/celeste/mod_files_database.zip", "/celeste/mod_dependency_graph.yaml"})
+        "/celeste/everest-update-reload", "/celeste/mod_search_database.yaml", "/celeste/mod_files_database.zip",
+        "/celeste/mod_dependency_graph.yaml"})
 public class CelesteModUpdateService extends HttpServlet {
     private final Logger logger = Logger.getLogger("CelesteModUpdateService");
 
@@ -72,14 +72,8 @@ public class CelesteModUpdateService extends HttpServlet {
             }
         } else if (request.getRequestURI().equals("/celeste/mod_dependency_graph.yaml")) {
             // send mod_dependency_graph.yaml from Cloud Storage
-            boolean everestYamlFormat = "everestyaml".equals(request.getParameter("format"));
             response.setHeader("Content-Type", "text/yaml");
-            if (!everestYamlFormat) {
-                logger.info("Deprecated API usage");
-            }
-
-            try (InputStream is = CloudStorageUtils.getCloudStorageInputStream(
-                    everestYamlFormat ? "mod_dependency_graph_everest.yaml" : "mod_dependency_graph.yaml")) {
+            try (InputStream is = CloudStorageUtils.getCloudStorageInputStream("mod_dependency_graph.yaml")) {
                 IOUtils.copy(is, response.getOutputStream());
             }
         } else {

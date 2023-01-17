@@ -26,8 +26,7 @@ import static com.max480.randomstuff.backend.celeste.crontabs.UpdateCheckerTrack
  */
 @WebServlet(name = "CelesteModSearchService", loadOnStartup = 2, urlPatterns = {"/celeste/gamebanana-search",
         "/celeste/gamebanana-search-reload", "/celeste/gamebanana-list", "/celeste/gamebanana-categories", "/celeste/gamebanana-info",
-        "/celeste/webp-to-png", "/celeste/banana-mirror-image", "/celeste/random-map", "/celeste/gamebanana-featured",
-        "/celeste/olympus-news", "/celeste/olympus-news-reload", "/celeste/everest-versions", "/celeste/everest-versions-reload"})
+        "/celeste/random-map", "/celeste/gamebanana-featured", "/celeste/everest-versions", "/celeste/everest-versions-reload"})
 public class CelesteModSearchService extends HttpServlet {
 
     private final Logger logger = Logger.getLogger("CelesteModSearchService");
@@ -76,10 +75,6 @@ public class CelesteModSearchService extends HttpServlet {
 
         if (request.getRequestURI().equals("/celeste/gamebanana-search")) {
             String queryParam = request.getParameter("q");
-            boolean fullInfo = "true".equals(request.getParameter("full"));
-            if (!fullInfo) {
-                logger.info("Deprecated API usage");
-            }
 
             if (queryParam == null || queryParam.trim().isEmpty()) {
                 // the user didn't give any search!
@@ -90,44 +85,23 @@ public class CelesteModSearchService extends HttpServlet {
             } else {
                 final String[] tokenizedRequest = tokenize(queryParam);
 
-                Stream<ModInfo> searchStream = modDatabaseForSorting.stream()
+                List<Map<String, Object>> responseBody = modDatabaseForSorting.stream()
                         .filter(mod -> scoreMod(tokenizedRequest, (String[]) mod.fullInfo.get("TokenizedName")) > 0.2f * tokenizedRequest.length)
-                        .sorted(Comparator.comparing(mod -> -scoreMod(tokenizedRequest, (String[]) mod.fullInfo.get("TokenizedName"))));
+                        .sorted(Comparator.comparing(mod -> -scoreMod(tokenizedRequest, (String[]) mod.fullInfo.get("TokenizedName"))))
+                        .map(mod -> mod.fullInfo)
+                        .limit(20)
+                        .collect(Collectors.toList());
 
-
-                // send out the response
-                if (fullInfo) {
-                    List<Map<String, Object>> responseBody = searchStream
-                            .map(mod -> mod.fullInfo)
-                            .limit(20)
-                            .collect(Collectors.toList());
-
-                    response.setHeader("Content-Type", "application/json");
-                    response.getWriter().write(new JSONArray(responseBody).toString());
-                } else {
-                    List<Map<String, Object>> responseBody = searchStream
-                            .map(mod -> ImmutableMap.<String, Object>of(
-                                    "itemtype", mod.type,
-                                    "itemid", mod.id))
-                            .limit(20)
-                            .collect(Collectors.toList());
-
-                    response.setHeader("Content-Type", "text/yaml");
-                    YamlUtil.dump(responseBody, response.getOutputStream());
-                }
+                response.setHeader("Content-Type", "application/json");
+                response.getWriter().write(new JSONArray(responseBody).toString());
             }
         }
 
         if (request.getRequestURI().equals("/celeste/gamebanana-list")) {
-            boolean fullInfo = "true".equals(request.getParameter("full"));
             String sortParam = request.getParameter("sort");
             String pageParam = request.getParameter("page");
-            String typeParam = request.getParameter("type") == null ? request.getParameter("itemtype") : request.getParameter("type");
+            String typeParam = request.getParameter("type");
             String categoryParam = request.getParameter("category");
-
-            if (!fullInfo || request.getParameter("itemtype") != null) {
-                logger.info("Deprecated API usage");
-            }
 
             if (!Arrays.asList("latest", "likes", "views", "downloads").contains(sortParam)) {
                 // invalid sort!
@@ -189,16 +163,7 @@ public class CelesteModSearchService extends HttpServlet {
                 final List<Map<String, Object>> responseBody = responseBodyStream
                         .skip((page - 1) * 20L)
                         .limit(20)
-                        .map(modInfo -> {
-                            if (fullInfo) {
-                                return modInfo.fullInfo;
-                            } else {
-                                Map<String, Object> result = new LinkedHashMap<>();
-                                result.put("itemtype", modInfo.type);
-                                result.put("itemid", modInfo.id);
-                                return result;
-                            }
-                        })
+                        .map(modInfo -> modInfo.fullInfo)
                         .collect(Collectors.toList());
 
                 // count the amount of results and put it as a header.
@@ -206,14 +171,8 @@ public class CelesteModSearchService extends HttpServlet {
                         .filter(typeFilter)
                         .count()));
 
-                // send out the response.
-                if (fullInfo) {
-                    response.setHeader("Content-Type", "application/json");
-                    response.getWriter().write(new JSONArray(responseBody).toString());
-                } else {
-                    response.setHeader("Content-Type", "text/yaml");
-                    YamlUtil.dump(responseBody, response.getOutputStream());
-                }
+                response.setHeader("Content-Type", "application/json");
+                response.getWriter().write(new JSONArray(responseBody).toString());
             }
         }
 
@@ -278,17 +237,11 @@ public class CelesteModSearchService extends HttpServlet {
         }
 
         if (request.getRequestURI().equals("/celeste/gamebanana-categories")) {
-            boolean v3 = "3".equals(request.getParameter("version"));
-            boolean v2 = v3 || "2".equals(request.getParameter("version"));
-            if (!v3) {
-                logger.info("Deprecated API usage");
-            }
-
             // go across all mods and aggregate stats per category.
             HashMap<Object, Integer> categoriesAndCounts = new HashMap<>();
             for (ModInfo modInfo : modDatabaseForSorting) {
                 Object category = modInfo.type;
-                if (v2 && category.equals("Mod")) {
+                if (category.equals("Mod")) {
                     category = modInfo.categoryId;
                 }
                 if (!categoriesAndCounts.containsKey(category)) {
@@ -310,7 +263,7 @@ public class CelesteModSearchService extends HttpServlet {
                             result.put("formatted", formatGameBananaItemtype(entry.getKey().toString(), true));
                         } else {
                             // mod category
-                            if (v3) result.put("itemtype", "Mod");
+                            result.put("itemtype", "Mod");
                             result.put("categoryid", entry.getKey());
                             result.put("formatted", modCategories.get(entry.getKey()));
                         }
@@ -322,7 +275,6 @@ public class CelesteModSearchService extends HttpServlet {
 
             // also add an "All" option to pass the total number of mods.
             Map<String, Object> all = new HashMap<>();
-            if (!v3) all.put("itemtype", "");
             all.put("formatted", "All");
             all.put("count", modDatabaseForSorting.size());
 
@@ -336,55 +288,6 @@ public class CelesteModSearchService extends HttpServlet {
             YamlUtil.dump(responseBody, response.getOutputStream());
         }
 
-        // "redirect to matching image on Banana Mirror" service, that also responds to /celeste/webp-to-png for backwards compatibility
-        if (request.getRequestURI().equals("/celeste/webp-to-png") || request.getRequestURI().equals("/celeste/banana-mirror-image")) {
-            if (request.getRequestURI().equals("/celeste/webp-to-png")) {
-                logger.info("Deprecated API usage");
-            }
-            String imagePath = request.getParameter("src");
-            if (imagePath == null) {
-                // no image path passed!
-                response.setHeader("Content-Type", "text/plain");
-                logger.warning("Bad request");
-                response.setStatus(400);
-                response.getWriter().write("expected \"src\" parameter");
-            } else if ((!imagePath.startsWith("https://screenshots.gamebanana.com/") && !imagePath.startsWith("https://images.gamebanana.com/"))) {
-                // the URL passed is not from GameBanana.
-                logger.warning("Returned 403 after trying to use conversion with non-GB URL");
-                response.setHeader("Content-Type", "text/plain");
-                response.setStatus(403);
-                response.getWriter().write("this API can only be used with GameBanana");
-            } else {
-                // find out what the ID on the mirror is going to be, and redirect to it.
-                String screenshotId;
-                if (imagePath.startsWith("https://screenshots.gamebanana.com/")) {
-                    screenshotId = imagePath.substring("https://screenshots.gamebanana.com/".length());
-                } else {
-                    screenshotId = imagePath.substring("https://images.gamebanana.com/".length());
-                }
-                screenshotId = screenshotId.substring(0, screenshotId.lastIndexOf(".")).replace("/", "_") + ".png";
-
-                if (request.getRequestURI().equals("/celeste/webp-to-png")) {
-                    // for compatibility, remove the 220-90 prefix.
-                    screenshotId = screenshotId.replace("220-90_", "");
-                }
-
-                response.setStatus(302);
-                response.setHeader("Location", "https://celestemodupdater.0x0a.de/banana-mirror-images/" + screenshotId);
-            }
-        }
-
-        if (request.getRequestURI().equals("/celeste/olympus-news-reload")) {
-            if (("key=" + SecretConstants.RELOAD_SHARED_SECRET).equals(request.getQueryString())) {
-                refreshOlympusNews();
-            } else {
-                // invalid secret
-                logger.warning("Invalid key");
-                response.setStatus(403);
-            }
-            return;
-        }
-
         if (request.getRequestURI().equals("/celeste/everest-versions-reload")) {
             if (("key=" + SecretConstants.RELOAD_SHARED_SECRET).equals(request.getQueryString())) {
                 refreshEverestVersions();
@@ -394,13 +297,6 @@ public class CelesteModSearchService extends HttpServlet {
                 response.setStatus(403);
             }
             return;
-        }
-
-        if ("/celeste/olympus-news".equals(request.getRequestURI())) {
-            // send olympus_news.json we downloaded earlier
-            logger.info("Deprecated API usage");
-            response.setHeader("Content-Type", "application/json");
-            IOUtils.write(olympusNews, response.getOutputStream());
         }
 
         if ("/celeste/everest-versions".equals(request.getRequestURI())) {

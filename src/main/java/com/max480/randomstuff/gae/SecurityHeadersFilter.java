@@ -73,9 +73,9 @@ public class SecurityHeadersFilter extends HttpFilter {
             res.setHeader("Access-Control-Allow-Origin", "https://gamebanana.com");
         }
         if (Arrays.asList("/celeste/gamebanana-search", "/celeste/gamebanana-list", "/celeste/gamebanana-featured", "/celeste/gamebanana-categories",
-                        "/celeste/gamebanana-info", "/celeste/bin-to-json", "/celeste/custom-entity-catalog.json", "/celeste/olympus-news",
-                        "/celeste/everest-versions", "/celeste/update-checker-status.json", "/celeste/everest_update.yaml", "/celeste/file_ids.yaml",
-                        "/celeste/mod_search_database.yaml", "/celeste/mod_dependency_graph.yaml")
+                        "/celeste/gamebanana-info", "/celeste/bin-to-json", "/celeste/custom-entity-catalog.json", "/celeste/everest-versions",
+                        "/celeste/update-checker-status.json", "/celeste/everest_update.yaml", "/celeste/mod_search_database.yaml",
+                        "/celeste/mod_dependency_graph.yaml")
                 .contains(req.getRequestURI())) {
             // allow most JSON and YAML APIs to be called from anywhere.
             res.setHeader("Access-Control-Allow-Origin", "*");
