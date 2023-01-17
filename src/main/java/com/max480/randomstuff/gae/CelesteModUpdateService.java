@@ -74,6 +74,9 @@ public class CelesteModUpdateService extends HttpServlet {
             // send mod_dependency_graph.yaml from Cloud Storage
             boolean everestYamlFormat = "everestyaml".equals(request.getParameter("format"));
             response.setHeader("Content-Type", "text/yaml");
+            if (!everestYamlFormat) {
+                logger.info("Deprecated API usage");
+            }
 
             try (InputStream is = CloudStorageUtils.getCloudStorageInputStream(
                     everestYamlFormat ? "mod_dependency_graph_everest.yaml" : "mod_dependency_graph.yaml")) {
