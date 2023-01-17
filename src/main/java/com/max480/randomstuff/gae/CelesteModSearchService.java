@@ -77,6 +77,9 @@ public class CelesteModSearchService extends HttpServlet {
         if (request.getRequestURI().equals("/celeste/gamebanana-search")) {
             String queryParam = request.getParameter("q");
             boolean fullInfo = "true".equals(request.getParameter("full"));
+            if (!fullInfo) {
+                logger.info("Deprecated API usage");
+            }
 
             if (queryParam == null || queryParam.trim().isEmpty()) {
                 // the user didn't give any search!
@@ -121,6 +124,10 @@ public class CelesteModSearchService extends HttpServlet {
             String pageParam = request.getParameter("page");
             String typeParam = request.getParameter("type") == null ? request.getParameter("itemtype") : request.getParameter("type");
             String categoryParam = request.getParameter("category");
+
+            if (!fullInfo || request.getParameter("itemtype") != null) {
+                logger.info("Deprecated API usage");
+            }
 
             if (!Arrays.asList("latest", "likes", "views", "downloads").contains(sortParam)) {
                 // invalid sort!
@@ -273,6 +280,9 @@ public class CelesteModSearchService extends HttpServlet {
         if (request.getRequestURI().equals("/celeste/gamebanana-categories")) {
             boolean v3 = "3".equals(request.getParameter("version"));
             boolean v2 = v3 || "2".equals(request.getParameter("version"));
+            if (!v3) {
+                logger.info("Deprecated API usage");
+            }
 
             // go across all mods and aggregate stats per category.
             HashMap<Object, Integer> categoriesAndCounts = new HashMap<>();
@@ -328,6 +338,9 @@ public class CelesteModSearchService extends HttpServlet {
 
         // "redirect to matching image on Banana Mirror" service, that also responds to /celeste/webp-to-png for backwards compatibility
         if (request.getRequestURI().equals("/celeste/webp-to-png") || request.getRequestURI().equals("/celeste/banana-mirror-image")) {
+            if (request.getRequestURI().equals("/celeste/webp-to-png")) {
+                logger.info("Deprecated API usage");
+            }
             String imagePath = request.getParameter("src");
             if (imagePath == null) {
                 // no image path passed!
@@ -385,12 +398,13 @@ public class CelesteModSearchService extends HttpServlet {
 
         if ("/celeste/olympus-news".equals(request.getRequestURI())) {
             // send olympus_news.json we downloaded earlier
+            logger.info("Deprecated API usage");
             response.setHeader("Content-Type", "application/json");
             IOUtils.write(olympusNews, response.getOutputStream());
         }
 
         if ("/celeste/everest-versions".equals(request.getRequestURI())) {
-            // send olympus_news.json we downloaded earlier
+            // send everest_version_list.json we downloaded earlier
             response.setHeader("Content-Type", "application/json");
             IOUtils.write(everestVersions, response.getOutputStream());
         }
