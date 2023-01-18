@@ -34,14 +34,12 @@ public class CelesteModSearchService extends HttpServlet {
     private static List<ModInfo> modDatabaseForSorting = Collections.emptyList();
     private Map<Integer, String> modCategories;
 
-    private byte[] olympusNews;
     private byte[] everestVersions;
 
     @Override
     public void init() {
         try {
             refreshModDatabase();
-            refreshOlympusNews();
             refreshEverestVersions();
         } catch (Exception e) {
             logger.log(Level.WARNING, "Warming up failed: " + e);
@@ -388,11 +386,6 @@ public class CelesteModSearchService extends HttpServlet {
         } catch (ClassNotFoundException e) {
             throw new IOException(e);
         }
-    }
-
-    private void refreshOlympusNews() throws IOException {
-        olympusNews = IOUtils.toByteArray(CloudStorageUtils.getCloudStorageInputStream("olympus_news.json"));
-        logger.fine("Reloaded Olympus news! " + olympusNews.length + " bytes preloaded.");
     }
 
     private void refreshEverestVersions() throws IOException {
