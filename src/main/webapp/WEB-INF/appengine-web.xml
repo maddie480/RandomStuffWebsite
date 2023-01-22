@@ -15,6 +15,11 @@
     </system-properties>
 
     <static-files>
+        <!-- A font that is used on the GameBanana profile and should have an appropriate Access-Control-Allow-Origin -->
+        <include path="/fonts/Renogare.otf">
+            <http-header name="Access-Control-Allow-Origin" value="https://gamebanana.com"/>
+        </include>
+
         <!-- Static images, CSS and JS, that don't need anything -->
         <include path="/celeste/*"/>
         <include path="/css/*"/>

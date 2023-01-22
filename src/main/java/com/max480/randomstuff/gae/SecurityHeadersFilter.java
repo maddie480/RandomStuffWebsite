@@ -60,7 +60,7 @@ public class SecurityHeadersFilter extends HttpFilter {
                     "object-src 'none';");
         }
 
-        if (Arrays.asList("/celeste/update-checker-status", "/fonts/Renogare.otf").contains(req.getRequestURI())) {
+        if ("/celeste/update-checker-status".equals(req.getRequestURI())) {
             // allow those to be accessed from GameBanana.
             res.setHeader("Access-Control-Allow-Origin", "https://gamebanana.com");
         }
