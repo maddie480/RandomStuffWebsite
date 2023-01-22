@@ -33,14 +33,6 @@ public class SecurityHeadersFilter extends HttpFilter {
                     "img-src 'self' data:; " +
                     "frame-ancestors 'none'; " +
                     "object-src 'none';");
-        } else if (req.getRequestURI().equals("/parrot-quick-importer-online")) {
-            // this one has its own separate rules: it was initially from a different app. :p
-            res.setHeader("Content-Security-Policy", "default-src 'self'; " +
-                    "style-src 'self' 'unsafe-inline'; " +
-                    "script-src 'self' https://code.jquery.com; " +
-                    "img-src 'self' https://cultofthepartyparrot.com; " +
-                    "frame-ancestors 'none'; " +
-                    "object-src 'none';");
         } else if (req.getRequestURI().equals("/celeste/wipe-converter")) {
             // web worker magic forces us to allow inline JS... ouch.
             res.setHeader("Content-Security-Policy", "default-src 'self'; " +
