@@ -10,13 +10,6 @@
     </suppress>
     <suppress>
         <notes><![CDATA[
-            This... isn't SnakeYAML, this is the YAML library for the Go language
-        ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.yaml/snakeyaml@.*$</packageUrl>
-        <cpe>cpe:/a:yaml_project:yaml</cpe>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
             google-http-client-protobuf misidentified as protobuf-java, which is actually in non-vulnerable version 3.21.10
         ]]></notes>
         <packageUrl regex="true">^pkg:maven/com\.google\.http\-client/google\-http\-client\-protobuf@.*$</packageUrl>
