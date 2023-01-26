@@ -146,7 +146,8 @@
                   class="dropdown-item"
                   href="https://ko-fi.com/max480"
                   target="_blank"
-                  >&#x2615;&#xFE0F;&nbsp;&nbsp;Ko-fi &#x2013; Updates & Donations</a
+                  >&#x2615;&#xFE0F;&nbsp;&nbsp;Ko-fi &#x2013; Updates &
+                  Donations</a
                 >
               </li>
             </ul>
