@@ -22,4 +22,11 @@
         <packageUrl regex="true">^pkg:maven/com\.badlogicgames\.gdx/gdx\-jnigen\-loader@.*$</packageUrl>
         <cpe>cpe:/a:utils_project:utils</cpe>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+            The vulnerability is about `XML.toJSONObject` which isn't used here
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.json/json@.*$</packageUrl>
+        <vulnerabilityName>CVE-2022-45688</vulnerabilityName>
+    </suppress>
 </suppressions>
