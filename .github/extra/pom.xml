@@ -118,6 +118,7 @@
                 <version>7.4.4</version>
                 <configuration>
                     <failBuildOnAnyVulnerability>true</failBuildOnAnyVulnerability>
+                    <suppressionFile>owasp-suppressions.xml</suppressionFile>
                 </configuration>
                 <executions>
                     <execution>
