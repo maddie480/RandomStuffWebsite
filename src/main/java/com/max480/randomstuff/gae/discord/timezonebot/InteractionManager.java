@@ -1,13 +1,11 @@
 package com.max480.randomstuff.gae.discord.timezonebot;
 
-import com.google.cloud.Timestamp;
-import com.google.cloud.datastore.*;
-import com.max480.randomstuff.gae.CloudStorageUtils;
 import com.max480.randomstuff.gae.ConnectionUtils;
 import com.max480.randomstuff.gae.SecretConstants;
 import com.max480.randomstuff.gae.discord.DiscordProtocolHandler;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.function.IOConsumer;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPatch;
 import org.apache.http.entity.ContentType;
@@ -25,11 +23,14 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
@@ -44,11 +45,9 @@ import java.util.stream.Collectors;
 /**
  * This is the API that makes Timezone Bot run.
  */
-@WebServlet(name = "TimezoneBot", urlPatterns = {"/discord/timezone-bot"}, loadOnStartup = 6)
+@WebServlet(name = "TimezoneBot", urlPatterns = {"/discord/timezone-bot"}, loadOnStartup = 5)
 public class InteractionManager extends HttpServlet {
     private static final Logger logger = Logger.getLogger("InteractionManager");
-    private static final Datastore datastore = DatastoreOptions.newBuilder().setProjectId("max480-random-stuff").build().getService();
-    private static final KeyFactory keyFactory = datastore.newKeyFactory().setKind("timezoneBotData");
 
     // offset timezone database
     private static Map<String, String> TIMEZONE_MAP;
@@ -57,17 +56,30 @@ public class InteractionManager extends HttpServlet {
 
     private static final AtomicLong lastTimezoneDBRequest = new AtomicLong(0);
 
+    private static class UserTimezone {
+        private static final long serialVersionUID = 561851525612831863L;
+
+        public String timezoneName;
+        public ZonedDateTime expiresAt;
+    }
+
+    private static Map<Pair<Long, Long>, UserTimezone> database = new HashMap<>();
+
+
     @Override
     public void init() {
-        try {
+        try (ObjectInputStream is = new ObjectInputStream(Files.newInputStream(Paths.get("/shared/discord-bots/timezone-bot-lite/user-timezones.ser")))) {
             populateTimezones();
+
+            database = (Map<Pair<Long, Long>, UserTimezone>) is.readObject();
+            logger.fine("Loaded " + database.size() + " timezones.");
         } catch (Exception e) {
             logger.log(Level.WARNING, "Warming up failed: " + e);
         }
     }
 
     private static void populateTimezones() throws IOException {
-        try (ObjectInputStream is = new ObjectInputStream(CloudStorageUtils.getCloudStorageInputStream("timezone_name_data.ser"))) {
+        try (ObjectInputStream is = new ObjectInputStream(Files.newInputStream(Paths.get("/shared/discord-bots/timezone-bot-lite/timezone-name-data.ser")))) {
             TIMEZONE_MAP = (Map<String, String>) is.readObject();
             TIMEZONE_FULL_NAMES = (Map<String, String>) is.readObject();
             TIMEZONE_CONFLICTS = (Map<String, List<String>>) is.readObject();
@@ -169,35 +181,28 @@ public class InteractionManager extends HttpServlet {
         }
     }
 
-    private static String getTimezoneFor(long serverId, long memberId) {
-        Entity entity = datastore.get(keyFactory.newKey(serverId + "/" + memberId));
-        if (entity == null) return null;
+    private static String getTimezoneFor(long serverId, long memberId) throws IOException {
+        UserTimezone userTimezone = database.get(Pair.of(serverId, memberId));
+        if (userTimezone == null) return null;
 
-        entity = Entity.newBuilder(entity)
-                .set("expiresAt", Timestamp.ofTimeSecondsAndNanos(ZonedDateTime.now().plusYears(1).toEpochSecond(), 0))
-                .build();
-        datastore.put(entity);
+        userTimezone.expiresAt = ZonedDateTime.now().plusYears(1);
+        saveDatabase();
 
-        return entity.getString("timezoneName");
+        return userTimezone.timezoneName;
     }
 
-    private static void setTimezoneFor(long serverId, long memberId, String timezone) {
-        Entity entity = Entity.newBuilder(keyFactory.newKey(serverId + "/" + memberId))
-                .set("serverId", serverId)
-                .set("memberId", memberId)
-                .set("timezoneName", timezone)
-                .set("expiresAt", Timestamp.ofTimeSecondsAndNanos(ZonedDateTime.now().plusYears(1).toEpochSecond(), 0))
-                .build();
-
-        datastore.put(entity);
+    private static void setTimezoneFor(long serverId, long memberId, String timezone) throws IOException {
+        UserTimezone userTimezone = new UserTimezone();
+        userTimezone.timezoneName = timezone;
+        userTimezone.expiresAt = ZonedDateTime.now().plusYears(1);
+        database.put(Pair.of(serverId, memberId), userTimezone);
+        saveDatabase();
     }
 
-    private static boolean deleteTimezoneFor(long serverId, long memberId) {
-        Entity entity = datastore.get(keyFactory.newKey(serverId + "/" + memberId));
-        if (entity == null) return false;
-
-        datastore.delete(entity.getKey());
-        return true;
+    private static boolean deleteTimezoneFor(long serverId, long memberId) throws IOException {
+        UserTimezone removed = database.remove(Pair.of(serverId, memberId));
+        saveDatabase();
+        return removed != null;
     }
 
     private void commandAutocomplete(JSONObject interaction, String locale, HttpServletResponse resp) throws IOException {
@@ -644,23 +649,25 @@ public class InteractionManager extends HttpServlet {
     }
 
     private void listTimezones(IOConsumer<String> respond, long serverId, int page, String locale, boolean edit) throws IOException {
-        // list all members from the server
-        final QueryResults<Entity> query = datastore.run(Query.newEntityQueryBuilder()
-                .setKind("timezoneBotData")
-                .setFilter(StructuredQuery.PropertyFilter.eq("serverId", serverId))
-                .build());
-
-        // group them by UTC offset
-        Map<Integer, Set<Long>> peopleByUtcOffset = new TreeMap<>();
-        while (query.hasNext()) {
-            Entity member = query.next();
-            ZoneId zone = ZoneId.of(member.getString("timezoneName"));
-            ZonedDateTime now = ZonedDateTime.now(zone);
-            int offset = now.getOffset().getTotalSeconds() / 60;
-
-            Set<Long> peopleInUtcOffset = peopleByUtcOffset.computeIfAbsent(offset, k -> new TreeSet<>());
-            peopleInUtcOffset.add(member.getLong("memberId"));
-        }
+        // list all members from the server, and group them by UTC offset
+        Map<Integer, Set<Long>> peopleByUtcOffset = database.entrySet().stream()
+                .filter(entry -> entry.getKey().getLeft() == serverId)
+                .collect(Collectors.toMap(
+                        // key = UTC offset in minutes
+                        entry -> {
+                            ZoneId zone = ZoneId.of(entry.getValue().timezoneName);
+                            ZonedDateTime now = ZonedDateTime.now(zone);
+                            return now.getOffset().getTotalSeconds() / 60;
+                        },
+                        // value = list of member IDs, which we initialize with a singleton set
+                        entry -> Collections.singleton(entry.getKey().getRight()),
+                        // merge of 2 values with the same keys = just merge the 2 sets
+                        (list1, list2) -> {
+                            Set<Long> merged = new TreeSet<>(list1);
+                            merged.addAll(list2);
+                            return merged;
+                        }
+                ));
 
         if (peopleByUtcOffset.isEmpty()) {
             JSONObject response = new JSONObject();
@@ -970,5 +977,11 @@ public class InteractionManager extends HttpServlet {
         }
 
         return english;
+    }
+
+    private static void saveDatabase() throws IOException {
+        try (ObjectOutputStream os = new ObjectOutputStream(Files.newOutputStream(Paths.get("/shared/discord-bots/timezone-bot-lite/user-timezones.ser")))) {
+            os.writeObject(database);
+        }
     }
 }

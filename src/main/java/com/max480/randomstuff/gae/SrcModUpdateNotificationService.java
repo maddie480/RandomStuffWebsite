@@ -11,6 +11,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -71,7 +74,9 @@ public class SrcModUpdateNotificationService extends HttpServlet {
 
             } else {
                 List<String> modList;
-                try (InputStream is = CloudStorageUtils.getCloudStorageInputStream("src_mod_update_notification_ids.json")) {
+                Path modUpdateNotificationIdsFile = Paths.get("/shared/celeste/src-mod-update-notification-ids.json");
+
+                try (InputStream is = Files.newInputStream(modUpdateNotificationIdsFile)) {
                     modList = new JSONArray(IOUtils.toString(is, UTF_8)).toList()
                             .stream()
                             .map(Object::toString)
@@ -109,8 +114,7 @@ public class SrcModUpdateNotificationService extends HttpServlet {
                 }
 
                 if (save) {
-                    CloudStorageUtils.sendBytesToCloudStorage("src_mod_update_notification_ids.json", "application/json",
-                            new JSONArray(modList).toString().getBytes(UTF_8));
+                    Files.write(modUpdateNotificationIdsFile, new JSONArray(modList).toString().getBytes(UTF_8));
                 }
             }
 
@@ -127,7 +131,7 @@ public class SrcModUpdateNotificationService extends HttpServlet {
 
     private void populateModList(HttpServletRequest request) throws IOException {
         List<String> modList;
-        try (InputStream is = CloudStorageUtils.getCloudStorageInputStream("src_mod_update_notification_ids.json")) {
+        try (InputStream is = Files.newInputStream(Paths.get("/shared/celeste/src-mod-update-notification-ids.json"))) {
             modList = new JSONArray(IOUtils.toString(is, UTF_8)).toList()
                     .stream()
                     .map(Object::toString)
@@ -135,7 +139,7 @@ public class SrcModUpdateNotificationService extends HttpServlet {
         }
 
         Map<String, Map<String, Object>> modUpdateDatabase;
-        try (InputStream is = CloudStorageUtils.getCloudStorageInputStream("everest_update.yaml")) {
+        try (InputStream is = Files.newInputStream(Paths.get("/shared/celeste/updater/everest-update.yaml"))) {
             modUpdateDatabase = YamlUtil.load(is);
         }
 
@@ -160,7 +164,7 @@ public class SrcModUpdateNotificationService extends HttpServlet {
     }
 
     private boolean doesModExist(String modName) throws IOException {
-        try (InputStream is = CloudStorageUtils.getCloudStorageInputStream("everest_update.yaml")) {
+        try (InputStream is = Files.newInputStream(Paths.get("/shared/celeste/updater/everest-update.yaml"))) {
             Map<String, Object> database = YamlUtil.load(is);
             return database.containsKey(modName);
         }

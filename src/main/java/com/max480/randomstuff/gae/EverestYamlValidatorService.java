@@ -14,6 +14,7 @@ import javax.servlet.http.Part;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.SecureRandom;
 import java.util.*;
@@ -163,7 +164,7 @@ public class EverestYamlValidatorService extends HttpServlet {
 
             if (metadatas != null) {
                 // load the mod database to check if dependencies exist there.
-                Map<String, Object> databaseUnparsed = YamlUtil.load(CloudStorageUtils.getCloudStorageInputStream("everest_update.yaml"));
+                Map<String, Object> databaseUnparsed = YamlUtil.load(Files.newInputStream(Paths.get("/shared/celeste/updater/everest-update.yaml")));
                 List<EverestModuleMetadata> database = databaseUnparsed
                         .entrySet().stream()
                         .map(entry -> {
@@ -175,7 +176,7 @@ public class EverestYamlValidatorService extends HttpServlet {
                         .collect(Collectors.toCollection(ArrayList::new));
 
                 JSONObject everestVersions;
-                try (InputStream is = CloudStorageUtils.getCloudStorageInputStream("everest_versions.json")) {
+                try (InputStream is = Files.newInputStream(Paths.get("/shared/celeste/latest-everest-versions.json"))) {
                     everestVersions = new JSONObject(IOUtils.toString(is, UTF_8));
                 }
 

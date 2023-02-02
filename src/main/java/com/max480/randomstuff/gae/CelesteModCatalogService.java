@@ -14,6 +14,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -35,7 +37,7 @@ public class CelesteModCatalogService extends HttpServlet {
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         if (request.getRequestURI().equals("/celeste/custom-entity-catalog.json")) {
             response.setHeader("Content-Type", "application/json");
-            try (InputStream is = CloudStorageUtils.getCloudStorageInputStream("custom_entity_catalog.json")) {
+            try (InputStream is = Files.newInputStream(Paths.get("/shared/celeste/custom-entity-catalog.json"))) {
                 IOUtils.copy(is, response.getOutputStream());
             }
         } else if (request.getRequestURI().equals("/celeste/custom-entity-catalog")) {
@@ -100,7 +102,7 @@ public class CelesteModCatalogService extends HttpServlet {
 
     private Pair<List<QueriedModInfo>, ZonedDateTime> loadList() throws IOException {
         // just load and parse the custom entity catalog JSON.
-        try (InputStream is = CloudStorageUtils.getCloudStorageInputStream("custom_entity_catalog.json")) {
+        try (InputStream is = Files.newInputStream(Paths.get("/shared/celeste/custom-entity-catalog.json"))) {
             JSONObject obj = new JSONObject(IOUtils.toString(is, UTF_8));
             ZonedDateTime lastUpdated = ZonedDateTime.parse(obj.getString("lastUpdated")).withZoneSameInstant(ZoneId.of("UTC"));
             List<QueriedModInfo> modInfo = obj.getJSONArray("modInfo").toList().stream()

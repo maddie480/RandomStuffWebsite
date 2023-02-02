@@ -8,6 +8,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Map;
 
 /**
@@ -20,7 +22,7 @@ public class DiscordBotsService extends HttpServlet {
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         Map<String, Integer> serverCounts;
-        try (InputStream is = CloudStorageUtils.getCloudStorageInputStream("bot_server_counts.yaml")) {
+        try (InputStream is = Files.newInputStream(Paths.get("/shared/discord-bots/bot-server-counts.yaml"))) {
             serverCounts = YamlUtil.load(is);
         }
 

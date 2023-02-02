@@ -15,6 +15,9 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -65,8 +68,10 @@ public class CelesteNewsNetworkSubscriptionService extends HttpServlet {
             request.setAttribute("bad_webhook", true);
 
         } else {
+            Path subscriberDatabase = Paths.get("/shared/celeste/celeste-news-network-subscribers.json");
+
             List<String> webhookUrls;
-            try (InputStream is = CloudStorageUtils.getCloudStorageInputStream("celeste_news_network_subscribers.json")) {
+            try (InputStream is = Files.newInputStream(subscriberDatabase)) {
                 webhookUrls = new JSONArray(IOUtils.toString(is, UTF_8)).toList()
                         .stream()
                         .map(Object::toString)
@@ -104,8 +109,7 @@ public class CelesteNewsNetworkSubscriptionService extends HttpServlet {
             }
 
             if (save) {
-                CloudStorageUtils.sendBytesToCloudStorage("celeste_news_network_subscribers.json", "application/json",
-                        new JSONArray(webhookUrls).toString().getBytes(UTF_8));
+                Files.write(subscriberDatabase, new JSONArray(webhookUrls).toString().getBytes(UTF_8));
             }
         }
 
@@ -148,7 +152,7 @@ public class CelesteNewsNetworkSubscriptionService extends HttpServlet {
     }
 
     private int countSubscribers() throws IOException {
-        try (InputStream is = CloudStorageUtils.getCloudStorageInputStream("celeste_news_network_subscribers.json")) {
+        try (InputStream is = Files.newInputStream(Paths.get("/shared/celeste/celeste-news-network-subscribers.json"))) {
             return new JSONArray(IOUtils.toString(is, UTF_8)).length();
         }
     }

@@ -1,12 +1,5 @@
 package com.max480.randomstuff.gae;
 
-import com.google.api.gax.batching.BatchingSettings;
-import com.google.cloud.WriteChannel;
-import com.google.cloud.pubsub.v1.Publisher;
-import com.google.cloud.storage.*;
-import com.google.protobuf.ByteString;
-import com.google.pubsub.v1.PubsubMessage;
-import com.google.pubsub.v1.TopicName;
 import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileUploadException;
@@ -22,12 +15,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.ByteBuffer;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
+import java.io.OutputStream;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -35,23 +30,10 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 /**
  * Servlet allowing to submit files to the Mod Structure Verifier bot.
  */
-@WebServlet(name = "ModStructureVerifierService", loadOnStartup = 4, urlPatterns = {"/celeste/mod-structure-verifier"})
+@WebServlet(name = "ModStructureVerifierService", loadOnStartup = 3, urlPatterns = {"/celeste/mod-structure-verifier"})
 @MultipartConfig
 public class ModStructureVerifierService extends HttpServlet {
     private static final Logger logger = Logger.getLogger("ModStructureVerifierService");
-    private static final Storage storage = StorageOptions.newBuilder().setProjectId("max480-random-stuff").build().getService();
-    private Publisher publisher = null;
-
-    @Override
-    public void init() {
-        try {
-            publisher = Publisher.newBuilder(TopicName.of("max480-random-stuff", "backend-tasks"))
-                    .setBatchingSettings(BatchingSettings.newBuilder().setIsEnabled(false).build())
-                    .build();
-        } catch (IOException e) {
-            logger.log(Level.WARNING, "Building the Pub/Sub publisher for Mod Structure Verifier failed: " + e);
-        }
-    }
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
@@ -110,20 +92,9 @@ public class ModStructureVerifierService extends HttpServlet {
                         if ("zipFile".equals(fieldname)) {
                             modZipFound = true;
 
-                            // stream file straight into Cloud Storage.
-                            BlobId blobId = BlobId.of("staging.max480-random-stuff.appspot.com", "mod-structure-verify-" + id + ".zip");
-                            BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType("application/octet-stream").build();
-
-                            try (InputStream readerStream = item.openStream();
-                                 WriteChannel writer = storage.writer(blobInfo);
-                                 ReadableByteChannel reader = Channels.newChannel(readerStream)) {
-
-                                ByteBuffer buffer = ByteBuffer.allocate(4 * 1024);
-                                while (reader.read(buffer) > 0 || buffer.position() != 0) {
-                                    buffer.flip();
-                                    writer.write(buffer);
-                                    buffer.compact();
-                                }
+                            // stream file straight into a local file.
+                            try (InputStream readerStream = item.openStream()) {
+                                Files.copy(readerStream, Paths.get("/shared/temp/mod-structure-verify/" + id + ".zip"));
                             }
                         }
                     }
@@ -169,23 +140,22 @@ public class ModStructureVerifierService extends HttpServlet {
     }
 
     private void runModStructureVerifyTask(String id, String chunkId, String assetsFolderName, String mapsFolderName) throws IOException {
-        // send timestamp marker to Cloud Storage (this will save that the task exists, and the timestamp at which it started)
-        BlobId blobId = BlobId.of("staging.max480-random-stuff.appspot.com", "mod-structure-verify-" + id + "-timestamp.txt");
-        BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType("text/plain").build();
-        storage.create(blobInfo, Long.toString(System.currentTimeMillis()).getBytes(UTF_8));
+        // save timestamp marker (this will save that the task exists, and the timestamp at which it started)
+        Files.write(Paths.get("/shared/temp/mod-structure-verify/" + id + "-timestamp.txt"), Long.toString(System.currentTimeMillis()).getBytes(UTF_8));
 
         if (chunkId != null) {
             // merge the chunks together, there should be exactly 32 of them
             logger.fine("Composing chunks with id " + chunkId + "...");
 
-            BlobId mergedBlobId = BlobId.of("staging.max480-random-stuff.appspot.com", "mod-structure-verify-" + id + ".zip");
-            BlobInfo mergedBlobInfo = BlobInfo.newBuilder(mergedBlobId).setContentType("application/zip").build();
-
-            final Storage.ComposeRequest.Builder builder = Storage.ComposeRequest.newBuilder();
-            for (int i = 0; i < 32; i++) {
-                builder.addSource("upload-chunk-" + chunkId + "-" + i + ".bin");
+            try (OutputStream os = Files.newOutputStream(Paths.get("/shared/temp/mod-structure-verify/" + id + ".zip"))) {
+                for (int i = 0; i < 32; i++) {
+                    Path chunkPath = Paths.get("/shared/temp/mod-structure-verify/upload-chunk-" + chunkId + "-" + i + ".bin");
+                    try (InputStream is = Files.newInputStream(chunkPath)) {
+                        IOUtils.copy(is, os);
+                    }
+                    Files.delete(chunkPath);
+                }
             }
-            storage.compose(builder.setTarget(mergedBlobInfo).build());
         }
 
         logger.fine("Creating task...");
@@ -212,18 +182,15 @@ public class ModStructureVerifierService extends HttpServlet {
         }
 
         // publish the message to the backend!
-        ByteString data = ByteString.copyFromUtf8(message.toString());
-        PubsubMessage pubsubMessage = PubsubMessage.newBuilder().setData(data).build();
-
-        try {
-            String messageId = publisher.publish(pubsubMessage).get();
-            logger.info("Emitted message id " + messageId + " to handle mod structure verification task " + id + "!");
-        } catch (InterruptedException | ExecutionException e) {
-            throw new IOException(e);
+        try (Socket socket = new Socket()) {
+            socket.connect(new InetSocketAddress("backend", 4480));
+            try (OutputStream os = socket.getOutputStream()) {
+                IOUtils.write(message.toString(), os, StandardCharsets.UTF_8);
+            }
         }
     }
 
-    private String handleChunkRequest(String gcsFileName, String chunkIndex, String chunkId) {
+    private String handleChunkRequest(String tempFileName, String chunkIndex, String chunkId) throws IOException {
         if ("0".equals(chunkIndex)) {
             // generate a new chunk upload
             chunkId = UUID.randomUUID().toString();
@@ -241,10 +208,7 @@ public class ModStructureVerifierService extends HttpServlet {
                     logger.warning("Chunk index is outside of the allowed bounds: " + chunkIndexInt);
                     return null;
                 } else {
-                    Blob previousChunk = storage.get(
-                            BlobId.of("staging.max480-random-stuff.appspot.com", "upload-chunk-" + chunkId + "-" + (chunkIndexInt - 1) + ".bin"));
-
-                    if (previousChunk == null) {
+                    if (!Files.exists(Paths.get("/shared/temp/mod-structure-verify/upload-chunk-" + chunkId + "-" + (chunkIndexInt - 1) + ".bin"))) {
                         logger.warning("Previous chunk upload-chunk-" + chunkId + "-" + (chunkIndexInt - 1) + ".bin does not exist!");
                         return null;
                     }
@@ -255,12 +219,9 @@ public class ModStructureVerifierService extends HttpServlet {
             }
         }
 
-        // it seems renaming is not a thing on Cloud Storage... oh well.
-        // (we are not deleting the original file because that takes time, and the bucket has a rule where any file older than 1 day is deleted.)
-        logger.fine("Copying file to expected location...");
-        BlobId uploadedFile = BlobId.of("staging.max480-random-stuff.appspot.com", gcsFileName);
-        BlobId targetFile = BlobId.of("staging.max480-random-stuff.appspot.com", "upload-chunk-" + chunkId + "-" + chunkIndex + ".bin");
-        storage.copy(Storage.CopyRequest.of(uploadedFile, targetFile));
+        // rename the file so that it's clear that it is a chunk, not a zip.
+        logger.fine("Moving file to expected location...");
+        Files.move(Paths.get(tempFileName), Paths.get("/shared/temp/mod-structure-verify/upload-chunk-" + chunkId + "-" + chunkIndex + ".bin"));
 
         return chunkId;
     }

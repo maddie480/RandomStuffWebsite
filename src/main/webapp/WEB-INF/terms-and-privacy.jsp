@@ -20,7 +20,7 @@
 </p>
 
 <p>
-    The bots, as well as this website, are hosted on Google Cloud, in the US.
+    The bots, as well as this website, are hosted on OVHcloud, in France.
 </p>
 
 <p>

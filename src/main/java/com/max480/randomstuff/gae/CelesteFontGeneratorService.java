@@ -11,15 +11,6 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.tools.bmfont.BitmapFontWriter;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
-import com.google.api.gax.batching.BatchingSettings;
-import com.google.cloud.pubsub.v1.Publisher;
-import com.google.cloud.storage.BlobId;
-import com.google.cloud.storage.BlobInfo;
-import com.google.cloud.storage.Storage;
-import com.google.cloud.storage.StorageOptions;
-import com.google.protobuf.ByteString;
-import com.google.pubsub.v1.PubsubMessage;
-import com.google.pubsub.v1.TopicName;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
@@ -42,15 +33,16 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
@@ -59,23 +51,11 @@ import java.util.zip.ZipOutputStream;
 /**
  * Servlet allowing to generate bitmap fonts for usage in Celeste (~~and any other game using the XML output of BMFont actually~~).
  */
-@WebServlet(name = "CelesteFontGeneratorService", loadOnStartup = 3, urlPatterns = {"/celeste/font-generator"})
+@WebServlet(name = "CelesteFontGeneratorService", urlPatterns = {"/celeste/font-generator"})
 @MultipartConfig
 public class CelesteFontGeneratorService extends HttpServlet {
     private static final Logger logger = Logger.getLogger("CelesteFontGeneratorService");
-    private static final Storage storage = StorageOptions.newBuilder().setProjectId("max480-random-stuff").build().getService();
-    private Publisher publisher = null;
 
-    @Override
-    public void init() {
-        try {
-            publisher = Publisher.newBuilder(TopicName.of("max480-random-stuff", "backend-tasks"))
-                    .setBatchingSettings(BatchingSettings.newBuilder().setIsEnabled(false).build())
-                    .build();
-        } catch (IOException e) {
-            logger.log(Level.WARNING, "Building the Pub/Sub publisher for Font Generator failed: " + e);
-        }
-    }
 
     private static class AllCharactersMissingException extends Exception {
     }
@@ -215,15 +195,13 @@ public class CelesteFontGeneratorService extends HttpServlet {
     private String runBMFontTask(String language, String dialogFile) throws IOException {
         String id = UUID.randomUUID().toString();
 
-        // send timestamp marker to Cloud Storage (this will save that the task exists, and the timestamp at which it started)
-        BlobId blobId = BlobId.of("staging.max480-random-stuff.appspot.com", "font-generate-" + id + "-timestamp.txt");
-        BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType("text/plain").build();
-        storage.create(blobInfo, Long.toString(System.currentTimeMillis()).getBytes(StandardCharsets.UTF_8));
+        // store timestamp marker (this will save that the task exists, and the timestamp at which it started)
+        Path file = Paths.get("/shared/temp/font-generate/" + id + "-timestamp.txt");
+        Files.write(file, Long.toString(System.currentTimeMillis()).getBytes(StandardCharsets.UTF_8));
 
-        // send dialog file to Cloud Storage
-        blobId = BlobId.of("staging.max480-random-stuff.appspot.com", "font-generate-" + id + ".txt");
-        blobInfo = BlobInfo.newBuilder(blobId).setContentType("text/plain").build();
-        storage.create(blobInfo, dialogFile.getBytes(StandardCharsets.UTF_8));
+        // store dialog file
+        file = Paths.get("/shared/temp/font-generate/" + id + ".txt");
+        Files.write(file, dialogFile.getBytes(StandardCharsets.UTF_8));
 
         // generate message payload
         JSONObject message = new JSONObject();
@@ -232,16 +210,14 @@ public class CelesteFontGeneratorService extends HttpServlet {
         message.put("fileName", "font-generate-" + id + ".txt");
 
         // publish the message to the backend!
-        ByteString data = ByteString.copyFromUtf8(message.toString());
-        PubsubMessage pubsubMessage = PubsubMessage.newBuilder().setData(data).build();
-
-        try {
-            String messageId = publisher.publish(pubsubMessage).get();
-            logger.info("Emitted message id " + messageId + " to handle font generation task " + id + "!");
-        } catch (InterruptedException | ExecutionException e) {
-            throw new IOException(e);
+        try (Socket socket = new Socket()) {
+            socket.connect(new InetSocketAddress("backend", 4480));
+            try (OutputStream os = socket.getOutputStream()) {
+                IOUtils.write(message.toString(), os, StandardCharsets.UTF_8);
+            }
         }
 
+        logger.info("Emitted message to handle font generation task " + id + "!");
         return id;
     }
 

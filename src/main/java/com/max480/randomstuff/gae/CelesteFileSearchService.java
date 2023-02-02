@@ -1,14 +1,6 @@
 package com.max480.randomstuff.gae;
 
-import com.google.api.gax.batching.BatchingSettings;
-import com.google.cloud.ReadChannel;
-import com.google.cloud.pubsub.v1.Publisher;
-import com.google.cloud.storage.BlobId;
-import com.google.cloud.storage.Storage;
-import com.google.cloud.storage.StorageOptions;
-import com.google.protobuf.ByteString;
-import com.google.pubsub.v1.PubsubMessage;
-import com.google.pubsub.v1.TopicName;
+import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
 
 import javax.servlet.annotation.WebServlet;
@@ -16,40 +8,29 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.net.URLEncoder;
-import java.nio.ByteBuffer;
-import java.nio.channels.Channels;
-import java.nio.channels.WritableByteChannel;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
  * Service allowing to trigger and retrieve results of file searches across all Celeste mods.
  */
-@WebServlet(name = "CelesteFileSearchService", loadOnStartup = 8, urlPatterns = {"/celeste/file-search"})
+@WebServlet(name = "CelesteFileSearchService", urlPatterns = {"/celeste/file-search"})
 public class CelesteFileSearchService extends HttpServlet {
     private static final Logger logger = Logger.getLogger("CelesteFileSearchService");
-    private static final Storage storage = StorageOptions.newBuilder().setProjectId("max480-random-stuff").build().getService();
 
     private static final Set<String> pendingSearches = new HashSet<>();
 
-    private Publisher publisher = null;
-
-    @Override
-    public void init() {
-        try {
-            publisher = Publisher.newBuilder(TopicName.of("max480-random-stuff", "backend-tasks"))
-                    .setBatchingSettings(BatchingSettings.newBuilder().setIsEnabled(false).build())
-                    .build();
-        } catch (IOException e) {
-            logger.log(Level.WARNING, "Building the Pub/Sub publisher for Mod Structure Verifier failed: " + e);
-        }
-    }
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -65,48 +46,32 @@ public class CelesteFileSearchService extends HttpServlet {
 
         response.setHeader("Content-Type", "application/json");
 
-        String fileName = "file_searches/" + URLEncoder.encode(query.toLowerCase(Locale.ROOT), "UTF-8") + "_" + exact + ".json";
-        BlobId blobId = BlobId.of("staging.max480-random-stuff.appspot.com", fileName);
+        Path file = Paths.get("/shared/temp/file-searches/" + URLEncoder.encode(query.toLowerCase(Locale.ROOT), "UTF-8") + "_" + exact + ".json");
 
-        if (storage.get(blobId) != null) {
-            logger.fine(fileName + " is done, returning results!");
+        if (Files.exists(file)) {
+            logger.fine(file + " is done, returning results!");
 
-            // copy search results from Cloud Storage
-            try (ReadChannel reader = storage.reader(blobId);
-                 WritableByteChannel writer = Channels.newChannel(response.getOutputStream())) {
-
-                ByteBuffer buffer = ByteBuffer.allocate(4 * 1024);
-                while (reader.read(buffer) > 0 || buffer.position() != 0) {
-                    buffer.flip();
-                    writer.write(buffer);
-                    buffer.compact();
-                }
-            }
-
-            pendingSearches.remove(fileName);
+            // copy search results
+            Files.copy(file, response.getOutputStream());
+            pendingSearches.remove(file.toString());
         } else {
             // result does not exist yet!
-            if (!pendingSearches.contains(fileName)) {
-                // request the search to the backend through Pub/Sub
+            if (!pendingSearches.contains(file.toString())) {
+                // request the search to the backend
                 JSONObject message = new JSONObject();
                 message.put("taskType", "fileSearch");
                 message.put("search", query);
                 message.put("exact", "true".equals(exact));
 
-                ByteString data = ByteString.copyFromUtf8(message.toString());
-                PubsubMessage pubsubMessage = PubsubMessage.newBuilder().setData(data).build();
-
-                try {
-                    String messageId = publisher.publish(pubsubMessage).get();
-                    logger.info("Emitted message id " + messageId + " to handle " + fileName + "!");
-                } catch (InterruptedException | ExecutionException ex) {
-                    throw new IOException(ex);
+                try (Socket socket = new Socket()) {
+                    socket.connect(new InetSocketAddress("backend", 4480));
+                    try (OutputStream os = socket.getOutputStream()) {
+                        IOUtils.write(message.toString(), os, StandardCharsets.UTF_8);
+                    }
                 }
-
-                pendingSearches.add(fileName);
             }
 
-            logger.fine(fileName + " is in progress");
+            logger.fine(file + " is in progress");
             response.getWriter().write("{\"pending\": true}");
         }
     }

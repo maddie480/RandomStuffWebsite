@@ -1,6 +1,5 @@
 package com.max480.randomstuff.gae;
 
-import com.google.common.collect.ImmutableMap;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.json.JSONArray;
@@ -12,6 +11,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.logging.Level;
@@ -378,8 +379,8 @@ public class CelesteModSearchService extends HttpServlet {
 
     // mapping takes an awful amount of time on App Engine (~2 seconds) so we can't make it when the user calls the API.
     private void refreshModDatabase() throws IOException {
-        // get and deserialize the mod list from Cloud Storage.
-        try (ObjectInputStream is = new ObjectInputStream(CloudStorageUtils.getCloudStorageInputStream("mod_search_database.ser"))) {
+        // get and deserialize the mod list from storage.
+        try (ObjectInputStream is = new ObjectInputStream(Files.newInputStream(Paths.get("/shared/celeste/mod-search-database.ser")))) {
             modDatabaseForSorting = (List<ModInfo>) is.readObject();
             modCategories = (Map<Integer, String>) is.readObject();
             logger.fine("There are " + modDatabaseForSorting.size() + " mods in the search database.");
@@ -389,7 +390,7 @@ public class CelesteModSearchService extends HttpServlet {
     }
 
     private void refreshEverestVersions() throws IOException {
-        everestVersions = IOUtils.toByteArray(CloudStorageUtils.getCloudStorageInputStream("everest_version_list.json"));
+        everestVersions = IOUtils.toByteArray(Files.newInputStream(Paths.get("/shared/celeste/everest-versions.json")));
         logger.fine("Reloaded Everest versions! " + everestVersions.length + " bytes preloaded.");
     }
 
