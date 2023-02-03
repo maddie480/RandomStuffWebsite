@@ -11,10 +11,13 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.tools.bmfont.BitmapFontWriter;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileUploadException;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Part;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
@@ -23,12 +26,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import javax.servlet.ServletException;
-import javax.servlet.annotation.MultipartConfig;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -79,16 +76,12 @@ public class CelesteFontGeneratorService extends HttpServlet {
         request.setAttribute("nothingToDo", false);
         boolean sentZip = false;
 
-        if (!ServletFileUpload.isMultipartContent(request)) {
+        if (!request.getContentType().startsWith("multipart/form-data")) {
             // if not, we stop here
             request.setAttribute("badrequest", true);
             logger.warning("Bad request");
             response.setStatus(400);
         } else {
-            DiskFileItemFactory factory = new DiskFileItemFactory();
-            factory.setRepository(new File("/tmp"));
-            ServletFileUpload upload = new ServletFileUpload(factory);
-
             // parse request
             String font = null;
             String fontFileName = null;
@@ -97,38 +90,35 @@ public class CelesteFontGeneratorService extends HttpServlet {
 
             String customFontFileName = null;
             InputStream customFontFile = null;
-            try {
-                for (FileItem item : upload.parseRequest(request)) {
-                    if (item.isFormField()) {
-                        // Process regular form field (input type="text|radio|checkbox|etc", select, etc).
-                        String fieldname = item.getFieldName();
-                        String fieldvalue = item.getString();
 
-                        if ("font".equals(fieldname)) {
-                            font = fieldvalue;
-                        } else if ("fontFileName".equals(fieldname)) {
-                            fontFileName = fieldvalue;
-                        } else if ("method".equals(fieldname)) {
-                            method = fieldvalue;
-                        }
-                    } else {
-                        // Process form file field (input type="file").
-                        String fieldname = item.getFieldName();
-                        InputStream filecontent = item.getInputStream();
+            for (Part part : request.getParts()) {
+                if (part.getSubmittedFileName() == null) {
+                    // Process regular form field (input type="text|radio|checkbox|etc", select, etc).
+                    String fieldname = part.getName();
+                    String fieldvalue = IOUtils.toString(part.getInputStream(), StandardCharsets.UTF_8);
 
-                        if ("dialogFile".equals(fieldname)) {
-                            dialogFile = IOUtils.toString(filecontent, StandardCharsets.UTF_8);
-                        } else if ("fontFile".equals(fieldname)) {
-                            customFontFileName = item.getName();
-                            if (customFontFileName.replace("\\", "/").contains("/")) {
-                                customFontFileName = customFontFileName.substring(customFontFileName.replace("\\", "/").indexOf("/") + 1);
-                            }
-                            customFontFile = filecontent;
+                    if ("font".equals(fieldname)) {
+                        font = fieldvalue;
+                    } else if ("fontFileName".equals(fieldname)) {
+                        fontFileName = fieldvalue;
+                    } else if ("method".equals(fieldname)) {
+                        method = fieldvalue;
+                    }
+                } else {
+                    // Process form file field (input type="file").
+                    String fieldname = part.getName();
+                    InputStream filecontent = part.getInputStream();
+
+                    if ("dialogFile".equals(fieldname)) {
+                        dialogFile = IOUtils.toString(filecontent, StandardCharsets.UTF_8);
+                    } else if ("fontFile".equals(fieldname)) {
+                        customFontFileName = part.getName();
+                        if (customFontFileName.replace("\\", "/").contains("/")) {
+                            customFontFileName = customFontFileName.substring(customFontFileName.replace("\\", "/").indexOf("/") + 1);
                         }
+                        customFontFile = filecontent;
                     }
                 }
-            } catch (FileUploadException e) {
-                logger.warning("Cannot parse request: " + e);
             }
 
             if ("bmfont".equals(method)) {

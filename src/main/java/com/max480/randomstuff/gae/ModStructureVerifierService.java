@@ -1,18 +1,15 @@
 package com.max480.randomstuff.gae;
 
-import org.apache.commons.fileupload.FileItemIterator;
-import org.apache.commons.fileupload.FileItemStream;
-import org.apache.commons.fileupload.FileUploadException;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Part;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
 
-import javax.servlet.ServletException;
-import javax.servlet.annotation.MultipartConfig;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -46,14 +43,12 @@ public class ModStructureVerifierService extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setAttribute("badrequest", false);
 
-        if (!ServletFileUpload.isMultipartContent(request)) {
+        if (!request.getContentType().startsWith("multipart/form-data")) {
             // if not, we stop here
             request.setAttribute("badrequest", true);
             logger.warning("Bad request");
             response.setStatus(400);
         } else {
-            ServletFileUpload upload = new ServletFileUpload();
-
             logger.fine("Parsing request...");
 
             String id = UUID.randomUUID().toString();
@@ -65,42 +60,33 @@ public class ModStructureVerifierService extends HttpServlet {
             String chunkIndex = null;
             String chunkId = null;
 
-            try {
-                FileItemIterator iter = upload.getItemIterator(request);
-                while (iter.hasNext()) {
-                    FileItemStream item = iter.next();
-                    if (item.isFormField()) {
-                        // Process regular form field (input type="text|radio|checkbox|etc", select, etc).
-                        String fieldname = item.getFieldName();
-                        String fieldvalue;
-                        try (InputStream is = item.openStream()) {
-                            fieldvalue = IOUtils.toString(is, UTF_8);
-                        }
+            for (Part part : request.getParts()) {
+                if (part.getSubmittedFileName() == null) {
+                    // Process regular form field (input type="text|radio|checkbox|etc", select, etc).
+                    String fieldname = part.getName();
+                    String fieldvalue = IOUtils.toString(part.getInputStream(), UTF_8);
 
-                        if ("assetFolderName".equals(fieldname)) {
-                            assetsFolderName = fieldvalue;
-                        } else if ("mapFolderName".equals(fieldname)) {
-                            mapsFolderName = fieldvalue;
-                        } else if ("chunkId".equals(fieldname)) {
-                            chunkId = fieldvalue;
-                        } else if ("chunkIndex".equals(fieldname)) {
-                            chunkIndex = fieldvalue;
-                        }
-                    } else {
-                        // Process form file field (input type="file").
-                        String fieldname = item.getFieldName();
-                        if ("zipFile".equals(fieldname)) {
-                            modZipFound = true;
+                    if ("assetFolderName".equals(fieldname)) {
+                        assetsFolderName = fieldvalue;
+                    } else if ("mapFolderName".equals(fieldname)) {
+                        mapsFolderName = fieldvalue;
+                    } else if ("chunkId".equals(fieldname)) {
+                        chunkId = fieldvalue;
+                    } else if ("chunkIndex".equals(fieldname)) {
+                        chunkIndex = fieldvalue;
+                    }
+                } else {
+                    // Process form file field (input type="file").
+                    String fieldname = part.getName();
+                    if ("zipFile".equals(fieldname)) {
+                        modZipFound = true;
 
-                            // stream file straight into a local file.
-                            try (InputStream readerStream = item.openStream()) {
-                                Files.copy(readerStream, Paths.get("/shared/temp/mod-structure-verify/" + id + ".zip"));
-                            }
+                        // stream file straight into a local file.
+                        try (InputStream readerStream = part.getInputStream()) {
+                            Files.copy(readerStream, Paths.get("/shared/temp/mod-structure-verify/" + id + ".zip"));
                         }
                     }
                 }
-            } catch (FileUploadException e) {
-                logger.warning("Cannot parse request: " + e);
             }
 
             if (!modZipFound

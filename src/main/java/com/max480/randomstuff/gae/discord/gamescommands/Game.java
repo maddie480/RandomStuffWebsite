@@ -2,8 +2,8 @@ package com.max480.randomstuff.gae.discord.gamescommands;
 
 
 import com.max480.randomstuff.gae.discord.gamescommands.status.GameState;
+import jakarta.servlet.http.HttpServletResponse;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.Arrays;
 import java.util.Base64;
@@ -361,7 +361,7 @@ public class Game {
      * @return The deserialized game
      */
     public static Game deserializeFromString(String s, HttpServletResponse httpResponse,
-                                                MultiConsumer<Game, String, List<String>, HttpServletResponse> actionCallback) {
+                                             MultiConsumer<Game, String, List<String>, HttpServletResponse> actionCallback) {
         byte[] serializedResult = Base64.getDecoder().decode(s);
         try (ByteArrayInputStream is = new ByteArrayInputStream(serializedResult);
              ObjectInputStream ois = new ObjectInputStream(is)) {
