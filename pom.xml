@@ -286,7 +286,7 @@
                             <workingDirectory>${project.build.directory}/random-stuff-website-1.0.0/WEB-INF/classes</workingDirectory>
                             <arguments>
                                 <argument>-cp</argument>
-                                <argument>.;../../../dependency/snakeyaml-1.33.jar;../../../dependency/commons-io-2.11.0.jar</argument>
+                                <argument>.:../../../dependency/snakeyaml-1.33.jar:../../../dependency/commons-io-2.11.0.jar</argument>
                                 <argument>com.max480.randomstuff.gae.LuaCutscenesDocumentationIntegrator</argument>
                             </arguments>
                         </configuration>
@@ -395,6 +395,30 @@
                         <groupId>org.eclipse.jetty</groupId>
                         <artifactId>jetty-maven-plugin</artifactId>
                         <version>11.0.13</version>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <executions>
+                            <execution>
+                                <id>integrate Lua Cutscenes documentation</id>
+                                <phase>prepare-package</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>java</executable>
+                                    <workingDirectory>${project.build.directory}/random-stuff-website-1.0.0/WEB-INF/classes</workingDirectory>
+                                    <arguments>
+                                        <argument>-cp</argument>
+                                        <argument>.;../../../dependency/snakeyaml-1.33.jar;../../../dependency/commons-io-2.11.0.jar</argument>
+                                        <argument>com.max480.randomstuff.gae.LuaCutscenesDocumentationIntegrator</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
                     </plugin>
                 </plugins>
             </build>

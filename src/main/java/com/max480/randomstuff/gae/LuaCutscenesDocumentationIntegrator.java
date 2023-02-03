@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -23,7 +24,7 @@ public class LuaCutscenesDocumentationIntegrator {
 
     public static void main(String[] args) throws IOException {
         String luaCutscenesDownloadUrl;
-        try (InputStream is = Files.newInputStream(Paths.get("/shared/celeste/updater/everest-update.yaml"))) {
+        try (InputStream is = ConnectionUtils.openStreamWithTimeout("https://max480-random-stuff.appspot.com/celeste/everest_update.yaml")) {
             Map<String, Map<String, Object>> db = YamlUtil.load(is);
             luaCutscenesDownloadUrl = db.get("LuaCutscenes").get("URL").toString();
         }
