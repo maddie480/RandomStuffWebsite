@@ -96,7 +96,7 @@ public class CelesteModCatalogService extends HttpServlet {
                                     )
                             ))
             ), os);
-            return new String(os.toByteArray(), UTF_8);
+            return os.toString(UTF_8);
         }
     }
 

@@ -114,7 +114,7 @@ public class SrcModUpdateNotificationService extends HttpServlet {
                 }
 
                 if (save) {
-                    Files.write(modUpdateNotificationIdsFile, new JSONArray(modList).toString().getBytes(UTF_8));
+                    Files.writeString(modUpdateNotificationIdsFile, new JSONArray(modList).toString());
                 }
             }
 

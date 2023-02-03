@@ -74,35 +74,24 @@ public class InteractionManager extends HttpServlet {
                 long serverId = Long.parseLong(data.getString("guild_id"));
 
                 switch (commandName) {
-                    case "addc":
+                    case "addc" ->
                         // admin command: add a command to the server
-                        addCommandWithSlash(serverId, data.getJSONObject("data").getJSONArray("options"), locale, resp);
-                        break;
-
-                    case "removec":
+                            addCommandWithSlash(serverId, data.getJSONObject("data").getJSONArray("options"), locale, resp);
+                    case "removec" ->
                         // admin command: remove a command from the server
-                        removeCommand(serverId, data.getJSONObject("data").getJSONArray("options").getJSONObject(0).getString("value"), locale, resp);
-                        break;
-
-                    case "editc":
+                            removeCommand(serverId, data.getJSONObject("data").getJSONArray("options").getJSONObject(0).getString("value"), locale, resp);
+                    case "editc" ->
                         // admin command: show the modal allowing to edit a command
-                        sendEditCommandForm(serverId, data.getJSONObject("data").getJSONArray("options"), locale, resp);
-                        break;
-
-                    case "clist":
+                            sendEditCommandForm(serverId, data.getJSONObject("data").getJSONArray("options"), locale, resp);
+                    case "clist" ->
                         // admin command: show the modal allowing to edit a command
-                        listCommands(serverId, locale, resp);
-                        break;
-
-                    case "Turn into Custom Slash Command":
+                            listCommands(serverId, locale, resp);
+                    case "Turn into Custom Slash Command" ->
                         // message command: create a custom slash command from a message
-                        createCustomSlashCommandFromMessage(serverId, data.getJSONObject("data"), locale, resp);
-                        break;
-
-                    default:
+                            createCustomSlashCommandFromMessage(serverId, data.getJSONObject("data"), locale, resp);
+                    default ->
                         // another command: most definitely a custom configured one
-                        handleCommand(serverId, commandName, resp);
-                        break;
+                            handleCommand(serverId, commandName, resp);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -153,40 +142,23 @@ public class InteractionManager extends HttpServlet {
                 }
 
                 switch (itemObject.getString(fieldName)) {
-                    case "name":
-                        info.name = itemObject.getString("value");
-                        break;
-                    case "description":
-                        info.description = itemObject.getString("value");
-                        break;
-                    case "answer":
-                        info.answer = itemObject.getString("value");
-                        break;
-                    case "is_public":
-                        info.isPublic = itemObject.getBoolean("value");
-                        break;
-                    case "is_public_string":
-                        info.isPublic = Boolean.parseBoolean(itemObject.getString("value").toLowerCase(Locale.ROOT));
-                        break;
-                    case "embed_thumbnail":
-                        info.embedThumbnail = itemObject.getString("value");
-                        break;
-                    case "embed_title":
-                        info.embedTitle = itemObject.getString("value");
-                        break;
-                    case "embed_text":
-                        info.embedText = itemObject.getString("value");
-                        break;
-                    case "embed_image":
-                        info.embedImage = itemObject.getString("value");
-                        break;
-                    case "embed_color":
+                    case "name" -> info.name = itemObject.getString("value");
+                    case "description" -> info.description = itemObject.getString("value");
+                    case "answer" -> info.answer = itemObject.getString("value");
+                    case "is_public" -> info.isPublic = itemObject.getBoolean("value");
+                    case "is_public_string" ->
+                            info.isPublic = Boolean.parseBoolean(itemObject.getString("value").toLowerCase(Locale.ROOT));
+                    case "embed_thumbnail" -> info.embedThumbnail = itemObject.getString("value");
+                    case "embed_title" -> info.embedTitle = itemObject.getString("value");
+                    case "embed_text" -> info.embedText = itemObject.getString("value");
+                    case "embed_image" -> info.embedImage = itemObject.getString("value");
+                    case "embed_color" -> {
                         // we accept uppercase and lowercase hex, with or without #, but we standardize it to only keep uppercase without #.
                         info.embedColor = itemObject.getString("value").toUpperCase(Locale.ROOT);
                         if (info.embedColor.startsWith("#")) {
                             info.embedColor = info.embedColor.substring(1);
                         }
-                        break;
+                    }
                 }
             }
 
@@ -433,12 +405,8 @@ public class InteractionManager extends HttpServlet {
             JSONObject itemObject = (JSONObject) item;
 
             switch (itemObject.getString("name")) {
-                case "name":
-                    name = itemObject.getString("value");
-                    break;
-                case "edit":
-                    isEmbed = "embed".equals(itemObject.getString("value"));
-                    break;
+                case "name" -> name = itemObject.getString("value");
+                case "edit" -> isEmbed = "embed".equals(itemObject.getString("value"));
             }
         }
 
@@ -463,12 +431,14 @@ public class InteractionManager extends HttpServlet {
 
         if (!messageData.getJSONArray("attachments").isEmpty()) {
             respond(resp, localizeMessage(locale,
-                    ":x: Custom slash command responses cannot contain attachments!\n" +
-                            "You can upload them somewhere and link to them instead.\n" +
-                            "If you want to include an image and text without the image link being visible, you can add a command with an embed image using </addc:992450514929332264>!",
-                    ":x: Les réponses aux commandes slash personnalisées ne peuvent pas contenir de pièces jointes !\n" +
-                            "Tu peux les envoyer quelque part puis utiliser un lien à la place.\n" +
-                            "Si tu veux inclure une image et du texte sans que le lien de l'image soit visible, tu peux ajouter une commande avec une image intégrée en utilisant </addc:992450514929332264> !"));
+                    """
+                            :x: Custom slash command responses cannot contain attachments!
+                            You can upload them somewhere and link to them instead.
+                            If you want to include an image and text without the image link being visible, you can add a command with an embed image using </addc:992450514929332264>!""",
+                    """
+                            :x: Les réponses aux commandes slash personnalisées ne peuvent pas contenir de pièces jointes !
+                            Tu peux les envoyer quelque part puis utiliser un lien à la place.
+                            Si tu veux inclure une image et du texte sans que le lien de l'image soit visible, tu peux ajouter une commande avec une image intégrée en utilisant </addc:992450514929332264> !"""));
         } else if (messageData.getString("content").isEmpty()) {
             respond(resp, localizeMessage(locale,
                     ":x: This message has no text!",
@@ -634,7 +604,7 @@ public class InteractionManager extends HttpServlet {
         if (info.embedColor != null) storedData.put("embedColor", info.embedColor);
         if (info.embedThumbnail != null) storedData.put("embedThumbnail", info.embedThumbnail);
 
-        Files.write(info.getStoragePath(), storedData.toString().getBytes(StandardCharsets.UTF_8));
+        Files.writeString(info.getStoragePath(), storedData.toString());
     }
 
     /**

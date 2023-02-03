@@ -345,7 +345,7 @@ public class EverestYamlValidatorService extends HttpServlet {
 
                         try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
                             YamlUtil.dump(latestVersionsYaml, os);
-                            attributes.put("latestVersionsYaml", new String(os.toByteArray(), UTF_8));
+                            attributes.put("latestVersionsYaml", os.toString(UTF_8));
                         }
 
                         if ("html".equals(outputFormat)) {

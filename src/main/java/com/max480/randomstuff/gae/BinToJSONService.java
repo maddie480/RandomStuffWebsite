@@ -139,19 +139,11 @@ public class BinToJSONService extends HttpServlet {
             AttributeValueType attributeValueType = AttributeValueType.fromValue(bin.readUnsignedByte());
             Object obj = null;
             switch (attributeValueType) {
-                case Boolean:
-                    obj = bin.readBoolean();
-                    break;
-                case Byte:
-                    obj = bin.readUnsignedByte();
-                    break;
-                case Float:
-                    obj = EndianUtils.readSwappedFloat(bin);
-                    break;
-                case Integer:
-                    obj = EndianUtils.readSwappedInteger(bin);
-                    break;
-                case LengthEncodedString: {
+                case Boolean -> obj = bin.readBoolean();
+                case Byte -> obj = bin.readUnsignedByte();
+                case Float -> obj = EndianUtils.readSwappedFloat(bin);
+                case Integer -> obj = EndianUtils.readSwappedInteger(bin);
+                case LengthEncodedString -> {
                     short length = EndianUtils.readSwappedShort(bin);
                     byte[] array = new byte[length];
                     if (bin.read(array) != length) throw new IOException("Missing characters in string!");
@@ -170,17 +162,10 @@ public class BinToJSONService extends HttpServlet {
                         }
                     }
                     obj = result;
-                    break;
                 }
-                case Short:
-                    obj = EndianUtils.readSwappedShort(bin);
-                    break;
-                case String:
-                    obj = readString(bin);
-                    break;
-                case FromLookup:
-                    obj = stringLookupTable[EndianUtils.readSwappedShort(bin)];
-                    break;
+                case Short -> obj = EndianUtils.readSwappedShort(bin);
+                case String -> obj = readString(bin);
+                case FromLookup -> obj = stringLookupTable[EndianUtils.readSwappedShort(bin)];
             }
 
             element.getJSONObject("attributes").put(localName, obj);

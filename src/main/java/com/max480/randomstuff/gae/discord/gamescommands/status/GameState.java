@@ -184,18 +184,13 @@ public abstract class GameState {
      */
     public static GameState deserialize(ObjectInputStream is) throws IOException {
         int game = is.readByte();
-        switch (game) {
-            case 0:
-                return new TicTacToe(is);
-            case 1:
-                return new Connect4(is);
-            case 2:
-                return new Reversi(is);
-            case 3:
-                return new Minesweeper(is);
-            default:
-                throw new IOException("Tried to deserialize unknown game (id: " + game + ")");
-        }
+        return switch (game) {
+            case 0 -> new TicTacToe(is);
+            case 1 -> new Connect4(is);
+            case 2 -> new Reversi(is);
+            case 3 -> new Minesweeper(is);
+            default -> throw new IOException("Tried to deserialize unknown game (id: " + game + ")");
+        };
     }
 
     /**

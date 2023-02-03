@@ -192,7 +192,7 @@ public class Game {
             GameState bestStatus = null;
             int bestScore;
 
-            List<GameState> possibleStatuses = currentGameState.listPossibleCommands().stream().map(currentGameState::applyCommand).collect(Collectors.toList());
+            List<GameState> possibleStatuses = currentGameState.listPossibleCommands().stream().map(currentGameState::applyCommand).toList();
 
             if (currentGameState.isPlayer1Turn()) {
                 bestScore = Integer.MIN_VALUE;
@@ -261,7 +261,7 @@ public class Game {
             GameState bestStatus = null;
             int bestScore;
 
-            List<GameState> possibleStatuses = node.listPossibleCommands().stream().map(node::applyCommand).collect(Collectors.toList());
+            List<GameState> possibleStatuses = node.listPossibleCommands().stream().map(node::applyCommand).toList();
 
             if (node.isPlayer1Turn()) {
                 bestScore = Integer.MIN_VALUE;

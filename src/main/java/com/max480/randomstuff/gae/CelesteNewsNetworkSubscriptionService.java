@@ -109,7 +109,7 @@ public class CelesteNewsNetworkSubscriptionService extends HttpServlet {
             }
 
             if (save) {
-                Files.write(subscriberDatabase, new JSONArray(webhookUrls).toString().getBytes(UTF_8));
+                Files.writeString(subscriberDatabase, new JSONArray(webhookUrls).toString());
             }
         }
 

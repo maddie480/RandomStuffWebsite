@@ -144,16 +144,12 @@ public class InteractionManager extends HttpServlet {
      * Converts a user command name to a slash command name.
      */
     private String userCommandToSlashCommand(String name) {
-        switch (name) {
-            case "Play Connect 4":
-                return "connect4";
-            case "Play Reversi":
-                return "reversi";
-            case "Play Tic-Tac-Toe":
-                return "tictactoe";
-            default:
-                throw new RuntimeException("Unknown game in user command: " + name);
-        }
+        return switch (name) {
+            case "Play Connect 4" -> "connect4";
+            case "Play Reversi" -> "reversi";
+            case "Play Tic-Tac-Toe" -> "tictactoe";
+            default -> throw new RuntimeException("Unknown game in user command: " + name);
+        };
     }
 
     /**
@@ -298,20 +294,12 @@ public class InteractionManager extends HttpServlet {
      * @return The state of the game
      */
     private GameState startGameFromName(String game) {
-        GameState startedGame;
-        switch (game) {
-            case "tictactoe":
-                startedGame = new TicTacToe(Math.random() < 0.5, 3);
-                break;
-            case "connect4":
-                startedGame = new Connect4(Math.random() < 0.5);
-                break;
-            case "reversi":
-                startedGame = new Reversi(Math.random() < 0.5);
-                break;
-            default:
-                throw new RuntimeException("This is not a known game!");
-        }
+        GameState startedGame = switch (game) {
+            case "tictactoe" -> new TicTacToe(Math.random() < 0.5, 3);
+            case "connect4" -> new Connect4(Math.random() < 0.5);
+            case "reversi" -> new Reversi(Math.random() < 0.5);
+            default -> throw new RuntimeException("This is not a known game!");
+        };
         return startedGame;
     }
 
@@ -439,7 +427,7 @@ public class InteractionManager extends HttpServlet {
             // map those to buttons.
             List<JSONObject> buttons = new ArrayList<>();
             for (Map.Entry<String, List<String>> buttonData : groups.entrySet().stream()
-                    .sorted(Map.Entry.comparingByKey()).collect(Collectors.toList())) {
+                    .sorted(Map.Entry.comparingByKey()).toList()) {
 
                 boolean isMultiButton = buttonData.getValue().size() > 1; // whether this button hides multiple choices
 

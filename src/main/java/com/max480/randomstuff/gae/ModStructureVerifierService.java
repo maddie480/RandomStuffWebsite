@@ -127,7 +127,7 @@ public class ModStructureVerifierService extends HttpServlet {
 
     private void runModStructureVerifyTask(String id, String chunkId, String assetsFolderName, String mapsFolderName) throws IOException {
         // save timestamp marker (this will save that the task exists, and the timestamp at which it started)
-        Files.write(Paths.get("/shared/temp/mod-structure-verify/" + id + "-timestamp.txt"), Long.toString(System.currentTimeMillis()).getBytes(UTF_8));
+        Files.writeString(Paths.get("/shared/temp/mod-structure-verify/" + id + "-timestamp.txt"), Long.toString(System.currentTimeMillis()));
 
         if (chunkId != null) {
             // merge the chunks together, there should be exactly 32 of them

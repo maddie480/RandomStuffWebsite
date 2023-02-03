@@ -206,14 +206,11 @@ public class TaskTrackerService extends HttpServlet {
 
     private List<String> getAttachmentsFor(String type, JSONObject result) {
         if (type.equals("font-generate")) {
-            switch (result.getJSONArray("attachments").length()) {
-                case 1:
-                    return Collections.singletonList("Font zip file");
-                case 2:
-                    return Arrays.asList("Font zip file", "Missing characters");
-                default:
-                    return Collections.emptyList();
-            }
+            return switch (result.getJSONArray("attachments").length()) {
+                case 1 -> Collections.singletonList("Font zip file");
+                case 2 -> Arrays.asList("Font zip file", "Missing characters");
+                default -> Collections.emptyList();
+            };
         } else if (type.equals("mod-structure-verify")) {
             List<String> attachmentList = new ArrayList<>();
             for (Object o : result.getJSONArray("attachments")) {

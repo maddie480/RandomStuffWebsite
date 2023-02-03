@@ -187,11 +187,11 @@ public class CelesteFontGeneratorService extends HttpServlet {
 
         // store timestamp marker (this will save that the task exists, and the timestamp at which it started)
         Path file = Paths.get("/shared/temp/font-generate/" + id + "-timestamp.txt");
-        Files.write(file, Long.toString(System.currentTimeMillis()).getBytes(StandardCharsets.UTF_8));
+        Files.writeString(file, Long.toString(System.currentTimeMillis()));
 
         // store dialog file
         file = Paths.get("/shared/temp/font-generate/" + id + ".txt");
-        Files.write(file, dialogFile.getBytes(StandardCharsets.UTF_8));
+        Files.writeString(file, dialogFile);
 
         // generate message payload
         JSONObject message = new JSONObject();
@@ -261,26 +261,26 @@ public class CelesteFontGeneratorService extends HttpServlet {
         String fontName;
         String vanillaFntName;
         switch (language) {
-            case "russian":
+            case "russian" -> {
                 fontName = "Noto Sans Med.ttf";
                 vanillaFntName = "russian.fnt";
-                break;
-            case "japanese":
+            }
+            case "japanese" -> {
                 fontName = "Noto Sans CJK JP Medium.otf";
                 vanillaFntName = "japanese.fnt";
-                break;
-            case "korean":
+            }
+            case "korean" -> {
                 fontName = "Noto Sans CJK KR Medium.otf";
                 vanillaFntName = "korean.fnt";
-                break;
-            case "chinese":
+            }
+            case "chinese" -> {
                 fontName = "Noto Sans CJK SC Medium.otf";
                 vanillaFntName = "chinese.fnt";
-                break;
-            default:
+            }
+            default -> {
                 fontName = "Renogare.otf";
                 vanillaFntName = "renogare64.fnt";
-                break;
+            }
         }
 
         // create a temp dir to dump stuff to.

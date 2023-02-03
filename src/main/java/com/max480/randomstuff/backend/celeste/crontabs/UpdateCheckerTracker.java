@@ -1,5 +1,6 @@
 package com.max480.randomstuff.backend.celeste.crontabs;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Map;
 
@@ -8,6 +9,7 @@ import java.util.Map;
  */
 public class UpdateCheckerTracker {
     public static class ModInfo implements Serializable {
+        @Serial
         private static final long serialVersionUID = -2184804878021343630L;
 
         public final String type;

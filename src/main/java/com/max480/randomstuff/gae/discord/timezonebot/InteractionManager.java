@@ -139,37 +139,20 @@ public class InteractionManager extends HttpServlet {
                 long memberId = Long.parseLong(data.getJSONObject("member").getJSONObject("user").getString("id"));
 
                 switch (commandName) {
-                    case "set-timezone":
-                        defineUserTimezone(resp, serverId, memberId, data.getJSONObject("data").getJSONArray("options").getJSONObject(0).getString("value"), locale);
-                        break;
-
-                    case "detect-timezone":
-                        sendDetectTimezoneLink(resp, serverId, memberId, locale);
-                        break;
-
-                    case "remove-timezone":
-                        removeUserTimezone(resp, serverId, memberId, locale);
-                        break;
-
-                    case "discord-timestamp":
-                        giveDiscordTimestamp(resp, serverId, memberId, data.getJSONObject("data").getJSONArray("options").getJSONObject(0).getString("value"), locale);
-                        break;
-
-                    case "time-for":
-                        giveTimeForOtherUser(resp, serverId, memberId, data.getJSONObject("data").getJSONArray("options").getJSONObject(0).getLong("value"), locale);
-                        break;
-
-                    case "world-clock":
-                        giveTimeForOtherPlace(resp, serverId, memberId, data.getJSONObject("data").getJSONArray("options").getJSONObject(0).getString("value"), locale);
-                        break;
-
-                    case "list-timezones":
-                        listTimezones(response -> resp.getWriter().write(response), serverId, 0, locale, false);
-                        break;
-
-                    case "Get Local Time":
-                        giveTimeForOtherUser(resp, serverId, memberId, data.getJSONObject("data").getLong("target_id"), locale);
-                        break;
+                    case "set-timezone" ->
+                            defineUserTimezone(resp, serverId, memberId, data.getJSONObject("data").getJSONArray("options").getJSONObject(0).getString("value"), locale);
+                    case "detect-timezone" -> sendDetectTimezoneLink(resp, serverId, memberId, locale);
+                    case "remove-timezone" -> removeUserTimezone(resp, serverId, memberId, locale);
+                    case "discord-timestamp" ->
+                            giveDiscordTimestamp(resp, serverId, memberId, data.getJSONObject("data").getJSONArray("options").getJSONObject(0).getString("value"), locale);
+                    case "time-for" ->
+                            giveTimeForOtherUser(resp, serverId, memberId, data.getJSONObject("data").getJSONArray("options").getJSONObject(0).getLong("value"), locale);
+                    case "world-clock" ->
+                            giveTimeForOtherPlace(resp, serverId, memberId, data.getJSONObject("data").getJSONArray("options").getJSONObject(0).getString("value"), locale);
+                    case "list-timezones" ->
+                            listTimezones(response -> resp.getWriter().write(response), serverId, 0, locale, false);
+                    case "Get Local Time" ->
+                            giveTimeForOtherUser(resp, serverId, memberId, data.getJSONObject("data").getLong("target_id"), locale);
                 }
             }
         } catch (Exception e) {
@@ -241,7 +224,7 @@ public class InteractionManager extends HttpServlet {
                             .startsWith(input.toLowerCase(Locale.ROOT));
                 })
                 .map(tz -> mapToChoice(tz, tz, locale))
-                .collect(Collectors.toList());
+                .toList();
 
         if (input.isEmpty()) {
             // we want to push for tz database timezones, so list them by default!
@@ -261,14 +244,14 @@ public class InteractionManager extends HttpServlet {
                     }
                     return mapToChoice(tzName, tz.getValue(), locale);
                 })
-                .collect(Collectors.toList());
+                .toList();
 
         // look up conflicting timezone names, showing all possibilities
         List<JSONObject> matchingTimezoneConflictNames = TIMEZONE_CONFLICTS.entrySet().stream()
                 .filter(tz -> tz.getKey().toLowerCase(Locale.ROOT).startsWith(input.toLowerCase(Locale.ROOT)))
                 .flatMap(tz -> tz.getValue().stream()
                         .map(tzValue -> mapToChoice(tzValue + " (" + tz.getKey() + ")", TIMEZONE_MAP.get(tzValue), locale)))
-                .collect(Collectors.toList());
+                .toList();
 
         List<JSONObject> allChoices = new ArrayList<>(matchingTzDatabaseTimezones);
         allChoices.addAll(matchingTimezoneNames);
@@ -424,10 +407,14 @@ public class InteractionManager extends HttpServlet {
         Long timestamp = null;
         if (parsedDateTime == null) {
             respondPrivately(event, localizeMessage(locale,
-                    ":x: The date you gave could not be parsed!\nMake sure you followed the format `YYYY-MM-dd hh:mm:ss`. " +
-                            "For example: `2020-10-01 15:42:00`\nYou can omit part of the date (or omit it entirely if you want today), and the seconds if you don't need that.",
-                    ":x: Je n'ai pas compris la date que tu as donnée !\nAssure-toi que tu as suivi le format `YYYY-MM-dd hh:mm:ss`. " +
-                            "Par exemple : `2020-10-01 15:42:00`\nTu peux enlever une partie de la date (ou l'enlever complètement pour obtenir le _timestamp_ d'aujourd'hui) et les secondes si tu n'en as pas besoin."));
+                    """
+                            :x: The date you gave could not be parsed!
+                            Make sure you followed the format `YYYY-MM-dd hh:mm:ss`. For example: `2020-10-01 15:42:00`
+                            You can omit part of the date (or omit it entirely if you want today), and the seconds if you don't need that.""",
+                    """
+                            :x: Je n'ai pas compris la date que tu as donnée !
+                            Assure-toi que tu as suivi le format `YYYY-MM-dd hh:mm:ss`. Par exemple : `2020-10-01 15:42:00`
+                            Tu peux enlever une partie de la date (ou l'enlever complètement pour obtenir le _timestamp_ d'aujourd'hui) et les secondes si tu n'en as pas besoin."""));
         } else {
             timestamp = parsedDateTime.atZone(ZoneId.of(timezoneToUse)).toEpochSecond();
         }
@@ -564,7 +551,7 @@ public class InteractionManager extends HttpServlet {
 
             // query OpenStreetMap
             HttpURLConnection osm = ConnectionUtils.openConnectionWithTimeout("https://nominatim.openstreetmap.org/search.php?" +
-                    "q=" + URLEncoder.encode(place, "UTF-8") +
+                    "q=" + URLEncoder.encode(place, StandardCharsets.UTF_8) +
                     "&accept-language=" + ("fr".equals(locale) ? "fr" : "en") +
                     "&limit=1&format=jsonv2");
             osm.setRequestProperty("User-Agent", "TimezoneBot/1.0 (+https://max480-random-stuff.appspot.com/discord-bots#timezone-bot)");

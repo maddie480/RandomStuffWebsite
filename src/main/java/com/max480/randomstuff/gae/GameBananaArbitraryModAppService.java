@@ -200,7 +200,7 @@ public class GameBananaArbitraryModAppService extends HttpServlet {
             if (Files.exists(cache)) {
                 // try reading from the cache, that is fed daily by the backend:
                 // see https://github.com/max4805/RandomBackendStuff/blob/main/src/main/java/com/max480/randomstuff/backend/celeste/crontabs/ArbitraryModAppCacher.java
-                return new JSONObject(new String(Files.readAllBytes(cache), UTF_8));
+                return new JSONObject(Files.readString(cache));
             } else {
                 // if this is not possible, read from GameBanana directly instead
                 logger.info("Could not retrieve mod by ID from cache, querying GameBanana directly");

@@ -135,42 +135,18 @@ public class Minesweeper extends OnePlayerGameState {
 
     private void appendDigitEmote(StringBuilder builder, int i) {
         switch (i) {
-            case -1:
-                builder.append(":x:");
-                break;
-            case 0:
-                builder.append(":white_large_square:");
-                break;
-            case 1:
-                builder.append(":one:");
-                break;
-            case 2:
-                builder.append(":two:");
-                break;
-            case 3:
-                builder.append(":three:");
-                break;
-            case 4:
-                builder.append(":four:");
-                break;
-            case 5:
-                builder.append(":five:");
-                break;
-            case 6:
-                builder.append(":six:");
-                break;
-            case 7:
-                builder.append(":seven:");
-                break;
-            case 8:
-                builder.append(":eight:");
-                break;
-            case 9:
-                builder.append(":nine:");
-                break;
-            default:
-                builder.append(":question:");
-                break;
+            case -1 -> builder.append(":x:");
+            case 0 -> builder.append(":white_large_square:");
+            case 1 -> builder.append(":one:");
+            case 2 -> builder.append(":two:");
+            case 3 -> builder.append(":three:");
+            case 4 -> builder.append(":four:");
+            case 5 -> builder.append(":five:");
+            case 6 -> builder.append(":six:");
+            case 7 -> builder.append(":seven:");
+            case 8 -> builder.append(":eight:");
+            case 9 -> builder.append(":nine:");
+            default -> builder.append(":question:");
         }
     }
 

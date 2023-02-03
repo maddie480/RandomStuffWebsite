@@ -91,9 +91,7 @@ public class TicTacToe extends GameState {
     public String displayStatus() {
         StringBuilder stringBuilder = new StringBuilder("```\n");
         for (int i = 0; i < board.length; i++) {
-            for (int j = 0; j < board.length; j++) {
-                stringBuilder.append(".---");
-            }
+            stringBuilder.append(".---".repeat(board.length));
             stringBuilder.append(".\n");
             for (int j = 0; j < board.length; j++) {
                 stringBuilder.append("|");
@@ -107,9 +105,7 @@ public class TicTacToe extends GameState {
             }
             stringBuilder.append("|\n");
         }
-        for (int j = 0; j < board.length; j++) {
-            stringBuilder.append(".---");
-        }
+        stringBuilder.append(".---".repeat(board.length));
         stringBuilder.append(".\n```");
         return stringBuilder.toString();
     }

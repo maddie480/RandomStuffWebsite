@@ -45,10 +45,12 @@ public class GameBananaAPIExtensions extends HttpServlet {
             return;
         }
 
-        StringBuilder rss = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n" +
-                "<rss version=\"2.0\">\n" +
-                "\t<items>\n" +
-                "\t\t<title>GameBanana API RSS Feed</title>\n");
+        StringBuilder rss = new StringBuilder("""
+                <?xml version="1.0" encoding="UTF-8" ?>
+                <rss version="2.0">
+                \t<items>
+                \t\t<title>GameBanana API RSS Feed</title>
+                """);
 
         JSONArray modList = new JSONArray(IOUtils.toString(connection.getInputStream(), StandardCharsets.UTF_8));
 

@@ -182,24 +182,22 @@ public class Reversi extends GameState {
             for (int x = 0; x < 8; x++) {
                 string.append(' ');
                 switch (board[x][y] * (invertedColors ? -1 : 1)) {
-                    default:
-                        string.append('?');
-                        break;
-                    case 1:
+                    default -> string.append('?');
+                    case 1 -> {
                         string.append('●');
                         countWhite++;
-                        break;
-                    case -1:
+                    }
+                    case -1 -> {
                         string.append('○');
                         countBlack++;
-                        break;
-                    case 0:
+                    }
+                    case 0 -> {
                         if (possibleMoves.contains(new Point(x, y))) {
                             string.append('-');
                         } else {
                             string.append(' ');
                         }
-                        break;
+                    }
                 }
             }
             string.append(" |\n");
@@ -247,12 +245,8 @@ public class Reversi extends GameState {
         for (int i = 0; i < 8; i += 7) {
             for (int j = 0; j < 8; j += 7) {
                 switch (board[i][j]) {
-                    case 1:
-                        nbCoinsJ1++;
-                        break;
-                    case -1:
-                        nbCoinsJ2++;
-                        break;
+                    case 1 -> nbCoinsJ1++;
+                    case -1 -> nbCoinsJ2++;
                 }
             }
         }

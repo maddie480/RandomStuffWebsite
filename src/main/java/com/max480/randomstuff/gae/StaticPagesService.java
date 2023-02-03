@@ -20,23 +20,21 @@ public class StaticPagesService extends HttpServlet {
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         switch (request.getRequestURI()) {
-            case "/discord-bots/timezone-bot/detect-timezone":
-                PageRenderer.render(request, response, "detect-timezone", "discord-bots", "Timezone Bot – Timezone Detector",
-                        "Use this page to figure out your timezone, for usage with the Timezone Bot.");
-                break;
-            case "/discord-bots/timezone-bot/timezone-dropdown-help":
-                PageRenderer.render(request, response, "timezone-dropdown-help", "discord-bots", "Timezone Bot – /timezone-dropdown help",
-                        "Check this page if you need help with using Timezone Bot's /timezone-dropdown command.");
-                break;
-            case "/discord-bots/terms-and-privacy":
-                PageRenderer.render(request, response, "terms-and-privacy", "discord-bots", "Discord Bots – Terms and Privacy",
-                        "This page details the Terms of Service and Privacy Policy of max480's Discord bots, and gives details on which data is stored.");
-                break;
-            default:
+            case "/discord-bots/timezone-bot/detect-timezone" ->
+                    PageRenderer.render(request, response, "detect-timezone", "discord-bots", "Timezone Bot – Timezone Detector",
+                            "Use this page to figure out your timezone, for usage with the Timezone Bot.");
+            case "/discord-bots/timezone-bot/timezone-dropdown-help" ->
+                    PageRenderer.render(request, response, "timezone-dropdown-help", "discord-bots", "Timezone Bot – /timezone-dropdown help",
+                            "Check this page if you need help with using Timezone Bot's /timezone-dropdown command.");
+            case "/discord-bots/terms-and-privacy" ->
+                    PageRenderer.render(request, response, "terms-and-privacy", "discord-bots", "Discord Bots – Terms and Privacy",
+                            "This page details the Terms of Service and Privacy Policy of max480's Discord bots, and gives details on which data is stored.");
+            default -> {
                 logger.warning("Not found");
                 response.setStatus(404);
                 PageRenderer.render(request, response, "page-not-found", "Page Not Found",
                         "Oops, this link seems invalid. Please try again!");
+            }
         }
     }
 }

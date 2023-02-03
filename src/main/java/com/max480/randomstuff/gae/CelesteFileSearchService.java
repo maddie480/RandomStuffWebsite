@@ -46,7 +46,7 @@ public class CelesteFileSearchService extends HttpServlet {
 
         response.setHeader("Content-Type", "application/json");
 
-        Path file = Paths.get("/shared/temp/file-searches/" + URLEncoder.encode(query.toLowerCase(Locale.ROOT), "UTF-8") + "_" + exact + ".json");
+        Path file = Paths.get("/shared/temp/file-searches/" + URLEncoder.encode(query.toLowerCase(Locale.ROOT), StandardCharsets.UTF_8) + "_" + exact + ".json");
 
         if (Files.exists(file)) {
             logger.fine(file + " is done, returning results!");

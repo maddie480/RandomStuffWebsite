@@ -63,7 +63,7 @@ public class CelesteModSearchService extends HttpServlet {
         if (request.getRequestURI().equals("/celeste/random-map")) {
             List<ModInfo> maps = modDatabaseForSorting.stream()
                     .filter(i -> "Mod".equals(i.type) && i.categoryId == 6800) // Map
-                    .collect(Collectors.toList());
+                    .toList();
 
             // pick a map and redirect to it. that's it.
             ModInfo drawnMod = maps.get((int) (Math.random() * maps.size()));
@@ -132,24 +132,14 @@ public class CelesteModSearchService extends HttpServlet {
                 }
 
                 // determine the field on which we want to sort. Sort by descending id to tell equal values apart.
-                Comparator<ModInfo> sort;
-                switch (sortParam) {
-                    case "views":
-                        sort = Comparator.<ModInfo>comparingInt(i -> -i.views).thenComparingInt(i -> -i.id);
-                        break;
-                    case "likes":
-                        sort = Comparator.<ModInfo>comparingInt(i -> -i.likes).thenComparingInt(i -> -i.id);
-                        break;
-                    case "downloads":
-                        sort = Comparator.<ModInfo>comparingInt(i -> -i.downloads).thenComparingInt(i -> -i.id);
-                        break;
-                    case "latest":
-                        sort = Comparator.<ModInfo>comparingInt(i -> -i.createdDate).thenComparingInt(i -> -i.id);
-                        break;
-                    default:
-                        sort = null;
-                        break;
-                }
+                Comparator<ModInfo> sort = switch (sortParam) {
+                    case "views" -> Comparator.<ModInfo>comparingInt(i -> -i.views).thenComparingInt(i -> -i.id);
+                    case "likes" -> Comparator.<ModInfo>comparingInt(i -> -i.likes).thenComparingInt(i -> -i.id);
+                    case "downloads" ->
+                            Comparator.<ModInfo>comparingInt(i -> -i.downloads).thenComparingInt(i -> -i.id);
+                    case "latest" -> Comparator.<ModInfo>comparingInt(i -> -i.createdDate).thenComparingInt(i -> -i.id);
+                    default -> null;
+                };
 
                 // then sort on it.
                 Stream<ModInfo> responseBodyStream = modDatabaseForSorting.stream()
@@ -270,7 +260,7 @@ public class CelesteModSearchService extends HttpServlet {
                         return result;
                     })
                     .sorted(Comparator.comparing(result -> result.get("formatted").toString()))
-                    .collect(Collectors.toList());
+                    .toList();
 
             // also add an "All" option to pass the total number of mods.
             Map<String, Object> all = new HashMap<>();
@@ -340,12 +330,15 @@ public class CelesteModSearchService extends HttpServlet {
     public static String formatGameBananaItemtype(String input, boolean pluralize) {
         // specific formatting for a few categories
         switch (input) {
-            case "Gamefile":
+            case "Gamefile" -> {
                 return pluralize ? "Game files" : "Game file";
-            case "Wip":
+            }
+            case "Wip" -> {
                 return pluralize ? "WiPs" : "WiP";
-            case "Gui":
+            }
+            case "Gui" -> {
                 return pluralize ? "GUIs" : "GUI";
+            }
         }
 
         // apply the spaced pascal case from Everest
