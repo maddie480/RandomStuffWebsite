@@ -21,6 +21,8 @@ import jakarta.servlet.http.Part;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -40,7 +42,6 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -51,7 +52,7 @@ import java.util.zip.ZipOutputStream;
 @WebServlet(name = "CelesteFontGeneratorService", urlPatterns = {"/celeste/font-generator"})
 @MultipartConfig
 public class CelesteFontGeneratorService extends HttpServlet {
-    private static final Logger logger = Logger.getLogger("CelesteFontGeneratorService");
+    private static final Logger log = LoggerFactory.getLogger(CelesteFontGeneratorService.class);
 
 
     private static class AllCharactersMissingException extends Exception {
@@ -79,7 +80,7 @@ public class CelesteFontGeneratorService extends HttpServlet {
         if (!request.getContentType().startsWith("multipart/form-data")) {
             // if not, we stop here
             request.setAttribute("badrequest", true);
-            logger.warning("Bad request");
+            log.warn("Bad request");
             response.setStatus(400);
         } else {
             // parse request
@@ -124,7 +125,7 @@ public class CelesteFontGeneratorService extends HttpServlet {
             if ("bmfont".equals(method)) {
                 if (font == null || dialogFile == null) {
                     request.setAttribute("badrequest", true);
-                    logger.warning("Bad request for generation through BMFont");
+                    log.warn("Bad request for generation through BMFont");
                     response.setStatus(400);
                 } else {
                     // create the task, and redirect to the page that will allow to follow it
@@ -137,7 +138,7 @@ public class CelesteFontGeneratorService extends HttpServlet {
                     || (font.equals("custom") && (customFontFileName == null || hasForbiddenCharacter(customFontFileName)))) {
 
                 request.setAttribute("badrequest", true);
-                logger.warning("Bad request for generation through libgdx");
+                log.warn("Bad request for generation through libgdx");
                 response.setStatus(400);
             } else {
                 try {
@@ -166,8 +167,7 @@ public class CelesteFontGeneratorService extends HttpServlet {
 
                 } catch (ParserConfigurationException | SAXException | IOException e) {
                     // something blew up along the way!
-                    logger.severe("Could not generate font!");
-                    e.printStackTrace();
+                    log.error("Could not generate font!", e);
 
                     request.setAttribute("error", true);
                     response.setStatus(500);
@@ -207,7 +207,7 @@ public class CelesteFontGeneratorService extends HttpServlet {
             }
         }
 
-        logger.info("Emitted message to handle font generation task " + id + "!");
+        log.info("Emitted message to handle font generation task {}!", id);
         return id;
     }
 
@@ -448,8 +448,7 @@ public class CelesteFontGeneratorService extends HttpServlet {
 
                     waitUntilFinished.release();
                 } catch (Exception e) {
-                    logger.severe("Could not generate font");
-                    e.printStackTrace();
+                    log.error("Could not generate font", e);
                     failure.set(true);
                     waitUntilFinished.release();
                 }

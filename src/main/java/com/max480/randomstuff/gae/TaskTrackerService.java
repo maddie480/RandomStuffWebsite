@@ -9,6 +9,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,7 +19,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,7 +28,7 @@ import java.util.regex.Pattern;
 @WebServlet(name = "TaskTrackerService", urlPatterns = {"/celeste/task-tracker/font-generate/*", "/celeste/task-tracker/mod-structure-verify/*"})
 @MultipartConfig
 public class TaskTrackerService extends HttpServlet {
-    private static final Logger logger = Logger.getLogger("TaskTrackerService");
+    private static final Logger log = LoggerFactory.getLogger(TaskTrackerService.class);
 
     private final Pattern trackerPageUrlPattern = Pattern.compile("^/celeste/task-tracker/([a-z-]+)/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/?$");
     private final Pattern downloadPageUrlPattern = Pattern.compile("^/celeste/task-tracker/([a-z-]+)/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/download/([0-9]+)/?$");
@@ -56,7 +57,7 @@ public class TaskTrackerService extends HttpServlet {
             Path timestampFile = Paths.get("/shared/temp/" + type + "/" + id + "-timestamp.txt");
             if (!Files.exists(timestampFile)) {
                 // if this file does not exist, it means the task was never created in the first place.
-                logger.warning(timestampFile + " does not exist => task not found!");
+                log.warn("{} does not exist => task not found!", timestampFile);
                 request.setAttribute("taskNotFound", true);
             } else {
                 // get the start timestamp
@@ -72,11 +73,11 @@ public class TaskTrackerService extends HttpServlet {
 
                     // we will refresh in a bit.
                     refreshDelay = getWaitTime(taskCreateTimestamp);
-                    logger.fine("Task is not finished yet, waiting for " + refreshDelay + " seconds before checking again.");
+                    log.debug("Task is not finished yet, waiting for {} seconds before checking again.", refreshDelay);
                     request.setAttribute("taskCreatedAgo", formatTimeAgo(taskCreateTimestamp));
                 } else {
                     // task is done!
-                    logger.fine("Task is finished!");
+                    log.debug("Task is finished!");
 
                     // parse the result
                     JSONObject result;
@@ -102,7 +103,7 @@ public class TaskTrackerService extends HttpServlet {
             Path report = Paths.get("/shared/temp/" + type + "/" + id + "-" + type + "-" + id + ".json");
             if (!Files.exists(report)) {
                 // the task doesn't exist (or isn't over) in the first place.
-                logger.warning(report + " does not exist => task not found!");
+                log.warn("{} does not exist => task not found!", report);
                 request.setAttribute("taskNotFound", true);
             } else {
                 // parse the task result
@@ -114,12 +115,12 @@ public class TaskTrackerService extends HttpServlet {
                 JSONArray attachmentNames = result.getJSONArray("attachments");
                 if (index < 0 || index >= attachmentNames.length()) {
                     // we asked for a file that was out of bounds!
-                    logger.warning("File " + index + " is out of range => file not found!");
+                    log.warn("File {} is out of range => file not found!", index);
                     request.setAttribute("fileNotFound", true);
                 } else {
                     // get the file name from the task attachment list
                     String fileName = attachmentNames.getString(index);
-                    logger.fine("File name: " + fileName);
+                    log.debug("File name: {}", fileName);
 
                     // send the file from storage
                     response.setHeader("Content-Type", getContentType(fileName));
@@ -134,7 +135,7 @@ public class TaskTrackerService extends HttpServlet {
 
         if (!regexMatch) {
             // the URL the user tried to access is invalid, so let's just answer the task was not found.
-            logger.warning("URI does not match regex => task not found!");
+            log.warn("URI does not match regex => task not found!");
             request.setAttribute("taskNotFound", true);
 
             request.setAttribute("type", request.getRequestURI().startsWith("/celeste/task-tracker/font-generate") ? "font-generate" : "mod-structure-verify");
@@ -161,7 +162,7 @@ public class TaskTrackerService extends HttpServlet {
                     + " and " + (secondsAgo % 60) + ((secondsAgo % 60 == 1) ? " second" : " seconds") + " ago";
         } else {
             // if we reach that point, we have big issues.
-            logger.warning("This task was launched more than an hour ago!");
+            log.warn("This task was launched more than an hour ago!");
             return "more than an hour ago";
         }
     }

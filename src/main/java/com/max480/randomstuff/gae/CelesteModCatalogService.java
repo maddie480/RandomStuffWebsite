@@ -10,6 +10,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -20,7 +22,6 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -30,8 +31,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  */
 @WebServlet(name = "CelesteModCatalogService", urlPatterns = {"/celeste/custom-entity-catalog", "/celeste/custom-entity-catalog.json"})
 public class CelesteModCatalogService extends HttpServlet {
-
-    private final Logger logger = Logger.getLogger("CelesteModCatalogService");
+    private static final Logger log = LoggerFactory.getLogger(CelesteModCatalogService.class);
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
@@ -46,7 +46,7 @@ public class CelesteModCatalogService extends HttpServlet {
             try {
                 list = loadList();
             } catch (Exception e) {
-                logger.severe("Could not load mod catalog: " + e);
+                log.error("Could not load mod catalog!", e);
             }
 
 
@@ -76,7 +76,7 @@ public class CelesteModCatalogService extends HttpServlet {
             PageRenderer.render(request, response, "mod-catalog", "Celeste Custom Entity and Trigger List",
                     "A big list containing all custom entities and triggers from mods published on GameBanana.");
         } else {
-            logger.warning("Not found");
+            log.warn("Not found");
             response.setStatus(404);
             PageRenderer.render(request, response, "page-not-found", "Page Not Found",
                     "Oops, this link seems invalid. Please try again!");
@@ -110,7 +110,7 @@ public class CelesteModCatalogService extends HttpServlet {
                     .map(QueriedModInfo::new)
                     .collect(Collectors.toList());
 
-            logger.fine("Loaded " + modInfo.size() + " mods.");
+            log.debug("Loaded {} mods.", modInfo.size());
             return Pair.of(modInfo, lastUpdated);
         }
     }

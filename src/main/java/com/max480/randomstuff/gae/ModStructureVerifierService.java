@@ -9,6 +9,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,7 +22,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
-import java.util.logging.Logger;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -30,7 +31,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 @WebServlet(name = "ModStructureVerifierService", loadOnStartup = 3, urlPatterns = {"/celeste/mod-structure-verifier"})
 @MultipartConfig
 public class ModStructureVerifierService extends HttpServlet {
-    private static final Logger logger = Logger.getLogger("ModStructureVerifierService");
+    private static final Logger log = LoggerFactory.getLogger(ModStructureVerifierService.class);
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
@@ -46,10 +47,10 @@ public class ModStructureVerifierService extends HttpServlet {
         if (!request.getContentType().startsWith("multipart/form-data")) {
             // if not, we stop here
             request.setAttribute("badrequest", true);
-            logger.warning("Bad request");
+            log.warn("Bad request");
             response.setStatus(400);
         } else {
-            logger.fine("Parsing request...");
+            log.debug("Parsing request...");
 
             String id = UUID.randomUUID().toString();
 
@@ -94,7 +95,7 @@ public class ModStructureVerifierService extends HttpServlet {
                     || (assetsFolderName != null && !assetsFolderName.matches("^[A-Za-z0-9]*$"))) {
 
                 request.setAttribute("badrequest", true);
-                logger.warning("Bad request: no file was sent in POST request, or one of the folder names has forbidden characters");
+                log.warn("Bad request: no file was sent in POST request, or one of the folder names has forbidden characters");
                 response.setStatus(400);
             } else {
                 if (chunkIndex != null) {
@@ -131,7 +132,7 @@ public class ModStructureVerifierService extends HttpServlet {
 
         if (chunkId != null) {
             // merge the chunks together, there should be exactly 32 of them
-            logger.fine("Composing chunks with id " + chunkId + "...");
+            log.debug("Composing chunks with id {}...", chunkId);
 
             try (OutputStream os = Files.newOutputStream(Paths.get("/shared/temp/mod-structure-verify/" + id + ".zip"))) {
                 for (int i = 0; i < 32; i++) {
@@ -144,7 +145,7 @@ public class ModStructureVerifierService extends HttpServlet {
             }
         }
 
-        logger.fine("Creating task...");
+        log.debug("Creating task...");
 
         // generate message payload
         JSONObject message = new JSONObject();
@@ -181,33 +182,33 @@ public class ModStructureVerifierService extends HttpServlet {
             // generate a new chunk upload
             chunkId = UUID.randomUUID().toString();
         } else if (chunkId == null) {
-            logger.warning("No chunk id was given and this is not the first chunk!");
+            log.warn("No chunk id was given and this is not the first chunk!");
             return null;
         } else if (!chunkId.matches("^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$")) {
-            logger.warning("Chunk ID is not a UUID: " + chunkId);
+            log.warn("Chunk ID is not a UUID: {}", chunkId);
             return null;
         } else {
             // check if the chunk index is in bounds and if the previous chunk exists.
             try {
                 int chunkIndexInt = Integer.parseInt(chunkIndex);
                 if (chunkIndexInt < 1 || chunkIndexInt > 31) {
-                    logger.warning("Chunk index is outside of the allowed bounds: " + chunkIndexInt);
+                    log.warn("Chunk index is outside of the allowed bounds: {}", chunkIndexInt);
                     return null;
                 } else {
                     if (!Files.exists(Paths.get("/shared/temp/mod-structure-verify/upload-chunk-" + chunkId + "-" + (chunkIndexInt - 1) + ".bin"))) {
-                        logger.warning("Previous chunk upload-chunk-" + chunkId + "-" + (chunkIndexInt - 1) + ".bin does not exist!");
+                        log.warn("Previous chunk upload-chunk-{}-{}.bin does not exist!", chunkId, chunkIndexInt - 1);
                         return null;
                     }
                 }
             } catch (NumberFormatException e) {
-                logger.warning("Chunk index is not an integer: " + chunkIndex);
+                log.warn("Chunk index is not an integer: {}", chunkIndex);
                 return null;
             }
         }
 
         // rename the file so that it's clear that it is a chunk, not a zip.
-        logger.fine("Moving file to expected location...");
-        Files.move(Paths.get(tempFileName), Paths.get("/shared/temp/mod-structure-verify/upload-chunk-" + chunkId + "-" + chunkIndex + ".bin"));
+        log.debug("Moving file to expected location...");
+        Files.move(Paths.get(tempFileName), Paths.get("/shared/temp/mod-structure-verify/upload-chunk-{}-{}.bin", chunkId, chunkIndex));
 
         return chunkId;
     }

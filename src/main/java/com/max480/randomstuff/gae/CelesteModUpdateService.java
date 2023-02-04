@@ -6,13 +6,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * This servlet caches and provides the everest_update.yaml Everest downloads to check for updates.
@@ -22,7 +22,7 @@ import java.util.logging.Logger;
         "/celeste/everest-update-reload", "/celeste/mod_search_database.yaml", "/celeste/mod_files_database.zip",
         "/celeste/mod_dependency_graph.yaml"})
 public class CelesteModUpdateService extends HttpServlet {
-    private final Logger logger = Logger.getLogger("CelesteModUpdateService");
+    private static final Logger log = LoggerFactory.getLogger(CelesteModUpdateService.class);
 
     private byte[] everestYaml;
     private String everestYamlEtag;
@@ -30,11 +30,11 @@ public class CelesteModUpdateService extends HttpServlet {
     @Override
     public void init() {
         try {
-            logger.fine("Reading everest_update.yaml from storage");
+            log.debug("Reading everest_update.yaml from storage");
             everestYaml = IOUtils.toByteArray(Files.newInputStream(Paths.get("/shared/celeste/updater/everest-update.yaml")));
             everestYamlEtag = "\"" + DigestUtils.sha512Hex(everestYaml) + "\"";
         } catch (Exception e) {
-            logger.log(Level.WARNING, "Warming up failed: " + e);
+            log.warn("Warming up failed!", e);
         }
     }
 
@@ -79,7 +79,7 @@ public class CelesteModUpdateService extends HttpServlet {
                 IOUtils.copy(is, response.getOutputStream());
             }
         } else {
-            logger.warning("Invalid key");
+            log.warn("Invalid key");
             response.setStatus(403);
         }
     }

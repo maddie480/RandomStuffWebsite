@@ -19,12 +19,13 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
@@ -33,7 +34,7 @@ import java.util.stream.Collectors;
  */
 @WebServlet(name = "DiscordGamesInteractionManager", urlPatterns = {"/discord/games-bot"})
 public class InteractionManager extends HttpServlet {
-    private static final Logger logger = Logger.getLogger("InteractionManager");
+    private static final Logger log = LoggerFactory.getLogger(InteractionManager.class);
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -249,7 +250,7 @@ public class InteractionManager extends HttpServlet {
         // then finally put the array in the request.
         responseData.put("components", actionRows);
 
-        logger.fine("Responding with: " + response.toString(2));
+        log.debug("Responding with: {}", response.toString(2));
         resp.getWriter().write(response.toString());
     }
 
@@ -361,7 +362,7 @@ public class InteractionManager extends HttpServlet {
         responseData.put("flags", 1 << 6); // ephemeral
         response.put("data", responseData);
 
-        logger.fine("Responding with: " + response.toString(2));
+        log.debug("Responding with: {}", response.toString(2));
         responseStream.getWriter().write(response.toString());
     }
 
@@ -475,13 +476,13 @@ public class InteractionManager extends HttpServlet {
         try {
             if (responseStream != null) {
                 // we should respond to Discord's request
-                logger.fine("Responding with: " + response.toString(2) + " to caller");
+                log.debug("Responding with: {} to caller", response.toString(2));
                 responseStream.getWriter().write(response.toString());
             } else {
                 // we should call Discord to edit the message, since we already responded.
                 String url = "https://discord.com/api/v10/webhooks/" + SecretConstants.GAMES_BOT_CLIENT_ID + "/" + interactionToken + "/messages/@original";
 
-                logger.fine("Responding with: " + responseData.toString(2) + " to " + url);
+                log.debug("Responding with: {} to {}", responseData.toString(2), url);
 
                 // Apache HttpClient because PATCH does not exist according to HttpURLConnection
                 try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
@@ -491,12 +492,12 @@ public class InteractionManager extends HttpServlet {
                     CloseableHttpResponse httpResponse = httpClient.execute(httpPatch);
 
                     if (httpResponse.getStatusLine().getStatusCode() != 200) {
-                        logger.severe("Discord responded with " + httpResponse.getStatusLine().getStatusCode() + " to our edit request!");
+                        log.error("Discord responded with {} to our edit request!", httpResponse.getStatusLine().getStatusCode());
                     }
                 }
             }
         } catch (IOException | URISyntaxException e) {
-            logger.severe("Error while communicating with Discord!");
+            log.error("Error while communicating with Discord!", e);
             throw new RuntimeException(e);
         }
     }

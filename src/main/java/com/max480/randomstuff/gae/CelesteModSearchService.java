@@ -8,6 +8,8 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -15,8 +17,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.function.Predicate;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -29,8 +29,7 @@ import static com.max480.randomstuff.backend.celeste.crontabs.UpdateCheckerTrack
         "/celeste/gamebanana-search-reload", "/celeste/gamebanana-list", "/celeste/gamebanana-categories", "/celeste/gamebanana-info",
         "/celeste/random-map", "/celeste/gamebanana-featured", "/celeste/everest-versions", "/celeste/everest-versions-reload"})
 public class CelesteModSearchService extends HttpServlet {
-
-    private final Logger logger = Logger.getLogger("CelesteModSearchService");
+    private static final Logger log = LoggerFactory.getLogger(BinToJSONService.class);
 
     private static List<ModInfo> modDatabaseForSorting = Collections.emptyList();
     private Map<Integer, String> modCategories;
@@ -43,7 +42,7 @@ public class CelesteModSearchService extends HttpServlet {
             refreshModDatabase();
             refreshEverestVersions();
         } catch (Exception e) {
-            logger.log(Level.WARNING, "Warming up failed: " + e);
+            log.warn("Warming up failed!", e);
         }
     }
 
@@ -54,7 +53,7 @@ public class CelesteModSearchService extends HttpServlet {
                 refreshModDatabase();
             } else {
                 // invalid secret
-                logger.warning("Invalid key");
+                log.warn("Invalid key");
                 response.setStatus(403);
             }
             return;
@@ -78,7 +77,7 @@ public class CelesteModSearchService extends HttpServlet {
             if (queryParam == null || queryParam.trim().isEmpty()) {
                 // the user didn't give any search!
                 response.setHeader("Content-Type", "text/plain");
-                logger.warning("Bad request");
+                log.warn("Bad request");
                 response.setStatus(400);
                 response.getWriter().write("\"q\" query parameter expected");
             } else {
@@ -105,7 +104,7 @@ public class CelesteModSearchService extends HttpServlet {
             if (!Arrays.asList("latest", "likes", "views", "downloads").contains(sortParam)) {
                 // invalid sort!
                 response.setHeader("Content-Type", "text/plain");
-                logger.warning("Bad request");
+                log.warn("Bad request");
                 response.setStatus(400);
                 response.getWriter().write("expected \"sort\" parameter with value \"latest\", \"likes\", \"views\" or \"downloads\"");
             } else {
@@ -115,7 +114,7 @@ public class CelesteModSearchService extends HttpServlet {
                     try {
                         page = Integer.parseInt(pageParam);
                     } catch (NumberFormatException e) {
-                        logger.info("Invalid page number, assuming 1");
+                        log.warn("Invalid page number, assuming 1");
                     }
                 }
 
@@ -174,12 +173,12 @@ public class CelesteModSearchService extends HttpServlet {
                     itemid = Integer.parseInt(request.getParameter("itemid"));
                 }
             } catch (NumberFormatException e) {
-                logger.warning("Cannot parse itemid as number: " + e);
+                log.warn("Cannot parse itemid as number", e);
             }
 
             if (itemtype == null || itemid == null) {
                 // missing parameter
-                logger.warning("Bad request");
+                log.warn("Bad request");
                 response.setHeader("Content-Type", "text/plain");
                 response.setStatus(400);
                 response.getWriter().write("'itemtype' and 'itemid' query params should both be specified, and itemid should be a valid number");
@@ -196,7 +195,7 @@ public class CelesteModSearchService extends HttpServlet {
                     response.setHeader("Content-Type", "application/json");
                     response.getWriter().write(responseBody);
                 } else {
-                    logger.warning("Not found");
+                    log.warn("Not found");
                     response.setHeader("Content-Type", "text/plain");
                     response.setStatus(404);
                     response.getWriter().write("Not Found");
@@ -282,7 +281,7 @@ public class CelesteModSearchService extends HttpServlet {
                 refreshEverestVersions();
             } else {
                 // invalid secret
-                logger.warning("Invalid key");
+                log.warn("Invalid key");
                 response.setStatus(403);
             }
             return;
@@ -376,7 +375,7 @@ public class CelesteModSearchService extends HttpServlet {
         try (ObjectInputStream is = new ObjectInputStream(Files.newInputStream(Paths.get("/shared/celeste/mod-search-database.ser")))) {
             modDatabaseForSorting = (List<ModInfo>) is.readObject();
             modCategories = (Map<Integer, String>) is.readObject();
-            logger.fine("There are " + modDatabaseForSorting.size() + " mods in the search database.");
+            log.debug("There are " + modDatabaseForSorting.size() + " mods in the search database.");
         } catch (ClassNotFoundException e) {
             throw new IOException(e);
         }
@@ -384,7 +383,7 @@ public class CelesteModSearchService extends HttpServlet {
 
     private void refreshEverestVersions() throws IOException {
         everestVersions = IOUtils.toByteArray(Files.newInputStream(Paths.get("/shared/celeste/everest-versions.json")));
-        logger.fine("Reloaded Everest versions! " + everestVersions.length + " bytes preloaded.");
+        log.debug("Reloaded Everest versions! {} bytes preloaded.", everestVersions.length);
     }
 
     public static ModInfo getModInfoByTypeAndId(String itemtype, int itemid) {

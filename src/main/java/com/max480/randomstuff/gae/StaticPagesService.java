@@ -5,9 +5,10 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 
 /**
  * Static pages, but that are still JSPs so that they can benefit from base.jsp.
@@ -15,7 +16,7 @@ import java.util.logging.Logger;
 @WebServlet(name = "StaticPagesService", urlPatterns = {"/discord-bots/timezone-bot/detect-timezone",
         "/discord-bots/timezone-bot/timezone-dropdown-help", "/discord-bots/terms-and-privacy"})
 public class StaticPagesService extends HttpServlet {
-    private static final Logger logger = Logger.getLogger("StaticPagesService");
+    private static final Logger log = LoggerFactory.getLogger(StaticPagesService.class);
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
@@ -30,7 +31,7 @@ public class StaticPagesService extends HttpServlet {
                     PageRenderer.render(request, response, "terms-and-privacy", "discord-bots", "Discord Bots – Terms and Privacy",
                             "This page details the Terms of Service and Privacy Policy of max480's Discord bots, and gives details on which data is stored.");
             default -> {
-                logger.warning("Not found");
+                log.warn("Not found");
                 response.setStatus(404);
                 PageRenderer.render(request, response, "page-not-found", "Page Not Found",
                         "Oops, this link seems invalid. Please try again!");

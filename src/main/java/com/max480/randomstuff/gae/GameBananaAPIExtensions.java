@@ -8,6 +8,8 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -15,7 +17,6 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.logging.Logger;
 
 /**
  * Here are... APIs that somehow extend GameBanana's APIs.
@@ -23,7 +24,7 @@ import java.util.logging.Logger;
  */
 @WebServlet(name = "GameBananaAPIExtensions", urlPatterns = {"/gamebanana/rss-feed"})
 public class GameBananaAPIExtensions extends HttpServlet {
-    private static final Logger logger = Logger.getLogger("GameBananaAPIExtensions");
+    private static final Logger log = LoggerFactory.getLogger(GameBananaAPIExtensions.class);
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -41,7 +42,7 @@ public class GameBananaAPIExtensions extends HttpServlet {
             response.setStatus(connection.getResponseCode());
             response.setHeader("Content-Type", connection.getContentType());
             IOUtils.copy(connection.getErrorStream(), response.getOutputStream());
-            logger.warning("Non-200 status code returned!");
+            log.warn("Non-200 status code returned!");
             return;
         }
 

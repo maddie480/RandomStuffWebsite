@@ -8,6 +8,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,7 +20,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import static com.max480.randomstuff.backend.celeste.crontabs.UpdateCheckerTracker.ModInfo;
@@ -30,7 +31,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 @WebServlet(name = "SrcModUpdateNotificationService", urlPatterns = {"/celeste/src-mod-update-notifications"})
 @MultipartConfig
 public class SrcModUpdateNotificationService extends HttpServlet {
-    private static final Logger logger = Logger.getLogger("SrcModUpdateNotificationService");
+    private static final Logger log = LoggerFactory.getLogger(SrcModUpdateNotificationService.class);
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
@@ -47,7 +48,7 @@ public class SrcModUpdateNotificationService extends HttpServlet {
             PageRenderer.render(request, response, "src-mod-update-notifications", "speedrun.com mod update notifications",
                     "This page allows speedrun.com moderators to pick the mods they want to be notified about when they are updated.");
         } else {
-            logger.warning("Invalid key");
+            log.warn("Invalid key");
             response.setStatus(404);
             PageRenderer.render(request, response, "page-not-found", "Page Not Found",
                     "Oops, this link seems invalid. Please try again!");
@@ -69,7 +70,7 @@ public class SrcModUpdateNotificationService extends HttpServlet {
             String action = request.getParameter("action");
 
             if (modId == null || action == null) {
-                logger.warning("Missing parameter!");
+                log.warn("Missing parameter!");
                 request.setAttribute("bad_request", true);
 
             } else {
@@ -87,28 +88,28 @@ public class SrcModUpdateNotificationService extends HttpServlet {
 
                 if (action.equals("Add to List")) {
                     if (modList.contains(modId)) {
-                        logger.warning("Mod already registered: " + modId);
+                        log.warn("Mod already registered: {}", modId);
                         request.setAttribute("already_registered", true);
 
                     } else if (doesModExist(modId)) {
-                        logger.info("New mod registered: " + modId);
+                        log.info("New mod registered: {}", modId);
                         modList.add(modId);
                         save = true;
                         request.setAttribute("register_success", true);
 
                     } else {
-                        logger.warning("Mod does not exist: " + modId);
+                        log.warn("Mod does not exist: {}", modId);
                         request.setAttribute("bad_mod", true);
                     }
                 } else {
                     if (modList.contains(modId)) {
-                        logger.info("Mod unregistered: " + modId);
+                        log.info("Mod unregistered: {}", modId);
                         modList.remove(modId);
                         save = true;
                         request.setAttribute("unregister_success", true);
 
                     } else {
-                        logger.warning("Mod is not registered: " + modId);
+                        log.warn("Mod is not registered: {}", modId);
                         request.setAttribute("not_registered", true);
                     }
                 }
@@ -122,7 +123,7 @@ public class SrcModUpdateNotificationService extends HttpServlet {
             PageRenderer.render(request, response, "src-mod-update-notifications", "speedrun.com mod update notifications",
                     "This page allows speedrun.com moderators to pick the mods they want to be notified about when they are updated.");
         } else {
-            logger.warning("Invalid key");
+            log.warn("Invalid key");
             response.setStatus(404);
             PageRenderer.render(request, response, "page-not-found", "Page Not Found",
                     "Oops, this link seems invalid. Please try again!");

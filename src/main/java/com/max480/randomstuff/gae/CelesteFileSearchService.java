@@ -6,6 +6,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -20,14 +22,13 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
-import java.util.logging.Logger;
 
 /**
  * Service allowing to trigger and retrieve results of file searches across all Celeste mods.
  */
 @WebServlet(name = "CelesteFileSearchService", urlPatterns = {"/celeste/file-search"})
 public class CelesteFileSearchService extends HttpServlet {
-    private static final Logger logger = Logger.getLogger("CelesteFileSearchService");
+    private static final Logger log = LoggerFactory.getLogger(CelesteFileSearchService.class);
 
     private static final Set<String> pendingSearches = new HashSet<>();
 
@@ -49,7 +50,7 @@ public class CelesteFileSearchService extends HttpServlet {
         Path file = Paths.get("/shared/temp/file-searches/" + URLEncoder.encode(query.toLowerCase(Locale.ROOT), StandardCharsets.UTF_8) + "_" + exact + ".json");
 
         if (Files.exists(file)) {
-            logger.fine(file + " is done, returning results!");
+            log.debug("{} is done, returning results!", file);
 
             // copy search results
             Files.copy(file, response.getOutputStream());
@@ -71,7 +72,7 @@ public class CelesteFileSearchService extends HttpServlet {
                 }
             }
 
-            logger.fine(file + " is in progress");
+            log.debug("{} is in progress", file);
             response.getWriter().write("{\"pending\": true}");
         }
     }

@@ -9,6 +9,8 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,8 +24,6 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import static com.max480.randomstuff.gae.ConnectionUtils.openStreamWithTimeout;
@@ -32,7 +32,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 @WebServlet(name = "GameBananaArbitraryModAppService", loadOnStartup = 6, urlPatterns = {"/gamebanana/arbitrary-mod-app",
         "/gamebanana/arbitrary-mod-app-settings", "/gamebanana/arbitrary-mod-app-housekeep", "/gamebanana/arbitrary-mod-app-modlist"})
 public class GameBananaArbitraryModAppService extends HttpServlet {
-    private static final Logger logger = Logger.getLogger("GameBananaArbitraryModAppService");
+    private static final Logger log = LoggerFactory.getLogger(GameBananaArbitraryModAppService.class);
 
     private static class ArbitraryModAppSettings {
         private static final long serialVersionUID = 56185131582831863L;
@@ -48,9 +48,9 @@ public class GameBananaArbitraryModAppService extends HttpServlet {
     public void init() {
         try (ObjectInputStream is = new ObjectInputStream(Files.newInputStream(Paths.get("/shared/gamebanana/arbitrary-mod-app-settings.ser")))) {
             database = (Map<String, ArbitraryModAppSettings>) is.readObject();
-            logger.fine("Loaded " + database.size() + " arbitrary mod app settings.");
+            log.debug("Loaded {} arbitrary mod app settings.", database.size());
         } catch (ClassNotFoundException | IOException e) {
-            logger.log(Level.WARNING, "Loading Arbitrary Mod App settings failed: " + e);
+            log.warn("Loading Arbitrary Mod App settings failed!", e);
         }
     }
 
@@ -93,7 +93,7 @@ public class GameBananaArbitraryModAppService extends HttpServlet {
                 housekeep();
             } else {
                 // invalid secret
-                logger.warning("Invalid key");
+                log.warn("Invalid key");
                 response.setStatus(403);
             }
             return;
@@ -106,7 +106,7 @@ public class GameBananaArbitraryModAppService extends HttpServlet {
                 response.getWriter().write(new JSONArray(modIds).toString());
             } else {
                 // invalid secret
-                logger.warning("Invalid key");
+                log.warn("Invalid key");
                 response.setStatus(403);
             }
             return;
@@ -115,7 +115,7 @@ public class GameBananaArbitraryModAppService extends HttpServlet {
         // check that the mandatory _idProfile parameter is present, respond 400 Bad Request otherwise.
         String memberId = request.getParameter("_idProfile");
         if (memberId == null) {
-            logger.warning("Bad Request");
+            log.warn("Bad Request");
             response.setStatus(400);
             return;
         }
@@ -203,14 +203,14 @@ public class GameBananaArbitraryModAppService extends HttpServlet {
                 return new JSONObject(Files.readString(cache));
             } else {
                 // if this is not possible, read from GameBanana directly instead
-                logger.info("Could not retrieve mod by ID from cache, querying GameBanana directly");
+                log.info("Could not retrieve mod by ID from cache, querying GameBanana directly");
                 try (InputStream is = openStreamWithTimeout("https://gamebanana.com/apiv8/Mod/" + modId +
                         "?_csvProperties=_sProfileUrl,_sName,_aPreviewMedia,_tsDateAdded,_tsDateUpdated,_aGame,_aRootCategory,_aSubmitter,_bIsWithheld,_bIsTrashed,_bIsPrivate,_nViewCount,_nLikeCount,_nPostCount")) {
                     return new JSONObject(IOUtils.toString(is, UTF_8));
                 }
             }
         } catch (IOException e) {
-            logger.severe("Could not retrieve mod by ID! " + e);
+            log.error("Could not retrieve mod by ID! ", e);
             e.printStackTrace();
             return null;
         }
@@ -220,7 +220,7 @@ public class GameBananaArbitraryModAppService extends HttpServlet {
         // check that the mandatory _idMember parameter is present, respond 400 Bad Request otherwise.
         String memberId = request.getParameter("_idMember");
         if (memberId == null) {
-            logger.warning("Bad Request");
+            log.warn("Bad Request");
             response.setStatus(400);
             return;
         }
@@ -292,7 +292,7 @@ public class GameBananaArbitraryModAppService extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         if (!request.getRequestURI().equals("/gamebanana/arbitrary-mod-app-settings")) {
             // Method Not Allowed: /gamebanana/arbitrary-mod-app only supports GET
-            logger.warning("Method Not Allowed");
+            log.warn("Method Not Allowed");
             response.setStatus(405);
             return;
         }
@@ -300,7 +300,7 @@ public class GameBananaArbitraryModAppService extends HttpServlet {
         // check that the mandatory _idMember parameter is present, respond 400 Bad Request otherwise.
         String memberId = request.getParameter("_idMember");
         if (memberId == null) {
-            logger.warning("Bad Request");
+            log.warn("Bad Request");
             response.setStatus(400);
             return;
         }
@@ -331,7 +331,7 @@ public class GameBananaArbitraryModAppService extends HttpServlet {
                 !request.getParameter("modlist").matches("([0-9]+,)*[0-9]+")) {
 
             // the user must have bypassed the HTML5 validations, so just send them an answer just like if they did a GET request.
-            logger.warning("POST was given up due to invalid parameters.");
+            log.warn("POST was given up due to invalid parameters.");
             getSettingsPage(request, response);
             return;
         }
@@ -350,19 +350,19 @@ public class GameBananaArbitraryModAppService extends HttpServlet {
         request.setAttribute("modList", request.getParameter("modlist"));
 
         if (entityIsInDatabase && !request.getParameter("key").equals(key)) {
-            logger.warning("Invalid key");
+            log.warn("Invalid key");
             request.setAttribute("invalidKey", true);
         } else if (request.getParameter("modlist").split(",").length > 50) {
-            logger.warning("Too many mods");
+            log.warn("Too many mods");
             request.setAttribute("tooManyMods", true);
         } else if (!getAllUsers().contains(memberId)) {
-            logger.warning("App not installed");
+            log.warn("App not installed");
             request.setAttribute("appDisabled", true);
         } else if (Arrays.stream(request.getParameter("modlist").split(","))
                 .map(this::queryModById)
                 .anyMatch(o -> o == null || o.getBoolean("_bIsWithheld") || o.getBoolean("_bIsTrashed") || o.getBoolean("_bIsPrivate"))) {
 
-            logger.warning("Invalid mods");
+            log.warn("Invalid mods");
             request.setAttribute("invalidMods", true);
         } else {
             // finally save!
@@ -373,10 +373,10 @@ public class GameBananaArbitraryModAppService extends HttpServlet {
 
             request.setAttribute("saved", true);
             request.setAttribute("isInDatabase", true);
-            logger.info("Save successful");
+            log.info("Save successful");
 
             if (!entityIsInDatabase) {
-                logger.info("Key newly generated");
+                log.info("Key newly generated");
                 request.setAttribute("initialKey", key);
             }
         }
@@ -400,7 +400,7 @@ public class GameBananaArbitraryModAppService extends HttpServlet {
 
             if (members.length() == 0) {
                 // we reached the end of the pages!
-                logger.info("User list: [" + String.join(", ", result) + "]");
+                log.info("User list: [" + String.join(", ", result) + "]");
 
                 if (!result.contains("1698143")) {
                     // failsafe: max480 should be in the list, otherwise this means the listing does not work
@@ -429,7 +429,7 @@ public class GameBananaArbitraryModAppService extends HttpServlet {
         List<String> keysToDelete = new ArrayList<>();
         for (String userId : database.keySet()) {
             if (!users.contains(userId)) {
-                logger.info("Deleting key " + userId + " from the database because they're not an app user.");
+                log.info("Deleting key {} from the database because they're not an app user.", userId);
                 keysToDelete.add(userId);
             }
         }

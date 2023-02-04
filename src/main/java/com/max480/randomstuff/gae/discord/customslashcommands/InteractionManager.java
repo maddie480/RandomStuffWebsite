@@ -10,6 +10,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,7 +24,6 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Function;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -33,7 +34,7 @@ import static com.max480.randomstuff.gae.discord.customslashcommands.CustomSlash
  */
 @WebServlet(name = "CustomSlashCommandsBot", urlPatterns = {"/discord/custom-slash-commands"}, loadOnStartup = 4)
 public class InteractionManager extends HttpServlet {
-    private static final Logger logger = Logger.getLogger("InteractionManager");
+    private static final Logger log = LoggerFactory.getLogger(InteractionManager.class);
     public static final String COMMAND_NAME_REGEX = "[a-z0-9_-]{1,32}";
 
     @Override
@@ -95,7 +96,7 @@ public class InteractionManager extends HttpServlet {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                logger.severe("An unexpected error occurred: " + e);
+                log.error("An unexpected error occurred!", e);
                 respond(resp, localizeMessage(locale,
                         ":x: An unexpected error occurred. Reach out at <https://discord.gg/PdyfMaq9Vq> if this keeps happening!",
                         ":x: Une erreur inattendue est survenue. Signale-la sur <https://discord.gg/PdyfMaq9Vq> si ça continue à arriver !"));
@@ -390,7 +391,7 @@ public class InteractionManager extends HttpServlet {
         responseData.put("choices", choices);
         response.put("data", responseData);
 
-        logger.fine("Responding with: " + response.toString(2));
+        log.debug("Responding with: {}", response.toString(2));
         resp.getWriter().write(response.toString());
     }
 
@@ -493,7 +494,7 @@ public class InteractionManager extends HttpServlet {
         responseData.put("components", componentData);
 
         response.put("data", responseData);
-        logger.fine("Responding with: " + response.toString(2));
+        log.debug("Responding with: {}", response.toString(2));
         resp.getWriter().write(response.toString());
     }
 
@@ -589,7 +590,7 @@ public class InteractionManager extends HttpServlet {
      * Handles adding a slash command on storage and Discord given all the information about it.
      */
     private void addSlashCommand(long serverId, CustomSlashCommandInfo info) throws IOException, MaximumCommandsReachedException {
-        logger.info("Adding " + info.getStoragePath());
+        log.info("Adding {}", info.getStoragePath());
 
         long commandId = CustomSlashCommandsManager.addSlashCommand(serverId, info.name, info.description);
 
@@ -611,7 +612,7 @@ public class InteractionManager extends HttpServlet {
      * Handles removing a slash command from storage and Discord given all the information about it.
      */
     private void removeSlashCommand(long serverId, CustomSlashCommandInfo info) throws IOException {
-        logger.info("Removing " + info.getStoragePath());
+        log.info("Removing {}", info.getStoragePath());
 
         CustomSlashCommandsManager.removeSlashCommand(serverId, info.id);
 
@@ -674,7 +675,7 @@ public class InteractionManager extends HttpServlet {
 
         response.put("data", responseData);
 
-        logger.fine("Responding with: " + response.toString(2));
+        log.debug("Responding with: {}", response.toString(2));
         resp.getWriter().write(response.toString());
     }
 
@@ -691,7 +692,7 @@ public class InteractionManager extends HttpServlet {
         responseData.put("flags", 1 << 6); // ephemeral
         response.put("data", responseData);
 
-        logger.fine("Responding with: " + response.toString(2));
+        log.debug("Responding with: {}", response.toString(2));
         responseStream.getWriter().write(response.toString());
     }
 

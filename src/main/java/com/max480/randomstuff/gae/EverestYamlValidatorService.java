@@ -10,6 +10,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -18,7 +20,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.SecureRandom;
 import java.util.*;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -30,7 +31,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 @WebServlet(name = "EverestYamlValidatorService", urlPatterns = {"/celeste/everest-yaml-validator"})
 @MultipartConfig
 public class EverestYamlValidatorService extends HttpServlet {
-    private final Logger logger = Logger.getLogger("EverestYamlValidatorService");
+    private static final Logger log = LoggerFactory.getLogger(EverestYamlValidatorService.class);
     private final SecureRandom random = new SecureRandom();
 
     // these are the fields in Everest's EverestModuleMetadata that are most commonly used in everest.yaml.
@@ -129,7 +130,7 @@ public class EverestYamlValidatorService extends HttpServlet {
         try {
             filePart = request.getPart("file");
         } catch (ServletException e) {
-            logger.warning("Failed to get file part: " + e);
+            log.warn("Failed to get file part", e);
         }
 
         // output format can be either "html" or "json".
@@ -140,7 +141,7 @@ public class EverestYamlValidatorService extends HttpServlet {
                 outputFormat = IOUtils.toString(outputFormatPart.getInputStream(), UTF_8);
             }
         } catch (ServletException e) {
-            logger.warning("Failed to get output format part: " + e);
+            log.warn("Failed to get output format part", e);
         }
 
         if (filePart != null && Arrays.asList("json", "html").contains(outputFormat)) {

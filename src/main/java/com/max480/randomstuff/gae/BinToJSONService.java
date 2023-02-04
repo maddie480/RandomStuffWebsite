@@ -8,6 +8,8 @@ import org.apache.commons.io.EndianUtils;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
@@ -15,7 +17,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.logging.Logger;
 
 /**
  * A port of iSkLz's BinToXML tool to Java, made to output JSON instead of XML.
@@ -23,7 +24,7 @@ import java.util.logging.Logger;
  */
 @WebServlet(name = "BinToJSONService", urlPatterns = {"/celeste/bin-to-json"})
 public class BinToJSONService extends HttpServlet {
-    private static final java.util.logging.Logger logger = Logger.getLogger("BinToJSON");
+    private static final Logger log = LoggerFactory.getLogger(BinToJSONService.class);
 
 
     @Override
@@ -82,10 +83,10 @@ public class BinToJSONService extends HttpServlet {
             }
             recursiveConvert(bin, root, stringLookupTable, true);
 
-            logger.info("Converted input to JSON in " + (System.currentTimeMillis() - startTime) + " ms");
+            log.info("Converted input to JSON in {} ms", System.currentTimeMillis() - startTime);
             return root;
         } catch (Exception e) {
-            logger.warning("Could not convert BIN to JSON! " + e);
+            log.warn("Could not convert BIN to JSON!", e);
             return null;
         }
     }
