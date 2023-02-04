@@ -10,13 +10,6 @@
     </suppress>
     <suppress>
         <notes><![CDATA[
-            google-http-client-protobuf misidentified as protobuf-java, which is actually in non-vulnerable version 3.21.10
-        ]]></notes>
-        <packageUrl regex="true">^pkg:maven/com\.google\.http\-client/google\-http\-client\-protobuf@.*$</packageUrl>
-        <cpe>cpe:/a:google:protobuf-java</cpe>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
            gdx-jnigen-loader misidentified as a screenshot upload bash script available on GitHub that had an URL predictability vulnerability
         ]]></notes>
         <packageUrl regex="true">^pkg:maven/com\.badlogicgames\.gdx/gdx\-jnigen\-loader@.*$</packageUrl>
