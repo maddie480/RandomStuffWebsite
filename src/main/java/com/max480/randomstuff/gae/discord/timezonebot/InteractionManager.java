@@ -22,10 +22,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -56,7 +53,8 @@ public class InteractionManager extends HttpServlet {
 
     private static final AtomicLong lastTimezoneDBRequest = new AtomicLong(0);
 
-    private static class UserTimezone {
+    private static class UserTimezone implements Serializable {
+        @Serial
         private static final long serialVersionUID = 561851525612831863L;
 
         public String timezoneName;

@@ -12,10 +12,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -34,7 +31,8 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 public class GameBananaArbitraryModAppService extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(GameBananaArbitraryModAppService.class);
 
-    private static class ArbitraryModAppSettings {
+    private static class ArbitraryModAppSettings implements Serializable {
+        @Serial
         private static final long serialVersionUID = 56185131582831863L;
 
         public String key;
