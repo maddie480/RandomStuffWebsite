@@ -11,7 +11,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,7 +29,16 @@ public class BinToJSONService extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        JSONObject json = toJsonDocument(new BufferedInputStream(req.getInputStream()));
+        byte[] input;
+        try (InputStream is = req.getInputStream()) {
+            input = IOUtils.toByteArray(is);
+        }
+        log.debug("Read {} bytes", input.length);
+
+        JSONObject json;
+        try (ByteArrayInputStream is = new ByteArrayInputStream(input)) {
+            json = toJsonDocument(is);
+        }
 
         if (json != null) {
             resp.setContentType("application/json");
