@@ -23,7 +23,7 @@ import java.util.Base64;
 public class CustomSlashCommandsManager {
     private static final Logger log = LoggerFactory.getLogger(CustomSlashCommandsManager.class);
 
-    private static final String USER_AGENT = "DiscordBot (https://max480-random-stuff.appspot.com, 1.0)";
+    private static final String USER_AGENT = "DiscordBot (https://max480.ovh, 1.0)";
 
     private static String accessToken = null;
     private static long tokenExpiresAt = 0;

@@ -112,7 +112,7 @@ enhanceFormWithUploadProgress(document.getElementById('verify-form'), document.g
 document.getElementById('copyUrl').addEventListener('click', function(e) {
     e.preventDefault();
 
-    var url = 'https://max480-random-stuff.appspot.com/celeste/mod-structure-verifier';
+    var url = 'https://max480.ovh/celeste/mod-structure-verifier';
     var assetFolderName = document.getElementById("assetFolderName").value;
     var mapFolderName = document.getElementById("mapFolderName").value;
     if (assetFolderName.length > 0) {

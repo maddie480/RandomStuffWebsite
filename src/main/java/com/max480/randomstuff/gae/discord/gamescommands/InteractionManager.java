@@ -489,7 +489,7 @@ public class InteractionManager extends HttpServlet {
                 // Apache HttpClient because PATCH does not exist according to HttpURLConnection
                 try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
                     HttpPatch httpPatch = new HttpPatch(new URI(url));
-                    httpPatch.setHeader("User-Agent", "DiscordBot (https://max480-random-stuff.appspot.com/discord-bots/#games-bot, 1.0)");
+                    httpPatch.setHeader("User-Agent", "DiscordBot (https://max480.ovh/discord-bots/#games-bot, 1.0)");
                     httpPatch.setEntity(new StringEntity(responseData.toString(), ContentType.APPLICATION_JSON));
                     CloseableHttpResponse httpResponse = httpClient.execute(httpPatch);
 

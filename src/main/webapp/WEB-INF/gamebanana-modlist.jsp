@@ -177,7 +177,7 @@
     });
 
     <% if ((boolean) request.getAttribute("isMax480")) { %>
-        fetch('https://max480-random-stuff.appspot.com/celeste/update-checker-status?widget=true')
+        fetch('https://max480.ovh/celeste/update-checker-status?widget=true')
             .then(r => r.text())
             .then(r => {
                 $('#UpdateCheckerStatus').html(r);

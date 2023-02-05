@@ -24,7 +24,7 @@ public class LuaCutscenesDocumentationIntegrator {
 
     public static void main(String[] args) throws IOException {
         String luaCutscenesDownloadUrl;
-        try (InputStream is = ConnectionUtils.openStreamWithTimeout("https://max480-random-stuff.appspot.com/celeste/everest_update.yaml")) {
+        try (InputStream is = ConnectionUtils.openStreamWithTimeout("https://max480.ovh/celeste/everest_update.yaml")) {
             Map<String, Map<String, Object>> db = YamlUtil.load(is);
             luaCutscenesDownloadUrl = db.get("LuaCutscenes").get("URL").toString();
         }

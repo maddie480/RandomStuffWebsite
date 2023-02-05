@@ -104,7 +104,7 @@
     <div>
         <pre>everest.yaml</pre> is mandatory, as it specifies which helpers are required to play your map.
         You can learn more about dependencies <a target="_blank" href="https://github.com/EverestAPI/Resources/wiki/Mod-Structure#using-helper-mods">on the wiki</a>,
-        and check your <pre>everest.yaml</pre> is valid using <a target="_blank" href="https://max480-random-stuff.appspot.com/celeste/everest-yaml-validator">this online tool</a>.
+        and check your <pre>everest.yaml</pre> is valid using <a target="_blank" href="https://max480.ovh/celeste/everest-yaml-validator">this online tool</a>.
     </div>
 
     <div>
@@ -116,7 +116,7 @@
     <h2>Your everest.yaml seems to have problems</h2>
 
     <div>
-        The bot sent your <pre>everest.yaml</pre> to <a target="_blank" href="https://max480-random-stuff.appspot.com/celeste/everest-yaml-validator">the validator</a>
+        The bot sent your <pre>everest.yaml</pre> to <a target="_blank" href="https://max480.ovh/celeste/everest-yaml-validator">the validator</a>
         and that tool found issues. Send it there yourself to get all the details!
     </div>
 <% } %>
@@ -153,7 +153,7 @@ Version: 1.2803.0
 - Name: MaxHelpingHand
 Version: 1.21.1</pre>
     <div>
-        You can send your <pre>everest.yaml</pre> to <a target="_blank" href="https://max480-random-stuff.appspot.com/celeste/everest-yaml-validator">the validator</a>
+        You can send your <pre>everest.yaml</pre> to <a target="_blank" href="https://max480.ovh/celeste/everest-yaml-validator">the validator</a>
         to have more details about how it is interpreted!
     </div>
 <% } %>

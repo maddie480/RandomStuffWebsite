@@ -29,7 +29,8 @@ public class StaticAssetsAndRouteNotFoundServlet extends HttpServlet {
             "png", "image/png",
             "js", "application/javascript",
             "otf", "font/otf",
-            "html", "text/html"
+            "html", "text/html",
+            "svg", "image/svg+xml"
     );
 
     private static final Logger log = LoggerFactory.getLogger(StaticAssetsAndRouteNotFoundServlet.class);

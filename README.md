@@ -1,29 +1,29 @@
 # max480-random-stuff website
 
-This is the source code for the [max480-random-stuff.appspot.com](https://max480-random-stuff.appspot.com/) website, a [Google App Engine](https://cloud.google.com/appengine/) app running on Java 8.
+This is the source code for the [max480.ovh](https://max480.ovh/) website, an app running on Java 17 using [Eclipse Jetty](https://www.eclipse.org/jetty/).
 
 The `src` folder contains the source for everything provided by the Java servlet:
-- [the Everest Update Checker frontend service](https://max480-random-stuff.appspot.com/celeste/everest_update.yaml), exposing files produced by the Update Checker
-- [the Celeste custom entity catalog](https://max480-random-stuff.appspot.com/celeste/custom-entity-catalog), and [its API version](https://max480-random-stuff.appspot.com/celeste/custom-entity-catalog.json)
-- [the everest.yaml validator](https://max480-random-stuff.appspot.com/celeste/everest-yaml-validator)
-- [the Everest Update Checker status page](https://max480-random-stuff.appspot.com/celeste/update-checker-status)
-- [the Celeste font generator](https://max480-random-stuff.appspot.com/celeste/font-generator)
-- [the Celeste Mod Structure Verifier](https://max480-random-stuff.appspot.com/celeste/mod-structure-verifier)
-- [the #celeste_news_network subscription service](https://max480-random-stuff.appspot.com/celeste/news-network-subscription) - the Twitter update checking code is not part of the frontend and can be found [on the Random Backend Stuff repository](https://github.com/max4805/RandomBackendStuff/blob/main/src/main/java/com/max480/randomstuff/backend/celeste/crontabs/TwitterUpdateChecker.java)
-- [the help page for the Mod Structure Verifier bot](https://max480-random-stuff.appspot.com/celeste/mod-structure-verifier-help?collabName=CollabName&collabMapName=CollabMapName&assets&xmls&nomap&multiplemaps&badmappath&badenglish&misplacedyaml&noyaml&yamlinvalid&multiyaml&missingassets&missingentities&missingfonts)
+- [the Everest Update Checker frontend service](https://max480.ovh/celeste/everest_update.yaml), exposing files produced by the Update Checker
+- [the Celeste custom entity catalog](https://max480.ovh/celeste/custom-entity-catalog), and [its API version](https://max480.ovh/celeste/custom-entity-catalog.json)
+- [the everest.yaml validator](https://max480.ovh/celeste/everest-yaml-validator)
+- [the Everest Update Checker status page](https://max480.ovh/celeste/update-checker-status)
+- [the Celeste font generator](https://max480.ovh/celeste/font-generator)
+- [the Celeste Mod Structure Verifier](https://max480.ovh/celeste/mod-structure-verifier)
+- [the #celeste_news_network subscription service](https://max480.ovh/celeste/news-network-subscription) - the Twitter update checking code is not part of the frontend and can be found [on the Random Backend Stuff repository](https://github.com/max4805/RandomBackendStuff/blob/main/src/main/java/com/max480/randomstuff/backend/celeste/crontabs/TwitterUpdateChecker.java)
+- [the help page for the Mod Structure Verifier bot](https://max480.ovh/celeste/mod-structure-verifier-help?collabName=CollabName&collabMapName=CollabMapName&assets&xmls&nomap&multiplemaps&badmappath&badenglish&misplacedyaml&noyaml&yamlinvalid&multiyaml&missingassets&missingentities&missingfonts)
 - [the "Show Arbitrary Mods on Profile" GameBanana app](https://gamebanana.com/apps/752)
-- [the Discord Games Bot](https://max480-random-stuff.appspot.com/discord-bots#games-bot) - the "bot" is actually a webhook that gets called by Discord
-- [the Discord Custom Slash Commands app](https://max480-random-stuff.appspot.com/discord-bots#custom-slash-commands)
-- [the Discord Timezone Bot](https://max480-random-stuff.appspot.com/discord-bots#timzeone-bot) - this repository only includes the "without timezone roles" variant; the one with timezone roles needs a bot user to work, and as such is [part of the backend](https://github.com/max4805/RandomBackendStuff/tree/main/src/main/java/com/max480/randomstuff/backend/discord/timezonebot)
+- [the Discord Games Bot](https://max480.ovh/discord-bots#games-bot) - the "bot" is actually a webhook that gets called by Discord
+- [the Discord Custom Slash Commands app](https://max480.ovh/discord-bots#custom-slash-commands)
+- [the Discord Timezone Bot](https://max480.ovh/discord-bots#timzeone-bot) - this repository only includes the "without timezone roles" variant; the one with timezone roles needs a bot user to work, and as such is [part of the backend](https://github.com/max4805/RandomBackendStuff/tree/main/src/main/java/com/max480/randomstuff/backend/discord/timezonebot)
 - Some [GameBanana](https://gamebanana.com)-related APIs extending the official API, described below
-- [the Everest versions list API](https://max480-random-stuff.appspot.com/celeste/everest-versions)
+- [the Everest versions list API](https://max480.ovh/celeste/everest-versions)
 - ... and some other things of more limited use that are on the website.
 
 The `front-vue` folder contains the source for more dynamic frontend parts made in [Vue.js](https://vuejs.org/):
-- [the Banana Mirror Browser](https://max480-random-stuff.appspot.com/celeste/banana-mirror-browser), a website that can substitute to [the GameBanana Celeste section](https://gamebanana.com/games/6460) if it is down. Files and images are [hosted on 0x0ade's server](https://celestemodupdater.0x0a.de/). Mod info and files on this server are kept up-to-date by [the Everest update checker](https://github.com/max4805/EverestUpdateCheckerServer).
-- [the Celeste Map Tree Viewer](https://max480-random-stuff.appspot.com/celeste/map-tree-viewer), a tool allowing you to see the raw contents of your map .bin as a tree, in order to find out what it is or search for a specific entity, trigger, decal or styleground.
-- [the Celeste Wipe Converter](https://max480-random-stuff.appspot.com/celeste/wipe-converter), a service to turn custom Celeste screen wipes into a format the game can use (with the [max480's Helping Hand](https://github.com/max4805/MaxHelpingHand) mod).
-- [the Celeste File Searcher](https://max480-random-stuff.appspot.com/celeste/file-searcher), a tool to find in which Celeste mod(s) a file is on GameBanana, based on its path in the zip.
+- [the Banana Mirror Browser](https://max480.ovh/celeste/banana-mirror-browser), a website that can substitute to [the GameBanana Celeste section](https://gamebanana.com/games/6460) if it is down. Files and images are [hosted on 0x0ade's server](https://celestemodupdater.0x0a.de/). Mod info and files on this server are kept up-to-date by [the Everest update checker](https://github.com/max4805/EverestUpdateCheckerServer).
+- [the Celeste Map Tree Viewer](https://max480.ovh/celeste/map-tree-viewer), a tool allowing you to see the raw contents of your map .bin as a tree, in order to find out what it is or search for a specific entity, trigger, decal or styleground.
+- [the Celeste Wipe Converter](https://max480.ovh/celeste/wipe-converter), a service to turn custom Celeste screen wipes into a format the game can use (with the [max480's Helping Hand](https://github.com/max4805/MaxHelpingHand) mod).
+- [the Celeste File Searcher](https://max480.ovh/celeste/file-searcher), a tool to find in which Celeste mod(s) a file is on GameBanana, based on its path in the zip.
 
 If you want to check how the update checker's everest_update.yaml file is generated, check [the Everest Update Checker Server repo](https://github.com/max4805/EverestUpdateCheckerServer) instead.
 
@@ -33,10 +33,10 @@ This API uses the mod search database generated by [the Everest Update Checker s
 
 It is used by [Olympus](https://github.com/EverestAPI/Olympus), the Everest installer and mod manager, to search Celeste mods on GameBanana.
 
-To use this API, call `https://max480-random-stuff.appspot.com/celeste/gamebanana-search?q=[search]`. The answer is in JSON format, and is a list of the top 20 matches. For example:
+To use this API, call `https://max480.ovh/celeste/gamebanana-search?q=[search]`. The answer is in JSON format, and is a list of the top 20 matches. For example:
 
 ```
-$ curl "https://max480-random-stuff.appspot.com/celeste/gamebanana-search?q=spring+collab+2020&full=true"
+$ curl "https://max480.ovh/celeste/gamebanana-search?q=spring+collab+2020&full=true"
 ```
 ```json
 [
@@ -84,7 +84,7 @@ This API allows to get a sorted list of most downloaded, liked or viewed Celeste
 
 If you want to retrieve the latest mod with no type filter, it is recommended to use [the real GameBanana API](https://api.gamebanana.com/docs/endpoints/Core/List/New) instead, for more up-to-date information.
 
-The URL is `https://max480-random-stuff.appspot.com/celeste/gamebanana-list?sort=[sort]&type=[type]&category=[category]&page=[page]` where:
+The URL is `https://max480.ovh/celeste/gamebanana-list?sort=[sort]&type=[type]&category=[category]&page=[page]` where:
 - `sort` is the info to sort on (**mandatory**). It can be `latest`, `likes`, `views` or `downloads`
 - `type` (or `itemtype`) is the GameBanana type to filter on (optional and case-insensitive). For example `Map`, `Gamefile` or `Tool`
 - `category` is the GameBanana mod category ID to filter on (optional), this is returned by [the GameBanana categories list API](#gamebanana-categories-list-api). For example `944`
@@ -94,7 +94,7 @@ The output format is the same as the GameBanana search API, [see the previous se
 
 ## GameBanana featured mods list API
 
-Hit the following URL: `https://max480-random-stuff.appspot.com/celeste/gamebanana-featured` to get a list of all mods that are shown in the front page of Celeste.
+Hit the following URL: `https://max480.ovh/celeste/gamebanana-featured` to get a list of all mods that are shown in the front page of Celeste.
 
 The output is JSON, in the same as the GameBanana search API ([see the corresponding section](#gamebanana-search-api)).
 
@@ -113,9 +113,9 @@ This API sorts the mods in the same order as they are on the website: by `Catego
 
 This API provides info on a mod, based on its `itemtype` and `itemid`, in the same as the GameBanana search API ([see the corresponding section](#gamebanana-search-api)).
 
-The URL is `https://max480-random-stuff.appspot.com/celeste/gamebanana-info?itemtype=[itemtype]&itemid=[itemid]`:
+The URL is `https://max480.ovh/celeste/gamebanana-info?itemtype=[itemtype]&itemid=[itemid]`:
 ```
-$ curl "https://max480-random-stuff.appspot.com/celeste/gamebanana-info?itemtype=Mod&itemid=150813"
+$ curl "https://max480.ovh/celeste/gamebanana-info?itemtype=Mod&itemid=150813"
 ```
 ```json
 {
@@ -194,7 +194,7 @@ The counts returned by this API might not match the numbers displayed on the Gam
 
 Each entry can have an `itemtype` and a `categoryid`, that can be used as `type` and `category` parameters on the [list API](#gamebanana-sorted-list-api).
 
-The URL is `https://max480-random-stuff.appspot.com/celeste/gamebanana-categories` and the result looks like:
+The URL is `https://max480.ovh/celeste/gamebanana-categories` and the result looks like:
 ```yaml
 - formatted: All
   count: 1406
@@ -229,7 +229,7 @@ https://gamebanana.com/apiv8/Mod/ByCategory?_csvProperties=@gbprofile&_aCategory
 
 You can get them in the RSS format by just replacing the URL and carrying over all query params except `_csvProperties`:
 ```
-https://max480-random-stuff.appspot.com/gamebanana/rss-feed?_aCategoryRowIds[]=5081&_sOrderBy=_tsDateAdded,DESC&_nPerpage=10
+https://max480.ovh/gamebanana/rss-feed?_aCategoryRowIds[]=5081&_sOrderBy=_tsDateAdded,DESC&_nPerpage=10
 ```
 
 You can copy this URL replacing `5081` with the category of your choice to get a feed for the latest mods in this category.
@@ -239,11 +239,11 @@ If the GameBanana API returns an error (for example if you pass an invalid param
 
 ## Random Celeste map button
 
-Click [here](https://max480-random-stuff.appspot.com/celeste/random-map) to get redirected to a random Celeste map.
+Click [here](https://max480.ovh/celeste/random-map) to get redirected to a random Celeste map.
 
 ## Everest versions list API
 
-This API is available at `https://max480-random-stuff.appspot.com/celeste/everest-versions`, and returns all the Everest versions available, in JSON format.  For example:
+This API is available at `https://max480.ovh/celeste/everest-versions`, and returns all the Everest versions available, in JSON format.  For example:
 ```json
 [
     {
