@@ -76,6 +76,26 @@ public class InteractionManager extends HttpServlet {
         } catch (Exception e) {
             log.warn("Warming up failed!", e);
         }
+
+        List<Pair<Long, Long>> toDelete = new ArrayList<>();
+        for (Map.Entry<Pair<Long, Long>, UserTimezone> entry : database.entrySet()) {
+            if (entry.getValue().expiresAt.isBefore(ZonedDateTime.now())) {
+                toDelete.add(entry.getKey());
+            }
+        }
+
+        if (!toDelete.isEmpty()) {
+            for (Pair<Long, Long> entry : toDelete) {
+                log.warn("Deleting timezone entry {} because it expired!", entry);
+                database.remove(entry);
+            }
+
+            try {
+                saveDatabase();
+            } catch (IOException e) {
+                log.error("Could not save cleaned up database!", e);
+            }
+        }
     }
 
     private static void populateTimezones() throws IOException {
