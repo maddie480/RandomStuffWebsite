@@ -1,23 +1,25 @@
 package com.max480.randomstuff.gae;
 
 import com.google.common.collect.ImmutableMap;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Part;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import javax.servlet.ServletException;
-import javax.servlet.annotation.MultipartConfig;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.Part;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.SecureRandom;
 import java.util.*;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -29,7 +31,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 @WebServlet(name = "EverestYamlValidatorService", urlPatterns = {"/celeste/everest-yaml-validator"})
 @MultipartConfig
 public class EverestYamlValidatorService extends HttpServlet {
-    private final Logger logger = Logger.getLogger("EverestYamlValidatorService");
+    private static final Logger log = LoggerFactory.getLogger(EverestYamlValidatorService.class);
     private final SecureRandom random = new SecureRandom();
 
     // these are the fields in Everest's EverestModuleMetadata that are most commonly used in everest.yaml.
@@ -128,7 +130,7 @@ public class EverestYamlValidatorService extends HttpServlet {
         try {
             filePart = request.getPart("file");
         } catch (ServletException e) {
-            logger.warning("Failed to get file part: " + e);
+            log.warn("Failed to get file part", e);
         }
 
         // output format can be either "html" or "json".
@@ -139,7 +141,7 @@ public class EverestYamlValidatorService extends HttpServlet {
                 outputFormat = IOUtils.toString(outputFormatPart.getInputStream(), UTF_8);
             }
         } catch (ServletException e) {
-            logger.warning("Failed to get output format part: " + e);
+            log.warn("Failed to get output format part", e);
         }
 
         if (filePart != null && Arrays.asList("json", "html").contains(outputFormat)) {
@@ -163,7 +165,7 @@ public class EverestYamlValidatorService extends HttpServlet {
 
             if (metadatas != null) {
                 // load the mod database to check if dependencies exist there.
-                Map<String, Object> databaseUnparsed = YamlUtil.load(CloudStorageUtils.getCloudStorageInputStream("everest_update.yaml"));
+                Map<String, Object> databaseUnparsed = YamlUtil.load(Files.newInputStream(Paths.get("/shared/celeste/updater/everest-update.yaml")));
                 List<EverestModuleMetadata> database = databaseUnparsed
                         .entrySet().stream()
                         .map(entry -> {
@@ -175,7 +177,7 @@ public class EverestYamlValidatorService extends HttpServlet {
                         .collect(Collectors.toCollection(ArrayList::new));
 
                 JSONObject everestVersions;
-                try (InputStream is = CloudStorageUtils.getCloudStorageInputStream("everest_versions.json")) {
+                try (InputStream is = Files.newInputStream(Paths.get("/shared/celeste/latest-everest-versions.json"))) {
                     everestVersions = new JSONObject(IOUtils.toString(is, UTF_8));
                 }
 
@@ -344,7 +346,7 @@ public class EverestYamlValidatorService extends HttpServlet {
 
                         try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
                             YamlUtil.dump(latestVersionsYaml, os);
-                            attributes.put("latestVersionsYaml", new String(os.toByteArray(), UTF_8));
+                            attributes.put("latestVersionsYaml", os.toString(UTF_8));
                         }
 
                         if ("html".equals(outputFormat)) {

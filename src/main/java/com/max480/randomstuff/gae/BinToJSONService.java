@@ -1,21 +1,22 @@
 package com.max480.randomstuff.gae;
 
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.io.EndianUtils;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.logging.Logger;
 
 /**
  * A port of iSkLz's BinToXML tool to Java, made to output JSON instead of XML.
@@ -23,7 +24,7 @@ import java.util.logging.Logger;
  */
 @WebServlet(name = "BinToJSONService", urlPatterns = {"/celeste/bin-to-json"})
 public class BinToJSONService extends HttpServlet {
-    private static final java.util.logging.Logger logger = Logger.getLogger("BinToJSON");
+    private static final Logger log = LoggerFactory.getLogger(BinToJSONService.class);
 
 
     @Override
@@ -82,10 +83,10 @@ public class BinToJSONService extends HttpServlet {
             }
             recursiveConvert(bin, root, stringLookupTable, true);
 
-            logger.info("Converted input to JSON in " + (System.currentTimeMillis() - startTime) + " ms");
+            log.info("Converted input to JSON in {} ms", System.currentTimeMillis() - startTime);
             return root;
         } catch (Exception e) {
-            logger.warning("Could not convert BIN to JSON! " + e);
+            log.warn("Could not convert BIN to JSON!", e);
             return null;
         }
     }
@@ -139,19 +140,11 @@ public class BinToJSONService extends HttpServlet {
             AttributeValueType attributeValueType = AttributeValueType.fromValue(bin.readUnsignedByte());
             Object obj = null;
             switch (attributeValueType) {
-                case Boolean:
-                    obj = bin.readBoolean();
-                    break;
-                case Byte:
-                    obj = bin.readUnsignedByte();
-                    break;
-                case Float:
-                    obj = EndianUtils.readSwappedFloat(bin);
-                    break;
-                case Integer:
-                    obj = EndianUtils.readSwappedInteger(bin);
-                    break;
-                case LengthEncodedString: {
+                case Boolean -> obj = bin.readBoolean();
+                case Byte -> obj = bin.readUnsignedByte();
+                case Float -> obj = EndianUtils.readSwappedFloat(bin);
+                case Integer -> obj = EndianUtils.readSwappedInteger(bin);
+                case LengthEncodedString -> {
                     short length = EndianUtils.readSwappedShort(bin);
                     byte[] array = new byte[length];
                     if (bin.read(array) != length) throw new IOException("Missing characters in string!");
@@ -170,17 +163,10 @@ public class BinToJSONService extends HttpServlet {
                         }
                     }
                     obj = result;
-                    break;
                 }
-                case Short:
-                    obj = EndianUtils.readSwappedShort(bin);
-                    break;
-                case String:
-                    obj = readString(bin);
-                    break;
-                case FromLookup:
-                    obj = stringLookupTable[EndianUtils.readSwappedShort(bin)];
-                    break;
+                case Short -> obj = EndianUtils.readSwappedShort(bin);
+                case String -> obj = readString(bin);
+                case FromLookup -> obj = stringLookupTable[EndianUtils.readSwappedShort(bin)];
             }
 
             element.getJSONObject("attributes").put(localName, obj);

@@ -11,47 +11,37 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.tools.bmfont.BitmapFontWriter;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
-import com.google.api.gax.batching.BatchingSettings;
-import com.google.cloud.pubsub.v1.Publisher;
-import com.google.cloud.storage.BlobId;
-import com.google.cloud.storage.BlobInfo;
-import com.google.cloud.storage.Storage;
-import com.google.cloud.storage.StorageOptions;
-import com.google.protobuf.ByteString;
-import com.google.pubsub.v1.PubsubMessage;
-import com.google.pubsub.v1.TopicName;
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileUploadException;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Part;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import javax.servlet.ServletException;
-import javax.servlet.annotation.MultipartConfig;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -59,23 +49,11 @@ import java.util.zip.ZipOutputStream;
 /**
  * Servlet allowing to generate bitmap fonts for usage in Celeste (~~and any other game using the XML output of BMFont actually~~).
  */
-@WebServlet(name = "CelesteFontGeneratorService", loadOnStartup = 3, urlPatterns = {"/celeste/font-generator"})
+@WebServlet(name = "CelesteFontGeneratorService", urlPatterns = {"/celeste/font-generator"})
 @MultipartConfig
 public class CelesteFontGeneratorService extends HttpServlet {
-    private static final Logger logger = Logger.getLogger("CelesteFontGeneratorService");
-    private static final Storage storage = StorageOptions.newBuilder().setProjectId("max480-random-stuff").build().getService();
-    private Publisher publisher = null;
+    private static final Logger log = LoggerFactory.getLogger(CelesteFontGeneratorService.class);
 
-    @Override
-    public void init() {
-        try {
-            publisher = Publisher.newBuilder(TopicName.of("max480-random-stuff", "backend-tasks"))
-                    .setBatchingSettings(BatchingSettings.newBuilder().setIsEnabled(false).build())
-                    .build();
-        } catch (IOException e) {
-            logger.log(Level.WARNING, "Building the Pub/Sub publisher for Font Generator failed: " + e);
-        }
-    }
 
     private static class AllCharactersMissingException extends Exception {
     }
@@ -99,16 +77,12 @@ public class CelesteFontGeneratorService extends HttpServlet {
         request.setAttribute("nothingToDo", false);
         boolean sentZip = false;
 
-        if (!ServletFileUpload.isMultipartContent(request)) {
+        if (!request.getContentType().startsWith("multipart/form-data")) {
             // if not, we stop here
             request.setAttribute("badrequest", true);
-            logger.warning("Bad request");
+            log.warn("Bad request");
             response.setStatus(400);
         } else {
-            DiskFileItemFactory factory = new DiskFileItemFactory();
-            factory.setRepository(new File("/tmp"));
-            ServletFileUpload upload = new ServletFileUpload(factory);
-
             // parse request
             String font = null;
             String fontFileName = null;
@@ -117,44 +91,41 @@ public class CelesteFontGeneratorService extends HttpServlet {
 
             String customFontFileName = null;
             InputStream customFontFile = null;
-            try {
-                for (FileItem item : upload.parseRequest(request)) {
-                    if (item.isFormField()) {
-                        // Process regular form field (input type="text|radio|checkbox|etc", select, etc).
-                        String fieldname = item.getFieldName();
-                        String fieldvalue = item.getString();
 
-                        if ("font".equals(fieldname)) {
-                            font = fieldvalue;
-                        } else if ("fontFileName".equals(fieldname)) {
-                            fontFileName = fieldvalue;
-                        } else if ("method".equals(fieldname)) {
-                            method = fieldvalue;
-                        }
-                    } else {
-                        // Process form file field (input type="file").
-                        String fieldname = item.getFieldName();
-                        InputStream filecontent = item.getInputStream();
+            for (Part part : request.getParts()) {
+                if (part.getSubmittedFileName() == null) {
+                    // Process regular form field (input type="text|radio|checkbox|etc", select, etc).
+                    String fieldname = part.getName();
+                    String fieldvalue = IOUtils.toString(part.getInputStream(), StandardCharsets.UTF_8);
 
-                        if ("dialogFile".equals(fieldname)) {
-                            dialogFile = IOUtils.toString(filecontent, StandardCharsets.UTF_8);
-                        } else if ("fontFile".equals(fieldname)) {
-                            customFontFileName = item.getName();
-                            if (customFontFileName.replace("\\", "/").contains("/")) {
-                                customFontFileName = customFontFileName.substring(customFontFileName.replace("\\", "/").indexOf("/") + 1);
-                            }
-                            customFontFile = filecontent;
+                    if ("font".equals(fieldname)) {
+                        font = fieldvalue;
+                    } else if ("fontFileName".equals(fieldname)) {
+                        fontFileName = fieldvalue;
+                    } else if ("method".equals(fieldname)) {
+                        method = fieldvalue;
+                    }
+                } else {
+                    // Process form file field (input type="file").
+                    String fieldname = part.getName();
+                    InputStream filecontent = part.getInputStream();
+
+                    if ("dialogFile".equals(fieldname)) {
+                        dialogFile = IOUtils.toString(filecontent, StandardCharsets.UTF_8);
+                    } else if ("fontFile".equals(fieldname)) {
+                        customFontFileName = part.getName();
+                        if (customFontFileName.replace("\\", "/").contains("/")) {
+                            customFontFileName = customFontFileName.substring(customFontFileName.replace("\\", "/").indexOf("/") + 1);
                         }
+                        customFontFile = filecontent;
                     }
                 }
-            } catch (FileUploadException e) {
-                logger.warning("Cannot parse request: " + e);
             }
 
             if ("bmfont".equals(method)) {
                 if (font == null || dialogFile == null) {
                     request.setAttribute("badrequest", true);
-                    logger.warning("Bad request for generation through BMFont");
+                    log.warn("Bad request for generation through BMFont");
                     response.setStatus(400);
                 } else {
                     // create the task, and redirect to the page that will allow to follow it
@@ -167,7 +138,7 @@ public class CelesteFontGeneratorService extends HttpServlet {
                     || (font.equals("custom") && (customFontFileName == null || hasForbiddenCharacter(customFontFileName)))) {
 
                 request.setAttribute("badrequest", true);
-                logger.warning("Bad request for generation through libgdx");
+                log.warn("Bad request for generation through libgdx");
                 response.setStatus(400);
             } else {
                 try {
@@ -196,8 +167,7 @@ public class CelesteFontGeneratorService extends HttpServlet {
 
                 } catch (ParserConfigurationException | SAXException | IOException e) {
                     // something blew up along the way!
-                    logger.severe("Could not generate font!");
-                    e.printStackTrace();
+                    log.error("Could not generate font!", e);
 
                     request.setAttribute("error", true);
                     response.setStatus(500);
@@ -215,33 +185,29 @@ public class CelesteFontGeneratorService extends HttpServlet {
     private String runBMFontTask(String language, String dialogFile) throws IOException {
         String id = UUID.randomUUID().toString();
 
-        // send timestamp marker to Cloud Storage (this will save that the task exists, and the timestamp at which it started)
-        BlobId blobId = BlobId.of("staging.max480-random-stuff.appspot.com", "font-generate-" + id + "-timestamp.txt");
-        BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType("text/plain").build();
-        storage.create(blobInfo, Long.toString(System.currentTimeMillis()).getBytes(StandardCharsets.UTF_8));
+        // store timestamp marker (this will save that the task exists, and the timestamp at which it started)
+        Path file = Paths.get("/shared/temp/font-generate/" + id + "-timestamp.txt");
+        Files.writeString(file, Long.toString(System.currentTimeMillis()));
 
-        // send dialog file to Cloud Storage
-        blobId = BlobId.of("staging.max480-random-stuff.appspot.com", "font-generate-" + id + ".txt");
-        blobInfo = BlobInfo.newBuilder(blobId).setContentType("text/plain").build();
-        storage.create(blobInfo, dialogFile.getBytes(StandardCharsets.UTF_8));
+        // store dialog file
+        file = Paths.get("/shared/temp/font-generate/" + id + ".txt");
+        Files.writeString(file, dialogFile);
 
         // generate message payload
         JSONObject message = new JSONObject();
         message.put("taskType", "fontGenerate");
         message.put("language", language);
-        message.put("fileName", "font-generate-" + id + ".txt");
+        message.put("fileName", "font-generate/" + id + ".txt");
 
         // publish the message to the backend!
-        ByteString data = ByteString.copyFromUtf8(message.toString());
-        PubsubMessage pubsubMessage = PubsubMessage.newBuilder().setData(data).build();
-
-        try {
-            String messageId = publisher.publish(pubsubMessage).get();
-            logger.info("Emitted message id " + messageId + " to handle font generation task " + id + "!");
-        } catch (InterruptedException | ExecutionException e) {
-            throw new IOException(e);
+        try (Socket socket = new Socket()) {
+            socket.connect(new InetSocketAddress("backend", 4480));
+            try (OutputStream os = socket.getOutputStream()) {
+                IOUtils.write(message.toString(), os, StandardCharsets.UTF_8);
+            }
         }
 
+        log.info("Emitted message to handle font generation task {}!", id);
         return id;
     }
 
@@ -295,26 +261,26 @@ public class CelesteFontGeneratorService extends HttpServlet {
         String fontName;
         String vanillaFntName;
         switch (language) {
-            case "russian":
+            case "russian" -> {
                 fontName = "Noto Sans Med.ttf";
                 vanillaFntName = "russian.fnt";
-                break;
-            case "japanese":
+            }
+            case "japanese" -> {
                 fontName = "Noto Sans CJK JP Medium.otf";
                 vanillaFntName = "japanese.fnt";
-                break;
-            case "korean":
+            }
+            case "korean" -> {
                 fontName = "Noto Sans CJK KR Medium.otf";
                 vanillaFntName = "korean.fnt";
-                break;
-            case "chinese":
+            }
+            case "chinese" -> {
                 fontName = "Noto Sans CJK SC Medium.otf";
                 vanillaFntName = "chinese.fnt";
-                break;
-            default:
+            }
+            default -> {
                 fontName = "Renogare.otf";
                 vanillaFntName = "renogare64.fnt";
-                break;
+            }
         }
 
         // create a temp dir to dump stuff to.
@@ -482,8 +448,7 @@ public class CelesteFontGeneratorService extends HttpServlet {
 
                     waitUntilFinished.release();
                 } catch (Exception e) {
-                    logger.severe("Could not generate font");
-                    e.printStackTrace();
+                    log.error("Could not generate font", e);
                     failure.set(true);
                     waitUntilFinished.release();
                 }

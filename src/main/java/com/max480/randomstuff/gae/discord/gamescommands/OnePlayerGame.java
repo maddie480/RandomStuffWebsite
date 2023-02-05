@@ -1,8 +1,8 @@
 package com.max480.randomstuff.gae.discord.gamescommands;
 
 import com.max480.randomstuff.gae.discord.gamescommands.status.GameState;
+import jakarta.servlet.http.HttpServletResponse;
 
-import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**

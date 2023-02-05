@@ -1,39 +1,59 @@
 package com.max480.randomstuff.gae;
 
-import com.google.cloud.datastore.*;
-import com.google.cloud.storage.BlobId;
-import com.google.cloud.storage.Storage;
-import com.google.cloud.storage.StorageOptions;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import static com.max480.randomstuff.gae.ConnectionUtils.openStreamWithTimeout;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-@WebServlet(name = "GameBananaArbitraryModAppService", urlPatterns = {"/gamebanana/arbitrary-mod-app",
+@WebServlet(name = "GameBananaArbitraryModAppService", loadOnStartup = 6, urlPatterns = {"/gamebanana/arbitrary-mod-app",
         "/gamebanana/arbitrary-mod-app-settings", "/gamebanana/arbitrary-mod-app-housekeep", "/gamebanana/arbitrary-mod-app-modlist"})
 public class GameBananaArbitraryModAppService extends HttpServlet {
-    private static final Logger logger = Logger.getLogger("GameBananaArbitraryModAppService");
-    private static final Datastore datastore = DatastoreOptions.newBuilder().setProjectId("max480-random-stuff").build().getService();
-    private static final KeyFactory keyFactory = datastore.newKeyFactory().setKind("arbitraryModAppConfiguration");
-    private final Storage storage = StorageOptions.newBuilder().setProjectId("max480-random-stuff").build().getService();
+    private static final Logger log = LoggerFactory.getLogger(GameBananaArbitraryModAppService.class);
+
+    private static class ArbitraryModAppSettings {
+        private static final long serialVersionUID = 56185131582831863L;
+
+        public String key;
+        public List<String> modList;
+        public String title;
+    }
+
+    private static Map<String, ArbitraryModAppSettings> database = new HashMap<>();
+
+    @Override
+    public void init() {
+        try (ObjectInputStream is = new ObjectInputStream(Files.newInputStream(Paths.get("/shared/gamebanana/arbitrary-mod-app-settings.ser")))) {
+            database = (Map<String, ArbitraryModAppSettings>) is.readObject();
+            log.debug("Loaded {} arbitrary mod app settings.", database.size());
+        } catch (ClassNotFoundException | IOException e) {
+            log.warn("Loading Arbitrary Mod App settings failed!", e);
+        }
+    }
+
 
     private static final DateTimeFormatter format = DateTimeFormatter.ofPattern("EE, MMM d yyyy h:mm a O", Locale.ENGLISH);
 
@@ -73,7 +93,7 @@ public class GameBananaArbitraryModAppService extends HttpServlet {
                 housekeep();
             } else {
                 // invalid secret
-                logger.warning("Invalid key");
+                log.warn("Invalid key");
                 response.setStatus(403);
             }
             return;
@@ -86,7 +106,7 @@ public class GameBananaArbitraryModAppService extends HttpServlet {
                 response.getWriter().write(new JSONArray(modIds).toString());
             } else {
                 // invalid secret
-                logger.warning("Invalid key");
+                log.warn("Invalid key");
                 response.setStatus(403);
             }
             return;
@@ -95,12 +115,12 @@ public class GameBananaArbitraryModAppService extends HttpServlet {
         // check that the mandatory _idProfile parameter is present, respond 400 Bad Request otherwise.
         String memberId = request.getParameter("_idProfile");
         if (memberId == null) {
-            logger.warning("Bad Request");
+            log.warn("Bad Request");
             response.setStatus(400);
             return;
         }
 
-        Entity dbEntity = datastore.get(keyFactory.newKey(memberId));
+        ArbitraryModAppSettings dbEntity = database.get(memberId);
 
         if (dbEntity == null) {
             // whoops, user doesn't exist yet.
@@ -109,10 +129,10 @@ public class GameBananaArbitraryModAppService extends HttpServlet {
             return;
         }
 
-        String name = dbEntity.getString("title");
-        String list = dbEntity.getString("modList");
+        String name = dbEntity.title;
+        List<String> list = dbEntity.modList;
 
-        List<ModInfo> modList = Arrays.stream(list.split(",")).parallel()
+        List<ModInfo> modList = list.stream().parallel()
                 // request all mods the user asked for.
                 .map(this::queryModById)
                 // take out the ones that errored or were withheld / trashed.
@@ -176,21 +196,23 @@ public class GameBananaArbitraryModAppService extends HttpServlet {
 
     private JSONObject queryModById(String modId) {
         try {
-            // try reading from the Cloud Storage cache, that is fed daily by the backend:
-            // see https://github.com/max4805/RandomBackendStuff/blob/main/src/main/java/com/max480/randomstuff/backend/celeste/crontabs/ArbitraryModAppCacher.java
-            BlobId blobId = BlobId.of("staging.max480-random-stuff.appspot.com", "arbitrary-mod-app-cache/" + modId + ".json");
-            return new JSONObject(new String(storage.readAllBytes(blobId), UTF_8));
-        } catch (Exception ex) {
-            // if this is not possible, read from GameBanana directly instead
-            logger.info("Could not retrieve mod by ID from cache, querying GameBanana directly: " + ex);
-            try (InputStream is = openStreamWithTimeout("https://gamebanana.com/apiv8/Mod/" + modId +
-                    "?_csvProperties=_sProfileUrl,_sName,_aPreviewMedia,_tsDateAdded,_tsDateUpdated,_aGame,_aRootCategory,_aSubmitter,_bIsWithheld,_bIsTrashed,_bIsPrivate,_nViewCount,_nLikeCount,_nPostCount")) {
-                return new JSONObject(IOUtils.toString(is, UTF_8));
-            } catch (IOException e) {
-                logger.severe("Could not retrieve mod by ID! " + e);
-                e.printStackTrace();
-                return null;
+            Path cache = Paths.get("/shared/temp/arbitrary-mod-app-cache/" + modId + ".json");
+            if (Files.exists(cache)) {
+                // try reading from the cache, that is fed daily by the backend:
+                // see https://github.com/max4805/RandomBackendStuff/blob/main/src/main/java/com/max480/randomstuff/backend/celeste/crontabs/ArbitraryModAppCacher.java
+                return new JSONObject(Files.readString(cache));
+            } else {
+                // if this is not possible, read from GameBanana directly instead
+                log.info("Could not retrieve mod by ID from cache, querying GameBanana directly");
+                try (InputStream is = openStreamWithTimeout("https://gamebanana.com/apiv8/Mod/" + modId +
+                        "?_csvProperties=_sProfileUrl,_sName,_aPreviewMedia,_tsDateAdded,_tsDateUpdated,_aGame,_aRootCategory,_aSubmitter,_bIsWithheld,_bIsTrashed,_bIsPrivate,_nViewCount,_nLikeCount,_nPostCount")) {
+                    return new JSONObject(IOUtils.toString(is, UTF_8));
+                }
             }
+        } catch (IOException e) {
+            log.error("Could not retrieve mod by ID! ", e);
+            e.printStackTrace();
+            return null;
         }
     }
 
@@ -198,7 +220,7 @@ public class GameBananaArbitraryModAppService extends HttpServlet {
         // check that the mandatory _idMember parameter is present, respond 400 Bad Request otherwise.
         String memberId = request.getParameter("_idMember");
         if (memberId == null) {
-            logger.warning("Bad Request");
+            log.warn("Bad Request");
             response.setStatus(400);
             return;
         }
@@ -211,15 +233,15 @@ public class GameBananaArbitraryModAppService extends HttpServlet {
         request.setAttribute("typedKey", "");
         request.setAttribute("initialKey", "");
 
-        Entity dbEntity = datastore.get(keyFactory.newKey(memberId));
+        ArbitraryModAppSettings dbEntity = database.get(memberId);
         if (dbEntity == null) {
             // whoops, user doesn't exist yet.
             request.setAttribute("title", "");
             request.setAttribute("modList", "");
             request.setAttribute("isInDatabase", false);
         } else {
-            request.setAttribute("title", dbEntity.getString("title"));
-            request.setAttribute("modList", dbEntity.getString("modList"));
+            request.setAttribute("title", dbEntity.title);
+            request.setAttribute("modList", String.join(",", dbEntity.modList));
             request.setAttribute("isInDatabase", true);
         }
 
@@ -270,7 +292,7 @@ public class GameBananaArbitraryModAppService extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         if (!request.getRequestURI().equals("/gamebanana/arbitrary-mod-app-settings")) {
             // Method Not Allowed: /gamebanana/arbitrary-mod-app only supports GET
-            logger.warning("Method Not Allowed");
+            log.warn("Method Not Allowed");
             response.setStatus(405);
             return;
         }
@@ -278,36 +300,38 @@ public class GameBananaArbitraryModAppService extends HttpServlet {
         // check that the mandatory _idMember parameter is present, respond 400 Bad Request otherwise.
         String memberId = request.getParameter("_idMember");
         if (memberId == null) {
-            logger.warning("Bad Request");
+            log.warn("Bad Request");
             response.setStatus(400);
             return;
         }
 
-        Entity.Builder dbEntityBuilder;
         String key;
 
-        Entity existingDbEntity = datastore.get(keyFactory.newKey(memberId));
-        if (existingDbEntity == null) {
+        ArbitraryModAppSettings dbEntity = database.get(memberId);
+        boolean entityIsInDatabase;
+
+        if (dbEntity == null) {
             // we must create the user with a random key.
             key = UUID.randomUUID().toString();
-            dbEntityBuilder = Entity.newBuilder(keyFactory.newKey(memberId))
-                    .set("key", key);
-            request.setAttribute("isInDatabase", false);
+            dbEntity = new ArbitraryModAppSettings();
+            dbEntity.key = key;
+            entityIsInDatabase = false;
         } else {
-            key = existingDbEntity.getString("key");
-            dbEntityBuilder = Entity.newBuilder(existingDbEntity);
+            key = dbEntity.key;
             request.setAttribute("initialKey", "");
-            request.setAttribute("isInDatabase", true);
+            entityIsInDatabase = true;
         }
+
+        request.setAttribute("isInDatabase", entityIsInDatabase);
 
         // never trust the frontend.
         if (StringUtils.isEmpty(request.getParameter("title")) ||
-                (existingDbEntity != null && StringUtils.isEmpty(request.getParameter("key"))) ||
+                (entityIsInDatabase && StringUtils.isEmpty(request.getParameter("key"))) ||
                 request.getParameter("modlist") == null ||
                 !request.getParameter("modlist").matches("([0-9]+,)*[0-9]+")) {
 
             // the user must have bypassed the HTML5 validations, so just send them an answer just like if they did a GET request.
-            logger.warning("POST was given up due to invalid parameters.");
+            log.warn("POST was given up due to invalid parameters.");
             getSettingsPage(request, response);
             return;
         }
@@ -321,37 +345,38 @@ public class GameBananaArbitraryModAppService extends HttpServlet {
         request.setAttribute("initialKey", "");
 
         // fill the form with the values previously typed in
-        request.setAttribute("typedKey", existingDbEntity != null ? request.getParameter("key") : "");
+        request.setAttribute("typedKey", entityIsInDatabase ? request.getParameter("key") : "");
         request.setAttribute("title", request.getParameter("title"));
         request.setAttribute("modList", request.getParameter("modlist"));
 
-        if (existingDbEntity != null && !request.getParameter("key").equals(key)) {
-            logger.warning("Invalid key");
+        if (entityIsInDatabase && !request.getParameter("key").equals(key)) {
+            log.warn("Invalid key");
             request.setAttribute("invalidKey", true);
         } else if (request.getParameter("modlist").split(",").length > 50) {
-            logger.warning("Too many mods");
+            log.warn("Too many mods");
             request.setAttribute("tooManyMods", true);
         } else if (!getAllUsers().contains(memberId)) {
-            logger.warning("App not installed");
+            log.warn("App not installed");
             request.setAttribute("appDisabled", true);
         } else if (Arrays.stream(request.getParameter("modlist").split(","))
                 .map(this::queryModById)
                 .anyMatch(o -> o == null || o.getBoolean("_bIsWithheld") || o.getBoolean("_bIsTrashed") || o.getBoolean("_bIsPrivate"))) {
 
-            logger.warning("Invalid mods");
+            log.warn("Invalid mods");
             request.setAttribute("invalidMods", true);
         } else {
             // finally save!
-            dbEntityBuilder
-                    .set("title", request.getParameter("title"))
-                    .set("modList", request.getParameter("modlist"));
-            datastore.put(dbEntityBuilder.build());
+            dbEntity.title = request.getParameter("title");
+            dbEntity.modList = Arrays.asList(request.getParameter("modlist").split(","));
+            database.put(memberId, dbEntity);
+            saveDatabase();
+
             request.setAttribute("saved", true);
             request.setAttribute("isInDatabase", true);
-            logger.info("Save successful");
+            log.info("Save successful");
 
-            if (existingDbEntity == null) {
-                logger.info("Key newly generated");
+            if (!entityIsInDatabase) {
+                log.info("Key newly generated");
                 request.setAttribute("initialKey", key);
             }
         }
@@ -375,7 +400,7 @@ public class GameBananaArbitraryModAppService extends HttpServlet {
 
             if (members.length() == 0) {
                 // we reached the end of the pages!
-                logger.info("User list: [" + String.join(", ", result) + "]");
+                log.info("User list: [" + String.join(", ", result) + "]");
 
                 if (!result.contains("1698143")) {
                     // failsafe: max480 should be in the list, otherwise this means the listing does not work
@@ -400,38 +425,34 @@ public class GameBananaArbitraryModAppService extends HttpServlet {
     private void housekeep() throws IOException {
         // delete all non-users from the database
         Set<String> users = getAllUsers();
-        final QueryResults<Key> query = datastore.run(Query.newKeyQueryBuilder()
-                .setKind("arbitraryModAppConfiguration")
-                .build());
 
-        List<Key> keysToDelete = new ArrayList<>();
-        while (query.hasNext()) {
-            Key key = query.next();
-            if (!users.contains(key.getName())) {
-                logger.info("Deleting key " + key + " from the database because they're not an app user.");
-                keysToDelete.add(key);
+        List<String> keysToDelete = new ArrayList<>();
+        for (String userId : database.keySet()) {
+            if (!users.contains(userId)) {
+                log.info("Deleting key {} from the database because they're not an app user.", userId);
+                keysToDelete.add(userId);
             }
         }
 
-        for (Key key : keysToDelete) {
-            datastore.delete(key);
+        for (String key : keysToDelete) {
+            database.remove(key);
         }
+        saveDatabase();
     }
 
     private Set<String> getModList() {
         Set<String> result = new HashSet<>();
 
-        final QueryResults<Entity> query = datastore.run(Query.newEntityQueryBuilder()
-                .setKind("arbitraryModAppConfiguration")
-                .build());
-
-        while (query.hasNext()) {
-            Entity entity = query.next();
-            String list = entity.getString("modList");
-            result.addAll(Arrays.asList(list.split(",")));
+        for (ArbitraryModAppSettings settings : database.values()) {
+            result.addAll(settings.modList);
         }
 
         return result;
     }
 
+    private void saveDatabase() throws IOException {
+        try (ObjectOutputStream os = new ObjectOutputStream(Files.newOutputStream(Paths.get("/shared/gamebanana/arbitrary-mod-app-settings.ser")))) {
+            os.writeObject(database);
+        }
+    }
 }

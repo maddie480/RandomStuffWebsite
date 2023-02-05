@@ -2,6 +2,8 @@ package com.max480.randomstuff.gae.discord.gamescommands.games;
 
 import com.max480.randomstuff.gae.discord.gamescommands.status.GameState;
 import com.max480.randomstuff.gae.discord.gamescommands.status.OnePlayerGameState;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -10,12 +12,11 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Minesweeper extends OnePlayerGameState {
-    private static final Logger logger = Logger.getLogger("Minesweeper");
+    private static final Logger log = LoggerFactory.getLogger(Minesweeper.class);
 
     private final int[][] map = new int[9][9]; // -1 = bomb, other = amount of bombs around
     private final int[][] reveal = new int[9][9]; // 0 = nothing, 1 = revealed, 2 = marked
@@ -25,7 +26,7 @@ public class Minesweeper extends OnePlayerGameState {
     public Minesweeper(int bombCount) {
         super();
 
-        logger.fine("Generating minesweeper grid with " + bombCount + " bombs");
+        log.debug("Generating minesweeper grid with " + bombCount + " bombs");
 
         for (int i = 0; i < bombCount; i++) {
             while (true) {
@@ -42,7 +43,7 @@ public class Minesweeper extends OnePlayerGameState {
         populateBombsAround();
         beginning = System.currentTimeMillis();
 
-        logger.fine("Grid generated!");
+        log.debug("Grid generated!");
     }
 
     @Override
@@ -135,47 +136,23 @@ public class Minesweeper extends OnePlayerGameState {
 
     private void appendDigitEmote(StringBuilder builder, int i) {
         switch (i) {
-            case -1:
-                builder.append(":x:");
-                break;
-            case 0:
-                builder.append(":white_large_square:");
-                break;
-            case 1:
-                builder.append(":one:");
-                break;
-            case 2:
-                builder.append(":two:");
-                break;
-            case 3:
-                builder.append(":three:");
-                break;
-            case 4:
-                builder.append(":four:");
-                break;
-            case 5:
-                builder.append(":five:");
-                break;
-            case 6:
-                builder.append(":six:");
-                break;
-            case 7:
-                builder.append(":seven:");
-                break;
-            case 8:
-                builder.append(":eight:");
-                break;
-            case 9:
-                builder.append(":nine:");
-                break;
-            default:
-                builder.append(":question:");
-                break;
+            case -1 -> builder.append(":x:");
+            case 0 -> builder.append(":white_large_square:");
+            case 1 -> builder.append(":one:");
+            case 2 -> builder.append(":two:");
+            case 3 -> builder.append(":three:");
+            case 4 -> builder.append(":four:");
+            case 5 -> builder.append(":five:");
+            case 6 -> builder.append(":six:");
+            case 7 -> builder.append(":seven:");
+            case 8 -> builder.append(":eight:");
+            case 9 -> builder.append(":nine:");
+            default -> builder.append(":question:");
         }
     }
 
     private void digAndExtend(int x, int y) {
-        logger.fine("Digging at " + x + ", " + y);
+        log.debug("Digging at " + x + ", " + y);
 
         reveal[x][y] = 1;
 
@@ -235,13 +212,13 @@ public class Minesweeper extends OnePlayerGameState {
             int y = Integer.parseInt(markRegex.group(2)) - 1;
 
             if (reveal[x][y] == 2) {
-                logger.fine("Command for removing a mark on " + x + ", " + y);
+                log.debug("Command for removing a mark on " + x + ", " + y);
                 reveal[x][y] = 0;
             } else if (reveal[x][y] == 0) {
-                logger.fine("Command for putting a mark on " + x + ", " + y);
+                log.debug("Command for putting a mark on " + x + ", " + y);
                 reveal[x][y] = 2;
             } else {
-                logger.warning("Command for putting a mark on " + x + ", " + y + " is invalid because we dug there!");
+                log.warn("Command for putting a mark on " + x + ", " + y + " is invalid because we dug there!");
             }
         }
 
@@ -250,9 +227,9 @@ public class Minesweeper extends OnePlayerGameState {
             int y = Integer.parseInt(digRegex.group(2)) - 1;
 
             if (reveal[x][y] == 1) {
-                logger.warning("Invalid command: we already dug on " + x + ", " + y);
+                log.warn("Invalid command: we already dug on " + x + ", " + y);
             } else if (map[x][y] == -1) {
-                logger.fine("Player fell on a bomb!");
+                log.debug("Player fell on a bomb!");
                 reveal[x][y] = 1;
             } else {
                 digAndExtend(x, y);

@@ -7,6 +7,10 @@ import com.max480.randomstuff.gae.discord.gamescommands.games.Minesweeper;
 import com.max480.randomstuff.gae.discord.gamescommands.games.Reversi;
 import com.max480.randomstuff.gae.discord.gamescommands.games.TicTacToe;
 import com.max480.randomstuff.gae.discord.gamescommands.status.GameState;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPatch;
 import org.apache.http.entity.ContentType;
@@ -15,16 +19,13 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
@@ -33,12 +34,14 @@ import java.util.stream.Collectors;
  */
 @WebServlet(name = "DiscordGamesInteractionManager", urlPatterns = {"/discord/games-bot"})
 public class InteractionManager extends HttpServlet {
-    private static final Logger logger = Logger.getLogger("InteractionManager");
+    private static final Logger log = LoggerFactory.getLogger(InteractionManager.class);
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         JSONObject data = DiscordProtocolHandler.validateRequest(req, resp, SecretConstants.GAMES_BOT_PUBLIC_KEY);
         if (data == null) return;
+
+        log.debug("Guild {} used the Games Bot!", data.getString("guild_id"));
 
         String locale = data.getString("locale");
 
@@ -144,16 +147,12 @@ public class InteractionManager extends HttpServlet {
      * Converts a user command name to a slash command name.
      */
     private String userCommandToSlashCommand(String name) {
-        switch (name) {
-            case "Play Connect 4":
-                return "connect4";
-            case "Play Reversi":
-                return "reversi";
-            case "Play Tic-Tac-Toe":
-                return "tictactoe";
-            default:
-                throw new RuntimeException("Unknown game in user command: " + name);
-        }
+        return switch (name) {
+            case "Play Connect 4" -> "connect4";
+            case "Play Reversi" -> "reversi";
+            case "Play Tic-Tac-Toe" -> "tictactoe";
+            default -> throw new RuntimeException("Unknown game in user command: " + name);
+        };
     }
 
     /**
@@ -253,7 +252,7 @@ public class InteractionManager extends HttpServlet {
         // then finally put the array in the request.
         responseData.put("components", actionRows);
 
-        logger.fine("Responding with: " + response.toString(2));
+        log.debug("Responding with: {}", response.toString(2));
         resp.getWriter().write(response.toString());
     }
 
@@ -298,20 +297,12 @@ public class InteractionManager extends HttpServlet {
      * @return The state of the game
      */
     private GameState startGameFromName(String game) {
-        GameState startedGame;
-        switch (game) {
-            case "tictactoe":
-                startedGame = new TicTacToe(Math.random() < 0.5, 3);
-                break;
-            case "connect4":
-                startedGame = new Connect4(Math.random() < 0.5);
-                break;
-            case "reversi":
-                startedGame = new Reversi(Math.random() < 0.5);
-                break;
-            default:
-                throw new RuntimeException("This is not a known game!");
-        }
+        GameState startedGame = switch (game) {
+            case "tictactoe" -> new TicTacToe(Math.random() < 0.5, 3);
+            case "connect4" -> new Connect4(Math.random() < 0.5);
+            case "reversi" -> new Reversi(Math.random() < 0.5);
+            default -> throw new RuntimeException("This is not a known game!");
+        };
         return startedGame;
     }
 
@@ -373,7 +364,7 @@ public class InteractionManager extends HttpServlet {
         responseData.put("flags", 1 << 6); // ephemeral
         response.put("data", responseData);
 
-        logger.fine("Responding with: " + response.toString(2));
+        log.debug("Responding with: {}", response.toString(2));
         responseStream.getWriter().write(response.toString());
     }
 
@@ -439,7 +430,7 @@ public class InteractionManager extends HttpServlet {
             // map those to buttons.
             List<JSONObject> buttons = new ArrayList<>();
             for (Map.Entry<String, List<String>> buttonData : groups.entrySet().stream()
-                    .sorted(Map.Entry.comparingByKey()).collect(Collectors.toList())) {
+                    .sorted(Map.Entry.comparingByKey()).toList()) {
 
                 boolean isMultiButton = buttonData.getValue().size() > 1; // whether this button hides multiple choices
 
@@ -487,13 +478,13 @@ public class InteractionManager extends HttpServlet {
         try {
             if (responseStream != null) {
                 // we should respond to Discord's request
-                logger.fine("Responding with: " + response.toString(2) + " to caller");
+                log.debug("Responding with: {} to caller", response.toString(2));
                 responseStream.getWriter().write(response.toString());
             } else {
                 // we should call Discord to edit the message, since we already responded.
                 String url = "https://discord.com/api/v10/webhooks/" + SecretConstants.GAMES_BOT_CLIENT_ID + "/" + interactionToken + "/messages/@original";
 
-                logger.fine("Responding with: " + responseData.toString(2) + " to " + url);
+                log.debug("Responding with: {} to {}", responseData.toString(2), url);
 
                 // Apache HttpClient because PATCH does not exist according to HttpURLConnection
                 try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
@@ -503,12 +494,12 @@ public class InteractionManager extends HttpServlet {
                     CloseableHttpResponse httpResponse = httpClient.execute(httpPatch);
 
                     if (httpResponse.getStatusLine().getStatusCode() != 200) {
-                        logger.severe("Discord responded with " + httpResponse.getStatusLine().getStatusCode() + " to our edit request!");
+                        log.error("Discord responded with {} to our edit request!", httpResponse.getStatusLine().getStatusCode());
                     }
                 }
             }
         } catch (IOException | URISyntaxException e) {
-            logger.severe("Error while communicating with Discord!");
+            log.error("Error while communicating with Discord!", e);
             throw new RuntimeException(e);
         }
     }

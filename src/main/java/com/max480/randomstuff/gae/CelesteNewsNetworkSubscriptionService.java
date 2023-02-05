@@ -1,23 +1,27 @@
 package com.max480.randomstuff.gae;
 
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import javax.servlet.ServletException;
-import javax.servlet.annotation.MultipartConfig;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -28,7 +32,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 @WebServlet(name = "CelesteNewsNetworkSubscriptionService", urlPatterns = {"/celeste/news-network-subscription"})
 @MultipartConfig
 public class CelesteNewsNetworkSubscriptionService extends HttpServlet {
-    private static final Logger logger = Logger.getLogger("CelesteNewsNetworkSubscriptionService");
+    private static final Logger log = LoggerFactory.getLogger(CelesteNewsNetworkSubscriptionService.class);
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
@@ -57,16 +61,18 @@ public class CelesteNewsNetworkSubscriptionService extends HttpServlet {
         String action = request.getParameter("action");
 
         if (webhook == null || action == null) {
-            logger.warning("Missing parameter!");
+            log.warn("Missing parameter!");
             request.setAttribute("bad_request", true);
 
         } else if (!webhook.matches("^https://discord\\.com/api/webhooks/[0-9]+/[A-Za-z0-9-_]+$")) {
-            logger.warning("Webhook does not follow regex: " + webhook);
+            log.warn("Webhook does not follow regex: " + webhook);
             request.setAttribute("bad_webhook", true);
 
         } else {
+            Path subscriberDatabase = Paths.get("/shared/celeste/celeste-news-network-subscribers.json");
+
             List<String> webhookUrls;
-            try (InputStream is = CloudStorageUtils.getCloudStorageInputStream("celeste_news_network_subscribers.json")) {
+            try (InputStream is = Files.newInputStream(subscriberDatabase)) {
                 webhookUrls = new JSONArray(IOUtils.toString(is, UTF_8)).toList()
                         .stream()
                         .map(Object::toString)
@@ -77,35 +83,34 @@ public class CelesteNewsNetworkSubscriptionService extends HttpServlet {
 
             if (action.equals("Subscribe")) {
                 if (webhookUrls.contains(webhook)) {
-                    logger.warning("Webhook already registered: " + webhook);
+                    log.warn("Webhook already registered: {}", webhook);
                     request.setAttribute("already_registered", true);
 
                 } else if (isWebhookWorking(webhook)) {
-                    logger.info("New webhook registered: " + webhook);
+                    log.info("New webhook registered: {}", webhook);
                     webhookUrls.add(webhook);
                     save = true;
                     request.setAttribute("subscribe_success", true);
 
                 } else {
-                    logger.warning("Webhook does not work: " + webhook);
+                    log.warn("Webhook does not work: {}", webhook);
                     request.setAttribute("bad_webhook", true);
                 }
             } else {
                 if (webhookUrls.contains(webhook)) {
-                    logger.info("Webhook unregistered: " + webhook);
+                    log.info("Webhook unregistered: {}", webhook);
                     webhookUrls.remove(webhook);
                     save = true;
                     request.setAttribute("unsubscribe_success", true);
 
                 } else {
-                    logger.warning("Webhook is not registered: " + webhook);
+                    log.warn("Webhook is not registered: {}", webhook);
                     request.setAttribute("not_registered", true);
                 }
             }
 
             if (save) {
-                CloudStorageUtils.sendBytesToCloudStorage("celeste_news_network_subscribers.json", "application/json",
-                        new JSONArray(webhookUrls).toString().getBytes(UTF_8));
+                Files.writeString(subscriberDatabase, new JSONArray(webhookUrls).toString());
             }
         }
 
@@ -142,13 +147,13 @@ public class CelesteNewsNetworkSubscriptionService extends HttpServlet {
             return connection.getResponseCode() == 204 || connection.getResponseCode() == 200;
         } catch (IOException e) {
             // well, the webhook is definitely not working. :p
-            logger.severe("I/O error while calling webhook: " + e);
+            log.error("I/O error while calling webhook", e);
             return false;
         }
     }
 
     private int countSubscribers() throws IOException {
-        try (InputStream is = CloudStorageUtils.getCloudStorageInputStream("celeste_news_network_subscribers.json")) {
+        try (InputStream is = Files.newInputStream(Paths.get("/shared/celeste/celeste-news-network-subscribers.json"))) {
             return new JSONArray(IOUtils.toString(is, UTF_8)).length();
         }
     }

@@ -4,6 +4,8 @@ import com.max480.randomstuff.gae.ConnectionUtils;
 import com.max480.randomstuff.gae.SecretConstants;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,14 +16,12 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Base64;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * This class handles the API calls to Discord that adds or removes the guild slash commands on their end.
  */
 public class CustomSlashCommandsManager {
-    private static final Logger logger = Logger.getLogger("CustomSlashCommandsManager");
+    private static final Logger log = LoggerFactory.getLogger(CustomSlashCommandsManager.class);
 
     private static final String USER_AGENT = "DiscordBot (https://max480-random-stuff.appspot.com, 1.0)";
 
@@ -107,7 +107,7 @@ public class CustomSlashCommandsManager {
         try {
             authenticate();
         } catch (IOException e) {
-            logger.log(Level.WARNING, "Discord authentication warmup failed! " + e);
+            log.warn("Discord authentication warmup failed!", e);
         }
     }
 
@@ -137,8 +137,8 @@ public class CustomSlashCommandsManager {
             accessToken = o.getString("access_token");
             tokenExpiresAt = System.currentTimeMillis() + (o.getInt("expires_in") * 1000L) - 5000;
 
-            logger.info("Got a new access token that expires at "
-                    + Instant.ofEpochMilli(tokenExpiresAt).atZone(ZoneId.of("UTC")).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME));
+            log.info("Got a new access token that expires at {}",
+                    Instant.ofEpochMilli(tokenExpiresAt).atZone(ZoneId.of("UTC")).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME));
 
             return accessToken;
         }

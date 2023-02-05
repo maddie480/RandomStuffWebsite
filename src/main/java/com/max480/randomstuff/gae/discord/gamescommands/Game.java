@@ -2,14 +2,15 @@ package com.max480.randomstuff.gae.discord.gamescommands;
 
 
 import com.max480.randomstuff.gae.discord.gamescommands.status.GameState;
+import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
@@ -20,7 +21,7 @@ public class Game {
         void accept(T t, U u, V v, W w);
     }
 
-    private final Logger logger = Logger.getLogger("Game");
+    private static final Logger log = LoggerFactory.getLogger(Game.class);
 
     private final boolean player1IsPC;
     private final boolean player2IsPC;
@@ -91,11 +92,11 @@ public class Game {
     }
 
     private void nextTurn() {
-        logger.fine("Next turn.");
+        log.debug("Next turn.");
 
         if (!Arrays.asList(Integer.MAX_VALUE, Integer.MIN_VALUE, null).contains(currentGameState.scoreSituation())) {
             if ((currentGameState.isPlayer1Turn() && player1IsPC) || (!currentGameState.isPlayer1Turn() && player2IsPC)) {
-                logger.fine("A CPU is playing.");
+                log.debug("A CPU is playing.");
 
                 // Update the message with "thinking..."
                 waitingInputFrom = 0L;
@@ -109,7 +110,7 @@ public class Game {
                     }
                 }.start();
             } else {
-                logger.fine("A player is playing.");
+                log.debug("A player is playing.");
                 playerTurn("");
             }
         } else if (currentGameState.scoreSituation() == null) {
@@ -127,7 +128,7 @@ public class Game {
      */
     protected void playerTurn(String partialCommand) {
         waitingInputFrom = (currentGameState.isPlayer1Turn() ? player1Id : player2Id);
-        logger.fine("We are now waiting for a command from " + waitingInputFrom);
+        log.debug("We are now waiting for a command from " + waitingInputFrom);
         refreshStatus(currentGameState.getInstructions() + "\n<@" + waitingInputFrom + ">, it's your turn!", partialCommand);
     }
 
@@ -192,7 +193,7 @@ public class Game {
             GameState bestStatus = null;
             int bestScore;
 
-            List<GameState> possibleStatuses = currentGameState.listPossibleCommands().stream().map(currentGameState::applyCommand).collect(Collectors.toList());
+            List<GameState> possibleStatuses = currentGameState.listPossibleCommands().stream().map(currentGameState::applyCommand).toList();
 
             if (currentGameState.isPlayer1Turn()) {
                 bestScore = Integer.MIN_VALUE;
@@ -200,12 +201,12 @@ public class Game {
                     GameState candidateStatus = minimax(leaf, cpuLevel - 1, Integer.MIN_VALUE, Integer.MAX_VALUE);
                     Integer candidateStatusScore = candidateStatus.scoreSituation();
                     if (candidateStatusScore == null) candidateStatusScore = 0;
-                    logger.fine("Command " + leaf.getLatestCommand() + " gives a score of " + candidateStatusScore + " with an immediate score of " + leaf.scoreSituation());
+                    log.debug("Command " + leaf.getLatestCommand() + " gives a score of " + candidateStatusScore + " with an immediate score of " + leaf.scoreSituation());
 
                     if (bestScore < candidateStatusScore ||
                             (bestScore == candidateStatusScore && (bestStatus == null || bestStatus.scoreSituationNonNullable() < leaf.scoreSituationNonNullable()))) {
 
-                        logger.fine("This is better");
+                        log.debug("This is better");
                         bestScore = candidateStatusScore;
                         bestStatus = leaf;
                     }
@@ -216,19 +217,19 @@ public class Game {
                     GameState candidateStatus = minimax(leaf, cpuLevel - 1, Integer.MIN_VALUE, Integer.MAX_VALUE);
                     Integer candidateStatusScore = candidateStatus.scoreSituation();
                     if (candidateStatusScore == null) candidateStatusScore = 0;
-                    logger.fine("Command " + leaf.getLatestCommand() + " gives a score of " + candidateStatusScore + " with an immediate score of " + leaf.scoreSituation());
+                    log.debug("Command " + leaf.getLatestCommand() + " gives a score of " + candidateStatusScore + " with an immediate score of " + leaf.scoreSituation());
 
                     if (bestScore > candidateStatusScore ||
                             (bestScore == candidateStatusScore && (bestStatus == null || bestStatus.scoreSituationNonNullable() > leaf.scoreSituationNonNullable()))) {
 
-                        logger.fine("This is better");
+                        log.debug("This is better");
                         bestScore = candidateStatusScore;
                         bestStatus = leaf;
                     }
                 }
             }
 
-            logger.fine("I'm picking " + bestStatus.getLatestCommand());
+            log.debug("I'm picking " + bestStatus.getLatestCommand());
             return bestStatus.getLatestCommand();
         }
     }
@@ -243,14 +244,6 @@ public class Game {
      * @return The best game state of this tree
      */
     private static GameState minimax(GameState node, int depth, int alpha, int beta) {
-        // this slows down minimax by quite a lot, but this prevents the entire resources of the website from going
-        // to that task, so that's a good thing!
-        try {
-            Thread.sleep(0, 10000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
         if (depth == 0) {
             // we shouldn't go deeper!
             return node;
@@ -261,7 +254,7 @@ public class Game {
             GameState bestStatus = null;
             int bestScore;
 
-            List<GameState> possibleStatuses = node.listPossibleCommands().stream().map(node::applyCommand).collect(Collectors.toList());
+            List<GameState> possibleStatuses = node.listPossibleCommands().stream().map(node::applyCommand).toList();
 
             if (node.isPlayer1Turn()) {
                 bestScore = Integer.MIN_VALUE;
@@ -361,7 +354,7 @@ public class Game {
      * @return The deserialized game
      */
     public static Game deserializeFromString(String s, HttpServletResponse httpResponse,
-                                                MultiConsumer<Game, String, List<String>, HttpServletResponse> actionCallback) {
+                                             MultiConsumer<Game, String, List<String>, HttpServletResponse> actionCallback) {
         byte[] serializedResult = Base64.getDecoder().decode(s);
         try (ByteArrayInputStream is = new ByteArrayInputStream(serializedResult);
              ObjectInputStream ois = new ObjectInputStream(is)) {

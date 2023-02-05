@@ -1,21 +1,22 @@
 package com.max480.randomstuff.gae;
 
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.logging.Logger;
 
 /**
  * Here are... APIs that somehow extend GameBanana's APIs.
@@ -23,7 +24,7 @@ import java.util.logging.Logger;
  */
 @WebServlet(name = "GameBananaAPIExtensions", urlPatterns = {"/gamebanana/rss-feed"})
 public class GameBananaAPIExtensions extends HttpServlet {
-    private static final Logger logger = Logger.getLogger("GameBananaAPIExtensions");
+    private static final Logger log = LoggerFactory.getLogger(GameBananaAPIExtensions.class);
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -41,14 +42,16 @@ public class GameBananaAPIExtensions extends HttpServlet {
             response.setStatus(connection.getResponseCode());
             response.setHeader("Content-Type", connection.getContentType());
             IOUtils.copy(connection.getErrorStream(), response.getOutputStream());
-            logger.warning("Non-200 status code returned!");
+            log.warn("Non-200 status code returned!");
             return;
         }
 
-        StringBuilder rss = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n" +
-                "<rss version=\"2.0\">\n" +
-                "\t<items>\n" +
-                "\t\t<title>GameBanana API RSS Feed</title>\n");
+        StringBuilder rss = new StringBuilder("""
+                <?xml version="1.0" encoding="UTF-8" ?>
+                <rss version="2.0">
+                \t<items>
+                \t\t<title>GameBanana API RSS Feed</title>
+                """);
 
         JSONArray modList = new JSONArray(IOUtils.toString(connection.getInputStream(), StandardCharsets.UTF_8));
 

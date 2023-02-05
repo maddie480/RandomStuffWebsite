@@ -25,6 +25,7 @@ hs_err_pid*
 .idea/
 dependency-reduced-pom.xml
 target/
+data/
 
 # More settings files
 .classpath

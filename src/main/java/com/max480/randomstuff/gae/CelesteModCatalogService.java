@@ -2,23 +2,26 @@ package com.max480.randomstuff.gae;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -28,14 +31,13 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  */
 @WebServlet(name = "CelesteModCatalogService", urlPatterns = {"/celeste/custom-entity-catalog", "/celeste/custom-entity-catalog.json"})
 public class CelesteModCatalogService extends HttpServlet {
-
-    private final Logger logger = Logger.getLogger("CelesteModCatalogService");
+    private static final Logger log = LoggerFactory.getLogger(CelesteModCatalogService.class);
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         if (request.getRequestURI().equals("/celeste/custom-entity-catalog.json")) {
             response.setHeader("Content-Type", "application/json");
-            try (InputStream is = CloudStorageUtils.getCloudStorageInputStream("custom_entity_catalog.json")) {
+            try (InputStream is = Files.newInputStream(Paths.get("/shared/celeste/custom-entity-catalog.json"))) {
                 IOUtils.copy(is, response.getOutputStream());
             }
         } else if (request.getRequestURI().equals("/celeste/custom-entity-catalog")) {
@@ -44,7 +46,7 @@ public class CelesteModCatalogService extends HttpServlet {
             try {
                 list = loadList();
             } catch (Exception e) {
-                logger.severe("Could not load mod catalog: " + e);
+                log.error("Could not load mod catalog!", e);
             }
 
 
@@ -74,7 +76,7 @@ public class CelesteModCatalogService extends HttpServlet {
             PageRenderer.render(request, response, "mod-catalog", "Celeste Custom Entity and Trigger List",
                     "A big list containing all custom entities and triggers from mods published on GameBanana.");
         } else {
-            logger.warning("Not found");
+            log.warn("Not found");
             response.setStatus(404);
             PageRenderer.render(request, response, "page-not-found", "Page Not Found",
                     "Oops, this link seems invalid. Please try again!");
@@ -94,13 +96,13 @@ public class CelesteModCatalogService extends HttpServlet {
                                     )
                             ))
             ), os);
-            return new String(os.toByteArray(), UTF_8);
+            return os.toString(UTF_8);
         }
     }
 
     private Pair<List<QueriedModInfo>, ZonedDateTime> loadList() throws IOException {
         // just load and parse the custom entity catalog JSON.
-        try (InputStream is = CloudStorageUtils.getCloudStorageInputStream("custom_entity_catalog.json")) {
+        try (InputStream is = Files.newInputStream(Paths.get("/shared/celeste/custom-entity-catalog.json"))) {
             JSONObject obj = new JSONObject(IOUtils.toString(is, UTF_8));
             ZonedDateTime lastUpdated = ZonedDateTime.parse(obj.getString("lastUpdated")).withZoneSameInstant(ZoneId.of("UTC"));
             List<QueriedModInfo> modInfo = obj.getJSONArray("modInfo").toList().stream()
@@ -108,7 +110,7 @@ public class CelesteModCatalogService extends HttpServlet {
                     .map(QueriedModInfo::new)
                     .collect(Collectors.toList());
 
-            logger.fine("Loaded " + modInfo.size() + " mods.");
+            log.debug("Loaded {} mods.", modInfo.size());
             return Pair.of(modInfo, lastUpdated);
         }
     }

@@ -3,26 +3,27 @@ package com.max480.randomstuff.gae.discord;
 import com.goterl.lazysodium.LazySodiumJava;
 import com.goterl.lazysodium.SodiumJava;
 import com.goterl.lazysodium.exceptions.SodiumException;
+import com.max480.randomstuff.gae.BinToJSONService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class DiscordProtocolHandler {
-    private static final Logger logger = Logger.getLogger("DiscordProtocolHandler");
+    private static final Logger log = LoggerFactory.getLogger(DiscordProtocolHandler.class);
 
     private static final LazySodiumJava sodium = new LazySodiumJava(new SodiumJava());
 
     public static void warmup() {
         try {
-            logger.info("Computing sha512 with sodium for warmup: " + DiscordProtocolHandler.sodium.cryptoHashSha512("warmup"));
+            log.info("Computed sha512 with sodium for warmup: {}", DiscordProtocolHandler.sodium.cryptoHashSha512("warmup"));
         } catch (SodiumException e) {
-            logger.log(Level.WARNING, "Sodium warmup failed! " + e);
+            log.warn("Sodium warmup failed!", e);
         }
     }
 
@@ -49,7 +50,7 @@ public class DiscordProtocolHandler {
                         hexStringToByteArray(publicKey))) {
 
             // signature bad!
-            logger.warning("Invalid or absent signature!");
+            log.warn("Invalid or absent signature!");
             resp.setStatus(401);
             return null;
         } else {
@@ -58,11 +59,11 @@ public class DiscordProtocolHandler {
             resp.setContentType("application/json");
 
             JSONObject data = new JSONObject(new String(body, StandardCharsets.UTF_8));
-            logger.fine("Message contents: " + data.toString(2));
+            log.debug("Message contents: {}", data.toString(2));
 
             if (data.getInt("type") == 1) {
                 // ping => pong
-                logger.fine("Ping => Pong");
+                log.debug("Ping => Pong");
                 resp.getWriter().write("{\"type\": 1}");
                 return null;
             } else {
