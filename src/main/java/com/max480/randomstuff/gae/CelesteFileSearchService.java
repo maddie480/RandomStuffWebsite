@@ -65,7 +65,7 @@ public class CelesteFileSearchService extends HttpServlet {
                 message.put("exact", "true".equals(exact));
 
                 try (Socket socket = new Socket()) {
-                    socket.connect(new InetSocketAddress("backend", 4480));
+                    socket.connect(new InetSocketAddress("127.0.1.1", 4480));
                     try (OutputStream os = socket.getOutputStream()) {
                         IOUtils.write(message.toString(), os, StandardCharsets.UTF_8);
                     }
