@@ -41,6 +41,8 @@ public class InteractionManager extends HttpServlet {
         JSONObject data = DiscordProtocolHandler.validateRequest(req, resp, SecretConstants.GAMES_BOT_PUBLIC_KEY);
         if (data == null) return;
 
+        log.debug("Guild {} used the Games Bot!", data.getString("guild_id"));
+
         String locale = data.getString("locale");
 
         if (data.getInt("type") == 2) {

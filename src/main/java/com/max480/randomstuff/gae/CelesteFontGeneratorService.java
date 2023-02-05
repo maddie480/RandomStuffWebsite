@@ -197,7 +197,7 @@ public class CelesteFontGeneratorService extends HttpServlet {
         JSONObject message = new JSONObject();
         message.put("taskType", "fontGenerate");
         message.put("language", language);
-        message.put("fileName", "font-generate-" + id + ".txt");
+        message.put("fileName", "font-generate/" + id + ".txt");
 
         // publish the message to the backend!
         try (Socket socket = new Socket()) {

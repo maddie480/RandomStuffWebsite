@@ -150,7 +150,7 @@ public class ModStructureVerifierService extends HttpServlet {
         // generate message payload
         JSONObject message = new JSONObject();
         message.put("taskType", "modStructureVerify");
-        message.put("fileName", "mod-structure-verify-" + id + ".zip");
+        message.put("fileName", "mod-structure-verify/" + id + ".zip");
 
         if (assetsFolderName == null || assetsFolderName.isEmpty()) {
             // no path was given
