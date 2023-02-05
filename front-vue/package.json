@@ -16,7 +16,7 @@
     "buffer": "^6.0.3",
     "core-js": "^3.27.2",
     "downloadjs": "^1.4.7",
-    "jimp": "^0.16.2",
+    "jimp": "^0.21.0",
     "js-yaml": "^4.1.0",
     "path-browserify": "^1.0.1",
     "simple-web-worker": "^1.2.0",
