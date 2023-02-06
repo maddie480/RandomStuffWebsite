@@ -99,7 +99,7 @@ public class ModStructureVerifierService extends HttpServlet {
                 response.setStatus(400);
             } else {
                 if (chunkIndex != null) {
-                    chunkId = handleChunkRequest("mod-structure-verify-" + id + ".zip", chunkIndex, chunkId);
+                    chunkId = handleChunkRequest(id + ".zip", chunkIndex, chunkId);
 
                     if (chunkId == null) {
                         // chunk request was invalid
@@ -208,7 +208,7 @@ public class ModStructureVerifierService extends HttpServlet {
 
         // rename the file so that it's clear that it is a chunk, not a zip.
         log.debug("Moving file to expected location...");
-        Files.move(Paths.get(tempFileName), Paths.get("/shared/temp/mod-structure-verify/upload-chunk-{}-{}.bin", chunkId, chunkIndex));
+        Files.move(Paths.get("/shared/temp/mod-structure-verify/" + tempFileName), Paths.get("/shared/temp/mod-structure-verify/upload-chunk-{}-{}.bin", chunkId, chunkIndex));
 
         return chunkId;
     }
