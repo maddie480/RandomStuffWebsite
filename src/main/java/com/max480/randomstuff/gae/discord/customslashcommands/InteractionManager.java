@@ -605,6 +605,7 @@ public class InteractionManager extends HttpServlet {
         if (info.embedColor != null) storedData.put("embedColor", info.embedColor);
         if (info.embedThumbnail != null) storedData.put("embedThumbnail", info.embedThumbnail);
 
+        Files.createDirectories(info.getStoragePath().getParent());
         Files.writeString(info.getStoragePath(), storedData.toString());
     }
 
