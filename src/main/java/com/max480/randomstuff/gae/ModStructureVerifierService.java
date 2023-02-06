@@ -208,7 +208,7 @@ public class ModStructureVerifierService extends HttpServlet {
 
         // rename the file so that it's clear that it is a chunk, not a zip.
         log.debug("Moving file to expected location...");
-        Files.move(Paths.get("/shared/temp/mod-structure-verify/" + tempFileName), Paths.get("/shared/temp/mod-structure-verify/upload-chunk-{}-{}.bin", chunkId, chunkIndex));
+        Files.move(Paths.get("/shared/temp/mod-structure-verify/" + tempFileName), Paths.get("/shared/temp/mod-structure-verify/upload-chunk-" + chunkId + "-" + chunkIndex + ".bin"));
 
         return chunkId;
     }
