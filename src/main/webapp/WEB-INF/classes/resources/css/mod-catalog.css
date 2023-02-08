@@ -33,3 +33,11 @@ pre {
         background-color: rgb(11, 81, 183) !important;
     }
 }
+.mlp:hover {
+  color: #fff;
+}
+
+.mlp {
+  text-decoration: none;
+  color: #fff;
+}

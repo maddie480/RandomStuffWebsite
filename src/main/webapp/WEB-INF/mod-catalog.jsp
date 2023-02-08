@@ -111,6 +111,13 @@
                         <% if (effect.getValue().contains("loenn")) { %>
                             <span class="badge bg-primary">L&#x00f6;nn</span>
                         <% } %>
+                        <% if (effect.getValue().contains("mlp")) { %>
+                            <span class="badge bg-success">
+                                <a href="https://gamebanana.com/tools/12000" target="_blank" class="mlp">
+                                    <abbr title="More L&#x00f6;nn Plugins (click to open GameBanana page)">MLP</abbr>
+                                </a>
+                            </span>
+                        <% } %>
                     </li>
                 <% } %>
             </ul>
@@ -126,6 +133,13 @@
                         <% if (entity.getValue().contains("loenn")) { %>
                             <span class="badge bg-primary">L&#x00f6;nn</span>
                         <% } %>
+                        <% if (entity.getValue().contains("mlp")) { %>
+                            <span class="badge bg-success">
+                                <a href="https://gamebanana.com/tools/12000" target="_blank" class="mlp">
+                                    <abbr title="More L&#x00f6;nn Plugins (click to open GameBanana page)">MLP</abbr>
+                                </a>
+                            </span>
+                        <% } %>
                     </li>
                 <% } %>
             </ul>
@@ -140,6 +154,13 @@
                         <% } %>
                         <% if (trigger.getValue().contains("loenn")) { %>
                             <span class="badge bg-primary">L&#x00f6;nn</span>
+                        <% } %>
+                        <% if (trigger.getValue().contains("mlp")) { %>
+                            <span class="badge bg-success">
+                                <a href="https://gamebanana.com/tools/12000" target="_blank" class="mlp">
+                                    <abbr title="More L&#x00f6;nn Plugins (click to open GameBanana page)">MLP</abbr>
+                                </a>
+                            </span>
                         <% } %>
                     </li>
                 <% } %>
