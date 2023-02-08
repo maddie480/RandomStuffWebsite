@@ -70,6 +70,8 @@ public class CelesteFileSearchService extends HttpServlet {
                         IOUtils.write(message.toString(), os, StandardCharsets.UTF_8);
                     }
                 }
+
+                pendingSearches.add(file.toString());
             }
 
             log.debug("{} is in progress", file);
