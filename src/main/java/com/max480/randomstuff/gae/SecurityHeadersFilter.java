@@ -43,7 +43,7 @@ public class SecurityHeadersFilter extends HttpFilter {
         } else if (req.getRequestURI().equals("/celeste/banana-mirror-browser")) {
             // allow getting the images from Banana Mirror.
             res.setHeader("Content-Security-Policy", "default-src 'self'; " +
-                    "img-src 'self' https://celestemodupdater.0x0a.de; " +
+                    "img-src 'self' https://celestemodupdater.0x0a.de https://celestemodupdater-storage.0x0a.de; " +
                     "frame-ancestors 'none'; " +
                     "object-src 'none';");
         } else if (Arrays.asList("/celeste/map-tree-viewer", "/celeste/file-searcher").contains(req.getRequestURI())) {
