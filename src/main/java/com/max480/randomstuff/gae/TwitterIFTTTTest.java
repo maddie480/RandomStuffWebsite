@@ -15,6 +15,8 @@ import java.nio.charset.StandardCharsets;
 
 /**
  * Just a simple test to see how IFTTT goes when it comes to reposting tweets to a webhook.
+ * Might or might not replace the backend's Twitter update checker when their API becomes paid, but this is currently
+ * leaning towards "might not" as IFTTT sent out an email saying it's most likely to break as well.
  */
 @WebServlet(name = "TwitterIFTTTTest", urlPatterns = {"/twitter-ifttt-test"})
 public class TwitterIFTTTTest extends HttpServlet {
