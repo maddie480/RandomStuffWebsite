@@ -29,9 +29,39 @@
 <p>
     This page allows you to register a Discord webhook in order to have a copy of the <code>#celeste_news_network</code> channel from
     the <a href="https://discord.gg/celeste" target="_blank">Mt. Celeste Climbing Association</a> on your server.
-    This webhook will receive all new tweets from <a href="https://twitter.com/celeste_game" target="_blank">@celeste_game</a>
-    and <a href="https://twitter.com/EverestAPI" target="_blank">@EverestAPI</a>.
 </p>
+
+<p class="last">
+    This webhook will receive messages from:
+</p>
+
+<ul>
+    <li><b><a href="https://twitter.com/celeste_game" target="_blank">@celeste_game</a></b> &#x2013; Official Celeste Twitter account</li>
+    <li>
+        <b><a href="https://twitter.com/EverestAPI" target="_blank">@EverestAPI</a></b> &#x2013; Twitter account for the
+        <a href="https://everestapi.github.io" target="_blank">Everest</a> mod loader
+    </li>
+    <li>
+        <b>Olympus News</b> &#x2013; Celeste modding news that appear in <a href="https://gamebanana.com/tools/6449" target="_blank">Olympus</a>,
+        a mod manager and installer for the <a href="https://everestapi.github.io" target="_blank">Everest</a> mod loader.
+        The news feed is managed by Nyan#0924, and published through
+        <a href="https://github.com/EverestAPI/EverestAPI.github.io/tree/main/olympusnews" target="_blank">the GitHub repository of the Everest website</a>.
+    </li>
+</ul>
+
+<div class="alert alert-warning">
+    <p>
+        The #celeste_news_network bot might lose access to Twitter in the near future.
+        Access to the Twitter API is planned to become paid (and <i>expensive</i>), but Twitter did not communicate many details about
+        the new API access tiers and the deployment schedule, and the change has already been postponed twice.
+        This was announced by the <a href="https://twitter.com/TwitterDev" target="_blank">@TwitterDev</a> account.
+    </p>
+
+    <p class="last">
+        As a result, if the bot breaks, it will start following <a href="https://mastodon.exok.com/@EXOK" target="_blank">@EXOK@mastodon.exok.com</a>,
+        instead, which is the official account of the Celeste developers on Mastodon. Olympus news will be unaffected.
+    </p>
+</div>
 
 <p>
     <b><%= request.getAttribute("sub_count") %> <%= ((int) request.getAttribute("sub_count")) == 1 ? "webhook" : "webhooks" %></b> are currently registered.

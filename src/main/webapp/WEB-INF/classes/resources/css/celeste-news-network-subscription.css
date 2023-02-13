@@ -7,3 +7,7 @@ input[type="submit"] {
         font-size: 1.8em;
     }
 }
+
+p.last {
+    margin-bottom: 0;
+}
