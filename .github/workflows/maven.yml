@@ -42,11 +42,14 @@ jobs:
     - name: Build with Maven
       run: mvn -B verify --file pom.xml
 
-    - name: Dependency Check on Extra
-      run: mvn -B dependency-check:check --file .github/extra/pom.xml
+    - name: Dependency Check on Extra 1
+      run: mvn -B dependency-check:check --file .github/extra-1/pom.xml
 
     - name: Dependency Check on Extra 2
-      run: mvn -B dependency-check:check --file .github/extra2/pom.xml
+      run: mvn -B dependency-check:check --file .github/extra-2/pom.xml
+
+    - name: Dependency Check on Extra 3
+      run: mvn -B dependency-check:check --file .github/extra-3/pom.xml
 
     - name: Set up QEMU
       if: github.ref == 'refs/heads/main'
