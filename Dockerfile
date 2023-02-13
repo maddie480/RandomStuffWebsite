@@ -15,6 +15,5 @@ RUN java -jar "$JETTY_HOME/start.jar" --add-to-startd=requestlog,console-capture
   && echo "jetty.requestlog.retainDays=30" >> /var/lib/jetty/start.d/requestlog.ini \
   && echo "jetty.requestlog.append=true" >> /var/lib/jetty/start.d/requestlog.ini
 
-VOLUME /tmp
 VOLUME /shared
 VOLUME /var/lib/jetty/logs
