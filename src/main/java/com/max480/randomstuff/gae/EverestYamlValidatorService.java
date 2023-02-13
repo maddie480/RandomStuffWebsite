@@ -202,12 +202,6 @@ public class EverestYamlValidatorService extends HttpServlet {
                         // skip! we don't want mods with an invalid Version in our database.
                     }
                 }
-                { // delete when SJ is out
-                    EverestModuleMetadata metadata = new EverestModuleMetadata();
-                    metadata.Name = "StrawberryJam2021";
-                    metadata.Version = "1.0.0";
-                    database.add(metadata);
-                }
 
                 List<String> problems = new ArrayList<>();
 
