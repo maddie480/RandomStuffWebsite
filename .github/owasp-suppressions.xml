@@ -14,46 +14,4 @@
         <packageUrl regex="true">^pkg:maven/com\.badlogicgames\.gdx/gdx\-jnigen\-loader@.*$</packageUrl>
         <cpe>cpe:/a:utils_project:utils</cpe>
     </suppress>
-    <suppress>
-        <notes><![CDATA[
-            google-http-client-protobuf misidentified as protobuf-java, which is actually in non-vulnerable version 3.21.10
-        ]]></notes>
-        <packageUrl regex="true">^pkg:maven/com\.google\.http\-client/google\-http\-client\-protobuf@.*$</packageUrl>
-        <cpe>cpe:/a:google:protobuf-java</cpe>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-            This CVE affects all versions of JSON-java up to and excluding 20220924... and the project depends on version 20220924
-        ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.json/json@.*$</packageUrl>
-        <cve>CVE-2022-45688</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-            GAX HTTP JSON misidentified as JSON-java
-        ]]></notes>
-        <packageUrl regex="true">^pkg:maven/com\.google\.api/gax\-httpjson@.*$</packageUrl>
-        <cpe>cpe:/a:json-java_project:json-java</cpe>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-            Google HTTP Client JSON misidentified as JSON-java
-        ]]></notes>
-        <packageUrl regex="true">^pkg:maven/com\.google\.http\-client/google\-http\-client\-gson@.*$</packageUrl>
-        <cpe>cpe:/a:json-java_project:json-java</cpe>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-            Google HTTP Client Jackson misidentified as JSON-java
-        ]]></notes>
-        <packageUrl regex="true">^pkg:maven/com\.google\.http\-client/google\-http\-client\-jackson2@.*$</packageUrl>
-        <cpe>cpe:/a:json-java_project:json-java</cpe>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-            Jackson misidentified as JSON-java
-        ]]></notes>
-        <packageUrl regex="true">^pkg:maven/com\.fasterxml\.jackson\.core/jackson\-core@.*$</packageUrl>
-        <cpe>cpe:/a:json-java_project:json-java</cpe>
-    </suppress>
 </suppressions>
