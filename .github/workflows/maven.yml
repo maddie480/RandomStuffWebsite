@@ -81,5 +81,6 @@ jobs:
         name: target
         path: |
           target
-          .github/extra/target
-          .github/extra2/target
+          .github/extra-1/target
+          .github/extra-2/target
+          .github/extra-3/target
