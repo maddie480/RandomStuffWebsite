@@ -55,6 +55,8 @@
                             href="/celeste/news-network-subscription">#celeste_news_network Subscription</a></li>
                         <li><a class="dropdown-item <%= "mod-catalog".equals(request.getAttribute("navId")) ? "active" : "" %>"
                             href="/celeste/custom-entity-catalog">Custom Entity Catalog</a></li>
+                        <li><a class="dropdown-item <%= "direct-url-service".equals(request.getAttribute("navId")) ? "active" : "" %>"
+                            href="/celeste/direct-link-service">Direct Link service</a></li>
                         <li><a class="dropdown-item <%= "everest-yaml-validator".equals(request.getAttribute("navId")) ? "active" : "" %>"
                             href="/celeste/everest-yaml-validator">everest.yaml validator</a></li>
                         <li><a class="dropdown-item" href="/celeste/file-searcher">File Searcher</a></li>

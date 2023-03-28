@@ -51,6 +51,11 @@
                 >
               </li>
               <li>
+                <a class="dropdown-item" href="/celeste/direct-link-service"
+                  >Direct Link service</a
+                >
+              </li>
+              <li>
                 <a class="dropdown-item" href="/celeste/everest-yaml-validator"
                   >everest.yaml validator</a
                 >

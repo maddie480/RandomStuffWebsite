@@ -33,6 +33,7 @@ public class CelesteModUpdateService extends HttpServlet {
             log.debug("Reading everest_update.yaml from storage");
             everestYaml = IOUtils.toByteArray(Files.newInputStream(Paths.get("/shared/celeste/updater/everest-update.yaml")));
             everestYamlEtag = "\"" + DigestUtils.sha512Hex(everestYaml) + "\"";
+            CelesteDirectURLService.updateUrls();
         } catch (Exception e) {
             log.warn("Warming up failed!", e);
         }
@@ -51,6 +52,7 @@ public class CelesteModUpdateService extends HttpServlet {
             // trigger a reload of everest_update.yaml
             everestYaml = IOUtils.toByteArray(Files.newInputStream(Paths.get("/shared/celeste/updater/everest-update.yaml")));
             everestYamlEtag = "\"" + DigestUtils.sha512Hex(everestYaml) + "\"";
+            CelesteDirectURLService.updateUrls();
         } else if (request.getRequestURI().equals("/celeste/everest_update.yaml")) {
             // send the everest_update.yaml we have in cache
             response.setHeader("ETag", everestYamlEtag);
