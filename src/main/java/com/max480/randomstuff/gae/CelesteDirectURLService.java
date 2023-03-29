@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @WebServlet(name = "CelesteDirectURLService", urlPatterns = {"/celeste/direct-link-service",
-        "/celeste/dl/*", "/celeste/mirrordl/*", "/pfpsource"})
+        "/celeste/dl/*", "/celeste/mirrordl/*", "/picrew"})
 public class CelesteDirectURLService extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(CelesteDirectURLService.class);
 
@@ -33,7 +33,7 @@ public class CelesteDirectURLService extends HttpServlet {
             request.setAttribute("typedId", "");
             PageRenderer.render(request, response, "direct-url-service", "Celeste Direct Link service",
                     "This page can give you direct download URLs to the latest version of a mod, based on the ID present in its everest.yaml file.");
-        } else if (request.getRequestURI().equals("/pfpsource")) {
+        } else if (request.getRequestURI().equals("/picrew")) {
             // Hard-coded DIY URL shortener to the rescue
             response.sendRedirect("https://picrew.me/share?cd=Eqzx6FYwjm");
         } else {
