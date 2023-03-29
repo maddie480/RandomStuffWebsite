@@ -188,14 +188,6 @@
                   >&#x1F4BB;&nbsp;&nbsp;GitHub &#x2013; Source Code</a
                 >
               </li>
-              <li>
-                <a
-                  class="dropdown-item"
-                  href="https://ko-fi.com/max480"
-                  target="_blank"
-                  >&#x2615;&#xFE0F;&nbsp;&nbsp;Ko-fi &#x2013; Donate</a
-                >
-              </li>
             </ul>
           </li>
         </ul>
