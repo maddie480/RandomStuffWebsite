@@ -1,5 +1,6 @@
 package com.max480.randomstuff.gae;
 
+import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,7 +28,8 @@ import static com.max480.randomstuff.backend.celeste.crontabs.UpdateCheckerTrack
  */
 @WebServlet(name = "CelesteModSearchService", loadOnStartup = 2, urlPatterns = {"/celeste/gamebanana-search",
         "/celeste/gamebanana-search-reload", "/celeste/gamebanana-list", "/celeste/gamebanana-categories", "/celeste/gamebanana-info",
-        "/celeste/random-map", "/celeste/gamebanana-featured", "/celeste/everest-versions", "/celeste/everest-versions-reload"})
+        "/celeste/random-map", "/celeste/gamebanana-featured", "/celeste/everest-versions", "/celeste/everest-versions-reload",
+        "/celeste/link-to"})
 public class CelesteModSearchService extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(BinToJSONService.class);
 
@@ -47,7 +49,7 @@ public class CelesteModSearchService extends HttpServlet {
     }
 
     @Override
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         if (request.getRequestURI().equals("/celeste/gamebanana-search-reload")) {
             if (("key=" + SecretConstants.RELOAD_SHARED_SECRET).equals(request.getQueryString())) {
                 refreshModDatabase();
@@ -92,6 +94,31 @@ public class CelesteModSearchService extends HttpServlet {
 
                 response.setHeader("Content-Type", "application/json");
                 response.getWriter().write(new JSONArray(responseBody).toString());
+            }
+        }
+
+        if (request.getRequestURI().equals("/celeste/link-to")) {
+            String queryParam = request.getParameter("q");
+
+            String target = null;
+
+            if (queryParam != null && !queryParam.trim().isEmpty()) {
+                final String[] tokenizedRequest = tokenize(queryParam);
+
+                target = modDatabaseForSorting.stream()
+                        .filter(mod -> scoreMod(tokenizedRequest, (String[]) mod.fullInfo.get("TokenizedName")) > 0.2f * tokenizedRequest.length)
+                        .sorted(Comparator.comparing(mod -> -scoreMod(tokenizedRequest, (String[]) mod.fullInfo.get("TokenizedName"))))
+                        .map(mod -> (String) mod.fullInfo.get("PageURL"))
+                        .findFirst().orElse(null);
+            }
+
+            if (target != null) {
+                response.sendRedirect(target);
+            } else {
+                response.setStatus(404);
+                PageRenderer.render(request, response, "page-not-found", "Mod Not Found",
+                        "Oops, this mod was not found. Please try again!");
+                log.warn("Mod not found: {}", queryParam);
             }
         }
 
