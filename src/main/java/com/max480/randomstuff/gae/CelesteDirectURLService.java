@@ -10,13 +10,14 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
-@WebServlet(name = "CelesteDirectURLService", urlPatterns = {"/celeste/direct-link-service",
-        "/celeste/dl/*", "/celeste/mirrordl/*", "/picrew"})
+@WebServlet(name = "CelesteDirectURLService", urlPatterns = {"/celeste/direct-link-service", "/celeste/dl", "/picrew"})
 public class CelesteDirectURLService extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(CelesteDirectURLService.class);
 
@@ -25,12 +26,28 @@ public class CelesteDirectURLService extends HttpServlet {
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        if (request.getRequestURI().startsWith("/celeste/dl/")) {
-            redirect(request, response, dlUrls, request.getRequestURI().substring(12));
-        } else if (request.getRequestURI().startsWith("/celeste/mirrordl/")) {
-            redirect(request, response, mirrorUrls, request.getRequestURI().substring(18));
+        if (request.getRequestURI().equals("/celeste/dl")) {
+            String modId = request.getParameter("id");
+            String twoclick = request.getParameter("twoclick");
+            String mirror = request.getParameter("mirror");
+
+            if (!dlUrls.containsKey(modId)) {
+                notFound(request, response);
+            } else {
+                String downloadLink = ("1".equals(mirror) ? mirrorUrls : dlUrls).get(modId);
+
+                if ("1".equals(twoclick)) {
+                    response.sendRedirect("https://0x0a.de/twoclick?" + downloadLink.substring(8));
+                } else {
+                    response.sendRedirect(downloadLink);
+                }
+            }
+
         } else if (request.getRequestURI().equals("/celeste/direct-link-service")) {
             request.setAttribute("typedId", "");
+            request.setAttribute("twoclick", false);
+            request.setAttribute("mirror", false);
+
             PageRenderer.render(request, response, "direct-url-service", "Celeste Direct Link service",
                     "This page can give you direct download URLs to the latest version of a mod, based on the ID present in its everest.yaml file.");
         } else if (request.getRequestURI().equals("/picrew")) {
@@ -46,16 +63,24 @@ public class CelesteDirectURLService extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         if (request.getRequestURI().equals("/celeste/direct-link-service")) {
             String modId = request.getParameter("modId");
+            String twoclick = request.getParameter("twoclick");
+            String mirror = request.getParameter("mirror");
+
             if (modId == null) {
                 // handle this like a GET
                 request.setAttribute("typedId", "");
+                request.setAttribute("twoclick", false);
+                request.setAttribute("mirror", false);
             } else {
                 request.setAttribute("typedId", modId);
+                request.setAttribute("twoclick", twoclick != null);
+                request.setAttribute("mirror", mirror != null);
 
                 // check if the link for this mod ID exists
-                String dasherized = CelesteModCatalogService.dasherize(modId);
-                if (dlUrls.containsKey(dasherized)) {
-                    request.setAttribute("link", dasherized);
+                if (dlUrls.containsKey(modId)) {
+                    request.setAttribute("link", "https://max480.ovh/celeste/dl?id=" + URLEncoder.encode(modId, StandardCharsets.UTF_8)
+                            + (twoclick != null ? "&twoclick=1" : "")
+                            + (mirror != null ? "&mirror=1" : ""));
                 } else {
                     request.setAttribute("notfound", true);
                 }
@@ -78,24 +103,14 @@ public class CelesteDirectURLService extends HttpServlet {
         }
 
         for (Map.Entry<String, Map<String, String>> element : everestUpdate.entrySet()) {
-            newDlUrls.put(CelesteModCatalogService.dasherize(element.getKey()), element.getValue().get("URL").substring(8));
-            newMirrorUrls.put(CelesteModCatalogService.dasherize(element.getKey()), element.getValue().get("MirrorURL").substring(8));
+            newDlUrls.put(element.getKey(), element.getValue().get("URL"));
+            newMirrorUrls.put(element.getKey(), element.getValue().get("MirrorURL"));
         }
 
         log.debug("There are now {} URLs and {} mirror URLs.", newDlUrls.size(), newMirrorUrls.size());
 
         dlUrls = newDlUrls;
         mirrorUrls = newMirrorUrls;
-    }
-
-    private void redirect(HttpServletRequest request, HttpServletResponse response, Map<String, String> links, String redirectTo)
-            throws IOException, ServletException {
-
-        if (links.containsKey(redirectTo)) {
-            response.sendRedirect("https://0x0a.de/twoclick?" + links.get(redirectTo));
-        } else {
-            notFound(request, response);
-        }
     }
 
     private static void notFound(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

@@ -6,16 +6,29 @@
     This page can give you direct download URLs to the latest version of a mod, based on the <code>Name</code> present in its <code>everest.yaml</code> file.
 </p>
 <p>
-    Links given here redirect to <a href="https://0x0a.de/twoclick" target="_blank">0x0ade's Everest 2-click installer</a>, allowing you to
-    install the mod directly with <a href="https://gamebanana.com/tools/6449" target="blank">Olympus</a>, or download the zip file directly,
-    from either <a href="https://gamebanana.com/games/6460" target="_blank">GameBanana</a>
+    Links given here can redirect either to the file download directly, or to
+    <a href="https://0x0a.de/twoclick" target="_blank">0x0ade's Everest 2-click installer</a>, that allows you to
+    install the mod directly with <a href="https://gamebanana.com/tools/6449" target="blank">Olympus</a>.
+</p>
+<p>
+    You can also pick whether to download the file from <a href="https://gamebanana.com/games/6460" target="_blank">GameBanana</a>
     or <a href="https://celestemodupdater.0x0a.de" target="_blank">0x0ade's mirror</a>.
 </p>
 
 <form method="POST">
     <div class="form-group">
-        <label for="modId">Type a mod's <code>everest.yaml</code> name here:</label>
+        <label for="modId">Type a mod's <code>everest.yaml</code> name here (<b>make sure that uppercase/lowercase letters are correct</b>):</label>
         <input type="text" class="form-control" id="modId" name="modId" required value="<%= escapeHtml4((String) request.getAttribute("typedId")) %>">
+    </div>
+
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" id="twoclick" name="twoclick" value="" <% if ((boolean) request.getAttribute("twoclick")) { %> checked <% } %>>
+        <label class="form-check-label" for="twoclick">Link to 0x0ade's 2-click installer</label>
+    </div>
+
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" id="mirror" name="mirror" value="" <% if ((boolean) request.getAttribute("mirror")) { %> checked <% } %>>
+        <label class="form-check-label" for="mirror">Download from 0x0ade's mirror instead of GameBanana</label>
     </div>
 
     <input type="submit" class="btn btn-primary" value="Generate URLs">
@@ -29,21 +42,10 @@
 
     <% if (request.getAttribute("link") != null) { %>
         <div class="alert alert-success">
-            <b>Here are your links:</b>
-            <ul>
-                <li>
-                    Download from GameBanana:
-                    <a href="/celeste/dl/<%= escapeHtml4((String) request.getAttribute("link")) %>" target="_blank">
-                        https://max480.ovh/celeste/dl/<%= escapeHtml4((String) request.getAttribute("link")) %>
-                    </a>
-                </li>
-                <li>
-                    Download from 0x0ade's mirror:
-                    <a href="/celeste/mirrordl/<%= escapeHtml4((String) request.getAttribute("link")) %>" target="_blank">
-                        https://max480.ovh/celeste/mirrordl/<%= escapeHtml4((String) request.getAttribute("link")) %>
-                    </a>
-                </li>
-            </ul>
+            <b>Here is your link:</b>
+            <a href="<%= escapeHtml4((String) request.getAttribute("link")) %>" target="_blank">
+                <%= escapeHtml4((String) request.getAttribute("link")) %>
+            </a>
         </div>
     <% } %>
 </form>

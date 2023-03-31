@@ -26,8 +26,8 @@ public class SecurityHeadersFilter extends HttpFilter {
                     "style-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; " +
                     "frame-ancestors https://gamebanana.com; " +
                     "object-src 'none';");
-        } else if (req.getRequestURI().equals("/celeste/font-generator")) {
-            // in addition, allow data URLs: Bootstrap dropdowns use inline SVG for their arrow pointing down.
+        } else if (Arrays.asList("/celeste/font-generator", "/celeste/direct-link-service").contains(req.getRequestURI())) {
+            // in addition, allow data URLs: Bootstrap dropdowns / checkboxes use inline SVG for their arrow pointing down.
             res.setHeader("Content-Security-Policy", "default-src 'self'; " +
                     "script-src 'self' https://cdn.jsdelivr.net; " +
                     "style-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; " +

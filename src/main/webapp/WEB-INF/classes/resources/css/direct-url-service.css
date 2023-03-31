@@ -3,13 +3,12 @@
     margin-bottom: 20px;
 }
 
-ul {
-    margin-bottom: 0;
-    list-style: disclosure-closed;
-}
-
 @media (prefers-color-scheme: dark) {
     code {
         color: #ff5c99;
     }
+}
+
+.btn {
+    margin-top: 20px;
 }
