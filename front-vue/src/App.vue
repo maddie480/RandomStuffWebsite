@@ -111,48 +111,6 @@
                   >Wipe Converter</a
                 >
               </li>
-              <li><hr class="dropdown-divider" /></li>
-              <li><h6 class="dropdown-header">External Tools</h6></li>
-              <li>
-                <a
-                  class="dropdown-item"
-                  href="https://berrycamp.github.io/"
-                  target="_blank"
-                  >Berry Camp &#x2013; Vanilla Room Browser</a
-                >
-              </li>
-              <li>
-                <a
-                  class="dropdown-item"
-                  href="https://lostinnowhere314.github.io/celeste-colorgrade-gen/"
-                  target="_blank"
-                  >Colorgrade Generator</a
-                >
-              </li>
-              <li>
-                <a
-                  class="dropdown-item"
-                  href="https://microlith57.github.io/celeste-loenn-migration-index/"
-                  target="_blank"
-                  >L&#x00f6;nn Migration Index</a
-                >
-              </li>
-              <li>
-                <a
-                  class="dropdown-item"
-                  href="https://valid-time.modded-celeste.com/"
-                  target="_blank"
-                  >Valid Frame Checker</a
-                >
-              </li>
-              <li>
-                <a
-                  class="dropdown-item"
-                  href="https://styleground-picker.modded-celeste.com/"
-                  target="_blank"
-                  >Vanilla Styleground Picker</a
-                >
-              </li>
             </ul>
           </li>
           <li class="nav-item">
