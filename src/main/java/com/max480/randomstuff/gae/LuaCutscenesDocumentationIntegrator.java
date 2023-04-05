@@ -24,7 +24,7 @@ public class LuaCutscenesDocumentationIntegrator {
 
     public static void main(String[] args) throws IOException {
         String luaCutscenesDownloadUrl;
-        try (InputStream is = ConnectionUtils.openStreamWithTimeout("https://max480.ovh/celeste/everest_update.yaml")) {
+        try (InputStream is = ConnectionUtils.openStreamWithTimeout("https://maddie480.ovh/celeste/everest_update.yaml")) {
             Map<String, Map<String, Object>> db = YamlUtil.load(is);
             luaCutscenesDownloadUrl = db.get("LuaCutscenes").get("URL").toString();
         }
@@ -32,7 +32,7 @@ public class LuaCutscenesDocumentationIntegrator {
         // download Lua Cutscenes and go through its files
         logger.info("Downloading Lua Cutscenes from " + luaCutscenesDownloadUrl + "...");
         HttpURLConnection connection = ConnectionUtils.openConnectionWithTimeout(luaCutscenesDownloadUrl);
-        connection.setRequestProperty("User-Agent", "max480-random-stuff/1.0.0"); // the mirror hates Java 8 for some reason.
+        connection.setRequestProperty("User-Agent", "maddie-random-stuff/1.0.0"); // the mirror hates Java 8 for some reason.
         try (ZipInputStream zip = new ZipInputStream(connection.getInputStream())) {
             ZipEntry entry;
             while ((entry = zip.getNextEntry()) != null) {

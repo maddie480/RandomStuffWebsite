@@ -10,9 +10,9 @@
     <title><%= escapeHtml4((String) request.getAttribute("pageTitle")) %></title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="author" content="max480">
+    <meta name="author" content="maddie480">
     <meta name="description" content="<%= escapeHtml4((String) request.getAttribute("pageDescription")) %>">
-    <meta property="og:site_name" content="max480's Random Stuff">
+    <meta property="og:site_name" content="Maddie's Random Stuff">
     <meta property="og:title" content="<%= escapeHtml4((String) request.getAttribute("pageTitle")) %>">
     <meta property="og:description" content="<%= escapeHtml4((String) request.getAttribute("pageDescription")) %>">
 
@@ -42,7 +42,7 @@
 <body>
     <nav class="navbar navbar-expand navbar-light bg-light border-bottom shadow-sm">
         <div class="container-fluid">
-            <h5 class="navbar-brand m-0">max480's Random Stuff</h5>
+            <h5 class="navbar-brand m-0">Maddie's Random Stuff</h5>
 
             <ul class="navbar-nav">
                 <li class="nav-item dropdown">
@@ -77,7 +77,7 @@
                     <a class="nav-link dropdown-toggle" href="#" id="linksDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Links</a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="linksDropdown">
                         <li><a class="dropdown-item" href="https://gamebanana.com/members/1698143" target="_blank">&#x1F34C;&nbsp;&nbsp;GameBanana &#x2013; Celeste Mods</a></li>
-                        <li><a class="dropdown-item" href="https://github.com/max4805" target="_blank">&#x1F4BB;&nbsp;&nbsp;GitHub &#x2013; Source Code</a></li>
+                        <li><a class="dropdown-item" href="https://github.com/maddie480" target="_blank">&#x1F4BB;&nbsp;&nbsp;GitHub &#x2013; Source Code</a></li>
                     </ul>
                 </li>
             </ul>

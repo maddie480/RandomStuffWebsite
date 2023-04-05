@@ -38,7 +38,7 @@ public class StaticAssetsAndRouteNotFoundServlet extends HttpServlet {
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         if (request.getRequestURI().equals("/")) {
-            PageRenderer.render(request, response, "home", "max480's Random Stuff",
+            PageRenderer.render(request, response, "home", "Maddie's Random Stuff",
                     "A website with a bunch of Celeste tools and Discord bots.");
         } else {
             String extension = request.getRequestURI().substring(request.getRequestURI().lastIndexOf(".") + 1);

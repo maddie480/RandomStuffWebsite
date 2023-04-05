@@ -78,7 +78,7 @@ public class CelesteDirectURLService extends HttpServlet {
 
                 // check if the link for this mod ID exists
                 if (dlUrls.containsKey(modId)) {
-                    request.setAttribute("link", "https://max480.ovh/celeste/dl?id=" + URLEncoder.encode(modId, StandardCharsets.UTF_8)
+                    request.setAttribute("link", "https://maddie480.ovh/celeste/dl?id=" + URLEncoder.encode(modId, StandardCharsets.UTF_8)
                             + (twoclick != null ? "&twoclick=1" : "")
                             + (mirror != null ? "&mirror=1" : ""));
                 } else {

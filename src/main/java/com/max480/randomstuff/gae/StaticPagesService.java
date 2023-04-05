@@ -29,7 +29,7 @@ public class StaticPagesService extends HttpServlet {
                             "Check this page if you need help with using Timezone Bot's /timezone-dropdown command.");
             case "/discord-bots/terms-and-privacy" ->
                     PageRenderer.render(request, response, "terms-and-privacy", "discord-bots", "Discord Bots – Terms and Privacy",
-                            "This page details the Terms of Service and Privacy Policy of max480's Discord bots, and gives details on which data is stored.");
+                            "This page details the Terms of Service and Privacy Policy of Maddie's Discord bots, and gives details on which data is stored.");
             default -> {
                 log.warn("Not found");
                 response.setStatus(404);

@@ -176,8 +176,8 @@
         appendTo: document.body
     });
 
-    <% if ((boolean) request.getAttribute("isMax480")) { %>
-        fetch('https://max480.ovh/celeste/update-checker-status?widget=true')
+    <% if ((boolean) request.getAttribute("isMaddie")) { %>
+        fetch('https://maddie480.ovh/celeste/update-checker-status?widget=true')
             .then(r => r.text())
             .then(r => {
                 $('#UpdateCheckerStatus').html(r);

@@ -5,7 +5,7 @@
       id="nav"
     >
       <div class="container-fluid">
-        <h5 class="navbar-brand m-0">max480's Random Stuff</h5>
+        <h5 class="navbar-brand m-0">Maddie's Random Stuff</h5>
 
         <ul class="navbar-nav">
           <li class="nav-item dropdown">
@@ -141,7 +141,7 @@
               <li>
                 <a
                   class="dropdown-item"
-                  href="https://github.com/max4805"
+                  href="https://github.com/maddie480"
                   target="_blank"
                   >&#x1F4BB;&nbsp;&nbsp;GitHub &#x2013; Source Code</a
                 >

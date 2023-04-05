@@ -35,7 +35,7 @@ public class VueServer extends HttpServlet {
                         .replace("${favicon}", StringEscapeUtils.escapeHtml4("/celeste/favicon.ico"))
                         .replace("${page_title}", StringEscapeUtils.escapeHtml4("Celeste Wipe Converter"))
                         .replace("${page_description}", StringEscapeUtils.escapeHtml4(
-                                "Upload the frames of a custom Celeste screen wipe here, and you will be able to use it in-game with the \"max480's Helping Hand\" mod."));
+                                "Upload the frames of a custom Celeste screen wipe here, and you will be able to use it in-game with the \"Maddie's Helping Hand\" mod."));
             } else if (request.getRequestURI().equals("/celeste/file-searcher")) {
                 contents = contents
                         .replace("${favicon}", StringEscapeUtils.escapeHtml4("/celeste/favicon.ico"))

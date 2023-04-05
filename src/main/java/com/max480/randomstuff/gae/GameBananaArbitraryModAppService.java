@@ -182,7 +182,7 @@ public class GameBananaArbitraryModAppService extends HttpServlet {
                 })
                 .collect(Collectors.toList());
 
-        request.setAttribute("isMax480", "1698143".equals(request.getParameter("_idProfile")));
+        request.setAttribute("isMaddie", "1698143".equals(request.getParameter("_idProfile")));
 
         response.setHeader("Content-Type", "application/json");
         request.setAttribute("title", name);
@@ -197,7 +197,7 @@ public class GameBananaArbitraryModAppService extends HttpServlet {
             Path cache = Paths.get("/shared/temp/arbitrary-mod-app-cache/" + modId + ".json");
             if (Files.exists(cache)) {
                 // try reading from the cache, that is fed daily by the backend:
-                // see https://github.com/max4805/RandomBackendStuff/blob/main/src/main/java/com/max480/randomstuff/backend/celeste/crontabs/ArbitraryModAppCacher.java
+                // see https://github.com/maddie480/RandomBackendStuff/blob/main/src/main/java/com/max480/randomstuff/backend/celeste/crontabs/ArbitraryModAppCacher.java
                 return new JSONObject(Files.readString(cache));
             } else {
                 // if this is not possible, read from GameBanana directly instead
@@ -401,8 +401,8 @@ public class GameBananaArbitraryModAppService extends HttpServlet {
                 log.info("User list: [" + String.join(", ", result) + "]");
 
                 if (!result.contains("1698143")) {
-                    // failsafe: max480 should be in the list, otherwise this means the listing does not work
-                    throw new RuntimeException("The user list does not have max480 in it!");
+                    // failsafe: Maddie should be in the list, otherwise this means the listing does not work
+                    throw new RuntimeException("The user list does not have Maddie in it!");
                 }
 
                 return result;

@@ -44,7 +44,7 @@
     </div>
 
     <div class="form-group" id="font-file-name-field">
-        <label for="fontFileName">Font file name (should be unique, for example: max480_extendedvariants_korean)</label>
+        <label for="fontFileName">Font file name (should be unique, for example: maddie480_extendedvariants_korean)</label>
         <input type="text" class="form-control" id="fontFileName" name="fontFileName" required pattern="[^/\\*?:&quot;<>|]+">
     </div>
 

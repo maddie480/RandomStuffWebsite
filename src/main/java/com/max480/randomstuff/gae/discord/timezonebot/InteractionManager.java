@@ -315,8 +315,8 @@ public class InteractionManager extends HttpServlet {
         getTimezoneFor(serverId, memberId);
 
         respondPrivately(event, localizeMessage(locale,
-                "To figure out your timezone, visit <https://max480.ovh/discord-bots/timezone-bot/detect-timezone>.",
-                "Pour déterminer ton fuseau horaire, consulte <https://max480.ovh/discord-bots/timezone-bot/detect-timezone>."));
+                "To figure out your timezone, visit <https://maddie480.ovh/discord-bots/timezone-bot/detect-timezone>.",
+                "Pour déterminer ton fuseau horaire, consulte <https://maddie480.ovh/discord-bots/timezone-bot/detect-timezone>."));
     }
 
     /**
@@ -362,9 +362,9 @@ public class InteractionManager extends HttpServlet {
             } else {
                 respondPrivately(event, localizeMessage(locale,
                         ":x: The given timezone was not recognized.\n" +
-                                "To figure out your timezone, visit <https://max480.ovh/discord-bots/timezone-bot/detect-timezone>.",
+                                "To figure out your timezone, visit <https://maddie480.ovh/discord-bots/timezone-bot/detect-timezone>.",
                         ":x: Le fuseau horaire que tu as donné n'a pas été reconnu.\n" +
-                                "Pour déterminer ton fuseau horaire, consulte <https://max480.ovh/discord-bots/timezone-bot/detect-timezone>."));
+                                "Pour déterminer ton fuseau horaire, consulte <https://maddie480.ovh/discord-bots/timezone-bot/detect-timezone>."));
             }
         }
     }
@@ -574,7 +574,7 @@ public class InteractionManager extends HttpServlet {
                     "q=" + URLEncoder.encode(place, StandardCharsets.UTF_8) +
                     "&accept-language=" + ("fr".equals(locale) ? "fr" : "en") +
                     "&limit=1&format=jsonv2");
-            osm.setRequestProperty("User-Agent", "TimezoneBot/1.0 (+https://max480.ovh/discord-bots#timezone-bot)");
+            osm.setRequestProperty("User-Agent", "TimezoneBot/1.0 (+https://maddie480.ovh/discord-bots#timezone-bot)");
 
             JSONArray osmResults;
             try (InputStream is = osm.getInputStream()) {
@@ -966,7 +966,7 @@ public class InteractionManager extends HttpServlet {
         // Apache HttpClient because PATCH does not exist according to HttpURLConnection
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
             HttpPatch httpPatch = new HttpPatch(new URI(url));
-            httpPatch.setHeader("User-Agent", "DiscordBot (https://max480.ovh/discord-bots/#timezone-bot, 1.0)");
+            httpPatch.setHeader("User-Agent", "DiscordBot (https://maddie480.ovh/discord-bots/#timezone-bot, 1.0)");
             httpPatch.setEntity(new StringEntity(message, ContentType.APPLICATION_JSON));
             CloseableHttpResponse httpResponse = httpClient.execute(httpPatch);
 

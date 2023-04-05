@@ -10,7 +10,7 @@
           href="https://gamebanana.com/mods/53687"
           rel="noopener"
           target="_blank"
-          >max480's Helping Hand</a
+          >Maddie's Helping Hand</a
         >, to use them in-game.
         <b>It is recommended to have 60 frames in total</b> (30 frames for the
         "fade in" animation, 30 for "fade out").
