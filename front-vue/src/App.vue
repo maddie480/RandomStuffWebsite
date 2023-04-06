@@ -153,10 +153,27 @@
     </nav>
 
     <div id="app" class="container">
+      <div class="alert alert-warning ovh-warning" v-if="isLegacyOvhWebsite">
+        <b>The max480.ovh domain will expire on January 31, 2024.</b>
+        Before then, update your bookmarks / links / scripts to point to
+        <a href="https://maddie480.ovh/">maddie480.ovh</a> instead! Thanks
+        &#x1F604;
+      </div>
       <router-view />
     </div>
   </div>
 </template>
+
+<script>
+const vue = {
+  name: "app",
+  computed: {
+    isLegacyOvhWebsite: () => document.location.host === "max480.ovh",
+  },
+};
+
+export default vue;
+</script>
 
 <style lang="scss">
 @import "../node_modules/bootstrap/scss/bootstrap.scss";
@@ -287,5 +304,22 @@
       color: #47a0ff;
     }
   }
+
+  // max480.ovh warning colors
+  .ovh-warning {
+    &.alert-warning {
+      color: #fff;
+      border-color: #b97b00;
+      background-color: #8e5f00;
+    }
+    a {
+      color: #ddd;
+      text-decoration: underline;
+    }
+  }
+}
+
+.ovh-warning {
+  text-align: left;
 }
 </style>

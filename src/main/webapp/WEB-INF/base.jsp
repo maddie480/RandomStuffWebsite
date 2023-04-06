@@ -85,6 +85,14 @@
     </nav>
 
     <div class="container">
+        <% if ((boolean) request.getAttribute("isLegacyOvhWebsite")) { %>
+            <div class="alert alert-warning">
+                <b>The max480.ovh domain will expire on January 31, 2024.</b>
+                Before then, update your bookmarks / links / scripts to point to <a href="https://maddie480.ovh/">maddie480.ovh</a> instead!
+                Thanks &#x1F604;
+            </div>
+        <% } %>
+
         <c:import url="/WEB-INF/${pageId}.jsp" />
     </div>
 </body>

@@ -42,6 +42,7 @@ public class PageRenderer {
         request.setAttribute("includeDownloadJS", includeDownloadJS);
         request.setAttribute("refreshAfter", refreshAfter);
         request.setAttribute("isCeleste", request.getRequestURI().startsWith("/celeste/"));
+        request.setAttribute("isLegacyOvhWebsite", "max480.ovh".equals(request.getHeader("Host")));
 
         request.getRequestDispatcher("/WEB-INF/base.jsp").forward(request, response);
     }
