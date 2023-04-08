@@ -1,5 +1,11 @@
-import jimp from "jimp/es";
 import SWorker from "simple-web-worker";
+import configure from "@jimp/custom";
+import types from "@jimp/types";
+
+const jimp = configure({
+  types: [types],
+  plugins: [],
+});
 
 /**
  * Converts a wipe image to an array of triangles
