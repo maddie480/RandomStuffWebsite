@@ -21,6 +21,8 @@ public class SecretConstants {
     public static String TIMEZONE_BOT_PUBLIC_KEY = "";
     public static String TIMEZONEDB_API_KEY = "";
 
+    public static String BANANABOT_PUBLIC_KEY = "";
+
     public static String RSS_AGGREGATOR_SECRET = "";
 
     static {
@@ -38,6 +40,8 @@ public class SecretConstants {
         TIMEZONE_BOT_CLIENT_ID = secrets.getString("TIMEZONE_BOT_CLIENT_ID");
         TIMEZONE_BOT_PUBLIC_KEY = secrets.getString("TIMEZONE_BOT_PUBLIC_KEY");
         TIMEZONEDB_API_KEY = secrets.getString("TIMEZONEDB_API_KEY");
+
+        BANANABOT_PUBLIC_KEY = secrets.getString("BANANABOT_PUBLIC_KEY");
 
         RELOAD_SHARED_SECRET = secrets.getString("RELOAD_SHARED_SECRET");
 

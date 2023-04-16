@@ -83,15 +83,7 @@ public class CelesteModSearchService extends HttpServlet {
                 response.setStatus(400);
                 response.getWriter().write("\"q\" query parameter expected");
             } else {
-                final String[] tokenizedRequest = tokenize(queryParam);
-
-                List<Map<String, Object>> responseBody = modDatabaseForSorting.stream()
-                        .filter(mod -> scoreMod(tokenizedRequest, (String[]) mod.fullInfo.get("TokenizedName")) > 0.2f * tokenizedRequest.length)
-                        .sorted(Comparator.comparing(mod -> -scoreMod(tokenizedRequest, (String[]) mod.fullInfo.get("TokenizedName"))))
-                        .map(mod -> mod.fullInfo)
-                        .limit(20)
-                        .collect(Collectors.toList());
-
+                List<Map<String, Object>> responseBody = searchModsByName(queryParam);
                 response.setHeader("Content-Type", "application/json");
                 response.getWriter().write(new JSONArray(responseBody).toString());
             }
@@ -100,26 +92,19 @@ public class CelesteModSearchService extends HttpServlet {
         if (request.getRequestURI().equals("/celeste/link-to")) {
             String queryParam = request.getParameter("q");
 
-            String target = null;
-
             if (queryParam != null && !queryParam.trim().isEmpty()) {
-                final String[] tokenizedRequest = tokenize(queryParam);
+                List<Map<String, Object>> searchResults = searchModsByName(queryParam);
 
-                target = modDatabaseForSorting.stream()
-                        .filter(mod -> scoreMod(tokenizedRequest, (String[]) mod.fullInfo.get("TokenizedName")) > 0.2f * tokenizedRequest.length)
-                        .sorted(Comparator.comparing(mod -> -scoreMod(tokenizedRequest, (String[]) mod.fullInfo.get("TokenizedName"))))
-                        .map(mod -> (String) mod.fullInfo.get("PageURL"))
-                        .findFirst().orElse(null);
+                if (!searchResults.isEmpty()) {
+                    response.sendRedirect((String) searchResults.get(0).get("PageURL"));
+                    return;
+                }
             }
 
-            if (target != null) {
-                response.sendRedirect(target);
-            } else {
-                response.setStatus(404);
-                PageRenderer.render(request, response, "page-not-found", "Mod Not Found",
-                        "Oops, this mod was not found. Please try again!");
-                log.warn("Mod not found: {}", queryParam);
-            }
+            response.setStatus(404);
+            PageRenderer.render(request, response, "page-not-found", "Mod Not Found",
+                    "Oops, this mod was not found. Please try again!");
+            log.warn("Mod not found: {}", queryParam);
         }
 
         if (request.getRequestURI().equals("/celeste/gamebanana-list")) {
@@ -319,6 +304,17 @@ public class CelesteModSearchService extends HttpServlet {
             response.setHeader("Content-Type", "application/json");
             IOUtils.write(everestVersions, response.getOutputStream());
         }
+    }
+
+    public static List<Map<String, Object>> searchModsByName(String queryParam) {
+        final String[] tokenizedRequest = tokenize(queryParam);
+
+        return modDatabaseForSorting.stream()
+                .filter(mod -> scoreMod(tokenizedRequest, (String[]) mod.fullInfo.get("TokenizedName")) > 0.2f * tokenizedRequest.length)
+                .sorted(Comparator.comparing(mod -> -scoreMod(tokenizedRequest, (String[]) mod.fullInfo.get("TokenizedName"))))
+                .map(mod -> mod.fullInfo)
+                .limit(20)
+                .collect(Collectors.toList());
     }
 
     private static String[] tokenize(String string) {
