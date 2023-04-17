@@ -90,4 +90,11 @@
     This information is deleted whenever the command is deleted, or within a day after removing the bot from the server.
 </p>
 
+<h2>BananaBot</h2>
+
+<p>
+    This bot <b>does not store anything</b> from Discord.
+    The data it collects from GameBanana is a mirror of public information available there: it is deleted whenever it disappears from GameBanana, or is made private.
+</p>
+
 <p class="space"></p>

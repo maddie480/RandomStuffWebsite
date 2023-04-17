@@ -13,7 +13,7 @@ h1.botname.margin {
     margin-right: 10px;
 }
 
-img {
+img, video {
     max-width: 100%;
     margin-top: -10px;
 }
@@ -88,12 +88,12 @@ img {
     margin-right: 12px;
 }
 
-.framed img {
+.framed img, .framed video {
     border: solid lightgray 2px;
 }
 
 @media(prefers-color-scheme: dark) {
-    .framed img {
+    .framed img, .framed video {
         border: solid #555 2px;
     }
 }

@@ -1,12 +1,13 @@
 <h1>Discord Bots</h1>
 
 <div>
-    I am currently hosting 4 publicly available Discord bots and applications:
+    I am currently hosting 5 publicly available Discord bots and applications:
     <ul>
         <li><a href="#timezone-bot">Timezone Bot</a></li>
         <li><a href="#mod-structure-verifier">Mod Structure Verifier</a></li>
         <li><a href="#games-bot">Games Bot</a></li>
         <li><a href="#custom-slash-commands">Custom Slash Commands</a></li>
+        <li><a href="#bananabot">BananaBot</a></li>
     </ul>
 </div>
 
@@ -412,5 +413,45 @@
 </div>
 
 <a class="btn btn-primary" href="https://discord.com/api/oauth2/authorize?client_id=992122149764608041&scope=applications.commands" target="_blank">Invite</a>
+
+<h1 class="botname margin" id="bananabot">
+    <img src="/img/bananabot-logo.png" class="botlogo extra-margin"> BananaBot
+
+    <span class="badge bg-secondary big-badge">
+        <%= request.getAttribute("bananaBotServerCount") %>
+        server<%= ((int) request.getAttribute("bananaBotServerCount")) == 1 ? "" : "s" %>
+    </span>
+</h1>
+
+<p class="small-badge">
+    <span class="badge bg-secondary">
+        <%= request.getAttribute("bananaBotServerCount") %>
+        server<%= ((int) request.getAttribute("bananaBotServerCount")) == 1 ? "" : "s" %>
+    </span>
+</p>
+
+<p>
+    An unofficial bot that allows you to search Celeste mods on GameBanana. The command is <code>/gamebanana-search [query]</code>.
+    The search results are private, and a button allows you to make it public once you found the mod you want to share.
+</p>
+
+<p>
+    Here is a video demo:
+</p>
+
+<p class="framed">
+    <span class="lighttheme">
+        <video controls preload="none" muted poster="/img/bananabot-poster-light.png">
+            <source src="vids/bananabot_demo_light.webm" type="video/webm">
+        </video>
+    </span>
+    <span class="darktheme">
+        <video controls preload="none" muted poster="/img/bananabot-poster-dark.png">
+            <source src="vids/bananabot_demo_dark.webm" type="video/webm">
+        </video>
+    </span>
+</p>
+
+<a class="btn btn-primary" href="https://discord.com/api/oauth2/authorize?client_id=1097127282872692789&scope=applications.commands" target="_blank">Invite</a>
 
 <p class="end"><i>Timezone Bot and Mod Structure Verifier logos by phant</i></p>

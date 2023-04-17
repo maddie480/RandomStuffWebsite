@@ -30,7 +30,8 @@ public class StaticAssetsAndRouteNotFoundServlet extends HttpServlet {
             "js", "application/javascript",
             "otf", "font/otf",
             "html", "text/html",
-            "svg", "image/svg+xml"
+            "svg", "image/svg+xml",
+            "webm", "video/webm"
     );
 
     private static final Logger log = LoggerFactory.getLogger(StaticAssetsAndRouteNotFoundServlet.class);
@@ -42,7 +43,7 @@ public class StaticAssetsAndRouteNotFoundServlet extends HttpServlet {
                     "A website with a bunch of Celeste tools and Discord bots.");
         } else {
             String extension = request.getRequestURI().substring(request.getRequestURI().lastIndexOf(".") + 1);
-            if (CONTENT_TYPES.containsKey(extension) && Stream.of("/celeste/", "/css/", "/fonts/", "/img/", "/js/", "/lua-cutscenes-documentation/")
+            if (CONTENT_TYPES.containsKey(extension) && Stream.of("/celeste/", "/css/", "/fonts/", "/img/", "/js/", "/vids/", "/lua-cutscenes-documentation/")
                     .anyMatch(request.getRequestURI()::startsWith)) {
 
                 try (InputStream is = StaticAssetsAndRouteNotFoundServlet.class.getClassLoader().getResourceAsStream("resources" + request.getRequestURI())) {

@@ -32,8 +32,9 @@ public class DiscordBotsService extends HttpServlet {
         request.setAttribute("modStructureVerifierServerCount", serverCounts.get("ModStructureVerifier"));
         request.setAttribute("gamesBotServerCount", serverCounts.get("GamesBot"));
         request.setAttribute("customSlashCommandsServerCount", serverCounts.get("CustomSlashCommands"));
+        request.setAttribute("bananaBotServerCount", serverCounts.get("BananaBot"));
 
         PageRenderer.render(request, response, "discord-bots", "Discord Bots",
-                "Read more about the Mod Structure Verifier, the Timezone Bot, the Games Bot and the Custom Slash Commands application here.");
+                "Read more about Maddie's various bots and applications for Discord here.");
     }
 }
