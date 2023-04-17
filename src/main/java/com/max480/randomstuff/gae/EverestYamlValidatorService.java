@@ -152,7 +152,7 @@ public class EverestYamlValidatorService extends HttpServlet {
             // try parsing given everest.yaml as YAML, and catch any exception that could happen.
             List<EverestModuleMetadata> metadatas = null;
             try (InputStream is = filePart.getInputStream()) {
-                List<Map<String, Object>> metadatasUnparsed = YamlUtil.load(is);
+                List<Map<String, Object>> metadatasUnparsed = YamlUtil.loadNoFloats(is);
 
                 if (metadatasUnparsed == null || metadatasUnparsed.isEmpty()) {
                     throw new Exception("The everest.yaml file is empty.");
