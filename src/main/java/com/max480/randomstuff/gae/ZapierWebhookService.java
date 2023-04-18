@@ -46,17 +46,16 @@ public class ZapierWebhookService extends HttpServlet {
                 oldTweets = new JSONArray(IOUtils.toString(is, StandardCharsets.UTF_8));
             }
 
-            // add the new one in front of the list
-            oldTweets.put(0, newTweet);
-
-            // trim the list to 100 elements
-            while (oldTweets.length() > 100) {
-                oldTweets.remove(100);
+            // add the new tweet at the start of the list
+            JSONArray newTweets = new JSONArray();
+            newTweets.put(0, newTweet);
+            for (int i = 0; i < oldTweets.length() && newTweets.length() < 100; i++) {
+                newTweets.put(i + 1, oldTweets.get(i));
             }
 
             // save!
             try (OutputStream os = Files.newOutputStream(Paths.get("/shared/celeste/celeste-game-twitter-raw.json"))) {
-                IOUtils.write(oldTweets.toString(), os, StandardCharsets.UTF_8);
+                IOUtils.write(newTweets.toString(), os, StandardCharsets.UTF_8);
             }
 
             response.setContentType("text/plain");
