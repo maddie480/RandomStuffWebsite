@@ -43,7 +43,7 @@ public class InteractionManager extends HttpServlet {
                     response.put("type", 4); // post a new message
 
                     JSONObject responseData = new JSONObject();
-                    responseData.put("content", linkToPost);
+                    responseData.put("content", linkToPost + "\n(shared by <@" + data.getJSONObject("member").getJSONObject("user").getString("id") + ">)");
                     responseData.put("allowed_mentions", new JSONObject("{\"parse\": []}"));
                     response.put("data", responseData);
                 } else {
@@ -110,7 +110,7 @@ public class InteractionManager extends HttpServlet {
         rowComponents.put(selectMenu);
 
         selectMenu.put("type", 3);
-        selectMenu.put("custom_id", "discord-timestamp");
+        selectMenu.put("custom_id", "search-results");
 
         JSONArray options = new JSONArray();
         selectMenu.put("options", options);
