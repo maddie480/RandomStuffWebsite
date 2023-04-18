@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +20,7 @@ import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
 
 /**
  * A small webhook that is called by Zapier with new tweets from celeste_game as a payload.
@@ -39,6 +41,10 @@ public class ZapierWebhookService extends HttpServlet {
             try (Reader r = request.getReader()) {
                 newTweet = new JSONObject(IOUtils.toString(r));
             }
+
+            log.info("Received tweet from Zapier:\n{}", newTweet.toString(2));
+            unstringifyArrays(newTweet);
+            log.info("Unstringified tweet from Zapier:\n{}", newTweet.toString(2));
 
             // read the old tweets from disk
             JSONArray oldTweets;
@@ -64,6 +70,24 @@ public class ZapierWebhookService extends HttpServlet {
             // invalid secret
             log.warn("Invalid key");
             response.setStatus(403);
+        }
+    }
+
+    private static void unstringifyArrays(JSONObject source) {
+        for (String key : source.keySet()) {
+            Object item = source.get(key);
+            if (item instanceof JSONObject) {
+                unstringifyArrays((JSONObject) item);
+            } else if (item instanceof String && Arrays.asList("urls", "hashtags", "media", "user_mentions", "symbols", "withheld_in_countries", "display_text_range").contains(key)) {
+                // this is a JSON array in disguise
+                String array = ((String) item).replace("'", "\"");
+                try {
+                    JSONArray converted = new JSONArray(array);
+                    source.put(key, converted);
+                } catch (JSONException e) {
+                    log.warn("Could not destringify array {}", item, e);
+                }
+            }
         }
     }
 }
