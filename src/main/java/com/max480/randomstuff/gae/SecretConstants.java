@@ -24,6 +24,7 @@ public class SecretConstants {
     public static String BANANABOT_PUBLIC_KEY = "";
 
     public static String RSS_AGGREGATOR_SECRET = "";
+    public static String ZAPIER_WEBHOOK_SECRET = "";
 
     static {
         // The SECRET_CONSTANTS environment variable has all secrets, in JSON format.
@@ -48,5 +49,6 @@ public class SecretConstants {
         SRC_MOD_LIST_KEY = secrets.getString("SRC_MOD_LIST_KEY");
 
         RSS_AGGREGATOR_SECRET = secrets.getString("RSS_AGGREGATOR_SECRET");
+        ZAPIER_WEBHOOK_SECRET = secrets.getString("ZAPIER_WEBHOOK_SECRET");
     }
 }
