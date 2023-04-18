@@ -1,18 +1,24 @@
 package com.max480.randomstuff.gae.discord.bananabot;
 
 import com.max480.randomstuff.gae.CelesteModSearchService;
+import com.max480.randomstuff.gae.ConnectionUtils;
 import com.max480.randomstuff.gae.SecretConstants;
 import com.max480.randomstuff.gae.discord.DiscordProtocolHandler;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
@@ -35,29 +41,52 @@ public class InteractionManager extends HttpServlet {
         try {
             if (data.getInt("type") == 3) {
                 JSONObject response = new JSONObject();
+                response.put("type", 7); // edit the original response
+
+                JSONObject responseData = new JSONObject();
 
                 if (data.getJSONObject("data").getInt("component_type") == 2) {
                     // used a button
+                    responseData.put("content", localizeMessage(locale, "Your link was published!", "Ton lien a été publié !"));
+                    responseData.put("components", new JSONArray());
+
                     String linkToPost = data.getJSONObject("message").getString("content");
+                    JSONObject followupMessageData = new JSONObject();
+                    followupMessageData.put("content", linkToPost + "\n(shared by <@" + data.getJSONObject("member").getJSONObject("user").getString("id") + ">)");
+                    followupMessageData.put("allowed_mentions", new JSONObject("{\"parse\": []}"));
 
-                    response.put("type", 4); // post a new message
+                    new Thread(() -> {
+                        try {
+                            Thread.sleep(1000);
 
-                    JSONObject responseData = new JSONObject();
-                    responseData.put("content", linkToPost + "\n(shared by <@" + data.getJSONObject("member").getJSONObject("user").getString("id") + ">)");
-                    responseData.put("allowed_mentions", new JSONObject("{\"parse\": []}"));
-                    response.put("data", responseData);
+                            String webhookUrl = "https://discord.com/api/v10/webhooks/" + data.getString("application_id") + "/" + data.getString("token");
+                            log.debug("Sending followup message request to {}: {}", webhookUrl, followupMessageData.toString(2));
+
+                            HttpURLConnection connection = ConnectionUtils.openConnectionWithTimeout(webhookUrl);
+                            connection.setRequestProperty("Content-Type", "application/json");
+                            connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:62.0) Gecko/20100101 Firefox/62.0");
+                            connection.setRequestMethod("POST");
+                            connection.setDoOutput(true);
+                            try (OutputStream os = connection.getOutputStream()) {
+                                IOUtils.write(followupMessageData.toString(), os, StandardCharsets.UTF_8);
+                            }
+                            try (InputStream is = connection.getInputStream()) {
+                                JSONObject discordResponse = new JSONObject(IOUtils.toString(is, StandardCharsets.UTF_8));
+                                log.debug("Got response: {}", discordResponse.toString(2));
+                            }
+                        } catch (IOException | InterruptedException e) {
+                            log.error("An unexpected error occurred while sending followup message!", e);
+                        }
+                    }).start();
                 } else {
                     // used a combo box
                     String pickedMod = data.getJSONObject("data").getJSONArray("values").getString(0);
-
-                    response.put("type", 7); // edit the original response
-
-                    JSONObject responseData = new JSONObject();
                     responseData.put("content", pickedMod);
-                    responseData.put("allowed_mentions", new JSONObject("{\"parse\": []}"));
                     responseData.put("flags", 1 << 6); // ephemeral
-                    response.put("data", responseData);
                 }
+
+                responseData.put("allowed_mentions", new JSONObject("{\"parse\": []}"));
+                response.put("data", responseData);
 
                 log.debug("Responding with: " + response.toString(2));
                 resp.getWriter().write(response.toString());
