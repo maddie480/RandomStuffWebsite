@@ -79,11 +79,26 @@ Want to know if your everest.yaml is valid? Send it here, and this service will 
             </button>
         <% } %>
     <% } else { %>
-        <div class="alert alert-success">
-            If you have difficulties writing your everest.yaml, the
-            <a href="https://gamebanana.com/tools/6908" target="_blank" rel="noopener">Dependency Generator</a>
-            will be able to generate it for you.
-        </div>
+        <% if (request.getAttribute("sampleYaml") != null) { %>
+            <div class="alert alert-success">
+                <b>Need help getting started?</b> Here is a sample everest.yaml that only has Everest as a dependency, you can open it with any text editor:
+
+                <button id="download-sample-yaml" class="btn btn-outline-dark">
+                    &#x1F4E5; Download sample everest.yaml
+                </button>
+
+                Replace <code>YourModName</code> with your mod's name (do not use characters forbidden in Windows file names),
+                and add your dependencies, making sure the <code>Name</code>s and <code>Version</code>s are all lined up vertically.
+                The L&#x00f6;nn map editor can also add missing dependencies to your mod for you, in the Map > Dependencies menu.
+            </div>
+
+            <script nonce="<%= request.getAttribute("nonce") %>">
+                document.getElementById("download-sample-yaml").addEventListener("click", function() {
+                    const yamlContents = "<%= escapeEcmaScript((String) request.getAttribute("sampleYaml")) %>";
+                    download(yamlContents, "everest.yaml", "text/yaml");
+                });
+            </script>
+        <% } %>
 
         <div class="alert alert-info">
             <b>This page only validates the everest.yaml files you place at the root of your mod.</b>

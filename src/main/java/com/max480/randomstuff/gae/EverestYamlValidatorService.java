@@ -120,8 +120,27 @@ public class EverestYamlValidatorService extends HttpServlet {
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        // generate a sample everest.yaml that depends on latest Everest stable
+        try (InputStream is = Files.newInputStream(Paths.get("/shared/celeste/latest-everest-versions.json"));
+             ByteArrayOutputStream os = new ByteArrayOutputStream()) {
+
+            YamlUtil.dump(Collections.singletonList(ImmutableMap.of(
+                    "Name", "YourModName",
+                    "Version", "1.0.0",
+                    "Dependencies", Collections.singletonList(ImmutableMap.of(
+                            "Name", "Everest",
+                            "Version", "1." + new JSONObject(IOUtils.toString(is, UTF_8)).getInt("stable") + ".0"
+                    ))
+            )), os);
+
+            request.setAttribute("sampleYaml", os.toString(UTF_8));
+        }
+
+        // we need a nonce for downloading the sample YAML through JS
+        addNonce(request, response);
+
         PageRenderer.render(request, response, "everest-yaml-validator", "everest.yaml validator",
-                "Check if your everest.yaml is valid by sending it on this page.");
+                "Check if your everest.yaml is valid by sending it on this page.", true);
     }
 
     @Override
@@ -345,17 +364,7 @@ public class EverestYamlValidatorService extends HttpServlet {
 
                         if ("html".equals(outputFormat)) {
                             // in order to allow the inline script without ruining the CSP, we need to generate a nonce.
-                            byte[] nonceBytes = new byte[128];
-                            random.nextBytes(nonceBytes);
-                            String nonce = Base64.getEncoder().encodeToString(nonceBytes);
-                            request.setAttribute("nonce", nonce);
-
-                            // then adjust the CSP to allow both accessing download.js and running the inline script powering the download button.
-                            response.setHeader("Content-Security-Policy", "default-src 'self'; " +
-                                    "script-src 'self' 'nonce-" + nonce + "' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; " +
-                                    "style-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; " +
-                                    "frame-ancestors 'none'; " +
-                                    "object-src 'none';");
+                            addNonce(request, response);
                         }
                     }
                 }
@@ -374,6 +383,20 @@ public class EverestYamlValidatorService extends HttpServlet {
 
         PageRenderer.render(request, response, "everest-yaml-validator", "everest.yaml validator",
                 "Check if your everest.yaml is valid by sending it on this page.", request.getAttribute("latestVersionsYaml") != null);
+    }
+
+    private void addNonce(HttpServletRequest request, HttpServletResponse response) {
+        byte[] nonceBytes = new byte[128];
+        random.nextBytes(nonceBytes);
+        String nonce = Base64.getEncoder().encodeToString(nonceBytes);
+        request.setAttribute("nonce", nonce);
+
+        // then adjust the CSP to allow both accessing download.js and running the inline script powering the download button.
+        response.setHeader("Content-Security-Policy", "default-src 'self'; " +
+                "script-src 'self' 'nonce-" + nonce + "' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; " +
+                "style-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; " +
+                "frame-ancestors 'none'; " +
+                "object-src 'none';");
     }
 
     /**

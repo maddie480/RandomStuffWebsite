@@ -34,3 +34,14 @@ ul {
         color: #000;
     }
 }
+
+#download-sample-yaml {
+    display: block;
+    margin: 10px 0;
+}
+
+@media(prefers-color-scheme: dark) {
+    .alert-success code {
+        color: #ddd;
+    }
+}
