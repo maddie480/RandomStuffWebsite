@@ -28,8 +28,7 @@ import static com.max480.randomstuff.backend.celeste.crontabs.UpdateCheckerTrack
  */
 @WebServlet(name = "CelesteModSearchService", loadOnStartup = 2, urlPatterns = {"/celeste/gamebanana-search",
         "/celeste/gamebanana-search-reload", "/celeste/gamebanana-list", "/celeste/gamebanana-categories", "/celeste/gamebanana-info",
-        "/celeste/random-map", "/celeste/gamebanana-featured", "/celeste/everest-versions", "/celeste/everest-versions-reload",
-        "/celeste/link-to"})
+        "/celeste/random-map", "/celeste/gamebanana-featured", "/celeste/everest-versions", "/celeste/everest-versions-reload"})
 public class CelesteModSearchService extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(BinToJSONService.class);
 
@@ -87,24 +86,6 @@ public class CelesteModSearchService extends HttpServlet {
                 response.setHeader("Content-Type", "application/json");
                 response.getWriter().write(new JSONArray(responseBody).toString());
             }
-        }
-
-        if (request.getRequestURI().equals("/celeste/link-to")) {
-            String queryParam = request.getParameter("q");
-
-            if (queryParam != null && !queryParam.trim().isEmpty()) {
-                List<Map<String, Object>> searchResults = searchModsByName(queryParam);
-
-                if (!searchResults.isEmpty()) {
-                    response.sendRedirect((String) searchResults.get(0).get("PageURL"));
-                    return;
-                }
-            }
-
-            response.setStatus(404);
-            PageRenderer.render(request, response, "page-not-found", "Mod Not Found",
-                    "Oops, this mod was not found. Please try again!");
-            log.warn("Mod not found: {}", queryParam);
         }
 
         if (request.getRequestURI().equals("/celeste/gamebanana-list")) {

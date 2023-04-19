@@ -16,6 +16,7 @@ The `src` folder contains the source for everything provided by the Java servlet
 - [the Discord Custom Slash Commands app](https://maddie480.ovh/discord-bots#custom-slash-commands)
 - [the Discord Timezone Bot](https://maddie480.ovh/discord-bots#timzeone-bot) - this repository only includes the "without timezone roles" variant; the one with timezone roles needs a bot user to work, and as such is [part of the backend](https://github.com/maddie480/RandomBackendStuff/tree/main/src/main/java/com/max480/randomstuff/backend/discord/timezonebot)
 - Some [GameBanana](https://gamebanana.com)-related APIs extending the official API, described below
+- [the BananaBot app for Discord](https://maddie480.ovh/discord-bots#bananabot) - allows searching for Celeste mods on GameBanana, using the same search as Olympus and the Banana Mirror Browser
 - [the Everest versions list API](https://maddie480.ovh/celeste/everest-versions)
 - ... and some other things of more limited use that are on the website.
 
