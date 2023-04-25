@@ -18,6 +18,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.function.Predicate;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -35,7 +36,10 @@ public class CelesteModSearchService extends HttpServlet {
     private static List<ModInfo> modDatabaseForSorting = Collections.emptyList();
     private Map<Integer, String> modCategories;
 
-    private byte[] everestVersions;
+    private byte[] everestVersionsNoNative;
+    private byte[] everestVersionsWithNative;
+
+    private static final Pattern SUPPORT_NATIVE_REGEX = Pattern.compile("(^|&)supportsNativeBuilds=true($|&)");
 
     @Override
     public void init() {
@@ -283,7 +287,12 @@ public class CelesteModSearchService extends HttpServlet {
         if ("/celeste/everest-versions".equals(request.getRequestURI())) {
             // send everest_version_list.json we downloaded earlier
             response.setHeader("Content-Type", "application/json");
-            IOUtils.write(everestVersions, response.getOutputStream());
+
+            if (request.getQueryString() != null && SUPPORT_NATIVE_REGEX.matcher(request.getQueryString()).matches()) {
+                IOUtils.write(everestVersionsWithNative, response.getOutputStream());
+            } else {
+                IOUtils.write(everestVersionsNoNative, response.getOutputStream());
+            }
         }
     }
 
@@ -386,8 +395,10 @@ public class CelesteModSearchService extends HttpServlet {
     }
 
     private void refreshEverestVersions() throws IOException {
-        everestVersions = IOUtils.toByteArray(Files.newInputStream(Paths.get("/shared/celeste/everest-versions.json")));
-        log.debug("Reloaded Everest versions! {} bytes preloaded.", everestVersions.length);
+        everestVersionsNoNative = IOUtils.toByteArray(Files.newInputStream(Paths.get("/shared/celeste/everest-versions.json")));
+        everestVersionsWithNative = IOUtils.toByteArray(Files.newInputStream(Paths.get("/shared/celeste/everest-versions-with-native.json")));
+        log.debug("Reloaded Everest versions! Preloaded {} bytes with native versions, {} bytes without native versions.",
+                everestVersionsWithNative.length, everestVersionsNoNative.length);
     }
 
     public static ModInfo getModInfoByTypeAndId(String itemtype, int itemid) {

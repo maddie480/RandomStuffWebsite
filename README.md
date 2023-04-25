@@ -262,7 +262,7 @@ This API is available at `https://maddie480.ovh/celeste/everest-versions`, and r
 ```
 
 - `version` is the Everest version number.
-- `branch` is eiter `dev`, `beta` or `stable`. Other branches might be created to test specific features in the future.
+- `branch` is either `dev`, `beta` or `stable`. Other branches might be created to test specific features in the future.
 - `mainDownload` is the download for use by Everest to install an update.
 - `date` is the date at which the version was published, in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format.
 - `olympusMetaDownload` is the download that Olympus uses to get the build size.
@@ -271,3 +271,6 @@ This API is available at `https://maddie480.ovh/celeste/everest-versions`, and r
 Two extra fields are specified for automatic builds made after a single change (commit or pull request merge):
 - `author` is the author of the change (GitHub username), either the author of the commit or the creator of the pull request.
 - `description` is the description of the change, either the message of the commit or the title of the pull request.
+
+If the version of Everest/Olympus you are calling this API from supports installing native builds (.NET Core builds), you should pass the `supportsNativeBuilds=true` query parameter to include them.
+As of now, this adds an extra branch to the output of the API, called `core`.
