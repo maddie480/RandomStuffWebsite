@@ -49,6 +49,12 @@
   "overrides": {
     "@jimp/core": {
       "mkdirp": "^0.5.0"
+    },
+    "cosmiconfig": {
+      "yaml": "^2.2.2"
+    },
+    "cssnano": {
+      "yaml": "^2.2.2"
     }
   }
 }
