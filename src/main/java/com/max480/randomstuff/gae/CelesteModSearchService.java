@@ -301,7 +301,9 @@ public class CelesteModSearchService extends HttpServlet {
 
         return modDatabaseForSorting.stream()
                 .filter(mod -> scoreMod(tokenizedRequest, (String[]) mod.fullInfo.get("TokenizedName")) > 0.2f * tokenizedRequest.length)
-                .sorted(Comparator.comparing(mod -> -scoreMod(tokenizedRequest, (String[]) mod.fullInfo.get("TokenizedName"))))
+                .sorted(Comparator
+                        .<ModInfo>comparingDouble(mod -> -scoreMod(tokenizedRequest, (String[]) mod.fullInfo.get("TokenizedName")))
+                        .thenComparingInt(mod -> -mod.downloads))
                 .map(mod -> mod.fullInfo)
                 .limit(20)
                 .collect(Collectors.toList());
