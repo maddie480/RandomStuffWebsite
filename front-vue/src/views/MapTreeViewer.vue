@@ -27,6 +27,14 @@
       Upload
     </button>
 
+    <button
+      class="btn btn-secondary"
+      :disabled="!selectedFiles || loading"
+      @click="toJSON"
+    >
+      Convert to JSON
+    </button>
+
     <div class="error" v-if="error">
       <div class="warning">
         An error occurred. Check that you uploaded a valid Celeste map.
@@ -90,6 +98,7 @@
 import axios from "axios";
 import config from "../config";
 import MapItemCollapsible from "../components/MapItemCollapsible.vue";
+import download from "downloadjs";
 
 const vue = {
   name: "map-tree-viewer",
@@ -133,6 +142,18 @@ const vue = {
       }
       this.loading = false;
     },
+    toJSON: async function () {
+      await this.upload();
+
+      if (this.mapContents !== null) {
+        download(
+          JSON.stringify(this.mapContents),
+          "map.json",
+          "application/json"
+        );
+        this.mapContents = null;
+      }
+    },
   },
 };
 
@@ -163,6 +184,10 @@ h1 {
 
 input.search {
   margin-top: 30px;
+}
+
+button.btn-secondary {
+  margin-left: 10px;
 }
 
 .searching {
