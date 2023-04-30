@@ -113,7 +113,7 @@ public class CelesteFontGeneratorService extends HttpServlet {
                     if ("dialogFile".equals(fieldname)) {
                         dialogFile = IOUtils.toString(filecontent, StandardCharsets.UTF_8);
                     } else if ("fontFile".equals(fieldname)) {
-                        customFontFileName = part.getName();
+                        customFontFileName = part.getSubmittedFileName();
                         if (customFontFileName.replace("\\", "/").contains("/")) {
                             customFontFileName = customFontFileName.substring(customFontFileName.replace("\\", "/").indexOf("/") + 1);
                         }
