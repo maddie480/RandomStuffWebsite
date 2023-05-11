@@ -23,7 +23,7 @@
     "simple-web-worker": "^1.2.0",
     "stream-browserify": "^3.0.0",
     "util": "^0.12.5",
-    "vue": "^3.2.47",
+    "vue": "^3.3.1",
     "vue-multiselect": "^3.0.0-beta.2",
     "vue-router": "^4.2.0",
     "vuex": "^4.1.0"
