@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@jimp/custom": "^0.22.7",
-    "@jimp/types": "^0.22.7",
+    "@jimp/types": "^0.22.8",
     "assert": "^2.0.0",
     "axios": "^1.4.0",
     "bootstrap": "^5.2.3",
