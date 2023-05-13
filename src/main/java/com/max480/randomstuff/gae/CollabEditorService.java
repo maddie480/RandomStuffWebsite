@@ -30,7 +30,7 @@ public class CollabEditorService extends HttpServlet {
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        if (request.getQueryString() == null || !request.getQueryString().startsWith("key=")
+        if (request.getQueryString() == null || !request.getQueryString().matches("^key=[0-9a-f]+$")
                 || !new File("/shared/celeste/collab-list/" + request.getQueryString().substring(4) + ".json").exists()) {
 
             log.warn("Invalid key");
@@ -46,7 +46,7 @@ public class CollabEditorService extends HttpServlet {
 
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        if (request.getQueryString() == null || !request.getQueryString().startsWith("key=")
+        if (request.getQueryString() == null || !request.getQueryString().matches("^key=[0-9a-f]+$")
                 || !new File("/shared/celeste/collab-list/" + request.getQueryString().substring(4) + ".json").exists()) {
 
             log.warn("Invalid key");
