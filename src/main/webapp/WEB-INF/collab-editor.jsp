@@ -50,7 +50,7 @@
                 <div class="form-check form-check-inline">
                     <input class="form-check-input" type="radio" id="req<%= req %>Maybe" name="req<%= req %>" value="maybe"
                         <% if (request.getAttribute("req" + req).equals("maybe")) { %>checked<% } %>>
-                    <label class="form-check-label" for="req<%= req %>Maybe">&#x2753;</label>
+                    <label class="form-check-label" for="req<%= req %>Maybe">&#x2754;</label>
                 </div>
                 <div class="form-check form-check-inline">
                     <input class="form-check-input" type="radio" id="req<%= req %>No" name="req<%= req %>" value="no"

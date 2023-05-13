@@ -43,7 +43,7 @@
                             <% if ("yes".equals(collab.getString("req" + req))) { %>
                                 &#x2705;
                             <% } else if ("maybe".equals(collab.getString("req" + req))) { %>
-                                &#x2753;
+                                &#x2754;
                             <% } else if ("no".equals(collab.getString("req" + req))) { %>
                                 &#x274C;
                             <% } %>
