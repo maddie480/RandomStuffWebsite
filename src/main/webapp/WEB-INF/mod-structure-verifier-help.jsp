@@ -18,6 +18,11 @@
         </ul>
     </div>
 
+    <div style="margin-bottom: 20px">
+        Since they cannot be in subfolders, emojis should be in
+        <pre>Graphics/Atlases/Gui/emoji/<%= escapeHtml4(request.getParameter("collabName")) %>_[anything]_[anything].png</pre> instead.
+    </div>
+
     <div>To fix this issue, create the missing subfolders and move your assets inside it.</div>
 
     <div>
