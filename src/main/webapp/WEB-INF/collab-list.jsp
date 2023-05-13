@@ -3,7 +3,7 @@
 <h1>Celeste Collab & Contest List</h1>
 
 <p>
-    Here is some info on ongoing Celeste collabs and contests here, updated by their managers.
+    Here is some info about ongoing Celeste collabs and contests, updated by their managers.
 </p>
 
 <div class="alert alert-info">
