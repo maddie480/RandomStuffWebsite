@@ -53,6 +53,8 @@
                         <li><a class="dropdown-item" href="/celeste/banana-mirror-browser">Banana Mirror Browser</a></li>
                         <li><a class="dropdown-item <%= "celeste-news-network-subscription".equals(request.getAttribute("navId")) ? "active" : "" %>"
                             href="/celeste/news-network-subscription">#celeste_news_network Subscription</a></li>
+                        <li><a class="dropdown-item <%= "collab-list".equals(request.getAttribute("navId")) ? "active" : "" %>"
+                            href="/celeste/collab-contest-list">Collab & Contest List</a></li>
                         <li><a class="dropdown-item <%= "mod-catalog".equals(request.getAttribute("navId")) ? "active" : "" %>"
                             href="/celeste/custom-entity-catalog">Custom Entity Catalog</a></li>
                         <li><a class="dropdown-item <%= "direct-url-service".equals(request.getAttribute("navId")) ? "active" : "" %>"

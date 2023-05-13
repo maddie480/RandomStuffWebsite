@@ -46,6 +46,11 @@
                 >
               </li>
               <li>
+                <a class="dropdown-item" href="/celeste/collab-contest-list"
+                  >Collab & Contest List</a
+                >
+              </li>
+              <li>
                 <a class="dropdown-item" href="/celeste/custom-entity-catalog"
                   >Custom Entity Catalog</a
                 >

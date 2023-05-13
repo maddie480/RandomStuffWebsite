@@ -1,0 +1,14 @@
+input[type="submit"] {
+    margin-bottom: 20px;
+}
+
+.open-to {
+    width: 170px;
+    display: inline-block;
+}
+
+@media(min-width: 400px) {
+    .open-to-content {
+        display: inline-block;
+    }
+}
