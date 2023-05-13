@@ -4,6 +4,10 @@
 
 .badge {
     margin-left: 5px;
+    margin-right: 5px;
+}
+.badge-secondary {
+    margin-left: 0;
 }
 
 .description {
