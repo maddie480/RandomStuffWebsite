@@ -30,7 +30,7 @@
                     <% } %>
 
                     <% if (collab.getBoolean("lookingForPeople")) { %>
-                        <span class="badge bg-secondary">Looking for people</span>
+                        <span class="badge bg-secondary">Recruiting</span>
                     <% } %>
                 </button>
             </h2>
