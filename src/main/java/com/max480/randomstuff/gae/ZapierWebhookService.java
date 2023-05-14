@@ -55,7 +55,7 @@ public class ZapierWebhookService extends HttpServlet {
             // add the new tweet at the start of the list
             JSONArray newTweets = new JSONArray();
             newTweets.put(0, newTweet);
-            for (int i = 0; i < oldTweets.length() && newTweets.length() < 100; i++) {
+            for (int i = 0; i < oldTweets.length() && newTweets.length() < 50; i++) {
                 newTweets.put(i + 1, oldTweets.get(i));
             }
 
