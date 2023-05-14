@@ -72,7 +72,7 @@
         <input type="text" class="form-control" id="reqOther" name="reqOther" value="<%= escapeHtml4((String) request.getAttribute("reqOther")) %>">
     </div>
     <div class="form-group">
-        <label for="notes"><b>Extra notes</b></label>
+        <label for="notes"><b>Extra notes (you can include links like this: <code>&lt;https://mywebsite.org/&gt;</code>)</b></label>
         <input type="text" class="form-control" id="notes" name="notes" value="<%= escapeHtml4((String) request.getAttribute("notes")) %>">
     </div>
 

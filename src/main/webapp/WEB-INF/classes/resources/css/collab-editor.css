@@ -12,3 +12,9 @@ input[type="submit"] {
         display: inline-block;
     }
 }
+
+@media(prefers-color-scheme: dark) {
+    code {
+        color: #ff5c99;
+    }
+}

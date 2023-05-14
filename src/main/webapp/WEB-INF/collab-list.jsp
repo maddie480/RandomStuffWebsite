@@ -57,7 +57,7 @@
 
                     <% if (!collab.getString("notes").isBlank()) { %>
                         <div class="description">
-                            <%= escapeHtml4(collab.getString("notes")) %>
+                            <%= collab.getString("notes") %>
                         </div>
                     <% } %>
 
