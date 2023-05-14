@@ -20,7 +20,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Stream;
 
 /**
  * This service lists all ongoing Celeste collabs.
@@ -37,11 +36,6 @@ public class CollabListService extends HttpServlet {
         for (String s : new File("/shared/celeste/collab-list").list()) {
             try (InputStream is = Files.newInputStream(Paths.get("/shared/celeste/collab-list/" + s))) {
                 JSONObject o = new JSONObject(IOUtils.toString(is, StandardCharsets.UTF_8));
-
-                o.put("lookingForPeople", Stream.of("reqMappers", "reqCoders", "reqArtists",
-                        "reqMusicians", "reqPlaytesters", "reqDecorators", "reqLobby").anyMatch(l -> !"no".equals(o.getString(l)))
-                        || !o.getString("reqOther").isBlank());
-
                 if (!"hidden".equals(o.getString("status"))) {
                     contents.add(o);
                 }
@@ -54,8 +48,8 @@ public class CollabListService extends HttpServlet {
                 return statusOrder.indexOf(c1.getString("status")) - statusOrder.indexOf(c2.getString("status"));
             }
 
-            if (c1.getBoolean("lookingForPeople") != c2.getBoolean("lookingForPeople")) {
-                return (c1.getBoolean("lookingForPeople") ? 0 : 1) - (c2.getBoolean("lookingForPeople") ? 0 : 1);
+            if (!c1.getString("lookingForPeople").equals(c2.getString("lookingForPeople"))) {
+                return c2.getString("lookingForPeople").compareTo(c1.getString("lookingForPeople"));
             }
 
             return c1.getString("name").compareToIgnoreCase(c2.getString("name"));

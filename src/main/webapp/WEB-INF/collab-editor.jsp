@@ -38,6 +38,13 @@
         <input type="text" class="form-control" id="contact" name="contact" value="<%= escapeHtml4((String) request.getAttribute("contact")) %>" required>
     </div>
 
+    <div class="form-group">
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="lookingForPeople" name="lookingForPeople" <% if (request.getAttribute("lookingForPeople").equals("yes")) { %>checked<% } %>>
+            <label class="form-check-label" for="lookingForPeople">Open for people to join</label>
+        </div>
+    </div>
+
     <% for (String req : Arrays.asList("Mappers", "Coders", "Artists", "Musicians", "Playtesters", "Decorators", "Lobby")) { %>
         <div class="form-group">
             <label for="req<%= req %>" class="open-to"><b>Open to <%= req %></b></label>

@@ -29,8 +29,8 @@
                         <span class="badge bg-danger">Cancelled</span>
                     <% } %>
 
-                    <% if (collab.getBoolean("lookingForPeople")) { %>
-                        <span class="badge bg-secondary">Recruiting</span>
+                    <% if ("yes".equals(collab.getString("lookingForPeople"))) { %>
+                        <span class="badge bg-secondary">Open</span>
                     <% } %>
                 </button>
             </h2>

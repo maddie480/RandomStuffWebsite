@@ -71,6 +71,8 @@ public class CollabEditorService extends HttpServlet {
                 collabInfo.put(attribute, request.getParameter(attribute));
             }
 
+            collabInfo.put("lookingForPeople", request.getParameter("lookingForPeople") != null ? "yes" : "no");
+
             request.setAttribute("bad_request", !valid);
             request.setAttribute("saved", valid);
             if (valid) {
@@ -90,7 +92,7 @@ public class CollabEditorService extends HttpServlet {
         }
 
         for (String attribute : Arrays.asList("name", "status", "contact", "notes", "reqMappers", "reqCoders", "reqArtists",
-                "reqMusicians", "reqPlaytesters", "reqDecorators", "reqLobby", "reqOther")) {
+                "reqMusicians", "reqPlaytesters", "reqDecorators", "reqLobby", "reqOther", "lookingForPeople")) {
 
             request.setAttribute(attribute, collabInfo.getString(attribute));
         }
