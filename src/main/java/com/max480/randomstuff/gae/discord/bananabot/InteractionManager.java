@@ -64,13 +64,12 @@ public class InteractionManager extends HttpServlet {
 
                             HttpURLConnection connection = ConnectionUtils.openConnectionWithTimeout(webhookUrl);
                             connection.setRequestProperty("Content-Type", "application/json");
-                            connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:62.0) Gecko/20100101 Firefox/62.0");
                             connection.setRequestMethod("POST");
                             connection.setDoOutput(true);
                             try (OutputStream os = connection.getOutputStream()) {
                                 IOUtils.write(followupMessageData.toString(), os, StandardCharsets.UTF_8);
                             }
-                            try (InputStream is = connection.getInputStream()) {
+                            try (InputStream is = ConnectionUtils.connectionToInputStream(connection)) {
                                 JSONObject discordResponse = new JSONObject(IOUtils.toString(is, StandardCharsets.UTF_8));
                                 log.debug("Got response: {}", discordResponse.toString(2));
                             }

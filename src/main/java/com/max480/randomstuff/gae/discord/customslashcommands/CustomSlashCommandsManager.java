@@ -51,7 +51,7 @@ public class CustomSlashCommandsManager {
             IOUtils.write(commandObject.toString(), os, StandardCharsets.UTF_8);
         }
 
-        try (InputStream is = connection.getInputStream()) {
+        try (InputStream is = ConnectionUtils.connectionToInputStream(connection)) {
             String response = IOUtils.toString(is, StandardCharsets.UTF_8);
             JSONObject o = new JSONObject(response);
             return Long.parseLong(o.getString("id"));
@@ -96,7 +96,7 @@ public class CustomSlashCommandsManager {
         connection.setRequestProperty("Authorization", "Bearer " + authenticate());
         connection.setRequestProperty("User-Agent", USER_AGENT);
 
-        try (InputStream is = connection.getInputStream()) {
+        try (InputStream is = ConnectionUtils.connectionToInputStream(connection)) {
             String response = IOUtils.toString(is, StandardCharsets.UTF_8);
             JSONObject o = new JSONObject(response);
             return o.getString("description");
@@ -130,7 +130,7 @@ public class CustomSlashCommandsManager {
             IOUtils.write("grant_type=client_credentials&scope=applications.commands.update", os, StandardCharsets.UTF_8);
         }
 
-        try (InputStream is = connection.getInputStream()) {
+        try (InputStream is = ConnectionUtils.connectionToInputStream(connection)) {
             String response = IOUtils.toString(is, StandardCharsets.UTF_8);
             JSONObject o = new JSONObject(response);
 

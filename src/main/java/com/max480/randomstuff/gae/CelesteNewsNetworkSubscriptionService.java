@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -128,14 +127,13 @@ public class CelesteNewsNetworkSubscriptionService extends HttpServlet {
      */
     private boolean isWebhookWorking(String webhookUrl) {
         try {
-            HttpURLConnection connection = (HttpURLConnection) new URL(webhookUrl).openConnection();
+            HttpURLConnection connection = ConnectionUtils.openConnectionWithTimeout(webhookUrl);
 
             connection.setDoInput(true);
             connection.setDoOutput(true);
 
             connection.setRequestMethod("POST");
             connection.setRequestProperty("Content-Type", "application/json");
-            connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:62.0) Gecko/20100101 Firefox/62.0");
 
             connection.connect();
 

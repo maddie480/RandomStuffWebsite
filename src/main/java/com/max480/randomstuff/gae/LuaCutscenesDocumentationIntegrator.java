@@ -5,8 +5,6 @@ import org.apache.commons.io.IOUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -31,9 +29,7 @@ public class LuaCutscenesDocumentationIntegrator {
 
         // download Lua Cutscenes and go through its files
         logger.info("Downloading Lua Cutscenes from " + luaCutscenesDownloadUrl + "...");
-        HttpURLConnection connection = ConnectionUtils.openConnectionWithTimeout(luaCutscenesDownloadUrl);
-        connection.setRequestProperty("User-Agent", "maddie-random-stuff/1.0.0"); // the mirror hates Java 8 for some reason.
-        try (ZipInputStream zip = new ZipInputStream(connection.getInputStream())) {
+        try (ZipInputStream zip = new ZipInputStream(ConnectionUtils.openStreamWithTimeout(luaCutscenesDownloadUrl))) {
             ZipEntry entry;
             while ((entry = zip.getNextEntry()) != null) {
                 if (!entry.isDirectory() && entry.getName().toLowerCase(Locale.ROOT).startsWith("documentation/")) {

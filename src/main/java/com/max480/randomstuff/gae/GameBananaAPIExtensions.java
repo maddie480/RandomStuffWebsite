@@ -38,10 +38,8 @@ public class GameBananaAPIExtensions extends HttpServlet {
                 "https://gamebanana.com/apiv8/Mod/ByCategory?_csvProperties=_sName,_sProfileUrl,_aPreviewMedia," + pubDateField + "&" + request.getQueryString());
 
         if (connection.getResponseCode() != 200) {
-            // pass the answer through
+            // pass the HTTP code through
             response.setStatus(connection.getResponseCode());
-            response.setHeader("Content-Type", connection.getContentType());
-            IOUtils.copy(connection.getErrorStream(), response.getOutputStream());
             log.warn("Non-200 status code returned!");
             return;
         }
@@ -53,7 +51,7 @@ public class GameBananaAPIExtensions extends HttpServlet {
                 \t\t<title>GameBanana API RSS Feed</title>
                 """);
 
-        JSONArray modList = new JSONArray(IOUtils.toString(connection.getInputStream(), StandardCharsets.UTF_8));
+        JSONArray modList = new JSONArray(IOUtils.toString(ConnectionUtils.connectionToInputStream(connection), StandardCharsets.UTF_8));
 
         for (Object item : modList) {
             JSONObject mod = (JSONObject) item;

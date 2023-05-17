@@ -574,10 +574,9 @@ public class InteractionManager extends HttpServlet {
                     "q=" + URLEncoder.encode(place, StandardCharsets.UTF_8) +
                     "&accept-language=" + ("fr".equals(locale) ? "fr" : "en") +
                     "&limit=1&format=jsonv2");
-            osm.setRequestProperty("User-Agent", "TimezoneBot/1.0 (+https://maddie480.ovh/discord-bots#timezone-bot)");
 
             JSONArray osmResults;
-            try (InputStream is = osm.getInputStream()) {
+            try (InputStream is = ConnectionUtils.connectionToInputStream(osm)) {
                 osmResults = new JSONArray(IOUtils.toString(is, StandardCharsets.UTF_8));
             }
 
