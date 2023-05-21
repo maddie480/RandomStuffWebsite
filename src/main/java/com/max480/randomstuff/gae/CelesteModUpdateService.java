@@ -25,14 +25,12 @@ public class CelesteModUpdateService extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(CelesteModUpdateService.class);
 
     private byte[] everestYaml;
-    private String everestYamlEtag;
 
     @Override
     public void init() {
         try {
             log.debug("Reading everest_update.yaml from storage");
             everestYaml = IOUtils.toByteArray(Files.newInputStream(Paths.get("/shared/celeste/updater/everest-update.yaml")));
-            everestYamlEtag = "\"" + DigestUtils.sha512Hex(everestYaml) + "\"";
             CelesteDirectURLService.updateUrls();
         } catch (Exception e) {
             log.warn("Warming up failed!", e);
@@ -51,17 +49,11 @@ public class CelesteModUpdateService extends HttpServlet {
                 && ("key=" + SecretConstants.RELOAD_SHARED_SECRET).equals(request.getQueryString())) {
             // trigger a reload of everest_update.yaml
             everestYaml = IOUtils.toByteArray(Files.newInputStream(Paths.get("/shared/celeste/updater/everest-update.yaml")));
-            everestYamlEtag = "\"" + DigestUtils.sha512Hex(everestYaml) + "\"";
             CelesteDirectURLService.updateUrls();
         } else if (request.getRequestURI().equals("/celeste/everest_update.yaml")) {
             // send the everest_update.yaml we have in cache
-            response.setHeader("ETag", everestYamlEtag);
-            if (everestYamlEtag.equals(request.getHeader("If-None-Match"))) {
-                response.setStatus(304);
-            } else {
-                response.setHeader("Content-Type", "text/yaml");
-                IOUtils.write(everestYaml, response.getOutputStream());
-            }
+            response.setHeader("Content-Type", "text/yaml");
+            IOUtils.write(everestYaml, response.getOutputStream());
         } else if (request.getRequestURI().equals("/celeste/mod_search_database.yaml")) {
             // send mod_search_database.yaml from storage
             response.setHeader("Content-Type", "text/yaml");

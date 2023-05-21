@@ -6,7 +6,6 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,17 +48,8 @@ public class StaticAssetsAndRouteNotFoundServlet extends HttpServlet {
 
                 try (InputStream is = StaticAssetsAndRouteNotFoundServlet.class.getClassLoader().getResourceAsStream("resources" + request.getRequestURI())) {
                     if (is != null) {
-                        byte[] bytes = IOUtils.toByteArray(is);
-                        String etag = "\"" + DigestUtils.sha512Hex(bytes) + "\"";
-
-                        if (etag.equals(request.getHeader("If-None-Match"))) {
-                            response.setStatus(304); // Not Modified
-                        } else {
-                            response.setContentType(CONTENT_TYPES.get(extension));
-                            response.setHeader("ETag", etag);
-                            IOUtils.write(bytes, response.getOutputStream());
-                        }
-
+                        response.setContentType(CONTENT_TYPES.get(extension));
+                        IOUtils.copy(is, response.getOutputStream());
                         return;
                     }
                 }
