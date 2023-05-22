@@ -89,7 +89,7 @@
     <h3>Some Stats (updated hourly)</h3>
 
     <div>
-        <%= new DecimalFormat("#,##0").format((int) request.getAttribute("totalRequests")) %> requests were run last week, with HTTP statuses:
+        <%= new DecimalFormat("#,##0").format((int) request.getAttribute("totalRequests")) %> requests were served last week, with HTTP statuses:
     </div>
 
     <ul>
@@ -152,7 +152,7 @@
     <h2>And who are you exactly?</h2>
 
     <div>
-        Just a girl that likes programming, video games and silly stuff. &#x1F61D;
+        Just a girl in her late twenties that likes programming, video games and silly stuff. &#x1F61D;
         I've got a bit of a hyperfocus on Celeste as you can see here, but I sometimes mess with obscure glitchy games, which can lead to
         <a href="https://www.twitch.tv/lesnavetsjouables/clip/AwkwardPlacidJaguarRiPepperonis-JfS4pR8Eg4JCaufk" target="_blank">pretty <i>interesting</i> results</a>.
         Maintaining all of that stuff takes time, but this is what I like doing &#x1F604;
