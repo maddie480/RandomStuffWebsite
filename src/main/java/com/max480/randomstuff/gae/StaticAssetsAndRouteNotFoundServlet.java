@@ -39,8 +39,7 @@ public class StaticAssetsAndRouteNotFoundServlet extends HttpServlet {
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         if (request.getRequestURI().equals("/")) {
-            PageRenderer.render(request, response, "home", "Maddie's Random Stuff",
-                    "A website with a bunch of Celeste tools and Discord bots.");
+            HomepageService.doGet(request, response);
         } else {
             String extension = request.getRequestURI().substring(request.getRequestURI().lastIndexOf(".") + 1);
             if (CONTENT_TYPES.containsKey(extension) && Stream.of("/celeste/", "/css/", "/fonts/", "/img/", "/js/", "/vids/", "/lua-cutscenes-documentation/")

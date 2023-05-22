@@ -5,7 +5,7 @@
       id="nav"
     >
       <div class="container-fluid">
-        <h5 class="navbar-brand m-0">Maddie's Random Stuff</h5>
+        <h5 class="navbar-brand m-0"><a href="/">Maddie's Random Stuff</a></h5>
 
         <ul class="navbar-nav">
           <li class="nav-item dropdown">
@@ -215,6 +215,11 @@ export default vue;
   }
 }
 
+.navbar .navbar-brand a {
+  color: rgb(33, 37, 41);
+  text-decoration: none;
+}
+
 // dark theme colors
 @media (prefers-color-scheme: dark) {
   // global app colors
@@ -230,7 +235,8 @@ export default vue;
     background-color: rgb(33, 37, 41) !important;
     border-bottom: 1px solid #8a8a8a !important;
   }
-  .navbar .navbar-brand {
+  .navbar .navbar-brand,
+  .navbar .navbar-brand a {
     color: #fff;
   }
   .navbar .navbar-nav .nav-link {

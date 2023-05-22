@@ -19,12 +19,17 @@
     }
 }
 
+.navbar .navbar-brand a {
+    color: rgb(33, 37, 41);
+    text-decoration: none;
+}
+
 @media(prefers-color-scheme: dark) {
     .navbar.bg-light {
         background-color: rgb(33, 37, 41) !important;
         border-bottom: 1px solid #8a8a8a !important;
     }
-    .navbar .navbar-brand {
+    .navbar .navbar-brand, .navbar .navbar-brand a {
       color: #fff;
     }
     .navbar .navbar-nav .nav-link {

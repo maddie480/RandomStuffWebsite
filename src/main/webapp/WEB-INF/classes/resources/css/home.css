@@ -1,5 +1,21 @@
-.home {
+.home h1 {
     text-align: center;
+    margin-bottom: 2rem;
+}
+
+.home div {
+    margin-bottom: 1rem;
+}
+
+.home ul {
+    margin-top: -0.5rem;
+}
+
+.text-secondary {
+    font-style: italic;
+}
+.text-warning {
+    color: rgb(136, 114, 47) !important;
 }
 
 @media(prefers-color-scheme: dark) {
@@ -8,5 +24,11 @@
     }
     #app {
         color: #dedad6;
+    }
+    .text-warning {
+        color: rgb(255, 193, 7) !important;
+    }
+    .text-success {
+        color: rgb(39, 196, 123) !important;
     }
 }
