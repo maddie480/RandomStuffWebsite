@@ -42,7 +42,7 @@
 <body>
     <nav class="navbar navbar-expand navbar-light bg-light border-bottom shadow-sm">
         <div class="container-fluid">
-            <h5 class="navbar-brand m-0"><a href="/">Maddie's Random Stuff</a></h5>
+            <h5 class="navbar-brand m-0"><a href="/"><img src="/img/maddie-avatar.png"> Maddie's Random Stuff</a></h5>
 
             <ul class="navbar-nav">
                 <li class="nav-item dropdown">

@@ -5,7 +5,11 @@
       id="nav"
     >
       <div class="container-fluid">
-        <h5 class="navbar-brand m-0"><a href="/">Maddie's Random Stuff</a></h5>
+        <h5 class="navbar-brand m-0">
+          <a href="/"
+            ><img src="/img/maddie-avatar.png" /> Maddie's Random Stuff</a
+          >
+        </h5>
 
         <ul class="navbar-nav">
           <li class="nav-item dropdown">
@@ -218,6 +222,14 @@ export default vue;
 .navbar .navbar-brand a {
   color: rgb(33, 37, 41);
   text-decoration: none;
+}
+
+.navbar-brand img {
+  border-radius: 50%;
+  height: 40px;
+  margin-right: 6px;
+  margin-top: -9px;
+  margin-bottom: -3px;
 }
 
 // dark theme colors
