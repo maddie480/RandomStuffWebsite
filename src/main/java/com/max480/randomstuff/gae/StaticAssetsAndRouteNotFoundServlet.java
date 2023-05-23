@@ -29,6 +29,7 @@ public class StaticAssetsAndRouteNotFoundServlet extends HttpServlet {
             "png", "image/png",
             "js", "application/javascript",
             "otf", "font/otf",
+            "ttf", "font/ttf",
             "html", "text/html",
             "svg", "image/svg+xml",
             "webm", "video/webm"

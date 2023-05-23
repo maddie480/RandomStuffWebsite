@@ -38,17 +38,18 @@ public class SecurityHeadersFilter extends HttpFilter {
         } else if (req.getRequestURI().equals("/celeste/wipe-converter")) {
             // web worker magic forces us to allow inline JS... ouch.
             res.setHeader("Content-Security-Policy", "default-src 'self'; " +
+                    "img-src 'self' data:; " +
                     "script-src 'self' 'unsafe-eval' blob:; " +
                     "frame-ancestors 'none'; " +
                     "object-src 'none';");
         } else if (req.getRequestURI().equals("/celeste/banana-mirror-browser")) {
             // allow getting the images from Banana Mirror.
             res.setHeader("Content-Security-Policy", "default-src 'self'; " +
-                    "img-src 'self' https://*.0x0a.de; " +
+                    "img-src 'self' data: https://*.0x0a.de; " +
                     "frame-ancestors 'none'; " +
                     "object-src 'none';");
         } else if (Arrays.asList("/celeste/map-tree-viewer", "/celeste/file-searcher").contains(req.getRequestURI())) {
-            // allow displaying checkboxes that use SVG as data URLs
+            // default rules for the Vue app
             res.setHeader("Content-Security-Policy", "default-src 'self'; " +
                     "img-src 'self' data:; " +
                     "frame-ancestors 'none'; " +

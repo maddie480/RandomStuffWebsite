@@ -1,5 +1,5 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ page import="static org.apache.commons.text.StringEscapeUtils.escapeHtml4"%>
+<%@ page import="static org.apache.commons.text.StringEscapeUtils.escapeHtml4, java.time.ZonedDateTime"%>
 
 <%@page session="false"%>
 
@@ -39,7 +39,7 @@
     <link rel="stylesheet" href="/css/<%= escapeHtml4((String) request.getAttribute("pageId")) %>.css">
 </head>
 
-<body>
+<body class="month-<%= ZonedDateTime.now().getMonthValue() %>">
     <nav class="navbar navbar-expand navbar-light bg-light border-bottom shadow-sm">
         <div class="container-fluid">
             <h5 class="navbar-brand m-0"><a href="/"><img src="/img/maddie-avatar.png"> Maddie's Random Stuff</a></h5>

@@ -32,7 +32,6 @@ export default vue;
 h1 {
   margin-top: 12px;
   margin-bottom: 22px;
-  font-family: sans-serif;
   font-size: 32px;
   font-weight: bold;
 }

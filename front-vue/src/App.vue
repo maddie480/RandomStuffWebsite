@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div :class="'month-' + (new Date().getMonth() + 1)">
     <nav
       class="navbar navbar-expand navbar-light bg-light border-bottom shadow-sm"
       id="nav"
@@ -219,6 +219,29 @@ export default vue;
   }
 }
 
+.navbar,
+.dropdown-menu {
+  background: url("/assets/img/white.png"),
+    url("/assets/img/bg-light.png") top / cover;
+}
+
+.month-11 .navbar,
+.month-12 .navbar,
+.month-1 .navbar,
+.month-2 .navbar,
+.month-3 .navbar,
+.month-4 .navbar,
+.month-11 .dropdown-menu,
+.month-12 .dropdown-menu,
+.month-1 .dropdown-menu,
+.month-2 .dropdown-menu,
+.month-3 .dropdown-menu,
+.month-4 .dropdown-menu {
+  background: url("/assets/img/white.png"),
+    url("/assets/img/snow-front.png") center / cover,
+    url("/assets/img/bg-light-alt.png") center / cover;
+}
+
 .navbar .navbar-brand a {
   color: rgb(33, 37, 41);
   text-decoration: none;
@@ -226,10 +249,73 @@ export default vue;
 
 .navbar-brand img {
   border-radius: 50%;
-  height: 40px;
-  margin-right: 6px;
-  margin-top: -9px;
-  margin-bottom: -3px;
+  height: 50px;
+  margin-right: 7px;
+  margin-top: -14px;
+  margin-bottom: -5px;
+}
+
+.month-6 .navbar-brand a::before {
+  border-radius: 50%;
+  height: 56px;
+  width: 56px;
+  background: linear-gradient(
+    to bottom,
+    #5bcefa 0% 20%,
+    #f5a9b8 20% 40%,
+    #fff 40% 60%,
+    #f5a9b8 60% 80%,
+    #5bcefa 80% 100%
+  );
+  content: "";
+  display: inline-block;
+  margin-right: -53px;
+  margin-bottom: -16px;
+  margin-top: -20px;
+}
+
+.month-6 .navbar-brand img {
+  background-color: #fcf6e0;
+}
+
+@font-face {
+  font-family: "Gontserrat";
+  src: url("/assets/fonts/Gontserrat-Light.ttf");
+}
+@font-face {
+  font-family: "Gontserrat";
+  font-weight: bold;
+  src: url("/assets/fonts/Gontserrat-Bold.ttf");
+}
+@font-face {
+  font-family: "Gontserrat";
+  font-style: italic;
+  src: url("/assets/fonts/Gontserrat-LightItalic.ttf");
+}
+@font-face {
+  font-family: "Gontserrat";
+  font-weight: bold;
+  font-style: italic;
+  src: url("/assets/fonts/Gontserrat-BoldItalic.ttf");
+}
+@font-face {
+  font-family: "Hey August";
+  src: url("/assets/fonts/HeyAugust.otf");
+}
+
+.navbar .navbar-brand a {
+  color: rgb(33, 37, 41);
+  text-decoration: none;
+  font-family: "Hey August", sans-serif;
+  font-size: 30px;
+}
+body {
+  font-family: "Gontserrat", sans-serif;
+}
+h1,
+h2,
+h3 {
+  font-family: "Hey August", sans-serif;
 }
 
 // dark theme colors
@@ -250,6 +336,32 @@ export default vue;
   .navbar .navbar-brand,
   .navbar .navbar-brand a {
     color: #fff;
+  }
+  .navbar,
+  .dropdown-menu {
+    background: url("/assets/img/black.png"),
+      url("/assets/img/bg-dark-l4.png") center / cover,
+      url("/assets/img/bg-dark-l3.png") center / cover,
+      url("/assets/img/bg-dark-l1.png") center / cover;
+  }
+  .month-6 .navbar-brand img {
+    background-color: #361738;
+  }
+  .month-11 .navbar,
+  .month-12 .navbar,
+  .month-1 .navbar,
+  .month-2 .navbar,
+  .month-3 .navbar,
+  .month-4 .navbar,
+  .month-11 .dropdown-menu,
+  .month-12 .dropdown-menu,
+  .month-1 .dropdown-menu,
+  .month-2 .dropdown-menu,
+  .month-3 .dropdown-menu,
+  .month-4 .dropdown-menu {
+    background: url("/assets/img/black.png"), url("/assets/img/black.png"),
+      url("/assets/img/snow-front.png") center / cover,
+      url("/assets/img/bg-dark-alt.png") top / cover;
   }
   .navbar .navbar-nav .nav-link {
     color: rgba(255, 255, 255, 0.55);
