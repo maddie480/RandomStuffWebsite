@@ -37,22 +37,6 @@
     src: url('/fonts/Gontserrat-Light.ttf');
 }
 @font-face {
-    font-family: "Gontserrat";
-    font-weight: bold;
-    src: url('/fonts/Gontserrat-Bold.ttf');
-}
-@font-face {
-    font-family: "Gontserrat";
-    font-style: italic;
-    src: url('/fonts/Gontserrat-LightItalic.ttf');
-}
-@font-face {
-    font-family: "Gontserrat";
-    font-weight: bold;
-    font-style: italic;
-    src: url('/fonts/Gontserrat-BoldItalic.ttf');
-}
-@font-face {
     font-family: "Hey August";
     src: url('/fonts/HeyAugust.otf');
 }
@@ -63,11 +47,8 @@
     font-family: "Hey August", sans-serif;
     font-size: 30px;
 }
-body {
+.navbar-nav {
     font-family: "Gontserrat", sans-serif;
-}
-h1 {
-    font-family: "Hey August", sans-serif;
 }
 
 .navbar-brand img {

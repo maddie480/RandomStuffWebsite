@@ -196,8 +196,8 @@
 
     <ul>
         <li>Avatar: <a href="/picrew" target="_blank">&#x5409;&#x7530;&#x541b; on Picrew</a></li>
-        <li>Title font: <a href="https://www.dafont.com/fr/hey-august.font" target="_blank">Hey August by Khurasan</a></li>
-        <li>Text font: <a href="https://www.dafont.com/fr/gontserrat.font" target="_blank">Gontserrat by Ospiro Enterprises</a></li>
+        <li>Site name font: <a href="https://www.dafont.com/fr/hey-august.font" target="_blank">Hey August by Khurasan</a></li>
+        <li>Navbar font: <a href="https://www.dafont.com/fr/gontserrat.font" target="_blank">Gontserrat by Ospiro Enterprises</a></li>
         <li>Navbar backgrounds: ripped from <a href="https://www.celestegame.com/">Celeste</a>, graphics by Amora B</li>
     </ul>
 </div>
