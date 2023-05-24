@@ -20,7 +20,7 @@
 }
 
 .navbar, .dropdown-menu {
-    background: url('/img/white.png'), url('/img/bg-light.png') top / cover;
+    background: url('/img/white.png'), url('/img/bg-light.jpg') top / cover;
 }
 
 .month-12 .navbar,
@@ -29,7 +29,7 @@
 .month-12 .dropdown-menu,
 .month-1 .dropdown-menu,
 .month-2 .dropdown-menu {
-    background: url('/img/white.png'), url('/img/snow-front.png') center / cover, url('/img/bg-light-alt.png') center / cover;
+    background: url('/img/white.png'), url('/img/bg-light-alt.jpg') center / cover;
 }
 
 @font-face {
@@ -100,8 +100,7 @@ h1, h2, h3 {
         border-bottom: 1px solid #8a8a8a !important;
     }
     .navbar, .dropdown-menu {
-        background: url('/img/black.png'), url('/img/bg-dark-l4.png') center / cover, url('/img/bg-dark-l3.png') center / cover,
-            url('/img/bg-dark-l1.png') center / cover;
+        background: url('/img/black.png'), url('/img/bg-dark.jpg') center / cover;
     }
     .month-6 .navbar-brand img {
         background-color: #361738;
@@ -112,7 +111,7 @@ h1, h2, h3 {
     .month-12 .dropdown-menu,
     .month-1 .dropdown-menu,
     .month-2 .dropdown-menu {
-        background: url('/img/black.png'), url('/img/black.png'), url('/img/snow-front.png') center / cover, url('/img/bg-dark-alt.png') top / cover;
+        background: url('/img/black.png'), url('/img/black.png'), url('/img/bg-dark-alt.jpg') top / cover;
     }
     .navbar .navbar-brand, .navbar .navbar-brand a {
       color: #fff;

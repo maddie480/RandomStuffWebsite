@@ -1,6 +1,5 @@
 package com.max480.randomstuff.gae;
 
-import com.google.common.collect.ImmutableMap;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -12,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -22,18 +22,22 @@ import java.util.stream.Stream;
  */
 @WebServlet(name = "StaticAssetsAndRouteNotFound", urlPatterns = {"/"})
 public class StaticAssetsAndRouteNotFoundServlet extends HttpServlet {
-    private static final Map<String, String> CONTENT_TYPES = ImmutableMap.of(
-            "json", "application/json",
-            "ico", "image/x-icon",
-            "css", "text/css",
-            "png", "image/png",
-            "js", "application/javascript",
-            "otf", "font/otf",
-            "ttf", "font/ttf",
-            "html", "text/html",
-            "svg", "image/svg+xml",
-            "webm", "video/webm"
-    );
+    private static final Map<String, String> CONTENT_TYPES;
+
+    static {
+        CONTENT_TYPES = new HashMap<>();
+        CONTENT_TYPES.put("json", "application/json");
+        CONTENT_TYPES.put("ico", "image/x-icon");
+        CONTENT_TYPES.put("css", "text/css");
+        CONTENT_TYPES.put("png", "image/png");
+        CONTENT_TYPES.put("js", "application/javascript");
+        CONTENT_TYPES.put("otf", "font/otf");
+        CONTENT_TYPES.put("ttf", "font/ttf");
+        CONTENT_TYPES.put("html", "text/html");
+        CONTENT_TYPES.put("svg", "image/svg+xml");
+        CONTENT_TYPES.put("webm", "video/webm");
+        CONTENT_TYPES.put("jpg", "image/jpeg");
+    }
 
     private static final Logger log = LoggerFactory.getLogger(StaticAssetsAndRouteNotFoundServlet.class);
 

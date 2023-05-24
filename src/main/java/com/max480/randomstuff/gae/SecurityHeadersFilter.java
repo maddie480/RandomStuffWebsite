@@ -38,19 +38,24 @@ public class SecurityHeadersFilter extends HttpFilter {
         } else if (req.getRequestURI().equals("/celeste/wipe-converter")) {
             // web worker magic forces us to allow inline JS... ouch.
             res.setHeader("Content-Security-Policy", "default-src 'self'; " +
+                    "script-src 'self' 'unsafe-eval' blob: https://cdn.jsdelivr.net; " +
+                    "style-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; " +
                     "img-src 'self' data:; " +
-                    "script-src 'self' 'unsafe-eval' blob:; " +
                     "frame-ancestors 'none'; " +
                     "object-src 'none';");
         } else if (req.getRequestURI().equals("/celeste/banana-mirror-browser")) {
             // allow getting the images from Banana Mirror.
             res.setHeader("Content-Security-Policy", "default-src 'self'; " +
+                    "script-src 'self' https://cdn.jsdelivr.net; " +
+                    "style-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; " +
                     "img-src 'self' data: https://*.0x0a.de; " +
                     "frame-ancestors 'none'; " +
                     "object-src 'none';");
         } else if (Arrays.asList("/celeste/map-tree-viewer", "/celeste/file-searcher").contains(req.getRequestURI())) {
             // default rules for the Vue app
             res.setHeader("Content-Security-Policy", "default-src 'self'; " +
+                    "script-src 'self' 'unsafe-eval' blob: https://cdn.jsdelivr.net; " +
+                    "style-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; " +
                     "img-src 'self' data:; " +
                     "frame-ancestors 'none'; " +
                     "object-src 'none';");

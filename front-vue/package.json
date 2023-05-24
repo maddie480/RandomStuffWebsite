@@ -13,7 +13,6 @@
     "@jimp/types": "^0.22.8",
     "assert": "^2.0.0",
     "axios": "^1.4.0",
-    "bootstrap": "^5.2.3",
     "browserify-zlib": "^0.2.0",
     "buffer": "^6.0.3",
     "core-js": "^3.30.2",
