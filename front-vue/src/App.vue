@@ -225,18 +225,13 @@ export default vue;
     url("/assets/img/bg-light.png") top / cover;
 }
 
-.month-11 .navbar,
 .month-12 .navbar,
 .month-1 .navbar,
 .month-2 .navbar,
-.month-3 .navbar,
-.month-4 .navbar,
 .month-11 .dropdown-menu,
 .month-12 .dropdown-menu,
 .month-1 .dropdown-menu,
-.month-2 .dropdown-menu,
-.month-3 .dropdown-menu,
-.month-4 .dropdown-menu {
+.month-2 .dropdown-menu {
   background: url("/assets/img/white.png"),
     url("/assets/img/snow-front.png") center / cover,
     url("/assets/img/bg-light-alt.png") center / cover;
@@ -347,18 +342,12 @@ h3 {
   .month-6 .navbar-brand img {
     background-color: #361738;
   }
-  .month-11 .navbar,
   .month-12 .navbar,
   .month-1 .navbar,
   .month-2 .navbar,
-  .month-3 .navbar,
-  .month-4 .navbar,
-  .month-11 .dropdown-menu,
   .month-12 .dropdown-menu,
   .month-1 .dropdown-menu,
-  .month-2 .dropdown-menu,
-  .month-3 .dropdown-menu,
-  .month-4 .dropdown-menu {
+  .month-2 .dropdown-menu {
     background: url("/assets/img/black.png"), url("/assets/img/black.png"),
       url("/assets/img/snow-front.png") center / cover,
       url("/assets/img/bg-dark-alt.png") top / cover;
