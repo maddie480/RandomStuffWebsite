@@ -16,9 +16,6 @@
 .contact {
     margin-top: 10px;
 }
-h2 {
-    font-family: "Gontserrat";
-}
 
 @media (prefers-color-scheme: dark) {
     .accordion-item, .accordion-button.collapsed {
