@@ -228,7 +228,6 @@ export default vue;
 .month-12 .navbar,
 .month-1 .navbar,
 .month-2 .navbar,
-.month-11 .dropdown-menu,
 .month-12 .dropdown-menu,
 .month-1 .dropdown-menu,
 .month-2 .dropdown-menu {
