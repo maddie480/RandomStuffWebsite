@@ -23,18 +23,12 @@
     background: url('/img/white.png'), url('/img/bg-light.png') top / cover;
 }
 
-.month-11 .navbar,
 .month-12 .navbar,
 .month-1 .navbar,
 .month-2 .navbar,
-.month-3 .navbar,
-.month-4 .navbar,
-.month-11 .dropdown-menu,
 .month-12 .dropdown-menu,
 .month-1 .dropdown-menu,
-.month-2 .dropdown-menu,
-.month-3 .dropdown-menu,
-.month-4 .dropdown-menu {
+.month-2 .dropdown-menu {
     background: url('/img/white.png'), url('/img/snow-front.png') center / cover, url('/img/bg-light-alt.png') center / cover;
 }
 
