@@ -34,13 +34,19 @@ public class GameBananaAPIExtensions extends HttpServlet {
             pubDateField = "_tsDateUpdated";
         }
 
-        HttpURLConnection connection = ConnectionUtils.openConnectionWithTimeout(
-                "https://gamebanana.com/apiv8/Mod/ByCategory?_csvProperties=_sName,_sProfileUrl,_aPreviewMedia," + pubDateField + "&" + request.getQueryString());
+        String url = "https://gamebanana.com/apiv8/Mod/ByCategory?_csvProperties=_sName,_sProfileUrl,_aPreviewMedia," + pubDateField + "&" + request.getQueryString();
+        HttpURLConnection connection = ConnectionUtils.openConnectionWithTimeout(url);
 
         if (connection.getResponseCode() != 200) {
-            // pass the HTTP code through
-            response.setStatus(connection.getResponseCode());
             log.warn("Non-200 status code returned!");
+
+            // 4xx errors get turned into 400 Bad Request, 5xx errors and everything else get turned into 502 Bad Gateway
+            response.setStatus(connection.getResponseCode() / 100 == 4 ? 400 : 502);
+            response.setContentType("text/plain");
+
+            response.getWriter().write("GameBanana responded with unexpected HTTP response code " + connection.getResponseCode() + ".\n" +
+                    "Please check the GameBanana source URL directly for more details:\n" + url);
+
             return;
         }
 
