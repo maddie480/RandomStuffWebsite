@@ -17,7 +17,7 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
-@WebServlet(name = "CelesteDirectURLService", urlPatterns = {"/celeste/direct-link-service", "/celeste/dl", "/picrew"})
+@WebServlet(name = "CelesteDirectURLService", urlPatterns = {"/celeste/direct-link-service", "/celeste/dl", "/picrew", "/gl-shortlink/*"})
 public class CelesteDirectURLService extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(CelesteDirectURLService.class);
 
@@ -53,8 +53,13 @@ public class CelesteDirectURLService extends HttpServlet {
         } else if (request.getRequestURI().equals("/picrew")) {
             // Hard-coded DIY URL shortener to the rescue
             response.sendRedirect("https://picrew.me/share?cd=Eqzx6FYwjm");
+        } else if (request.getRequestURI().matches("^/gl-shortlink/[0-9]+/[0-9]+$")
+            && SecretConstants.GITLAB_PROJECT_IDS.containsKey(request.getRequestURI().substring(14, request.getRequestURI().lastIndexOf("/")))) {
+
+            String url = request.getRequestURI().substring(14);
+            response.sendRedirect("https://gitlab.com/" + SecretConstants.GITLAB_PROJECT_IDS.get(url.substring(0, url.indexOf("/")))
+                + "/-/merge_requests/" + url.substring(url.indexOf("/") + 1));
         } else {
-            // How do you even land here?
             notFound(request, response);
         }
     }
