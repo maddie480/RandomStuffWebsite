@@ -6,9 +6,3 @@
     margin-top: 0.5rem;
     margin-bottom: 0.5rem;
 }
-
-@media(prefers-color-scheme: dark) {
-    .alert-info code {
-        color: #ddd;
-    }
-}

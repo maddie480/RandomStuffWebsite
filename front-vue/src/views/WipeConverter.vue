@@ -198,26 +198,6 @@ h1 {
   margin: 20px;
 }
 
-@media (prefers-color-scheme: dark) {
-  input[type="file"] {
-    color: #dedad6;
-  }
-
-  .alert-info {
-    color: #fff;
-    border-color: #1f85a8;
-    background-color: #0a6382;
-
-    code {
-      color: white;
-    }
-  }
-
-  a {
-    color: #47a0ff;
-  }
-}
-
 .text {
   text-align: left;
   margin-bottom: 30px;

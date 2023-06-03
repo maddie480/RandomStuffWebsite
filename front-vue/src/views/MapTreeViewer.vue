@@ -176,12 +176,6 @@ h1 {
   margin: 20px;
 }
 
-@media (prefers-color-scheme: dark) {
-  input[type="file"] {
-    color: #dedad6;
-  }
-}
-
 input.search {
   margin-top: 30px;
 }

@@ -22,13 +22,6 @@ export default vue;
 </script>
 
 <style lang="scss" scoped>
-// better contrast for links in dark mode
-@media (prefers-color-scheme: dark) {
-  a {
-    color: #47a0ff;
-  }
-}
-
 h1 {
   margin-top: 12px;
   margin-bottom: 22px;

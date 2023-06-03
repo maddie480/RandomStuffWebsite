@@ -39,9 +39,3 @@ ul {
     display: block;
     margin: 10px 0;
 }
-
-@media(prefers-color-scheme: dark) {
-    .alert-success code {
-        color: #ddd;
-    }
-}

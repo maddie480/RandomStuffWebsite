@@ -28,10 +28,6 @@ pre {
         border: solid #444 1px;
         color: #bbb;
     }
-
-    .bg-primary {
-        background-color: rgb(11, 81, 183) !important;
-    }
 }
 .mlp:hover {
   color: #fff;

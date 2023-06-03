@@ -76,10 +76,6 @@
 }
 
 @media(prefers-color-scheme: dark) {
-    .navbar.bg-light {
-        background-color: rgb(33, 37, 41) !important;
-        border-bottom: 1px solid #8a8a8a !important;
-    }
     .navbar, .dropdown-menu {
         background: url('/img/black.png'), url('/img/bg-dark.jpg') center / cover;
     }
@@ -96,94 +92,5 @@
     }
     .navbar .navbar-brand, .navbar .navbar-brand a {
       color: #fff;
-    }
-    .navbar .navbar-nav .nav-link {
-      color: rgba(255, 255, 255, .55);
-    }
-    .navbar .navbar-nav .nav-link:focus, .navbar .navbar-nav .nav-link:hover {
-      color: rgba(255, 255, 255, .75);
-    }
-    .navbar .navbar-nav .nav-link.active {
-      color: #fff;
-    }
-    .navbar-light .navbar-brand:hover {
-        color: #fff;
-    }
-    .dropdown-menu {
-      color: #dee2e6;
-      background-color: #343a40;
-      border-color: rgba(0,0,0,.15);
-    }
-    .dropdown-menu .dropdown-item {
-      color: #dee2e6;
-    }
-    .dropdown-menu .dropdown-item:focus:not(.active), .dropdown-menu .dropdown-item:hover:not(.active) {
-      color: #fff;
-      background-color: rgba(255,255,255,.15);
-    }
-
-    body {
-        background-color: black;
-        color: #DEDAD6;
-    }
-
-    .alert-success {
-        color: #fff;
-        border-color: #00a442;
-        background-color: #016f2d;
-    }
-    .alert-info {
-        color: #fff;
-        border-color: #1f85a8;
-        background-color: #0a6382;
-    }
-    .alert-warning {
-        color: #fff;
-        border-color: #b97b00;
-        background-color: #8e5f00;
-    }
-    .alert-danger {
-        color: #fff;
-        border-color: #bf203d;
-        background-color: #8e071e;
-    }
-    .alert a {
-        color: #ddd;
-        text-decoration: underline;
-    }
-    .alert a:hover {
-        color: #ccc;
-    }
-
-    .alert-danger pre {
-        background-color: black;
-        color: #DEDAD6;
-    }
-
-    a {
-        color: #47a0ff;
-    }
-
-    .btn-outline-primary {
-        color: #47a0ff;
-        border-color: #47a0ff;
-    }
-    .btn-outline-secondary {
-        color: #909ca6;
-        border-color: #909ca6;
-    }
-
-    .form-control, .form-select {
-        background-color: black;
-        border-color: #83888c;
-        color: #dedad6;
-    }
-    .form-control:focus, .form-select:focus {
-        background-color: black;
-        color: #dedad6;
-        border-color: #125cc8;
-    }
-    .form-select {
-        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ccc' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e")
     }
 }

@@ -422,14 +422,6 @@ export default {
   }
 }
 
-// dark theme for modal dialogs
-@media (prefers-color-scheme: dark) {
-  .modal-content {
-    background-color: black;
-    border-color: #777;
-  }
-}
-
 // custom close button
 .close {
   color: black;
@@ -469,18 +461,6 @@ export default {
 .not-mirrored-help {
   text-align: center;
   margin-top: 10px;
-}
-@media (prefers-color-scheme: dark) {
-  .text-danger {
-    color: rgb(240, 79, 94) !important;
-  }
-}
-
-// make Bootstrap not kill the download list in dark theme
-.table-striped > tbody > tr:nth-of-type(2n + 1) > td.first {
-  @media (prefers-color-scheme: dark) {
-    color: #dedad6;
-  }
 }
 
 // style for the download dialog: buttons column

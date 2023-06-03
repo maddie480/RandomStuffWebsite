@@ -44,9 +44,7 @@
     <div class="loading" v-if="loading">Searching...</div>
 
     <div class="error" v-if="error">
-      <div class="warning">
-        An error occurred. Check that you uploaded a valid Celeste map.
-      </div>
+      <div class="warning">An error occurred.</div>
     </div>
 
     <div class="results" v-if="results !== null">

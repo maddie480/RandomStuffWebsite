@@ -17,18 +17,3 @@
 .text-warning {
     color: rgb(136, 114, 47) !important;
 }
-
-@media(prefers-color-scheme: dark) {
-    body {
-        background-color: #000;
-    }
-    #app {
-        color: #dedad6;
-    }
-    .text-warning {
-        color: rgb(255, 193, 7) !important;
-    }
-    .text-success {
-        color: rgb(39, 196, 123) !important;
-    }
-}

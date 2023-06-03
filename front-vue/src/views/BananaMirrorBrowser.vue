@@ -288,12 +288,6 @@ export default vue;
   margin-bottom: 20px;
 }
 
-@media (prefers-color-scheme: dark) {
-  .search[disabled] {
-    background-color: #444;
-  }
-}
-
 .filters {
   margin-bottom: -16px;
 }
