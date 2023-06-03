@@ -197,7 +197,7 @@ public class EverestYamlValidatorService extends HttpServlet {
 
                 // add private mods that come from GitHub directly.
                 try (InputStream is = Files.newInputStream(Paths.get("/shared/celeste/everest-yamls-from-github.json"))) {
-                    JSONObject modsFromGitHub = new JSONObject(IOUtils.toString(is));
+                    JSONObject modsFromGitHub = new JSONObject(IOUtils.toString(is, UTF_8));
                     for (String key : modsFromGitHub.keySet()) {
                         EverestModuleMetadata metadata = new EverestModuleMetadata();
                         metadata.Name = key;

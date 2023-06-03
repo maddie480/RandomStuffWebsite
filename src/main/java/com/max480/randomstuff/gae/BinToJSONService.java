@@ -151,7 +151,20 @@ public class BinToJSONService extends HttpServlet {
             switch (attributeValueType) {
                 case Boolean -> obj = bin.readBoolean();
                 case Byte -> obj = bin.readUnsignedByte();
-                case Float -> obj = EndianUtils.readSwappedFloat(bin);
+                case Float -> {
+                    float value = EndianUtils.readSwappedFloat(bin);
+
+                    // map special float values to strings, since JSON cannot handle them
+                    if (value == Float.POSITIVE_INFINITY) {
+                        obj = "+Infinity";
+                    } else if (value == Float.NEGATIVE_INFINITY) {
+                        obj = "-Infinity";
+                    } else if (Float.isNaN(value)) {
+                        obj = "NaN";
+                    } else {
+                        obj = value;
+                    }
+                }
                 case Integer -> obj = EndianUtils.readSwappedInteger(bin);
                 case LengthEncodedString -> {
                     short length = EndianUtils.readSwappedShort(bin);
