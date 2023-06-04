@@ -19,22 +19,6 @@ ul {
     margin-bottom: 20px;
 }
 
-@media(prefers-color-scheme: dark) {
-    .btn-outline-dark {
-        color: #f8f9fa;
-        border-color: #f8f9fa;
-    }
-    .btn-outline-dark:hover {
-        background-color: #f8f9fa;
-        color: #000;
-    }
-    .btn-outline-dark:focus {
-        box-shadow: 0 0 0 0.25rem rgba(248, 249, 250, .5);
-        background-color: #f8f9fa;
-        color: #000;
-    }
-}
-
 #download-sample-yaml {
     display: block;
     margin: 10px 0;
