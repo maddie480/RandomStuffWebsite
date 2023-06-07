@@ -2,9 +2,6 @@ package com.max480.randomstuff.gae;
 
 import org.json.JSONObject;
 
-import java.util.Map;
-import java.util.TreeMap;
-
 /**
  * Config constants that are retrieved from environment variables on startup.
  */
@@ -28,8 +25,6 @@ public class SecretConstants {
 
     public static String RSS_AGGREGATOR_SECRET = "";
     public static String ZAPIER_WEBHOOK_SECRET = "";
-
-    public static Map<String, String> GITLAB_PROJECT_IDS;
 
     static {
         // The SECRET_CONSTANTS environment variable has all secrets, in JSON format.
@@ -55,15 +50,5 @@ public class SecretConstants {
 
         RSS_AGGREGATOR_SECRET = secrets.getString("RSS_AGGREGATOR_SECRET");
         ZAPIER_WEBHOOK_SECRET = secrets.getString("ZAPIER_WEBHOOK_SECRET");
-
-        GITLAB_PROJECT_IDS = getGitLabProjectIds(secrets.getJSONObject("GITLAB_PROJECT_IDS"));
-    }
-
-    private static Map<String, String> getGitLabProjectIds(JSONObject object) {
-        Map<String, String> map = new TreeMap<>();
-        for (String key : object.keySet()) {
-            map.put(Long.toString(object.getLong(key)), key);
-        }
-        return map;
     }
 }
