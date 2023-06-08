@@ -7,7 +7,7 @@
 </p>
 
 <div class="alert alert-info">
-    To add your own, reach out to Maddie (maddie480#4596 on the <a href="https://discord.gg/celeste" target="_blank">Mt. Celeste Climbing Association</a> server),
+    To add your own, reach out to Maddie (maddie480 on the <a href="https://discord.gg/celeste" target="_blank">Mt. Celeste Climbing Association</a> server),
     and she will give you a private link to add and update the status of your own collab.
 </div>
 

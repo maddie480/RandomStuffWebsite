@@ -3,7 +3,7 @@
 <% if((boolean) request.getAttribute("error")) { %>
     <div class="alert alert-danger">
         An error occurred while loading the entity and trigger list. Please try again later.<br>
-        If this keeps happening, get in touch with maddie480#4596 on <a href="https://discord.gg/6qjaePQ" target="_blank">Discord</a>.
+        If this keeps happening, get in touch with maddie480 on <a href="https://discord.gg/6qjaePQ" target="_blank">Discord</a>.
     </div>
 <% } else { %>
     <h1>Celeste Custom Entity and Trigger List</h1>

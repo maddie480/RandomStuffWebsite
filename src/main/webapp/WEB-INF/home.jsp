@@ -176,7 +176,7 @@
     </div>
 
     <div>
-        You can find me on Discord, I'm <b>maddie480#4596</b> and I hang out quite a bit on the
+        You can find me on Discord, I'm <b>maddie480</b> and I hang out quite a bit on the
         <a href="https://discord.gg/celeste" target="_blank">Celeste server</a>.
         I'm also on <a href="https://github.com/maddie480" target="_blank">GitHub</a>, and my Celeste mods are showcased
         on <a href="https://gamebanana.com/members/1698143" target="_blank">GameBanana</a>!

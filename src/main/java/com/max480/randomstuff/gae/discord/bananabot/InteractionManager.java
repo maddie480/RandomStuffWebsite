@@ -106,8 +106,8 @@ public class InteractionManager extends HttpServlet {
             e.printStackTrace();
             log.error("An unexpected error occurred!", e);
             respondPrivately(resp, localizeMessage(locale,
-                    ":x: An unexpected error occurred. Ping Maddie (`maddie480#4596`) if this keeps happening!",
-                    ":x: Une erreur inattendue est survenue. Ping Maddie (`maddie480#4596`) si ça continue à arriver !"));
+                    ":x: An unexpected error occurred. Ping Maddie (`maddie480`) if this keeps happening!",
+                    ":x: Une erreur inattendue est survenue. Ping Maddie (`maddie480`) si ça continue à arriver !"));
         }
     }
 
