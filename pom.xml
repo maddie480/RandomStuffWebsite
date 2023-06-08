@@ -54,7 +54,7 @@
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.12.0</version>
+            <version>2.13.0</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-text -->
@@ -284,7 +284,7 @@
                             <workingDirectory>${project.build.directory}/random-stuff-website-1.0.0/WEB-INF/classes</workingDirectory>
                             <arguments>
                                 <argument>-cp</argument>
-                                <argument>.:../../../dependency/snakeyaml-2.0.jar:../../../dependency/commons-io-2.12.0.jar</argument>
+                                <argument>.:../../../dependency/snakeyaml-2.0.jar:../../../dependency/commons-io-2.13.0.jar</argument>
                                 <argument>com.max480.randomstuff.gae.LuaCutscenesDocumentationIntegrator</argument>
                             </arguments>
                         </configuration>
@@ -406,7 +406,7 @@
                                     <workingDirectory>${project.build.directory}/random-stuff-website-1.0.0/WEB-INF/classes</workingDirectory>
                                     <arguments>
                                         <argument>-cp</argument>
-                                        <argument>.;../../../dependency/snakeyaml-2.0.jar;../../../dependency/commons-io-2.12.0.jar</argument>
+                                        <argument>.;../../../dependency/snakeyaml-2.0.jar;../../../dependency/commons-io-2.13.0.jar</argument>
                                         <argument>com.max480.randomstuff.gae.LuaCutscenesDocumentationIntegrator</argument>
                                     </arguments>
                                 </configuration>
