@@ -2,6 +2,13 @@
 
 <h1 class="mt-4">Everest Update Checker status page</h1>
 
+<p class="last-refresh">
+    Page last refreshed on
+    <span class="timestamp-long" data-timestamp="<%= java.time.ZonedDateTime.now().toEpochSecond() %>">
+        <%= java.time.ZonedDateTime.now().format(java.time.format.DateTimeFormatter.ofLocalizedDateTime(java.time.format.FormatStyle.LONG)) %>
+    </span>
+</p>
+
 <% if ((boolean) request.getAttribute("up")) { %>
     <div class="alert alert-success"><b>The update checker is up and running!</b></div>
 <% } else { %>
