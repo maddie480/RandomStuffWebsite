@@ -189,7 +189,7 @@
 
     <div>
         I hope you'll find this website useful, don't hesitate to report issues or to make suggestions on Discord! &#x2764;&#xFE0F;<br/>
-        ~ Maddie
+        <span class="august">~ Maddie</span>
     </div>
 
     <h2>Credits</h2>
@@ -198,6 +198,6 @@
         <li>Avatar: <a href="/picrew" target="_blank">&#x5409;&#x7530;&#x541b; on Picrew</a></li>
         <li>Site name font: <a href="https://www.dafont.com/fr/hey-august.font" target="_blank">Hey August by Khurasan</a></li>
         <li>Navbar font: <a href="https://www.dafont.com/fr/gontserrat.font" target="_blank">Gontserrat by Ospiro Enterprises</a></li>
-        <li>Navbar backgrounds: ripped from <a href="https://www.celestegame.com/">Celeste</a>, graphics by Amora B</li>
+        <li>Navbar theme: inspired by <a href="https://color.firefox.com/" target="_blank">Firefox Color</a></li>
     </ul>
 </div>

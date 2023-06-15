@@ -15,20 +15,13 @@
     margin-top: -10px;
 }
 pre {
-    background: #eee;
-    border: solid gray 1px;
+    background: var(--bs-info-bg-subtle);
+    border: solid var(--bs-info-border-subtle) 1px;
     padding: 4px;
     margin: 5px 0 25px 0;
     white-space: pre-wrap;
 }
 
-@media(prefers-color-scheme: dark) {
-    pre {
-        background: #222;
-        border: solid #444 1px;
-        color: #bbb;
-    }
-}
 .mlp:hover {
   color: #fff;
 }

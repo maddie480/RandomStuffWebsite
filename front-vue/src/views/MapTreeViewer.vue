@@ -20,7 +20,7 @@
     </label>
 
     <button
-      class="btn btn-success"
+      class="btn btn-primary"
       :disabled="!selectedFiles || loading"
       @click="upload"
     >

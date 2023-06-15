@@ -69,7 +69,7 @@
     </label>
 
     <button
-      class="btn btn-success"
+      class="btn btn-primary"
       :disabled="!selectedFiles || converting"
       @click="convert"
     >

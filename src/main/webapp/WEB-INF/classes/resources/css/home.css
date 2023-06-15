@@ -17,3 +17,8 @@
 .text-warning {
     color: rgb(136, 114, 47) !important;
 }
+
+.august {
+    font-family: "Hey August", sans-serif;
+    font-size: 20pt;
+}

@@ -62,7 +62,7 @@
         <button class="btn btn-secondary" v-on:click="openDescription">
           Description
         </button>
-        <button class="btn btn-success" v-on:click="openDownloads">
+        <button class="btn btn-primary" v-on:click="openDownloads">
           Download
         </button>
       </div>
