@@ -94,6 +94,12 @@ public class CacheEtagFilter extends HttpFilter {
 
     @Override
     protected void doFilter(HttpServletRequest req, HttpServletResponse res, FilterChain chain) throws IOException, ServletException {
+        if (req.getRequestURI().equals("/celeste/bundle-download")) {
+            // this one MUST be streamed to the client
+            chain.doFilter(req, res);
+            return;
+        }
+
         CachingServletResponse placeholderResponse = new CachingServletResponse(res);
         chain.doFilter(req, placeholderResponse);
 

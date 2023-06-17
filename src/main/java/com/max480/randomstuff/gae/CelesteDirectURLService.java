@@ -47,6 +47,7 @@ public class CelesteDirectURLService extends HttpServlet {
             request.setAttribute("typedId", "");
             request.setAttribute("twoclick", false);
             request.setAttribute("mirror", false);
+            request.setAttribute("bundle", false);
 
             PageRenderer.render(request, response, "direct-url-service", "Celeste Direct Link service",
                     "This page can give you direct download URLs to the latest version of a mod, based on the ID present in its everest.yaml file.");
@@ -65,22 +66,29 @@ public class CelesteDirectURLService extends HttpServlet {
             String modId = request.getParameter("modId");
             String twoclick = request.getParameter("twoclick");
             String mirror = request.getParameter("mirror");
+            String bundle = request.getParameter("bundle");
 
             if (modId == null) {
                 // handle this like a GET
                 request.setAttribute("typedId", "");
                 request.setAttribute("twoclick", false);
                 request.setAttribute("mirror", false);
+                request.setAttribute("bundle", false);
             } else {
                 request.setAttribute("typedId", modId);
                 request.setAttribute("twoclick", twoclick != null);
                 request.setAttribute("mirror", mirror != null);
+                request.setAttribute("bundle", bundle != null);
 
                 // check if the link for this mod ID exists
                 if (dlUrls.containsKey(modId)) {
-                    request.setAttribute("link", "https://maddie480.ovh/celeste/dl?id=" + URLEncoder.encode(modId, StandardCharsets.UTF_8)
-                            + (twoclick != null ? "&twoclick=1" : "")
-                            + (mirror != null ? "&mirror=1" : ""));
+                    if (bundle != null) {
+                        request.setAttribute("link", "https://maddie480.ovh/celeste/bundle-download?id=" + URLEncoder.encode(modId, StandardCharsets.UTF_8));
+                    } else {
+                        request.setAttribute("link", "https://maddie480.ovh/celeste/dl?id=" + URLEncoder.encode(modId, StandardCharsets.UTF_8)
+                                + (twoclick != null ? "&twoclick=1" : "")
+                                + (mirror != null ? "&mirror=1" : ""));
+                    }
                 } else {
                     request.setAttribute("notfound", true);
                 }

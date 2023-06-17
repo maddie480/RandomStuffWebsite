@@ -22,6 +22,11 @@
     </div>
 
     <div class="form-check">
+        <input type="checkbox" class="form-check-input" id="bundle" name="bundle" value="" <% if ((boolean) request.getAttribute("bundle")) { %> checked <% } %>>
+        <label class="form-check-label" for="bundle">Get a zip with the mod and all of its dependencies</label>
+    </div>
+
+    <div class="form-check">
         <input type="checkbox" class="form-check-input" id="twoclick" name="twoclick" value="" <% if ((boolean) request.getAttribute("twoclick")) { %> checked <% } %>>
         <label class="form-check-label" for="twoclick">Link to 0x0ade's 2-click installer</label>
     </div>
@@ -49,3 +54,5 @@
         </div>
     <% } %>
 </form>
+
+<script src="/js/direct-url-service.js"></script>
