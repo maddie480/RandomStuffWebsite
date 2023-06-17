@@ -248,14 +248,15 @@ This API is available at `https://maddie480.ovh/celeste/everest-versions`, and r
 ```json
 [
     {
-        "version": 3520,
+        "date": "2023-05-20T18:39:10.871934Z",
+        "mainFileSize": 19033830,
+        "mainDownload": "https://dev.azure.com/EverestAPI/Everest/_apis/build/builds/3303/artifacts?artifactName=main&api-version=5.0&%24format=zip",
+        "olympusMetaDownload": "https://dev.azure.com/EverestAPI/Everest/_apis/build/builds/3303/artifacts?artifactName=olympus-meta&api-version=5.0&%24format=zip",
+        "author": "maddie480",
+        "olympusBuildDownload": "https://dev.azure.com/EverestAPI/Everest/_apis/build/builds/3303/artifacts?artifactName=olympus-build&api-version=5.0&%24format=zip",
+        "description": "Better support for transitive dependencies",
         "branch": "dev",
-        "author": "bigkahuna443",
-        "description": "Handle duplicate room names",
-        "date": "2022-08-10T15:09:33.8105837Z",
-        "mainDownload": "https://dev.azure.com/EverestAPI/Everest/_apis/build/builds/2820/artifacts?artifactName=main&api-version=5.0&%24format=zip",
-        "olympusMetaDownload": "https://dev.azure.com/EverestAPI/Everest/_apis/build/builds/2820/artifacts?artifactName=olympus-meta&api-version=5.0&%24format=zip",
-        "olympusBuildDownload": "https://dev.azure.com/EverestAPI/Everest/_apis/build/builds/2820/artifacts?artifactName=olympus-build&api-version=5.0&%24format=zip"
+        "version": 4003
     },
     [...]
 ]
@@ -264,6 +265,7 @@ This API is available at `https://maddie480.ovh/celeste/everest-versions`, and r
 - `version` is the Everest version number.
 - `branch` is either `dev`, `beta` or `stable`. Other branches might be created to test specific features in the future.
 - `mainDownload` is the download for use by Everest to install an update.
+- `mainFileSize` is the size of the `mainDownload` file, in bytes.
 - `date` is the date at which the version was published, in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format.
 - `olympusMetaDownload` is the download that Olympus uses to get the build size.
 - `olympusBuildDownload` is the download for use by Olympus to install Everest.
