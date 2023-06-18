@@ -196,8 +196,9 @@
 
     <ul>
         <li>Avatar: <a href="/picrew" target="_blank">&#x5409;&#x7530;&#x541b; on Picrew</a></li>
+        <li>Base theme: <a href="https://getbootstrap.com/" target="_blank">Bootstrap</a></li>
         <li>Site name font: <a href="https://www.dafont.com/fr/hey-august.font" target="_blank">Hey August by Khurasan</a></li>
-        <li>Navbar font: <a href="https://www.dafont.com/fr/gontserrat.font" target="_blank">Gontserrat by Ospiro Enterprises</a></li>
+        <li>Navbar and title font: <a href="https://www.dafont.com/fr/gontserrat.font" target="_blank">Gontserrat by Ospiro Enterprises</a></li>
         <li>Navbar theme: inspired by <a href="https://color.firefox.com/" target="_blank">Firefox Color</a></li>
     </ul>
 </div>
