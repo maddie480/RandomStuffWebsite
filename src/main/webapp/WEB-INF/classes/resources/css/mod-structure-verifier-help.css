@@ -4,10 +4,10 @@ pre {
 
 pre.codeblock {
     display: block;
-    background: #eee;
-    border: solid gray 1px;
+    background: var(--bs-info-bg-subtle);
+    border: solid var(--bs-info-border-subtle) 1px;
     padding: 4px;
-    margin: 5px 0;
+    margin: 5px 0 25px 0;
     white-space: pre-wrap;
 }
 
