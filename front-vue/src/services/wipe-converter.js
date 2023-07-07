@@ -109,7 +109,7 @@ const findTrianglesInWorker = (image, verticalScan) => {
                 x,
                 y,
                 dimensions1[0],
-                dimensions1[1]
+                dimensions1[1],
               );
               scan(
                 bitmap,
@@ -117,14 +117,14 @@ const findTrianglesInWorker = (image, verticalScan) => {
                 y,
                 dimensions1[0],
                 dimensions1[1],
-                (_x, _y, idx) => (bitmap.data[idx + 3] = 0)
+                (_x, _y, idx) => (bitmap.data[idx + 3] = 0),
               );
             } else {
               definitiveTriangles = getTrianglesFromRectangle(
                 x,
                 y,
                 dimensions2[0],
-                dimensions2[1]
+                dimensions2[1],
               );
               scan(
                 bitmap,
@@ -132,7 +132,7 @@ const findTrianglesInWorker = (image, verticalScan) => {
                 y,
                 dimensions2[0],
                 dimensions2[1],
-                (_x, _y, idx) => (bitmap.data[idx + 3] = 0)
+                (_x, _y, idx) => (bitmap.data[idx + 3] = 0),
               );
             }
 
@@ -267,7 +267,7 @@ const findTrianglesInWorker = (image, verticalScan) => {
       // double-flatten (triangles => points => coordinates) to end up with a coordinate list
       return triangles.flatMap((t) => t).flatMap((p) => p);
     },
-    [image.bitmap, verticalScan]
+    [image.bitmap, verticalScan],
   );
 };
 

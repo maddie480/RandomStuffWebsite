@@ -122,7 +122,7 @@ const vue = {
 
         // sort files by name
         const selectedFiles = Array.from(this.selectedFiles).sort((a, b) =>
-          a.name.localeCompare(b.name)
+          a.name.localeCompare(b.name),
         );
 
         // the output bin is a binary format:
@@ -154,7 +154,7 @@ const vue = {
 
           // convert it to triangles
           const coordinates = await wipeConverter.convertWipeToTriangles(
-            Buffer.from(fileBuffer)
+            Buffer.from(fileBuffer),
           );
 
           // add the coordinate count, then the coordinates themselves, to the array.
@@ -169,7 +169,7 @@ const vue = {
             type: "application/octet-stream",
           }),
           "wipe.bin",
-          "application/octet-stream"
+          "application/octet-stream",
         );
       } catch (e) {
         this.error = true;

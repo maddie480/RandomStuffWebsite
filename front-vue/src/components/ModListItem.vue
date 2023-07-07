@@ -145,7 +145,7 @@
                           >-
                           {{
                             new Date(
-                              file.CreatedDate * 1000
+                              file.CreatedDate * 1000,
                             ).toLocaleDateString(undefined, {
                               hour12: false,
                               year: "numeric",

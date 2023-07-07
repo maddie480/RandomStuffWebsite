@@ -195,15 +195,15 @@ const vue = {
                 : "") +
               (categoryFilter.categoryid
                 ? `&category=${categoryFilter.categoryid}`
-                : "")
+                : ""),
           );
         } else {
           result = await axios.get(
             `${
               config.backendUrl
             }/celeste/gamebanana-search?q=${encodeURIComponent(
-              this.query
-            )}&full=true`
+              this.query,
+            )}&full=true`,
           );
         }
 
@@ -214,7 +214,7 @@ const vue = {
         for (const mod of mods) {
           for (const file of mod.Files) {
             const gameBananaFileId = parseInt(
-              file.URL.substr(file.URL.lastIndexOf("/") + 1)
+              file.URL.substr(file.URL.lastIndexOf("/") + 1),
             );
             file.GameBananaFileId = gameBananaFileId;
 
