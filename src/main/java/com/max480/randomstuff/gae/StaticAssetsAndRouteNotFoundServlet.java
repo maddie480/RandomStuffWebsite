@@ -22,7 +22,7 @@ import java.util.stream.Stream;
  */
 @WebServlet(name = "StaticAssetsAndRouteNotFound", urlPatterns = {"/"})
 public class StaticAssetsAndRouteNotFoundServlet extends HttpServlet {
-    private static final Map<String, String> CONTENT_TYPES;
+    public static final Map<String, String> CONTENT_TYPES;
 
     static {
         CONTENT_TYPES = new HashMap<>();

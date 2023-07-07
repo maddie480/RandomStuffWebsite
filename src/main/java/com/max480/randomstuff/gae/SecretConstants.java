@@ -26,6 +26,9 @@ public class SecretConstants {
     public static String RSS_AGGREGATOR_SECRET = "";
     public static String ZAPIER_WEBHOOK_SECRET = "";
 
+    public static String SECURE_STORAGE_WRITE_BASIC_AUTH = "";
+    public static String SECURE_STORAGE_READ_BASIC_AUTH = "";
+
     static {
         // The SECRET_CONSTANTS environment variable has all secrets, in JSON format.
         String environment = System.getenv("SECRET_CONSTANTS");
@@ -50,5 +53,8 @@ public class SecretConstants {
 
         RSS_AGGREGATOR_SECRET = secrets.getString("RSS_AGGREGATOR_SECRET");
         ZAPIER_WEBHOOK_SECRET = secrets.getString("ZAPIER_WEBHOOK_SECRET");
+
+        SECURE_STORAGE_WRITE_BASIC_AUTH = secrets.getString("SECURE_STORAGE_WRITE_BASIC_AUTH");
+        SECURE_STORAGE_READ_BASIC_AUTH = secrets.getString("SECURE_STORAGE_READ_BASIC_AUTH");
     }
 }
