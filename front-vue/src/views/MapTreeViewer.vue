@@ -132,7 +132,7 @@ const vue = {
         const contents = (
           await axios.post(
             `${config.backendUrl}/celeste/bin-to-json`,
-            this.selectedFiles[0]
+            this.selectedFiles[0],
           )
         ).data;
 
@@ -149,7 +149,7 @@ const vue = {
         download(
           JSON.stringify(this.mapContents),
           "map.json",
-          "application/json"
+          "application/json",
         );
         this.mapContents = null;
       }

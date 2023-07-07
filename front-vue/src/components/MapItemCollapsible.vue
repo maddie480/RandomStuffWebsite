@@ -129,7 +129,7 @@ const isHighlighted = function (
   parent,
   grandparent,
   highlight,
-  outOfBoundsOnly
+  outOfBoundsOnly,
 ) {
   // check if this should be highlighted due to being OOB only
   if (
@@ -191,10 +191,10 @@ export default {
         }
       }
       specials.sort(
-        (a, b) => specialKeys.indexOf(a.key) - specialKeys.indexOf(b.key)
+        (a, b) => specialKeys.indexOf(a.key) - specialKeys.indexOf(b.key),
       );
       result.sort((a, b) =>
-        a.key.toLowerCase().localeCompare(b.key.toLowerCase())
+        a.key.toLowerCase().localeCompare(b.key.toLowerCase()),
       );
 
       specials.push(...result);
@@ -207,7 +207,7 @@ export default {
         this.parent,
         this.grandparent,
         this.highlight.toLowerCase(),
-        this.outOfBoundsOnly
+        this.outOfBoundsOnly,
       );
     },
     shown() {
@@ -217,7 +217,7 @@ export default {
         this.parent,
         this.grandparent,
         this.highlight.toLowerCase(),
-        this.outOfBoundsOnly
+        this.outOfBoundsOnly,
       );
     },
   },
