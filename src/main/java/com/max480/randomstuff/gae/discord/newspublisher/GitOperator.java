@@ -190,9 +190,9 @@ public final class GitOperator {
             log.info("Committing");
             gitRepository.commit()
                     .setAll(true)
-                    .setAuthor("maddie480", "52103563+maddie480@users.noreply.github.com")
+                    .setAuthor("Nyan-Games", "24738390+nyan-games@users.noreply.github.com")
                     .setCommitter("maddie480", "52103563+maddie480@users.noreply.github.com")
-                    .setMessage("[Automated] Update Olympus news")
+                    .setMessage("[Olympus News Manager Discord bot] Update Olympus news")
                     .call();
 
             log.info("Pushing");
