@@ -23,11 +23,18 @@ public class SecretConstants {
 
     public static String BANANABOT_PUBLIC_KEY = "";
 
+    public static String OLYMPUS_NEWS_MANAGER_CLIENT_ID = "";
+    public static String OLYMPUS_NEWS_MANAGER_PUBLIC_KEY = "";
+
     public static String RSS_AGGREGATOR_SECRET = "";
     public static String ZAPIER_WEBHOOK_SECRET = "";
 
     public static String SECURE_STORAGE_WRITE_BASIC_AUTH = "";
     public static String SECURE_STORAGE_READ_BASIC_AUTH = "";
+
+    public static String GITHUB_SSH_KNOWN_HOSTS = "";
+    public static String GITHUB_SSH_PUBLIC_KEY = "";
+    public static String GITHUB_SSH_PRIVATE_KEY = "";
 
     static {
         // The SECRET_CONSTANTS environment variable has all secrets, in JSON format.
@@ -47,6 +54,9 @@ public class SecretConstants {
 
         BANANABOT_PUBLIC_KEY = secrets.getString("BANANABOT_PUBLIC_KEY");
 
+        OLYMPUS_NEWS_MANAGER_CLIENT_ID = secrets.getString("OLYMPUS_NEWS_MANAGER_CLIENT_ID");
+        OLYMPUS_NEWS_MANAGER_PUBLIC_KEY = secrets.getString("OLYMPUS_NEWS_MANAGER_PUBLIC_KEY");
+
         RELOAD_SHARED_SECRET = secrets.getString("RELOAD_SHARED_SECRET");
 
         SRC_MOD_LIST_KEY = secrets.getString("SRC_MOD_LIST_KEY");
@@ -56,5 +66,9 @@ public class SecretConstants {
 
         SECURE_STORAGE_WRITE_BASIC_AUTH = secrets.getString("SECURE_STORAGE_WRITE_BASIC_AUTH");
         SECURE_STORAGE_READ_BASIC_AUTH = secrets.getString("SECURE_STORAGE_READ_BASIC_AUTH");
+
+        GITHUB_SSH_KNOWN_HOSTS = secrets.getString("GITHUB_SSH_KNOWN_HOSTS");
+        GITHUB_SSH_PUBLIC_KEY = secrets.getString("GITHUB_SSH_PUBLIC_KEY");
+        GITHUB_SSH_PRIVATE_KEY = secrets.getString("GITHUB_SSH_PRIVATE_KEY");
     }
 }
