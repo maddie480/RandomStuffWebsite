@@ -68,7 +68,7 @@ public final class GitOperator {
                     .setDirectory(gitDirectory.toFile())
                     .setBranch("main")
                     .setDepth(1)
-                    .setURI("git@github.com:maddie480/EverestAPI.github.io.git")
+                    .setURI("git@github.com:EverestAPI/EverestAPI.github.io.git")
                     .call();
         } catch (GitAPIException e) {
             throw new IOException(e);
