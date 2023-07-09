@@ -9,7 +9,7 @@ The `src` folder contains the source for everything provided by the Java servlet
 - [the Everest Update Checker status page](https://maddie480.ovh/celeste/update-checker-status)
 - [the Celeste font generator](https://maddie480.ovh/celeste/font-generator)
 - [the Celeste Mod Structure Verifier](https://maddie480.ovh/celeste/mod-structure-verifier)
-- [the #celeste_news_network subscription service](https://maddie480.ovh/celeste/news-network-subscription) - the Twitter update checking code is not part of the frontend and can be found [on the Random Backend Stuff repository](https://github.com/maddie480/RandomBackendStuff/blob/main/src/main/java/com/max480/randomstuff/backend/celeste/crontabs/TwitterUpdateChecker.java)
+- [the #celeste_news_network subscription service](https://maddie480.ovh/celeste/news-network-subscription) - the Mastodon update checking code is not part of the frontend and can be found [on the Random Backend Stuff repository](https://github.com/maddie480/RandomBackendStuff/blob/main/src/main/java/com/max480/randomstuff/backend/celeste/crontabs/MastodonUpdateChecker.java)
 - [the help page for the Mod Structure Verifier bot](https://maddie480.ovh/celeste/mod-structure-verifier-help?collabName=CollabName&collabMapName=CollabMapName&assets&xmls&nomap&multiplemaps&badmappath&badenglish&misplacedyaml&noyaml&yamlinvalid&multiyaml&missingassets&missingentities&missingfonts)
 - [the "Show Arbitrary Mods on Profile" GameBanana app](https://gamebanana.com/apps/752)
 - [the Discord Games Bot](https://maddie480.ovh/discord-bots#games-bot) - the "bot" is actually a webhook that gets called by Discord

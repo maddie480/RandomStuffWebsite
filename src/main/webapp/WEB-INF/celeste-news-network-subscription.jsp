@@ -36,7 +36,10 @@
 </p>
 
 <ul>
-    <li><b><a href="https://twitter.com/celeste_game" target="_blank">@celeste_game</a></b> &#x2013; The official Celeste Twitter account</li>
+    <li>
+        <b><a href="https://mastodon.exok.com/@EXOK" target="_blank">@EXOK@mastodon.exok.com</a></b> &#x2013;
+        The official Mastodon account of EXOK Games, the developer of Celeste
+    </li>
     <li>
         <b>Olympus News</b> &#x2013; Celeste modding news that appear in <a href="https://gamebanana.com/tools/6449" target="_blank">Olympus</a>,
         a mod manager and installer for the <a href="https://everestapi.github.io" target="_blank">Everest</a> mod loader.

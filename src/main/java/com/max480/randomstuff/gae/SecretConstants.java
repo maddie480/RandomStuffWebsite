@@ -27,7 +27,6 @@ public class SecretConstants {
     public static String OLYMPUS_NEWS_MANAGER_PUBLIC_KEY = "";
 
     public static String RSS_AGGREGATOR_SECRET = "";
-    public static String ZAPIER_WEBHOOK_SECRET = "";
 
     public static String SECURE_STORAGE_WRITE_BASIC_AUTH = "";
     public static String SECURE_STORAGE_READ_BASIC_AUTH = "";
@@ -62,7 +61,6 @@ public class SecretConstants {
         SRC_MOD_LIST_KEY = secrets.getString("SRC_MOD_LIST_KEY");
 
         RSS_AGGREGATOR_SECRET = secrets.getString("RSS_AGGREGATOR_SECRET");
-        ZAPIER_WEBHOOK_SECRET = secrets.getString("ZAPIER_WEBHOOK_SECRET");
 
         SECURE_STORAGE_WRITE_BASIC_AUTH = secrets.getString("SECURE_STORAGE_WRITE_BASIC_AUTH");
         SECURE_STORAGE_READ_BASIC_AUTH = secrets.getString("SECURE_STORAGE_READ_BASIC_AUTH");
