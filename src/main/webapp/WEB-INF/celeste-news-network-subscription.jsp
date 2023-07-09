@@ -43,7 +43,7 @@
     <li>
         <b>Olympus News</b> &#x2013; Celeste modding news that appear in <a href="https://gamebanana.com/tools/6449" target="_blank">Olympus</a>,
         a mod manager and installer for the <a href="https://everestapi.github.io" target="_blank">Everest</a> mod loader.
-        The news feed is managed by Nyan#0924, and published through
+        The news feed is managed by Nyan (ppnyan on Discord), and published through
         <a href="https://github.com/EverestAPI/EverestAPI.github.io/tree/main/olympusnews" target="_blank">the GitHub repository of the Everest website</a>.
     </li>
 </ul>
