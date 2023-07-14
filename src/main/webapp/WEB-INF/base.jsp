@@ -69,6 +69,8 @@
                         <li><a class="dropdown-item" href="/celeste/map-tree-viewer">Map Tree Viewer</a></li>
                         <li><a class="dropdown-item <%= "mod-structure-verifier".equals(request.getAttribute("navId")) ? "active" : "" %>"
                             href="/celeste/mod-structure-verifier">Mod Structure Verifier</a></li>
+                        <li><a class="dropdown-item <%= "olympus-news".equals(request.getAttribute("navId")) ? "active" : "" %>"
+                            href="/celeste/olympus-news">Olympus News</a></li>
                         <li><a class="dropdown-item <%= "update-checker-status".equals(request.getAttribute("navId")) ? "active" : "" %>"
                             href="/celeste/update-checker-status">Update Checker status</a></li>
                         <li><a class="dropdown-item" href="/celeste/wipe-converter">Wipe Converter</a></li>

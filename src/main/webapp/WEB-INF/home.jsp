@@ -65,6 +65,11 @@
             packaged as zip files. It can find missing dependencies, naming issues, missing characters in the font, and so on.
         </li>
         <li>
+            <b><a href="/celeste/olympus-news">Olympus News</a>:</b> Celeste modding news that appeared in
+            <a href="https://gamebanana.com/tools/6449" target="_blank">Olympus</a>, a mod manager and installer for the
+            <a href="https://everestapi.github.io" target="_blank">Everest</a> mod loader.
+        </li>
+        <li>
             <b><a href="/celeste/update-checker-status">Update Checker status</a>:</b> exactly what it says, a status page for the Everest update checker.
             If it is down, Everest and Olympus (the mod manager) will not be aware of the latest changes on GameBanana.
             The page also displays the latest changes the update checker detected.

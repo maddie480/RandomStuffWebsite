@@ -104,6 +104,11 @@
                 >
               </li>
               <li>
+                <a class="dropdown-item" href="/celeste/olympus-news"
+                  >Olympus News</a
+                >
+              </li>
+              <li>
                 <a class="dropdown-item" href="/celeste/update-checker-status"
                   >Update Checker status</a
                 >

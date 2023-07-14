@@ -1,0 +1,23 @@
+.card {
+    display: inline-block;
+    margin: 12px 0 12px 0;
+}
+
+.btn {
+    margin-right: 10px;
+}
+
+.paginator {
+    text-align: center;
+    font-size: 14pt;
+    margin-bottom: 30px;
+}
+
+.paginator .btn {
+    margin: 5px 2px;
+}
+
+.news-description {
+    margin-top: 4px;
+    display: inline-block;
+}

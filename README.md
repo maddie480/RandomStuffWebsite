@@ -6,6 +6,7 @@ The `src` folder contains the source for everything provided by the Java servlet
 - [the Everest Update Checker frontend service](https://maddie480.ovh/celeste/everest_update.yaml), exposing files produced by the Update Checker
 - [the Celeste custom entity catalog](https://maddie480.ovh/celeste/custom-entity-catalog), and [its API version](https://maddie480.ovh/celeste/custom-entity-catalog.json)
 - [the everest.yaml validator](https://maddie480.ovh/celeste/everest-yaml-validator)
+- [an online version of Olympus News](https://maddie480.ovh/celeste/olympus-news)
 - [the Everest Update Checker status page](https://maddie480.ovh/celeste/update-checker-status)
 - [the Celeste font generator](https://maddie480.ovh/celeste/font-generator)
 - [the Celeste Mod Structure Verifier](https://maddie480.ovh/celeste/mod-structure-verifier)

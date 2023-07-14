@@ -76,7 +76,15 @@ public final class GitOperator {
     }
 
     public static List<OlympusNews> listOlympusNews() throws IOException {
-        try (Stream<Path> files = Files.list(gitDirectory.resolve("olympusnews"))) {
+        return listOlympusNews(false);
+    }
+
+    public static List<OlympusNews> listArchivedOlympusNews() throws IOException {
+        return listOlympusNews(true);
+    }
+
+    private static List<OlympusNews> listOlympusNews(boolean archive) throws IOException {
+        try (Stream<Path> files = Files.list(gitDirectory.resolve(archive ? "olympusnews/archive" : "olympusnews"))) {
             List<OlympusNews> result = new ArrayList<>();
 
             for (Path olympusNews : files

@@ -31,8 +31,8 @@ public record OlympusNews(String slug, String title, String image, String link, 
                 dataParsed.get("title"),
                 dataParsed.get("image"),
                 dataParsed.get("link"),
-                preview.trim(),
-                text != null ? text.trim() : null
+                preview.isEmpty() ? null : preview,
+                text == null || text.isEmpty() ? null : text
         );
     }
 
