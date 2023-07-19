@@ -72,17 +72,17 @@ public class OlympusNewsService extends HttpServlet {
         if ("/celeste/olympus-news.json".equals(request.getRequestUri())) {
             JSONArray result = new JSONArray();
 
-            for (OlympusNews news : (List<OlympusNews>) request.getAttribute("news")) {
+            for (OlympusNews newsEntry : (List<OlympusNews>) request.getAttribute("news")) {
                 JSONObject item = new JSONObject();
 
-                item.put("slug", news.slug());
-                if (news.title() != null) item.put("title", news.title());
-                if (news.image() != null) item.put("image", news.image());
-                if (news.link() != null) item.put("link", news.link());
-                if (news.shortDescription() != null) item.put("shortDescription", news.shortDescription());
-                if (news.longDescription() != null) item.put("longDescription", news.longDescription());
+                item.put("slug", newsEntry.slug());
+                if (newsEntry.title() != null) item.put("title", newsEntry.title());
+                if (newsEntry.image() != null) item.put("image", newsEntry.image());
+                if (newsEntry.link() != null) item.put("link", newsEntry.link());
+                if (newsEntry.shortDescription() != null) item.put("shortDescription", newsEntry.shortDescription());
+                if (newsEntry.longDescription() != null) item.put("longDescription", newsEntry.longDescription());
 
-                result.add(item);
+                result.put(item);
             }
 
             response.setContentType("application/json");
