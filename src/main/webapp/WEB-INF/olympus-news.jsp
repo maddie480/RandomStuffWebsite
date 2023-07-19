@@ -9,6 +9,11 @@
     <a href="https://github.com/EverestAPI/EverestAPI.github.io/tree/main/olympusnews" target="_blank">the GitHub repository of the Everest website</a>.
 </p>
 
+<p>
+    This news feed is also available <a href="/celeste/olympus-news.json" target="_blank">in JSON format</a>
+    and <a href="/celeste/olympus-news.xml" target="_blank">as an RSS / Atom feed</a>.
+</p>
+
 <div class="row">
     <% for (OlympusNews news : (List<OlympusNews>) request.getAttribute("news")) { %>
         <div class="col-xl-4 col-md-6 col-sm-12">

@@ -21,7 +21,8 @@ import java.util.List;
 /**
  *
  */
-@WebServlet(name = "OlympusNewsService", urlPatterns = {"/celeste/olympus-news", "/celeste/olympus-news.json"})
+@WebServlet(name = "OlympusNewsService", urlPatterns = {"/celeste/olympus-news",
+        "/celeste/olympus-news.json", "/celeste/olympus-news.xml"})
 public class OlympusNewsService extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(OlympusNewsService.class);
 
@@ -87,6 +88,10 @@ public class OlympusNewsService extends HttpServlet {
 
             response.setContentType("application/json");
             response.getWriter().write(result.toString());
+
+        } else if ("/celeste/olympus-news.xml".equals(request.getRequestURI())) {
+            request.getRequestDispatcher("/WEB-INF/olympus-news-rss.jsp").forward(request, response);
+
         } else {
             PageRenderer.render(request, response, "olympus-news", "Olympus News",
                     "Find all the news that appeared in Olympus, the mod manager for Celeste, on this page!");
