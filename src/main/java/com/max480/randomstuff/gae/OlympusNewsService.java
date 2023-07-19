@@ -7,6 +7,8 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,7 +21,7 @@ import java.util.List;
 /**
  *
  */
-@WebServlet(name = "OlympusNewsService", urlPatterns = {"/celeste/olympus-news"})
+@WebServlet(name = "OlympusNewsService", urlPatterns = {"/celeste/olympus-news", "/celeste/olympus-news.json"})
 public class OlympusNewsService extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(OlympusNewsService.class);
 
@@ -67,7 +69,27 @@ public class OlympusNewsService extends HttpServlet {
                 })
                 .toList());
 
-        PageRenderer.render(request, response, "olympus-news", "Olympus News",
-                "Find all the news that appeared in Olympus, the mod manager for Celeste, on this page!");
+        if ("/celeste/olympus-news.json".equals(request.getRequestUri())) {
+            JSONArray result = new JSONArray();
+
+            for (OlympusNews news : (List<OlympusNews>) request.getAttribute("news")) {
+                JSONObject item = new JSONObject();
+
+                item.put("slug", news.slug());
+                if (news.title() != null) item.put("title", news.title());
+                if (news.image() != null) item.put("image", news.image());
+                if (news.link() != null) item.put("link", news.link());
+                if (news.shortDescription() != null) item.put("shortDescription", news.shortDescription());
+                if (news.longDescription() != null) item.put("longDescription", news.longDescription());
+
+                result.add(item);
+            }
+
+            response.setContentType("application/json");
+            response.getWriter().write(result.toString());
+        } else {
+            PageRenderer.render(request, response, "olympus-news", "Olympus News",
+                    "Find all the news that appeared in Olympus, the mod manager for Celeste, on this page!");
+        }
     }
 }
