@@ -1,5 +1,4 @@
 # Maddie's Random Stuff Website
-
 This is the source code for the [maddie480.ovh](https://maddie480.ovh/) website, an app running on Java 17 using [Eclipse Jetty](https://www.eclipse.org/jetty/).
 
 The `src` folder contains the source for everything provided by the Java servlet:
@@ -249,15 +248,16 @@ This API is available at `https://maddie480.ovh/celeste/everest-versions`, and r
 ```json
 [
     {
-        "date": "2023-05-20T18:39:10.871934Z",
-        "mainFileSize": 19033830,
-        "mainDownload": "https://dev.azure.com/EverestAPI/Everest/_apis/build/builds/3303/artifacts?artifactName=main&api-version=5.0&%24format=zip",
-        "olympusMetaDownload": "https://dev.azure.com/EverestAPI/Everest/_apis/build/builds/3303/artifacts?artifactName=olympus-meta&api-version=5.0&%24format=zip",
-        "author": "maddie480",
-        "olympusBuildDownload": "https://dev.azure.com/EverestAPI/Everest/_apis/build/builds/3303/artifacts?artifactName=olympus-build&api-version=5.0&%24format=zip",
-        "description": "Better support for transitive dependencies",
+        "date": "2023-07-15T20:47:39.2562228Z",
+        "mainFileSize": 19034073,
+        "mainDownload": "https://dev.azure.com/EverestAPI/Everest/_apis/build/builds/3371/artifacts?artifactName=main&api-version=5.0&%24format=zip",
+        "olympusMetaDownload": "https://dev.azure.com/EverestAPI/Everest/_apis/build/builds/3371/artifacts?artifactName=olympus-meta&api-version=5.0&%24format=zip",
+        "author": "Kalobi",
+        "olympusBuildDownload": "https://dev.azure.com/EverestAPI/Everest/_apis/build/builds/3371/artifacts?artifactName=olympus-build&api-version=5.0&%24format=zip",
+        "description": "Fix update notification not showing on older installs",
         "branch": "dev",
-        "version": 4003
+        "version": 4071,
+        "isNative": false
     },
     [...]
 ]
@@ -265,6 +265,7 @@ This API is available at `https://maddie480.ovh/celeste/everest-versions`, and r
 
 - `version` is the Everest version number.
 - `branch` is either `dev`, `beta` or `stable`. Other branches might be created to test specific features in the future.
+- `isNative` indicates whether this is a .NET Core build. Native builds (using .NET Core) are currently experimental, but non-native builds (.NET Framework) will be deprecated in the future.
 - `mainDownload` is the download for use by Everest to install an update.
 - `mainFileSize` is the size of the `mainDownload` file, in bytes.
 - `date` is the date at which the version was published, in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format.
