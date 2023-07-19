@@ -69,7 +69,7 @@ public class OlympusNewsService extends HttpServlet {
                 })
                 .toList());
 
-        if ("/celeste/olympus-news.json".equals(request.getRequestUri())) {
+        if ("/celeste/olympus-news.json".equals(request.getRequestURI())) {
             JSONArray result = new JSONArray();
 
             for (OlympusNews newsEntry : (List<OlympusNews>) request.getAttribute("news")) {
