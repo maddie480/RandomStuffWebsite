@@ -42,7 +42,7 @@
     "eslint-plugin-prettier": "^5.0.0",
     "eslint-plugin-vue": "^9.15.1",
     "prettier": "^3.0.0",
-    "sass": "^1.63.6",
+    "sass": "^1.64.0",
     "sass-loader": "^13.3.2"
   },
   "overrides": {
