@@ -17,6 +17,8 @@
     <meta property="og:description" content="<%= escapeHtml4((String) request.getAttribute("pageDescription")) %>">
 
     <link rel="icon" href="/img/favicon.png">
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#FFB8DD" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#77286E" />
 
     <% if ((int) request.getAttribute("refreshAfter") != 0) { %>
         <meta http-equiv="refresh" content="<%= request.getAttribute("refreshAfter") %>" >
