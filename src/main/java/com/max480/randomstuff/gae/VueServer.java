@@ -26,25 +26,21 @@ public class VueServer extends HttpServlet {
 
             if (request.getRequestURI().equals("/celeste/banana-mirror-browser")) {
                 contents = contents
-                        .replace("${favicon}", StringEscapeUtils.escapeHtml4("/celeste/favicon.ico"))
                         .replace("${page_title}", StringEscapeUtils.escapeHtml4("Banana Mirror Browser"))
                         .replace("${page_description}", StringEscapeUtils.escapeHtml4(
                                 "If GameBanana is down or being slow, you can download Celeste mods here instead."));
             } else if (request.getRequestURI().equals("/celeste/wipe-converter")) {
                 contents = contents
-                        .replace("${favicon}", StringEscapeUtils.escapeHtml4("/celeste/favicon.ico"))
                         .replace("${page_title}", StringEscapeUtils.escapeHtml4("Celeste Wipe Converter"))
                         .replace("${page_description}", StringEscapeUtils.escapeHtml4(
                                 "Upload the frames of a custom Celeste screen wipe here, and you will be able to use it in-game with the \"Maddie's Helping Hand\" mod."));
             } else if (request.getRequestURI().equals("/celeste/file-searcher")) {
                 contents = contents
-                        .replace("${favicon}", StringEscapeUtils.escapeHtml4("/celeste/favicon.ico"))
                         .replace("${page_title}", StringEscapeUtils.escapeHtml4("Celeste File Searcher"))
                         .replace("${page_description}", StringEscapeUtils.escapeHtml4(
                                 "Use this tool to find in which Celeste mod(s) a file is on GameBanana, based on its path in the zip."));
             } else {
                 contents = contents
-                        .replace("${favicon}", StringEscapeUtils.escapeHtml4("/celeste/favicon.ico"))
                         .replace("${page_title}", StringEscapeUtils.escapeHtml4("Celeste Map Tree Viewer"))
                         .replace("${page_description}", StringEscapeUtils.escapeHtml4("See the raw contents of your map .bin as a tree to find out what is inside!"));
             }

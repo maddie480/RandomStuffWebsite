@@ -26,17 +26,14 @@ public class StaticAssetsAndRouteNotFoundServlet extends HttpServlet {
 
     static {
         CONTENT_TYPES = new HashMap<>();
-        CONTENT_TYPES.put("json", "application/json");
-        CONTENT_TYPES.put("ico", "image/x-icon");
         CONTENT_TYPES.put("css", "text/css");
-        CONTENT_TYPES.put("png", "image/png");
-        CONTENT_TYPES.put("js", "application/javascript");
         CONTENT_TYPES.put("otf", "font/otf");
         CONTENT_TYPES.put("ttf", "font/ttf");
-        CONTENT_TYPES.put("html", "text/html");
+        CONTENT_TYPES.put("png", "image/png");
         CONTENT_TYPES.put("svg", "image/svg+xml");
+        CONTENT_TYPES.put("js", "application/javascript");
         CONTENT_TYPES.put("webm", "video/webm");
-        CONTENT_TYPES.put("jpg", "image/jpeg");
+        CONTENT_TYPES.put("html", "text/html");
     }
 
     private static final Logger log = LoggerFactory.getLogger(StaticAssetsAndRouteNotFoundServlet.class);
@@ -47,7 +44,7 @@ public class StaticAssetsAndRouteNotFoundServlet extends HttpServlet {
             HomepageService.doGet(request, response);
         } else {
             String extension = request.getRequestURI().substring(request.getRequestURI().lastIndexOf(".") + 1);
-            if (CONTENT_TYPES.containsKey(extension) && Stream.of("/celeste/", "/css/", "/fonts/", "/img/", "/js/", "/vids/", "/lua-cutscenes-documentation/")
+            if (CONTENT_TYPES.containsKey(extension) && Stream.of("/css/", "/fonts/", "/img/", "/js/", "/vids/", "/lua-cutscenes-documentation/")
                     .anyMatch(request.getRequestURI()::startsWith)) {
 
                 try (InputStream is = StaticAssetsAndRouteNotFoundServlet.class.getClassLoader().getResourceAsStream("resources" + request.getRequestURI())) {

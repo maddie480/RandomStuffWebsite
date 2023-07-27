@@ -16,9 +16,7 @@
     <meta property="og:title" content="<%= escapeHtml4((String) request.getAttribute("pageTitle")) %>">
     <meta property="og:description" content="<%= escapeHtml4((String) request.getAttribute("pageDescription")) %>">
 
-    <% if ((boolean) request.getAttribute("isCeleste")) { %>
-        <link rel="shortcut icon" href="/celeste/favicon.ico">
-    <% } %>
+    <link rel="icon" href="/img/favicon.png">
 
     <% if ((int) request.getAttribute("refreshAfter") != 0) { %>
         <meta http-equiv="refresh" content="<%= request.getAttribute("refreshAfter") %>" >
