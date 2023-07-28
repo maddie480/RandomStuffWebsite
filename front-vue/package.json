@@ -15,7 +15,7 @@
     "axios": "^1.4.0",
     "browserify-zlib": "^0.2.0",
     "buffer": "^6.0.3",
-    "core-js": "^3.31.1",
+    "core-js": "^3.32.0",
     "downloadjs": "^1.4.7",
     "js-yaml": "^4.1.0",
     "path-browserify": "^1.0.1",
