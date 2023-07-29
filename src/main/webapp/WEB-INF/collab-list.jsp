@@ -17,7 +17,7 @@
         <div class="accordion-item">
             <h2 class="accordion-header" id="heading-<%= id %>">
                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collab-<%= id %>" aria-expanded="false" aria-controls="collab-<%= id %>">
-                    <%= escapeHtml4(collab.getString("name")) %>
+                    <span class="collab-name"><%= escapeHtml4(collab.getString("name")) %></span>
 
                     <% if ("in-progress".equals(collab.getString("status"))) { %>
                         <span class="badge bg-primary">In Progress</span>

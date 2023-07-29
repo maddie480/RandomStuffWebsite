@@ -16,3 +16,7 @@
 .contact {
     margin-top: 10px;
 }
+
+.collab-name, .description a {
+    overflow-wrap: anywhere;
+}
