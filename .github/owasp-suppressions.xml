@@ -25,14 +25,7 @@
         <notes><![CDATA[
             The vulnerability only affects alpha versions of Jetty 12
         ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.eclipse\.jetty/jetty\-server@.*$</packageUrl>
-        <cve>CVE-2023-26049</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-            The vulnerability only affects alpha versions of Jetty 12
-        ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.eclipse\.jetty/jetty\-io@.*$</packageUrl>
+        <packageUrl regex="true">^pkg:maven/org\.eclipse\.jetty/jetty\-(server|io|http)@.*$</packageUrl>
         <cve>CVE-2023-26049</cve>
     </suppress>
 </suppressions>
