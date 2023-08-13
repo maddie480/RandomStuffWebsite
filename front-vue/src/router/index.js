@@ -48,6 +48,14 @@ const routes = [
     },
   },
   {
+    path: "/celeste/graphics-dump-browser",
+    name: "GraphicsDumpBrowser",
+    component: () => import("../views/GraphicsDumpBrowser.vue"),
+    meta: {
+      title: "Celeste Graphics Dump Browser",
+    },
+  },
+  {
     path: "/:pathMatch(.*)*",
     component: () => import("../views/RouteNotFound.vue"),
   },

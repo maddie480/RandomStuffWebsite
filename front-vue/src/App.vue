@@ -90,6 +90,18 @@
                 <a
                   :class="
                     'dropdown-item ' +
+                    (this.$route.path === '/celeste/graphics-dump-browser'
+                      ? 'active'
+                      : '')
+                  "
+                  href="/celeste/graphics-dump-browser"
+                  >Graphics Dump Browser</a
+                >
+              </li>
+              <li>
+                <a
+                  :class="
+                    'dropdown-item ' +
                     (this.$route.path === '/celeste/map-tree-viewer'
                       ? 'active'
                       : '')

@@ -57,6 +57,11 @@
             are not present in the vanilla font (which happens a lot in languages like Chinese).
         </li>
         <li>
+            <b><a href="/celeste/graphics-dump-browser">Graphics Dump Browser</a>:</b> browse the
+            <a href="https://drive.google.com/file/d/1ITwCI2uJ7YflAG0OwBR4uOUEJBjwTCet/view" target="_blank">Celeste Graphics Dump</a>
+            online, download individual images or figure out their path.
+        </li>
+        <li>
             <b><a href="/celeste/map-tree-viewer">Map Tree Viewer</a>:</b> this tool displays a Celeste map as a tree, allowing you to see
             how those are structured, and to search for entities by name. You can also convert maps to JSON.
         </li>

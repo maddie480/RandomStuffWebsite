@@ -66,6 +66,7 @@
                         <li><a class="dropdown-item" href="/celeste/file-searcher">File Searcher</a></li>
                         <li><a class="dropdown-item <%= "font-generator".equals(request.getAttribute("navId")) ? "active" : "" %>"
                             href="/celeste/font-generator">Font Generator</a></li>
+                        <li><a class="dropdown-item" href="/celeste/graphics-dump-browser">Graphics Dump Browser</a></li>
                         <li><a class="dropdown-item" href="/celeste/map-tree-viewer">Map Tree Viewer</a></li>
                         <li><a class="dropdown-item <%= "mod-structure-verifier".equals(request.getAttribute("navId")) ? "active" : "" %>"
                             href="/celeste/mod-structure-verifier">Mod Structure Verifier</a></li>

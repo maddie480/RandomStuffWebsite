@@ -48,7 +48,7 @@ public class StaticAssetsAndRouteNotFoundServlet extends HttpServlet {
             if (CONTENT_TYPES.containsKey(extension) && Stream.of("/css/", "/fonts/", "/img/", "/js/", "/vids/", "/lua-cutscenes-documentation/", "/vanilla-graphics-dump/")
                     .anyMatch(request.getRequestURI()::startsWith)) {
 
-                try (InputStream is = StaticAssetsAndRouteNotFoundServlet.class.getClassLoader().getResourceAsStream("resources" + request.getRequestURI())) {
+                try (InputStream is = StaticAssetsAndRouteNotFoundServlet.class.getClassLoader().getResourceAsStream("resources" + request.getRequestURI().replace("%20", " "))) {
                     if (is != null) {
                         response.setContentType(CONTENT_TYPES.get(extension));
                         IOUtils.copy(is, response.getOutputStream());
