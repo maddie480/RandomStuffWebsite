@@ -51,7 +51,7 @@ public class SecurityHeadersFilter extends HttpFilter {
                     "img-src 'self' data: https://*.0x0a.de; " +
                     "frame-ancestors 'none'; " +
                     "object-src 'none';");
-        } else if ("/celeste/olympus-news".equals(req.getRequestURI())){
+        } else if ("/celeste/olympus-news" .equals(req.getRequestURI())) {
             // allow images from GitHub
             res.setHeader("Content-Security-Policy", "default-src 'self'; " +
                     "img-src 'self' data: https://raw.githubusercontent.com; " +
@@ -83,7 +83,7 @@ public class SecurityHeadersFilter extends HttpFilter {
         if (Arrays.asList("/celeste/gamebanana-search", "/celeste/gamebanana-list", "/celeste/gamebanana-featured", "/celeste/gamebanana-categories",
                         "/celeste/gamebanana-info", "/celeste/bin-to-json", "/celeste/custom-entity-catalog.json", "/celeste/everest-versions",
                         "/celeste/update-checker-status.json", "/celeste/everest_update.yaml", "/celeste/mod_search_database.yaml",
-                        "/celeste/mod_dependency_graph.yaml")
+                        "/celeste/mod_dependency_graph.yaml", "/celeste/olympus-news.json", "/vanilla-graphics-dump/list.json")
                 .contains(req.getRequestURI())) {
             // allow most JSON and YAML APIs to be called from anywhere.
             res.setHeader("Access-Control-Allow-Origin", "*");

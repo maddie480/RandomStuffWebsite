@@ -303,7 +303,24 @@
                     </execution>
 
                     <execution>
-                        <id>delete Lua Cutscenes documentation integrator code</id>
+                        <id>integrate vanilla graphics dump</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>java</executable>
+                            <workingDirectory>${project.build.directory}/random-stuff-website-1.0.0/WEB-INF/classes</workingDirectory>
+                            <arguments>
+                                <argument>-cp</argument>
+                                <argument>.:../../../dependency/commons-io-2.13.0.jar:../../../dependency/json-20230618.jar</argument>
+                                <argument>com.max480.randomstuff.gae.GraphicsDumpIntegrator</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>delete integrators code</id>
                         <phase>prepare-package</phase>
                         <goals>
                             <goal>exec</goal>
@@ -314,6 +331,7 @@
                             <arguments>
                                 <argument>-v</argument>
                                 <argument>com/max480/randomstuff/gae/LuaCutscenesDocumentationIntegrator.class</argument>
+                                <argument>com/max480/randomstuff/gae/GraphicsDumpIntegrator.class</argument>
                             </arguments>
                         </configuration>
                     </execution>
@@ -422,6 +440,42 @@
                                         <argument>com.max480.randomstuff.gae.LuaCutscenesDocumentationIntegrator</argument>
                                     </arguments>
                                 </configuration>
+                            </execution>
+
+                            <execution>
+                                <id>integrate vanilla graphics dump</id>
+                                <phase>prepare-package</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>java</executable>
+                                    <workingDirectory>${project.build.directory}/random-stuff-website-1.0.0/WEB-INF/classes</workingDirectory>
+                                    <arguments>
+                                        <argument>-cp</argument>
+                                        <argument>.;../../../dependency/commons-io-2.13.0.jar;../../../dependency/json-20230618.jar</argument>
+                                        <argument>com.max480.randomstuff.gae.GraphicsDumpIntegrator</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>no-graphics-dump</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>3.1.0</version>
+
+                        <executions>
+                            <execution>
+                                <id>integrate vanilla graphics dump</id>
+                                <phase>none</phase>
                             </execution>
                         </executions>
                     </plugin>

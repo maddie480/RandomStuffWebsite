@@ -34,6 +34,7 @@ public class StaticAssetsAndRouteNotFoundServlet extends HttpServlet {
         CONTENT_TYPES.put("js", "application/javascript");
         CONTENT_TYPES.put("webm", "video/webm");
         CONTENT_TYPES.put("html", "text/html");
+        CONTENT_TYPES.put("json", "application/json");
     }
 
     private static final Logger log = LoggerFactory.getLogger(StaticAssetsAndRouteNotFoundServlet.class);
@@ -44,7 +45,7 @@ public class StaticAssetsAndRouteNotFoundServlet extends HttpServlet {
             HomepageService.doGet(request, response);
         } else {
             String extension = request.getRequestURI().substring(request.getRequestURI().lastIndexOf(".") + 1);
-            if (CONTENT_TYPES.containsKey(extension) && Stream.of("/css/", "/fonts/", "/img/", "/js/", "/vids/", "/lua-cutscenes-documentation/")
+            if (CONTENT_TYPES.containsKey(extension) && Stream.of("/css/", "/fonts/", "/img/", "/js/", "/vids/", "/lua-cutscenes-documentation/", "/vanilla-graphics-dump/")
                     .anyMatch(request.getRequestURI()::startsWith)) {
 
                 try (InputStream is = StaticAssetsAndRouteNotFoundServlet.class.getClassLoader().getResourceAsStream("resources" + request.getRequestURI())) {
