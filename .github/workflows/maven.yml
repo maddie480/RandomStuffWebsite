@@ -40,9 +40,14 @@ jobs:
         grep "" matches.txt && exit 1 || echo "No trailing space found!"
 
     - name: Build with Maven
+      if: github.ref == 'refs/heads/main'
       env:
         GOOGLE_DRIVE_API_KEY: ${{ secrets.GOOGLE_DRIVE_API_KEY }}
       run: mvn -B verify --file pom.xml
+
+    - name: Build with Maven (no graphics dump)
+      if: github.ref != 'refs/heads/main'
+      run: mvn -B verify -Pno-graphics-dump --file pom.xml
 
     - name: Dependency Check on Extra 1
       run: mvn -B dependency-check:check --file .github/extra-1/pom.xml
