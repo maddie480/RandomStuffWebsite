@@ -163,8 +163,12 @@
 
     <div>
         Just a girl in her late twenties that likes programming, video games and silly stuff. &#x1F61D;
-        I've got a bit of a hyperfocus on Celeste as you can see here, but I sometimes mess with obscure glitchy games, which can lead to
-        <a href="https://www.twitch.tv/lesnavetsjouables/clip/AwkwardPlacidJaguarRiPepperonis-JfS4pR8Eg4JCaufk" target="_blank">pretty <i>interesting</i> results</a>.
+        I've got a bit of a hyperfocus on Celeste as you can see here, but I sometimes mess with obscure glitchy games, 
+        leading to rather <i>interesting</i> things like <a href="/vids/pizza-dude.webm" target="_blank">stacking cars</a> or
+        <a href="/vids/forklift-racer.webm" target="_blank">shooting forklifts into space</a>.
+    </div>
+
+    <div>
         Maintaining all of that stuff takes time, but this is what I like doing &#x1F604;
         And at the end of the day, I don't really play video games that much, even Celeste. &#x1F914;
     </div>
