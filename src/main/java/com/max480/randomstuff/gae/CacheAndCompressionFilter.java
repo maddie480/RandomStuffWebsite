@@ -123,8 +123,14 @@ public class CacheAndCompressionFilter extends HttpFilter {
 
     @Override
     protected void doFilter(HttpServletRequest req, HttpServletResponse res, FilterChain chain) throws IOException, ServletException {
+        if (req.getRequestURI().equals("/vids/pizza-dude.webm")) {
+            // big file, do not buffer it in memory
+            res.setContentLength(44214984);
+            chain.doFilter(req, res);
+            return;
+        }
         if (req.getRequestURI().equals("/celeste/bundle-download")) {
-            // this one MUST be streamed to the client
+            // this file has an unpredictable and possibly huge size (and it is a zip), so stream it without compression
             chain.doFilter(req, res);
             return;
         }
