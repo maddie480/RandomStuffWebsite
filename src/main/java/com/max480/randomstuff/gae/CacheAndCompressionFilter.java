@@ -10,13 +10,15 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpServletResponseWrapper;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.NotImplementedException;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.zip.GZIPOutputStream;
 
 @WebFilter(filterName = "CacheEtagFilter", urlPatterns = "/*")
-public class CacheEtagFilter extends HttpFilter {
+public class CacheAndCompressionFilter extends HttpFilter {
     private static class ServletOutputStreamWrapper extends ServletOutputStream {
         private final OutputStream wrappedOutputStream;
 
@@ -52,13 +54,15 @@ public class CacheEtagFilter extends HttpFilter {
 
     private static class CachingServletResponse extends HttpServletResponseWrapper {
         private final HttpServletResponse wrappedResponse;
+        private final boolean compress;
 
         private StringWriter writer;
         private ByteArrayOutputStream outputStream;
 
-        public CachingServletResponse(HttpServletResponse response) {
+        public CachingServletResponse(HttpServletResponse response, boolean compress) {
             super(response);
             this.wrappedResponse = response;
+            this.compress = compress;
         }
 
         @Override
@@ -84,11 +88,36 @@ public class CacheEtagFilter extends HttpFilter {
         }
 
         public void sendResponse() throws IOException {
-            if (writer != null) {
-                wrappedResponse.getWriter().write(writer.toString());
-            } else if (outputStream != null) {
-                wrappedResponse.getOutputStream().write(outputStream.toByteArray());
+            if (writer == null && outputStream == null) {
+                // nothing to do /shrug
+                return;
             }
+
+            ByteArrayOutputStream finalContent = new ByteArrayOutputStream();
+
+            if (compress) {
+                wrappedResponse.setHeader("Content-Encoding", "gzip");
+
+                try (GZIPOutputStream os = new GZIPOutputStream(finalContent)) {
+                    if (writer != null) {
+                        wrappedResponse.setCharacterEncoding("UTF-8");
+                        IOUtils.write(writer.toString(), os, StandardCharsets.UTF_8);
+                    } else {
+                        IOUtils.write(outputStream.toByteArray(), os);
+                    }
+                }
+            } else {
+                if (writer != null) {
+                    wrappedResponse.setCharacterEncoding("UTF-8");
+                    IOUtils.write(writer.toString(), finalContent, StandardCharsets.UTF_8);
+                } else {
+                    finalContent = outputStream;
+                }
+            }
+
+            byte[] content = finalContent.toByteArray();
+            wrappedResponse.setContentLength(content.length);
+            wrappedResponse.getOutputStream().write(content);
         }
     }
 
@@ -100,7 +129,9 @@ public class CacheEtagFilter extends HttpFilter {
             return;
         }
 
-        CachingServletResponse placeholderResponse = new CachingServletResponse(res);
+        boolean compress = req.getHeader("Accept-Encoding") != null && req.getHeader("Accept-Encoding").matches(".*(^|[, ])gzip($|[ ;,]).*");
+
+        CachingServletResponse placeholderResponse = new CachingServletResponse(res, compress);
         chain.doFilter(req, placeholderResponse);
 
         if (placeholderResponse.getStatus() != 200) {
