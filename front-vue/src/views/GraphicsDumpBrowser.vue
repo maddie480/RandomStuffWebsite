@@ -2,6 +2,15 @@
   <div>
     <h1>Celeste Graphics Dump Browser</h1>
 
+    <div class="alert alert-info">
+      You can download the full graphics dump
+      <a
+        href="https://drive.google.com/file/d/1ITwCI2uJ7YflAG0OwBR4uOUEJBjwTCet/view"
+        target="_blank"
+        >here</a
+      >.
+    </div>
+
     <div>
       <div class="loading" v-if="loading">Loading...</div>
       <div class="error" v-else-if="error">
@@ -119,7 +128,8 @@ h1 {
   margin-bottom: 30px;
 }
 
-.row {
+.row,
+.alert {
   text-align: left;
 }
 
