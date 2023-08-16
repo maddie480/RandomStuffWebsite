@@ -163,7 +163,7 @@
 
     <div>
         Just a girl in her late twenties that likes programming, video games and silly stuff. &#x1F61D;
-        I've got a bit of a hyperfocus on Celeste as you can see here, but I sometimes mess with obscure glitchy games, 
+        I've got a bit of a hyperfocus on Celeste as you can see here, but I sometimes mess with obscure glitchy games,
         leading to rather <i>interesting</i> things like <a href="/vids/pizza-dude.webm" target="_blank">stacking cars</a> or
         <a href="/vids/forklift-racer.webm" target="_blank">shooting forklifts into space</a>.
     </div>
