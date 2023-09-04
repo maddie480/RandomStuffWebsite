@@ -81,10 +81,21 @@
                     <a class="nav-link <%= "discord-bots".equals(request.getAttribute("navId")) ? "active" : "" %>" href="/discord-bots">Discord Bots</a>
                 </li>
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="linksDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Links</a>
+                    <a class="nav-link dropdown-toggle <%= "radio-lnj".equals(request.getAttribute("navId")) ? "active" : "" %>"
+                        href="#" id="linksDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Links</a>
+
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="linksDropdown">
+                        <li><h6 class="dropdown-header">External Profiles</h6></li>
                         <li><a class="dropdown-item" href="https://gamebanana.com/members/1698143" target="_blank">&#x1F34C;&nbsp;&nbsp;GameBanana &#x2013; Celeste Mods</a></li>
                         <li><a class="dropdown-item" href="https://github.com/maddie480" target="_blank">&#x1F4BB;&nbsp;&nbsp;GitHub &#x2013; Source Code</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><h6 class="dropdown-header">Les Navets Jouables (in French)</h6></li>
+                        <li><a class="dropdown-item" href="https://github.com/maddie480/LNJ" target="_blank">&#x1F50E;&nbsp;&nbsp;Bazar LNJ &#x2013; Game Investigation</a></li>
+                        <li><a class="dropdown-item <%= "radio-lnj".equals(request.getAttribute("navId")) ? "active" : "" %>"
+                            href="/radio-lnj">&#x1F4FB;&nbsp;&nbsp;Radio LNJ &#x2013; Game Music</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><h6 class="dropdown-header">QUEST by Laupok (in French)</h6></li>
+                        <li><a class="dropdown-item" href="https://quest-community-bot.appspot.com" target="_blank">&#x2694;&#xFE0F;&nbsp;&nbsp;QUEST &#x2013; Game Modding</a></li>
                     </ul>
                 </li>
             </ul>

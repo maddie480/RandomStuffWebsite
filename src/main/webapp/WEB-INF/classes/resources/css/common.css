@@ -23,6 +23,9 @@
     background-color: var(--bs-info-bg-subtle);
     border-color: var(--bs-info-border-subtle);
 }
+.dropdown-header {
+    color: var(--bs-body-color);
+}
 .navbar {
     background-color: #FFB8DD !important;
     background-image: url('/img/navbar-bg.svg');
