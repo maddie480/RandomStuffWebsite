@@ -64,7 +64,7 @@ public class StaticAssetsAndRouteNotFoundServlet extends HttpServlet {
                 }
 
                 long start = 0;
-                long end = size;
+                long end = size - 1;
 
                 if (request.getHeader("Range") != null) {
                     Matcher rangeMatched = rangePattern.matcher(request.getHeader("Range"));
@@ -79,7 +79,7 @@ public class StaticAssetsAndRouteNotFoundServlet extends HttpServlet {
                     }
 
                     if (!rangeMatched.group(2).isEmpty()) {
-                        long newEnd = Long.parseLong(rangeMatched.group(1));
+                        long newEnd = Long.parseLong(rangeMatched.group(2));
 
                         if (newEnd > end) {
                             // requested bytes past the end of the file!
@@ -87,17 +87,17 @@ public class StaticAssetsAndRouteNotFoundServlet extends HttpServlet {
                             return;
                         }
 
-                        end = newEnd;
-
                         if (rangeMatched.group(1).isEmpty()) {
                             // X bytes from the end
-                            start = size - end;
+                            start = size - newEnd;
+                        } else {
+                            end = newEnd;
                         }
                     }
 
                     response.setStatus(206);
-                    response.setHeader("Content-Range", "bytes " + start + "-" + (end - 1) + "/" + size);
-                    response.setContentLength((int) (end - start));
+                    response.setHeader("Content-Range", "bytes " + start + "-" + end + "/" + size);
+                    response.setContentLength((int) (end - start + 1));
                 } else {
                     response.setContentLength((int) size);
                 }
@@ -106,7 +106,7 @@ public class StaticAssetsAndRouteNotFoundServlet extends HttpServlet {
                 response.setContentType(CONTENT_TYPES.get(extension));
 
                 try (InputStream is = StaticAssetsAndRouteNotFoundServlet.class.getClassLoader().getResourceAsStream("resources" + request.getRequestURI().replace("%20", " "))) {
-                    IOUtils.copyLarge(is, response.getOutputStream(), start, end);
+                    IOUtils.copyLarge(is, response.getOutputStream(), start, end - start + 1);
                     return;
                 }
             }
