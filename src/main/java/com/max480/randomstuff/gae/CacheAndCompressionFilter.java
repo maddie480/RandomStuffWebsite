@@ -129,7 +129,7 @@ public class CacheAndCompressionFilter extends HttpFilter {
             chain.doFilter(req, res);
             return;
         }
-        if (req.getRequestURI().equals("/celeste/bundle-download")) {
+        if (req.getRequestURI().equals("/celeste/bundle-download") || req.getRequestURI().endsWith(".ogg")) {
             // this file has an unpredictable and possibly huge size (and it is a zip), so stream it without compression
             chain.doFilter(req, res);
             return;

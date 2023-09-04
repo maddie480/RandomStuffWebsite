@@ -1,0 +1,29 @@
+@font-face {
+    font-family: "SF Digital Readout";
+    src: url('/fonts/SFDigitalReadout-Light.ttf');
+}
+
+.container {
+    text-align: center;
+}
+
+.btn {
+    margin-bottom: 20px;
+}
+
+#timer {
+    font-family: "SF Digital Readout", sans-serif;
+    color: #00FF00;
+    position: absolute;
+    margin-top: -132px;
+    font-size: 42pt;
+    margin-left: -11px;
+}
+
+#pre-title {
+    font-size: 14pt;
+    margin-top: 20px;
+}
+#title {
+    font-size: 18pt;
+}

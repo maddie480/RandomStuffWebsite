@@ -24,6 +24,12 @@ jobs:
         distribution: 'temurin'
         cache: maven
 
+    - name: Install dependencies
+      run: |
+        sudo apt-get install ffmpeg
+        curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /tmp/yt-dlp
+        chmod +x /tmp/yt-dlp
+
     - name: Check for tabs
       run: |
         find "(" -name "*.java" -or -name "*.jsp" -or -name "*.html" -or -name "*.css" -or -name "*.js" -or -name "*.vue" -or -name "*.xml" -or -name "*.yaml" -or -name "*.yml" -or -name "*.txt" -or -name "*.md" ")" -exec grep -Pl "\t" {} \; > matches.txt
@@ -43,6 +49,7 @@ jobs:
       if: github.ref == 'refs/heads/main'
       env:
         GOOGLE_DRIVE_API_KEY: ${{ secrets.GOOGLE_DRIVE_API_KEY }}
+        RADIO_LNJ_SOURCES: ${{ secrets.RADIO_LNJ_SOURCES }}
       run: mvn -B verify --file pom.xml
 
     - name: Build with Maven (no graphics dump)
