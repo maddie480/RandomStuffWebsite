@@ -15,6 +15,7 @@ import org.apache.commons.lang3.NotImplementedException;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.stream.Stream;
 import java.util.zip.GZIPOutputStream;
 
 @WebFilter(filterName = "CacheEtagFilter", urlPatterns = "/*")
@@ -123,14 +124,10 @@ public class CacheAndCompressionFilter extends HttpFilter {
 
     @Override
     protected void doFilter(HttpServletRequest req, HttpServletResponse res, FilterChain chain) throws IOException, ServletException {
-        if (req.getRequestURI().equals("/vids/pizza-dude.webm")) {
-            // big file, do not buffer it in memory
-            res.setContentLength(44214984);
-            chain.doFilter(req, res);
-            return;
-        }
-        if (req.getRequestURI().equals("/celeste/bundle-download") || req.getRequestURI().endsWith(".ogg")) {
-            // this file has an unpredictable and possibly huge size (and it is a zip), so stream it without compression
+        if (Stream.of("/vids/", "/music/").anyMatch(req.getRequestURI()::startsWith)
+                || req.getRequestURI().equals("/celeste/bundle-download")) {
+
+            // big media; we shouldn't try compressing or caching it
             chain.doFilter(req, res);
             return;
         }

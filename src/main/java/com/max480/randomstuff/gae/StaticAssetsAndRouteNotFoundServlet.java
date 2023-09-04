@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 /**
@@ -40,6 +42,8 @@ public class StaticAssetsAndRouteNotFoundServlet extends HttpServlet {
 
     private static final Logger log = LoggerFactory.getLogger(StaticAssetsAndRouteNotFoundServlet.class);
 
+    private static final Pattern rangePattern = Pattern.compile("^bytes=([0-9]*)-([0-9]*)$");
+
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         if (request.getRequestURI().equals("/")) {
@@ -49,20 +53,72 @@ public class StaticAssetsAndRouteNotFoundServlet extends HttpServlet {
             if (CONTENT_TYPES.containsKey(extension) && Stream.of("/css/", "/fonts/", "/img/", "/js/", "/vids/", "/music/", "/lua-cutscenes-documentation/", "/vanilla-graphics-dump/")
                     .anyMatch(request.getRequestURI()::startsWith)) {
 
+                long size;
                 try (InputStream is = StaticAssetsAndRouteNotFoundServlet.class.getClassLoader().getResourceAsStream("resources" + request.getRequestURI().replace("%20", " "))) {
-                    if (is != null) {
-                        response.setContentType(CONTENT_TYPES.get(extension));
-                        IOUtils.copy(is, response.getOutputStream());
+                    if (is == null) {
+                        display404(request, response);
                         return;
                     }
+
+                    size = IOUtils.consume(is);
+                }
+
+                long start = 0;
+                long end = size;
+
+                if (request.getHeader("Range") != null) {
+                    Matcher rangeMatched = rangePattern.matcher(request.getHeader("Range"));
+
+                    if (!rangeMatched.matches()) {
+                        response.setStatus(416);
+                        return;
+                    }
+
+                    if (!rangeMatched.group(1).isEmpty()) {
+                        start = Long.parseLong(rangeMatched.group(1));
+                    }
+
+                    if (!rangeMatched.group(2).isEmpty()) {
+                        long newEnd = Long.parseLong(rangeMatched.group(1));
+
+                        if (newEnd > end) {
+                            // requested bytes past the end of the file!
+                            response.setStatus(416);
+                            return;
+                        }
+
+                        end = newEnd;
+
+                        if (rangeMatched.group(1).isEmpty()) {
+                            // X bytes from the end
+                            start = size - end;
+                        }
+                    }
+
+                    response.setStatus(206);
+                    response.setHeader("Content-Range", "bytes " + start + "-" + (end - 1) + "/" + size);
+                    response.setContentLength((int) (end - start));
+                } else {
+                    response.setContentLength((int) size);
+                }
+
+                response.setHeader("Accept-Ranges", "bytes");
+                response.setContentType(CONTENT_TYPES.get(extension));
+
+                try (InputStream is = StaticAssetsAndRouteNotFoundServlet.class.getClassLoader().getResourceAsStream("resources" + request.getRequestURI().replace("%20", " "))) {
+                    IOUtils.copyLarge(is, response.getOutputStream(), start, end);
+                    return;
                 }
             }
 
-            // display a simple 404 page
-            response.setStatus(404);
-            PageRenderer.render(request, response, "page-not-found", "Page Not Found",
-                    "Oops, this link seems invalid. Please try again!");
-            log.warn("Route not found: {}", request.getRequestURI());
+            display404(request, response);
         }
+    }
+
+    private static void display404(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setStatus(404);
+        PageRenderer.render(request, response, "page-not-found", "Page Not Found",
+                "Oops, this link seems invalid. Please try again!");
+        log.warn("Route not found: {}", request.getRequestURI());
     }
 }
