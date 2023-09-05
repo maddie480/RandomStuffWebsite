@@ -90,7 +90,7 @@
                         <li><a class="dropdown-item" href="https://github.com/maddie480" target="_blank">&#x1F4BB;&nbsp;&nbsp;GitHub &#x2013; Source Code</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li><h6 class="dropdown-header">Les Navets Jouables (in French)</h6></li>
-                        <li><a class="dropdown-item" href="https://github.com/maddie480/LNJ" target="_blank">&#x1F50E;&nbsp;&nbsp;Bazar LNJ &#x2013; Game Investigation</a></li>
+                        <li><a class="dropdown-item" href="https://github.com/maddie480/BazarLNJ" target="_blank">&#x1F50E;&nbsp;&nbsp;Bazar LNJ &#x2013; Game Investigation</a></li>
                         <li><a class="dropdown-item <%= "radio-lnj".equals(request.getAttribute("navId")) ? "active" : "" %>"
                             href="/radio-lnj">&#x1F4FB;&nbsp;&nbsp;Radio LNJ &#x2013; Game Music</a></li>
                         <li><hr class="dropdown-divider"></li>
