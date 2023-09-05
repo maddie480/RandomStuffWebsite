@@ -37,7 +37,7 @@ public class StaticAssetsAndRouteNotFoundServlet extends HttpServlet {
         CONTENT_TYPES.put("webm", "video/webm");
         CONTENT_TYPES.put("html", "text/html");
         CONTENT_TYPES.put("json", "application/json");
-        CONTENT_TYPES.put("ogg", "audio/ogg");
+        CONTENT_TYPES.put("mp3", "audio/mpeg");
     }
 
     private static final Logger log = LoggerFactory.getLogger(StaticAssetsAndRouteNotFoundServlet.class);

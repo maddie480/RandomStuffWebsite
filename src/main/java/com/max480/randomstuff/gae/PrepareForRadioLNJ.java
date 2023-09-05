@@ -39,7 +39,7 @@ public class PrepareForRadioLNJ {
                 Path ytDlTarget = Paths.get("/tmp/yt-dlp-tmp");
                 Files.createDirectory(ytDlTarget);
 
-                new ProcessBuilder("/tmp/yt-dlp", "-f", "bestaudio*", "-x", "--audio-format", "vorbis", source.getString("url"))
+                new ProcessBuilder("/tmp/yt-dlp", "-f", "bestaudio*", "-x", "--audio-format", "mp3", source.getString("url"))
                         .inheritIO()
                         .directory(ytDlTarget.toFile())
                         .start()
@@ -47,7 +47,7 @@ public class PrepareForRadioLNJ {
 
                 try (Stream<Path> downloadedFiles = Files.list(ytDlTarget)) {
                     for (Path file : downloadedFiles.toList()) {
-                        Path targetFile = targetDirectory.resolve(musicIndex + ".ogg");
+                        Path targetFile = targetDirectory.resolve(musicIndex + ".mp3");
                         musicIndex++;
 
                         Files.copy(file, targetFile);
@@ -70,12 +70,21 @@ public class PrepareForRadioLNJ {
                 try (ZipInputStream zip = new ZipInputStream(ConnectionUtils.openStreamWithTimeout(source.getString("url")))) {
                     ZipEntry entry;
                     while ((entry = zip.getNextEntry()) != null) {
-                        Path targetFile = targetDirectory.resolve(musicIndex + ".ogg");
-                        musicIndex++;
+                        Path temp = Paths.get("/tmp/stuff.ogg");
 
-                        try (OutputStream os = Files.newOutputStream(targetFile)) {
+                        try (OutputStream os = Files.newOutputStream(temp)) {
                             IOUtils.copy(zip, os);
                         }
+
+                        Path targetFile = targetDirectory.resolve(musicIndex + ".mp3");
+                        musicIndex++;
+
+                        new ProcessBuilder("ffmpeg", "-i", "/tmp/stuff.ogg", targetFile.toAbsolutePath().toString())
+                            .inheritIO()
+                            .start()
+                            .waitFor();
+
+                            Files.delete(temp);
 
                         JSONObject meta = new JSONObject();
                         meta.put("trackName", source.getString("prefix") + entry.getName().substring(0, entry.getName().length() - 4));
