@@ -15,10 +15,14 @@
     font-family: "SF Digital Readout", sans-serif;
     color: #00FF00;
     position: absolute;
-    margin-top: -132px;
+    margin-top: -125px;
     font-size: 42pt;
     margin-left: -11px;
 }
+#timer.windows {
+    margin-top: -132px;
+}
+
 
 #pre-title {
     font-size: 14pt;

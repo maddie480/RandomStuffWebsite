@@ -33,7 +33,7 @@ public class RadioLNJService extends HttpServlet {
             JSONArray array = new JSONArray(IOUtils.toString(is, StandardCharsets.UTF_8));
             for (Object o : array) {
                 JSONObject item = (JSONObject) o;
-                item.put("duration", item.getInt("duration") + 5000);
+                item.put("duration", item.getInt("duration") + 1000);
                 playlist.add(item);
             }
 
