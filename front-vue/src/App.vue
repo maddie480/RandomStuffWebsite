@@ -180,7 +180,7 @@
               <li>
                 <a
                   class="dropdown-item"
-                  href="https://github.com/maddie480/LNJ"
+                  href="https://github.com/maddie480/BazarLNJ"
                   target="_blank"
                   >&#x1F50E;&nbsp;&nbsp;Bazar LNJ &#x2013; Game Investigation</a
                 >
