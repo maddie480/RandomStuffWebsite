@@ -97,7 +97,7 @@
             const doneElement = playlist.splice(0, 1);
             playlist.push(doneElement);
 
-            console.log('[playback] Moving to next song! Will move to next one in', playlist[0].duration, 'ms');
+            console.log('[playback] Moving to next song ', playlist[0] ,'! Will move to next one in', playlist[0].duration, 'ms');
 
             // start playing the next element
             playHeadOfPlaylist(0);
@@ -111,7 +111,7 @@
             const playlistResource = await (await fetch('/radio-lnj/playlist.json')).json();
             playlist = playlistResource.playlist;
 
-            console.log('[playback] Starting playback! With offset', playlistResource.seek,
+            console.log('[playback] Starting playback of', playlist[0] ,'! With offset', playlistResource.seek,
                 'ms, and will move to next song in', playlist[0].duration - playlistResource.seek, 'ms');
 
             // play the current element

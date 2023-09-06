@@ -14,6 +14,8 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.text.DecimalFormat;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -24,6 +26,9 @@ public class RadioLNJService extends HttpServlet {
 
     private List<JSONObject> playlist;
     private long nextItemStartsAt;
+
+    private int elementCount;
+    private String totalDuration;
 
     @Override
     public void init() {
@@ -39,6 +44,18 @@ public class RadioLNJService extends HttpServlet {
 
             Collections.shuffle(playlist);
             nextItemStartsAt = System.currentTimeMillis() + playlist.get(0).getInt("duration");
+
+            elementCount = playlist.size();
+
+            int totalDurationMinutes = (int) (playlist.stream()
+                    .mapToLong(element -> element.getInt("duration"))
+                    .sum() / 60000L);
+
+            totalDuration = totalDurationMinutes / 60 + "h"
+                    + new DecimalFormat("00").format(totalDurationMinutes % 60);
+
+            log.info("Loaded Radio LNJ playlist, " + elementCount + " elements, total duration " + totalDuration
+                    + ", head of playlist is " + playlist.get(0) + " until " + Instant.ofEpochMilli(nextItemStartsAt));
         } catch (Exception e) {
             log.warn("Warming up failed!", e);
         }
@@ -52,6 +69,7 @@ public class RadioLNJService extends HttpServlet {
                     JSONObject pastItem = playlist.remove(0);
                     nextItemStartsAt += playlist.get(0).getInt("duration");
                     playlist.add(pastItem);
+                    log.info("Updated playlist: head of playlist is now " + playlist.get(0) + " until " + Instant.ofEpochMilli(nextItemStartsAt));
                 }
 
                 int timeLeft = (int) (nextItemStartsAt - System.currentTimeMillis());
@@ -64,6 +82,9 @@ public class RadioLNJService extends HttpServlet {
                 response.getWriter().write(body.toString());
             }
         } else {
+            request.setAttribute("elementCount", elementCount);
+            request.setAttribute("totalDuration", totalDuration);
+
             PageRenderer.render(request, response, "radio-lnj", "Radio LNJ",
                     "La radio de référence pour vous enjailler sur des musiques de navets !");
         }

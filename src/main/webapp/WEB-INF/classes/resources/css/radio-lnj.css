@@ -23,7 +23,9 @@
     margin-top: -132px;
 }
 
-
+.header {
+    margin-top: 20px;
+}
 #pre-title {
     font-size: 14pt;
     margin-top: 20px;
