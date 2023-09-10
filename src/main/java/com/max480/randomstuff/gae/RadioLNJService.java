@@ -16,15 +16,14 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
-@WebServlet(name = "RadioLNJService", urlPatterns = {"/radio-lnj", "/radio-lnj/playlist.json"}, loadOnStartup = 8)
+@WebServlet(name = "RadioLNJService", urlPatterns = {"/radio-lnj", "/radio-lnj/playlist.json", "/radio-lnj/playlist"}, loadOnStartup = 8)
 public class RadioLNJService extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(RadioLNJService.class);
 
     private List<JSONObject> playlist;
+    private List<JSONObject> sortedPlaylist;
     private long nextItemStartsAt;
 
     private int elementCount;
@@ -53,6 +52,9 @@ public class RadioLNJService extends HttpServlet {
 
             totalDuration = totalDurationMinutes / 60 + "h"
                     + new DecimalFormat("00").format(totalDurationMinutes % 60);
+
+            sortedPlaylist = new ArrayList<>(playlist);
+            sortedPlaylist.sort(Comparator.comparing(item -> item.getString("trackName").toLowerCase(Locale.ROOT)));
 
             log.info("Loaded Radio LNJ playlist, " + elementCount + " elements, total duration " + totalDuration
                     + ", head of playlist is " + playlist.get(0) + " until " + Instant.ofEpochMilli(nextItemStartsAt));
@@ -84,9 +86,15 @@ public class RadioLNJService extends HttpServlet {
         } else {
             request.setAttribute("elementCount", elementCount);
             request.setAttribute("totalDuration", totalDuration);
+            request.setAttribute("elements", sortedPlaylist);
 
-            PageRenderer.render(request, response, "radio-lnj", "Radio LNJ",
-                    "La radio de référence pour vous enjailler sur des musiques de navets !");
+            if (request.getRequestURI().equals("/radio-lnj/playlist")) {
+                PageRenderer.render(request, response, "radio-lnj-playlist", "Radio LNJ – Playlist",
+                        "Consultez la liste des chansons qui passent sur Radio LNJ, et écoutez celles que vous voulez !");
+            } else {
+                PageRenderer.render(request, response, "radio-lnj", "Radio LNJ",
+                        "La radio de référence pour vous enjailler sur des musiques de navets !");
+            }
         }
     }
 }

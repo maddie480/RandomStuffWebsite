@@ -1,0 +1,47 @@
+tr {
+    vertical-align: middle;
+}
+
+td:nth-child(1) {
+    width: 330px;
+}
+
+audio {
+    width: 300px;
+    margin-bottom: -6px;
+}
+
+@media(max-width: 767px) {
+    td:nth-child(1) {
+        width: 230px;
+    }
+
+    audio {
+        width: 200px;
+    }
+}
+
+@media(max-width: 575px) {
+    audio {
+        width: 100%;
+        display: block;
+    }
+
+    td:nth-child(2) {
+        display: none;
+    }
+
+    audio {
+        margin-bottom: 8px;
+    }
+
+    table {
+        text-align: center;
+    }
+}
+
+@media(min-width: 576px) {
+    .track-name {
+        display: none;
+    }
+}

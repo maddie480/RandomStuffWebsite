@@ -1,5 +1,5 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ page import="static org.apache.commons.text.StringEscapeUtils.escapeHtml4, java.time.ZonedDateTime"%>
+<%@ page import="static org.apache.commons.text.StringEscapeUtils.escapeHtml4, java.time.ZonedDateTime, java.util.Arrays"%>
 
 <%@page session="false"%>
 
@@ -81,7 +81,7 @@
                     <a class="nav-link <%= "discord-bots".equals(request.getAttribute("navId")) ? "active" : "" %>" href="/discord-bots">Discord Bots</a>
                 </li>
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle <%= "radio-lnj".equals(request.getAttribute("navId")) ? "active" : "" %>"
+                    <a class="nav-link dropdown-toggle <%= Arrays.asList("radio-lnj", "radio-lnj-playlist").contains(request.getAttribute("navId")) ? "active" : "" %>"
                         href="#" id="linksDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Links</a>
 
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="linksDropdown">
@@ -91,7 +91,7 @@
                         <li><hr class="dropdown-divider"></li>
                         <li><h6 class="dropdown-header">Les Navets Jouables (in French)</h6></li>
                         <li><a class="dropdown-item" href="https://github.com/maddie480/BazarLNJ" target="_blank">&#x1F50E;&nbsp;&nbsp;Bazar LNJ &#x2013; Game Investigation</a></li>
-                        <li><a class="dropdown-item <%= "radio-lnj".equals(request.getAttribute("navId")) ? "active" : "" %>"
+                        <li><a class="dropdown-item <%= Arrays.asList("radio-lnj", "radio-lnj-playlist").contains(request.getAttribute("navId")) ? "active" : "" %>"
                             href="/radio-lnj">&#x1F4FB;&nbsp;&nbsp;Radio LNJ &#x2013; Game Music</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li><h6 class="dropdown-header">QUEST by Laupok (in French)</h6></li>
