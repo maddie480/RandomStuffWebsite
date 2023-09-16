@@ -15,6 +15,21 @@
     or <a href="https://celestemodupdater.0x0a.de" target="_blank">0x0ade's mirror</a>.
 </p>
 
+<div class="alert alert-info">
+    Looking for a link to download the latest Olympus or Everest version? Check the following links:
+    <ul>
+        <li>
+            <a href="/celeste/download-olympus?branch=stable&platform=windows">https://maddie480.ovh/celeste/download-olympus?branch=stable&platform=windows</a>
+            downloads the latest stable version of Olympus for Windows. Other options for branches are <code>main</code> and <code>windows-init</code>,
+            and other options for platforms are <code>mac</code> and <code>linux</code>.
+        </li>
+        <li>
+            <a href="/celeste/download-everest?branch=stable">https://maddie480.ovh/celeste/download-everest?branch=stable</a>
+            downloads the latest stable version of Everest. Other options for branches are <code>beta</code>, <code>dev</code> and <code>core</code>.
+        </li>
+    </ul>
+</div>
+
 <form method="POST">
     <div class="form-group">
         <label for="modId">Type a mod's <code>everest.yaml</code> name here (<b>make sure that uppercase/lowercase letters are correct</b>):</label>

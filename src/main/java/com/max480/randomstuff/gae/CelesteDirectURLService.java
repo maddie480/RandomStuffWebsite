@@ -5,6 +5,9 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.apache.commons.io.IOUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,7 +20,8 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
-@WebServlet(name = "CelesteDirectURLService", urlPatterns = {"/celeste/direct-link-service", "/celeste/dl", "/picrew"})
+@WebServlet(name = "CelesteDirectURLService", urlPatterns = {"/celeste/direct-link-service", "/celeste/dl", "/picrew",
+        "/celeste/download-olympus", "/celeste/download-everest"})
 public class CelesteDirectURLService extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(CelesteDirectURLService.class);
 
@@ -54,10 +58,50 @@ public class CelesteDirectURLService extends HttpServlet {
         } else if (request.getRequestURI().equals("/picrew")) {
             // Hard-coded DIY URL shortener to the rescue
             response.sendRedirect("https://picrew.me/share?cd=Eqzx6FYwjm");
+
+        } else if (request.getRequestURI().equals("/celeste/download-everest")) {
+            JSONObject branch;
+
+            try (InputStream is = Files.newInputStream(Paths.get("/shared/celeste/everest-versions-with-native.json"))) {
+                JSONArray versions = new JSONArray(IOUtils.toString(is, StandardCharsets.UTF_8));
+                branch = getBranch(versions, request.getParameter("branch"));
+            }
+
+            if (branch != null) {
+                response.sendRedirect(branch.getString("mainDownload"));
+            } else {
+                notFound(request, response);
+            }
+
+        } else if (request.getRequestURI().equals("/celeste/download-olympus")) {
+            JSONObject branch;
+
+            try (InputStream is = Files.newInputStream(Paths.get("/shared/celeste/olympus-versions.json"))) {
+                JSONArray versions = new JSONArray(IOUtils.toString(is, StandardCharsets.UTF_8));
+                branch = getBranch(versions, request.getParameter("branch"));
+            }
+
+            if (branch != null && branch.has(request.getParameter("platform") + "Download")) {
+                response.sendRedirect(branch.getString(request.getParameter("platform") + "Download"));
+            } else {
+                notFound(request, response);
+            }
         } else {
             // How do you even land here?
             notFound(request, response);
         }
+    }
+
+    private JSONObject getBranch(JSONArray source, String branch) {
+        for (int i = 0; i < source.length(); i++) {
+            JSONObject candidate = source.getJSONObject(i);
+
+            if (candidate.getString("branch").equals(branch)) {
+                return candidate;
+            }
+        }
+
+        return null;
     }
 
     @Override
