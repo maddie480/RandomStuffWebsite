@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -29,7 +30,8 @@ import static com.max480.randomstuff.backend.celeste.crontabs.UpdateCheckerTrack
  */
 @WebServlet(name = "CelesteModSearchService", loadOnStartup = 2, urlPatterns = {"/celeste/gamebanana-search",
         "/celeste/gamebanana-search-reload", "/celeste/gamebanana-list", "/celeste/gamebanana-categories", "/celeste/gamebanana-info",
-        "/celeste/random-map", "/celeste/gamebanana-featured", "/celeste/everest-versions", "/celeste/everest-versions-reload"})
+        "/celeste/random-map", "/celeste/gamebanana-featured", "/celeste/everest-versions", "/celeste/everest-versions-reload",
+        "/celeste/olympus-versions"})
 public class CelesteModSearchService extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(CelesteModSearchService.class);
 
@@ -292,6 +294,15 @@ public class CelesteModSearchService extends HttpServlet {
                 IOUtils.write(everestVersionsWithNative, response.getOutputStream());
             } else {
                 IOUtils.write(everestVersionsNoNative, response.getOutputStream());
+            }
+        }
+
+        if ("/celeste/olympus-versions".equals(request.getRequestURI())) {
+            // send olympus-versions.json
+            response.setHeader("Content-Type", "application/json");
+
+            try (InputStream is = Files.newInputStream(Paths.get("/shared/celeste/olympus-versions.json"))) {
+                IOUtils.copy(is, response.getOutputStream());
             }
         }
     }

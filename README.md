@@ -17,7 +17,7 @@ The `src` folder contains the source for everything provided by the Java servlet
 - [the Discord Timezone Bot](https://maddie480.ovh/discord-bots#timzeone-bot) - this repository only includes the "without timezone roles" variant; the one with timezone roles needs a bot user to work, and as such is [part of the backend](https://github.com/maddie480/RandomBackendStuff/tree/main/src/main/java/com/max480/randomstuff/backend/discord/timezonebot)
 - Some [GameBanana](https://gamebanana.com)-related APIs extending the official API, described below
 - [the BananaBot app for Discord](https://maddie480.ovh/discord-bots#bananabot) - allows searching for Celeste mods on GameBanana, using the same search as Olympus and the Banana Mirror Browser
-- [the Everest versions list API](https://maddie480.ovh/celeste/everest-versions)
+- the [Everest](https://maddie480.ovh/celeste/everest-versions) and [Olympus](https://maddie480.ovh/celeste/olympus-versions) versions list APIs
 - ... and some other things of more limited use that are on the website.
 
 The `front-vue` folder contains the source for more dynamic frontend parts made in [Vue.js](https://vuejs.org/):
@@ -278,3 +278,28 @@ Two extra fields are specified for automatic builds made after a single change (
 
 If the version of Everest/Olympus you are calling this API from supports installing native builds (.NET Core builds), you should pass the `supportsNativeBuilds=true` query parameter to include them.
 As of now, this adds an extra branch to the output of the API, called `core`.
+
+
+## Olympus versions list API
+
+This API is available at `https://maddie480.ovh/celeste/olympus-versions`, and returns all the Olympus versions available, in JSON format.  For example:
+```json
+[
+    {
+        "date": "2023-09-14T22:04:54.9319239Z",
+        "windowsDownload": "https://dev.azure.com/EverestAPI/Olympus/_apis/build/builds/3518/artifacts?artifactName=windows.main&api-version=5.0&%24format=zip",
+        "macDownload": "https://dev.azure.com/EverestAPI/Olympus/_apis/build/builds/3518/artifacts?artifactName=macos.main&api-version=5.0&%24format=zip",
+        "linuxDownload": "https://dev.azure.com/EverestAPI/Olympus/_apis/build/builds/3518/artifacts?artifactName=linux.main&api-version=5.0&%24format=zip"
+        "changelog": "Make sure Lonn is run with the same Love2d install as Olympus itself on Linux",
+        "branch": "main",
+        "version": "23.09.14.03"
+    },
+    [...]
+]
+```
+
+- `version` is the Olympus version number.
+- `branch` is either `windows-init`, `main` or `stable`. `windows-init` is the version initially installed by the Windows installer, and `main` is the development branch.
+- `windowsDownload`, `macDownload` and `linuxDownload` are download links for each platform.
+- `date` is the date at which the version was published, in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format.
+- `changelog` is the changelog of the version, pulled straight from the `changelog.txt` file on the repository. (That's where in-app update changelogs come from.)
