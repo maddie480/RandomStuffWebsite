@@ -2,10 +2,24 @@
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
     <suppress>
         <notes><![CDATA[
-            This CVE affects all versions of JSON-java up to and excluding 20220924... and the project depends on version 20220924
+            The version we have is not affected by this vulnerability
         ]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.json/json@.*$</packageUrl>
         <cve>CVE-2022-45688</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+            The version we have is not affected by this vulnerability
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.eclipse\.jgit/org\.eclipse\.jgit@.*$</packageUrl>
+        <cve>CVE-2023-4759</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+            The version we have is not affected by this vulnerability
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.eclipse\.jgit/org\.eclipse\.jgit\.ssh\.jsch@.*$</packageUrl>
+        <cve>CVE-2023-4759</cve>
     </suppress>
     <suppress>
         <notes><![CDATA[
