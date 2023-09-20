@@ -1,0 +1,51 @@
+h1, .instructions {
+    text-align: center;
+}
+
+h1 {
+    margin-top: 20px;
+}
+
+.instructions {
+    font-style: italic;
+}
+
+td {
+    font-style: italic;
+}
+
+.choice-name {
+    font-weight: bold;
+    font-style: normal;
+    font-size: 14pt;
+}
+
+.bar {
+    height: 20px;
+    background-color: #95C18C;
+    margin-top: 10px;
+    border-radius: 5px;
+    border: solid #247000 2px;
+    transition: width 0.5s;
+}
+
+.navbar {
+    display: none;
+}
+
+body {
+    --bs-body-color: #247000;
+    --bs-body-bg: #F6FFE8;
+}
+
+@media(prefers-color-scheme: dark) {
+    body {
+        --bs-body-color: #95C18C;
+        --bs-body-bg: #0D2800;
+    }
+
+    .bar {
+        background-color: #247000;
+        border: solid #95C18C 2px;
+    }
+}
