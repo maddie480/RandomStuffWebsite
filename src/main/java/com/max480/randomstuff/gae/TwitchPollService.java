@@ -8,8 +8,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,11 +16,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * This service is tied to the LNJ Twitch bot:
@@ -30,35 +23,12 @@ import java.util.regex.Pattern;
  * It displays poll results in real time (at least, it refreshes every 5 seconds), using a file dropped in /shared/temp by the backend
  * (that handles the real polling and communication with Twitch).
  */
-@WebServlet(name = "TwitchPollService", urlPatterns = {"/twitch-polls/*"})
+@WebServlet(name = "TwitchPollService", urlPatterns = {"/twitch-poll", "twitch-poll.json"})
 @MultipartConfig
 public class TwitchPollService extends HttpServlet {
-    private static final Logger log = LoggerFactory.getLogger(TwitchPollService.class);
-
-    private final Pattern pageUrlPattern = Pattern.compile("^/twitch-polls/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})(?:\\.json)?/?$");
-
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        Matcher pageUrlMatch = pageUrlPattern.matcher(request.getRequestURI());
-
-        if (!pageUrlMatch.matches()) {
-            log.warn("Invalid URL format!");
-            response.setStatus(404);
-            PageRenderer.render(request, response, "page-not-found", "Page Not Found",
-                    "Oops, this link seems invalid. Please try again!");
-            return;
-        }
-
-        String uuid = pageUrlMatch.group(1);
-        Path pollFile = Paths.get("/shared/temp/lnj-polls/" + uuid + ".json");
-
-        if (!Files.exists(pollFile)) {
-            log.warn("Poll does not exist!");
-            response.setStatus(404);
-            PageRenderer.render(request, response, "page-not-found", "Page Not Found",
-                    "Oops, this link seems invalid. Please try again!");
-            return;
-        }
+        Path pollFile = Paths.get("/shared/lnj-poll.json");
 
         if (request.getRequestURI().endsWith(".json")) {
             // literally send out the raw JSON file
@@ -76,16 +46,11 @@ public class TwitchPollService extends HttpServlet {
                 pollInfo = new JSONObject(IOUtils.toString(is, StandardCharsets.UTF_8));
             }
 
-            List<String> answers = new ArrayList<>(pollInfo.getJSONObject("answers").keySet());
-            answers.sort(Comparator.comparing(String::toLowerCase));
+            request.setAttribute("title", pollInfo.getString("name"));
+            request.setAttribute("answers", pollInfo.getJSONObject("answersWithCase"));
 
-            request.setAttribute("uuid", uuid);
-            request.setAttribute("title", pollInfo.getString("title"));
-            request.setAttribute("answers", answers);
-
-            PageRenderer.render(request, response, "twitch-poll", "Sondage Twitch – \"" + pollInfo.getString("title") + "\"",
-                    "Les résultats du sondage \"" + pollInfo.getString("title") + "\" sur Twitch. " +
-                            "Le lien restera valide pendant 24 heures après le début du sondage.");
+            PageRenderer.render(request, response, "twitch-poll", "LNJ – Sondage Twitch",
+                    "Les résultats du dernier sondage LNJ sur Twitch.");
         }
     }
 }

@@ -40,7 +40,7 @@ body {
 
 @media(prefers-color-scheme: dark) {
     body {
-        --bs-body-color: #95C18C;
+        --bs-body-color: #F5EBC1;
         --bs-body-bg: #0D2800;
     }
 

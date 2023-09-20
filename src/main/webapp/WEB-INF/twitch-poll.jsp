@@ -7,11 +7,11 @@
     Vous pouvez envoyer un autre message pour changer votre choix.
 </p>
 
-<table class="table table-striped" id="table" data-poll-uuid="<%= escapeHtml4((String) request.getAttribute("uuid")) %>">
-    <% for (String choice : (List<String>) request.getAttribute("answers")) { %>
+<table class="table table-striped" id="table">
+    <% for (String key : ((JSONObject) request.getAttribute("answers")).keySet()) { %>
         <tr>
-            <td data-choice="<%= escapeHtml4(choice) %>">
-                <span class="choice-name"><%= escapeHtml4(choice) %></span>
+            <td data-choice="<%= escapeHtml4(key) %>">
+                <span class="choice-name"><%= escapeHtml4(((JSONObject) request.getAttribute("answers")).getString(key)) %></span>
                 &#x2013;
                 <span class="quantity">--</span>
                 <div class="bar" style="width: 0"></div>
