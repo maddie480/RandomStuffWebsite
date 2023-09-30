@@ -273,7 +273,7 @@
                             <workingDirectory>${project.build.directory}/random-stuff-website-1.0.0/WEB-INF/classes</workingDirectory>
                             <arguments>
                                 <argument>-cp</argument>
-                                <argument>.:../../../dependency/snakeyaml-2.2.jar:../../../dependency/commons-io-2.13.0.jar</argument>
+                                <argument>.:../../../dependency/snakeyaml-2.2.jar:../../../dependency/commons-io-2.14.0.jar</argument>
                                 <argument>com.max480.randomstuff.gae.LuaCutscenesDocumentationIntegrator</argument>
                             </arguments>
                         </configuration>
@@ -290,7 +290,7 @@
                             <workingDirectory>${project.build.directory}/random-stuff-website-1.0.0/WEB-INF/classes</workingDirectory>
                             <arguments>
                                 <argument>-cp</argument>
-                                <argument>.:../../../dependency/commons-io-2.13.0.jar:../../../dependency/json-20230618.jar</argument>
+                                <argument>.:../../../dependency/commons-io-2.14.0.jar:../../../dependency/json-20230618.jar</argument>
                                 <argument>com.max480.randomstuff.gae.PrepareForRadioLNJ</argument>
                             </arguments>
                         </configuration>
@@ -307,7 +307,7 @@
                             <workingDirectory>${project.build.directory}/random-stuff-website-1.0.0/WEB-INF/classes</workingDirectory>
                             <arguments>
                                 <argument>-cp</argument>
-                                <argument>.:../../../dependency/commons-io-2.13.0.jar:../../../dependency/json-20230618.jar</argument>
+                                <argument>.:../../../dependency/commons-io-2.14.0.jar:../../../dependency/json-20230618.jar</argument>
                                 <argument>com.max480.randomstuff.gae.GraphicsDumpIntegrator</argument>
                             </arguments>
                         </configuration>
@@ -431,7 +431,7 @@
                                     <workingDirectory>${project.build.directory}/random-stuff-website-1.0.0/WEB-INF/classes</workingDirectory>
                                     <arguments>
                                         <argument>-cp</argument>
-                                        <argument>.;../../../dependency/snakeyaml-2.2.jar;../../../dependency/commons-io-2.13.0.jar</argument>
+                                        <argument>.;../../../dependency/snakeyaml-2.2.jar;../../../dependency/commons-io-2.14.0.jar</argument>
                                         <argument>com.max480.randomstuff.gae.LuaCutscenesDocumentationIntegrator</argument>
                                     </arguments>
                                 </configuration>
@@ -448,7 +448,7 @@
                                     <workingDirectory>${project.build.directory}/random-stuff-website-1.0.0/WEB-INF/classes</workingDirectory>
                                     <arguments>
                                         <argument>-cp</argument>
-                                        <argument>.;../../../dependency/commons-io-2.13.0.jar;../../../dependency/json-20230618.jar</argument>
+                                        <argument>.;../../../dependency/commons-io-2.14.0.jar;../../../dependency/json-20230618.jar</argument>
                                         <argument>com.max480.randomstuff.gae.PrepareForRadioLNJ</argument>
                                     </arguments>
                                 </configuration>
@@ -465,7 +465,7 @@
                                     <workingDirectory>${project.build.directory}/random-stuff-website-1.0.0/WEB-INF/classes</workingDirectory>
                                     <arguments>
                                         <argument>-cp</argument>
-                                        <argument>.;../../../dependency/commons-io-2.13.0.jar;../../../dependency/json-20230618.jar</argument>
+                                        <argument>.;../../../dependency/commons-io-2.14.0.jar;../../../dependency/json-20230618.jar</argument>
                                         <argument>com.max480.randomstuff.gae.GraphicsDumpIntegrator</argument>
                                     </arguments>
                                 </configuration>
