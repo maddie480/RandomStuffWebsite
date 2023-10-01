@@ -39,7 +39,7 @@ public class PrepareForRadioLNJ {
                 Path ytDlTarget = Paths.get("/tmp/yt-dlp-tmp");
                 Files.createDirectory(ytDlTarget);
 
-                new ProcessBuilder("/tmp/yt-dlp", "-f", "bestaudio*", "-x", "--audio-format", "mp3", source.getString("url"))
+                new ProcessBuilder("/tmp/yt-dlp", "-f", "bestaudio*", "-x", "--audio-format", "mp3", "--no-windows-filenames", source.getString("url"))
                         .inheritIO()
                         .directory(ytDlTarget.toFile())
                         .start()
