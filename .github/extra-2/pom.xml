@@ -113,7 +113,7 @@
         <dependency>
             <groupId>io.grpc</groupId>
             <artifactId>grpc-services</artifactId>
-            <version>1.57.2</version>
+            <version>1.58.0</version>
         </dependency>
         <dependency>
             <groupId>io.grpc</groupId>
