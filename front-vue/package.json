@@ -46,47 +46,8 @@
     "sass-loader": "^13.3.2"
   },
   "overrides": {
-    "@babel/core": {
-      "semver": "^7.5.2"
-    },
-    "@babel/helper-compilation-targets": {
-      "semver": "^7.5.2"
-    },
-    "@babel/eslint-parser": {
-      "semver": "^7.5.2"
-    },
-    "@babel/helper-create-class-features-plugin": {
-      "semver": "^7.5.2"
-    },
-    "@babel/helper-define-polyfill-provider": {
-      "semver": "^7.5.2"
-    },
-    "@babel/babel-plugin-polyfill-corejs2": {
-      "semver": "^7.5.2"
-    },
-    "@babel/plugin-transform-runtime": {
-      "semver": "^7.5.2"
-    },
-    "@babel/preset-env": {
-      "semver": "^7.5.2"
-    },
-    "@babel/plugin-syntax-unicode-sets-regex": {
-      "semver": "^7.5.2"
-    },
-    "@babel/helper-create-regexp-features-plugin": {
-      "semver": "^7.5.2"
-    },
-    "cross-spawn": {
-      "semver": "^7.5.2"
-    },
-    "normalize-package-data": {
-      "semver": "^7.5.2"
-    },
-    "make-dir": {
-      "semver": "^7.5.2"
-    },
-    "editorconfig": {
-      "semver": "^7.5.2"
+    "@vue/component-compiler-utils": {
+      "postcss": "^8.4.31"
     }
   }
 }
