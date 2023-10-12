@@ -152,6 +152,7 @@ public class CacheAndCompressionFilter extends HttpFilter {
 
         if (etag.equals(req.getHeader("If-None-Match"))) {
             placeholderResponse.setStatus(304); // Not Modified
+            placeholderResponse.setContentLength(0);
         } else {
             placeholderResponse.setHeader("ETag", etag);
             placeholderResponse.sendResponse();
