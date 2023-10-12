@@ -1,4 +1,4 @@
-FROM jetty:11-jre17
+FROM jetty:11-jdk17
 
 USER root
 RUN apt-get update && apt-get upgrade -y && apt-get clean \
