@@ -262,7 +262,7 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.1.0</version>
                 <executions>
-                    <execution>
+                    <!-- <execution>
                         <id>integrate Lua Cutscenes documentation</id>
                         <phase>prepare-package</phase>
                         <goals>
@@ -294,7 +294,7 @@
                                 <argument>com.max480.randomstuff.gae.PrepareForRadioLNJ</argument>
                             </arguments>
                         </configuration>
-                    </execution>
+                    </execution> -->
 
                     <execution>
                         <id>integrate vanilla graphics dump</id>
