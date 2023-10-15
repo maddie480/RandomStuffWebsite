@@ -77,7 +77,7 @@
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
-            <version>20230618</version>
+            <version>20231013</version>
         </dependency>
 
         <!-- Patch up the vulnerabilities of the 3453452 gRPC transitive dependencies, bless Google Cloud -->
