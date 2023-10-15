@@ -57,7 +57,7 @@ public class CelesteDirectURLService extends HttpServlet {
                     "This page can give you direct download URLs to the latest version of a mod, based on the ID present in its everest.yaml file.");
         } else if (request.getRequestURI().equals("/picrew")) {
             // Hard-coded DIY URL shortener to the rescue
-            response.sendRedirect("https://picrew.me/share?cd=Eqzx6FYwjm");
+            response.sendRedirect("https://picrew.me/en/image_maker/1387003");
 
         } else if (request.getRequestURI().equals("/celeste/download-everest")) {
             JSONObject branch;
