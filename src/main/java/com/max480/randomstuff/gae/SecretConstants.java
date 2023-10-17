@@ -28,9 +28,6 @@ public class SecretConstants {
 
     public static String RSS_AGGREGATOR_SECRET = "";
 
-    public static String SECURE_STORAGE_WRITE_BASIC_AUTH = "";
-    public static String SECURE_STORAGE_READ_BASIC_AUTH = "";
-
     public static String GITHUB_SSH_KNOWN_HOSTS = "";
     public static String GITHUB_SSH_PUBLIC_KEY = "";
     public static String GITHUB_SSH_PRIVATE_KEY = "";
@@ -61,9 +58,6 @@ public class SecretConstants {
         SRC_MOD_LIST_KEY = secrets.getString("SRC_MOD_LIST_KEY");
 
         RSS_AGGREGATOR_SECRET = secrets.getString("RSS_AGGREGATOR_SECRET");
-
-        SECURE_STORAGE_WRITE_BASIC_AUTH = secrets.getString("SECURE_STORAGE_WRITE_BASIC_AUTH");
-        SECURE_STORAGE_READ_BASIC_AUTH = secrets.getString("SECURE_STORAGE_READ_BASIC_AUTH");
 
         GITHUB_SSH_KNOWN_HOSTS = secrets.getString("GITHUB_SSH_KNOWN_HOSTS");
         GITHUB_SSH_PUBLIC_KEY = secrets.getString("GITHUB_SSH_PUBLIC_KEY");
