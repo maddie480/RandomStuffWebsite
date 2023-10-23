@@ -25,8 +25,9 @@ public class BackgroundListPage extends HttpServlet {
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         if (request.getRequestURI().startsWith("/quest/backgrounds/") || request.getRequestURI().startsWith("/quest/game_backgrounds/")) {
-            Path source = Paths.get("/shared/temp/quest-backgrounds/" +
-                    request.getRequestURI().substring(1, request.getRequestURI().lastIndexOf("/")) + "/" +
+            String category = request.getRequestURI().startsWith("/quest/backgrounds/") ? "backgrounds" : "game_backgrounds";
+
+            Path source = Paths.get("/shared/temp/quest-backgrounds/quest_" + category + "/" +
                     getProperName(request.getRequestURI().substring(request.getRequestURI().lastIndexOf("/") + 1)));
 
             if (Files.isRegularFile(source)) {
@@ -37,6 +38,10 @@ public class BackgroundListPage extends HttpServlet {
 
                     IOUtils.copy(is, os);
                 }
+            } else {
+                response.setStatus(404);
+                PageRenderer.render(request, response, "page-not-found", "Page Not Found",
+                        "Oops, this link seems invalid. Please try again!");
             }
 
             return;

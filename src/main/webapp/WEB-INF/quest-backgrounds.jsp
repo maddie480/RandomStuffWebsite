@@ -34,7 +34,7 @@
         <% for(Background bg : (List<Background>) request.getAttribute("backgrounds")) { %>
             <div class="col-lg-4 col-md-6 px-3 py-3">
                 <div class="card">
-                    <img src="/backgrounds/<%= escapeHtml4(bg.fileName) %>" class="card-img-top" alt="Arrière-plan">
+                    <img src="/quest/backgrounds/<%= escapeHtml4(bg.fileName) %>" class="card-img-top" alt="Arrière-plan">
                     <div class="card-body">
                         <h5 class="card-title"><%= escapeHtml4(bg.nameUrlDecoded) %></h5>
                         <h6 class="card-subtitle mb-2 text-muted">

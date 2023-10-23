@@ -75,11 +75,11 @@ public class SecurityHeadersFilter extends HttpFilter {
                     "frame-ancestors 'none'; " +
                     "object-src 'none';");
         } else if (Arrays.asList("/quest/mods", "/quest/tools", "/quest/backgrounds").contains(req.getRequestURI())) {
-            // legacy stuff *has* to use jQuery
+            // legacy stuff *has* to use jQuery (and there are some images from Discord)
             res.setHeader("Content-Security-Policy", "default-src 'self'; " +
                     "script-src 'self' https://cdn.jsdelivr.net https://code.jquery.com; " +
                     "style-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; " +
-                    "img-src 'self' data:; " +
+                    "img-src 'self' data: https://cdn.discordapp.com; " +
                     "frame-ancestors 'none'; " +
                     "object-src 'none';");
         } else {

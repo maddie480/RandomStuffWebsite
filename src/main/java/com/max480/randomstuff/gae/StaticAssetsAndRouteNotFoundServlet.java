@@ -33,6 +33,7 @@ public class StaticAssetsAndRouteNotFoundServlet extends HttpServlet {
         CONTENT_TYPES.put("ttf", "font/ttf");
         CONTENT_TYPES.put("png", "image/png");
         CONTENT_TYPES.put("gif", "image/gif");
+        CONTENT_TYPES.put("jpg", "image/jpeg");
         CONTENT_TYPES.put("svg", "image/svg+xml");
         CONTENT_TYPES.put("js", "application/javascript");
         CONTENT_TYPES.put("webm", "video/webm");
