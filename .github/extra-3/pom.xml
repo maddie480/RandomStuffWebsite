@@ -72,7 +72,7 @@
                         <artifactId>appengine-maven-plugin</artifactId>
                         <version>2.4.4</version>
                         <configuration>
-                            <cloudSdkHome>C:\Users\csouc\AppData\Local\Google\Cloud SDK\google-cloud-sdk</cloudSdkHome>
+                            <cloudSdkHome>C:\Users\csouc\gcloud\google-cloud-sdk</cloudSdkHome>
                         </configuration>
                     </plugin>
                 </plugins>
