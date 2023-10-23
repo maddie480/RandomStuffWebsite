@@ -124,7 +124,7 @@ public class CacheAndCompressionFilter extends HttpFilter {
 
     @Override
     protected void doFilter(HttpServletRequest req, HttpServletResponse res, FilterChain chain) throws IOException, ServletException {
-        if (Stream.of("/vids/", "/music/").anyMatch(req.getRequestURI()::startsWith)
+        if (Stream.of(".mp3", ".webm", ".zip", ".exe", ".jar").anyMatch(req.getRequestURI()::endsWith)
                 || req.getRequestURI().equals("/celeste/bundle-download")) {
 
             // big media; we shouldn't try compressing or caching it

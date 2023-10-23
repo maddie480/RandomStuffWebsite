@@ -32,12 +32,17 @@ public class StaticAssetsAndRouteNotFoundServlet extends HttpServlet {
         CONTENT_TYPES.put("otf", "font/otf");
         CONTENT_TYPES.put("ttf", "font/ttf");
         CONTENT_TYPES.put("png", "image/png");
+        CONTENT_TYPES.put("gif", "image/gif");
         CONTENT_TYPES.put("svg", "image/svg+xml");
         CONTENT_TYPES.put("js", "application/javascript");
         CONTENT_TYPES.put("webm", "video/webm");
         CONTENT_TYPES.put("html", "text/html");
         CONTENT_TYPES.put("json", "application/json");
         CONTENT_TYPES.put("mp3", "audio/mpeg");
+        CONTENT_TYPES.put("zip", "application/zip");
+        CONTENT_TYPES.put("exe", "application/vnd.microsoft.portable-executable");
+        CONTENT_TYPES.put("jar", "application/java-archive");
+        CONTENT_TYPES.put("csv", "text/csv");
     }
 
     private static final Logger log = LoggerFactory.getLogger(StaticAssetsAndRouteNotFoundServlet.class);
@@ -50,7 +55,7 @@ public class StaticAssetsAndRouteNotFoundServlet extends HttpServlet {
             HomepageService.doGet(request, response);
         } else {
             String extension = request.getRequestURI().substring(request.getRequestURI().lastIndexOf(".") + 1);
-            if (CONTENT_TYPES.containsKey(extension) && Stream.of("/css/", "/fonts/", "/img/", "/js/", "/vids/", "/music/", "/lua-cutscenes-documentation/", "/vanilla-graphics-dump/")
+            if (CONTENT_TYPES.containsKey(extension) && Stream.of("/css/", "/fonts/", "/img/", "/js/", "/vids/", "/music/", "/quest/", "/lua-cutscenes-documentation/", "/vanilla-graphics-dump/", "/static/")
                     .anyMatch(request.getRequestURI()::startsWith)) {
 
                 long size;

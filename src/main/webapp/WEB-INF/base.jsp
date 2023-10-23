@@ -81,7 +81,7 @@
                     <a class="nav-link <%= "discord-bots".equals(request.getAttribute("navId")) ? "active" : "" %>" href="/discord-bots">Discord Bots</a>
                 </li>
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle <%= Arrays.asList("radio-lnj", "radio-lnj-playlist").contains(request.getAttribute("navId")) ? "active" : "" %>"
+                    <a class="nav-link dropdown-toggle <%= Arrays.asList("radio-lnj", "radio-lnj-playlist", "quest-mods", "quest-tools", "quest-backgrounds").contains(request.getAttribute("navId")) ? "active" : "" %>"
                         href="#" id="linksDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Links</a>
 
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="linksDropdown">
@@ -95,7 +95,10 @@
                             href="/radio-lnj">&#x1F4FB;&nbsp;&nbsp;Radio LNJ &#x2013; Game Music</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li><h6 class="dropdown-header">QUEST by Laupok (in French)</h6></li>
-                        <li><a class="dropdown-item" href="https://quest-community-bot.appspot.com" target="_blank">&#x2694;&#xFE0F;&nbsp;&nbsp;QUEST &#x2013; Game Modding</a></li>
+                        <li><a class="dropdown-item <%= "quest-mods".equals(request.getAttribute("navId")) ? "active" : "" %>"
+                            href="/quest/mods">&#x2694;&#xFE0F;&nbsp;&nbsp;Quest &#x2013; Game Mods</a></li>
+                        <li><a class="dropdown-item <%= "quest-tools".equals(request.getAttribute("navId")) ? "active" : "" %>"
+                            href="/quest/tools">&#x1F527;&#xFE0F;&nbsp;&nbsp;Quest &#x2013; Modding Tools</a></li>
                     </ul>
                 </li>
             </ul>

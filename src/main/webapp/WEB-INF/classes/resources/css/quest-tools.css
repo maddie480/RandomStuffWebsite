@@ -1,0 +1,15 @@
+.tool-image {
+    width: 100%;
+    height: auto;
+    cursor: pointer;
+}
+
+#tool-image-modal {
+    max-width: 100%;
+    max-height: calc(100vh - 150px);
+    height: auto;
+}
+
+.modal-body {
+    text-align: center;
+}

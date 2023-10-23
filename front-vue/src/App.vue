@@ -195,11 +195,13 @@
                 <h6 class="dropdown-header">QUEST by Laupok (in French)</h6>
               </li>
               <li>
-                <a
-                  class="dropdown-item"
-                  href="https://quest-community-bot.appspot.com"
-                  target="_blank"
-                  >&#x2694;&#xFE0F;&nbsp;&nbsp;QUEST &#x2013; Game Modding</a
+                <a class="dropdown-item" href="/quest/mods"
+                  >&#x2694;&#xFE0F;&nbsp;&nbsp;Quest &#x2013; Game Mods</a
+                >
+              </li>
+              <li>
+                <a class="dropdown-item" href="/quest/tools"
+                  >&#x1F527;&#xFE0F;&nbsp;&nbsp;Quest &#x2013; Modding Tools</a
                 >
               </li>
             </ul>
