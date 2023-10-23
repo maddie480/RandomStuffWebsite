@@ -35,4 +35,33 @@
         <packageUrl regex="true">^pkg:maven/io\.grpc/grpc\-.*$</packageUrl>
         <cve>CVE-2023-44487</cve>
     </suppress>
+
+    <suppress>
+        <notes><![CDATA[
+            Quest-related tool is affected, won't fix
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/com\.google\.code\.gson/gson@.*$</packageUrl>
+        <cve>CVE-2022-25647</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+            Quest is affected, won't fix
+        ]]></notes>
+        <sha1>25a2450d5138fea22688342218dc1d6567f3c15a</sha1>
+        <cpe>cpe:/a:libvorbis:libvorbis</cpe>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+            Quest is affected, won't fix
+        ]]></notes>
+        <sha1>90f59b2e8d2d1fac6f523d73fd497c0607ad2076</sha1>
+        <cpe>cpe:/a:zlib:zlib</cpe>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+            Quest-related tool is affected, won't fix
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/commons\-io/commons\-io@.*$</packageUrl>
+        <cve>CVE-2021-29425</cve>
+    </suppress>
 </suppressions>
