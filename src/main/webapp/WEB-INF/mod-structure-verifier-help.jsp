@@ -39,7 +39,7 @@
         for example <pre>Graphics/<%= escapeHtml4(request.getParameter("collabName")) %>xmls/[subfolder]/ForegroundTiles.xml</pre>.
     </div>
 
-    <div>To fix this issue, create the missing subfolders and move your XMLs inside it. <b>Don't forget to update your map metadata in Ahorn to reference the new paths!</b></div>
+    <div>To fix this issue, create the missing subfolders and move your XMLs inside it. <b>Don't forget to update your map metadata in your map editor to reference the new paths!</b></div>
 <% } %>
 
 <% if (request.getParameter("nomap") != null) { %>
@@ -113,7 +113,8 @@
     </div>
 
     <div>
-        To generate one, you can <a target="_blank" href="https://gamebanana.com/tools/6908">download the Dependency Generator</a> and hit "Generate everest.yaml" in Ahorn.
+        Lönn allows you to generate and update your <pre>everest.yaml</pre> file in the <b>Map &gt; Dependencies</b> menu.
+        If you use Ahorn, you can <a target="_blank" href="https://gamebanana.com/tools/6908">download the Dependency Generator</a> and hit "Generate everest.yaml".
     </div>
 <% } %>
 
@@ -193,7 +194,7 @@ Version: 1.21.1</pre>
             </li>
         </ul>
     </div>
-    <div><i>Note: "Effects" refer to the Effects tab of the Stylegrounds window in Ahorn here.</i></div>
+    <div><i>Note: "Effects" refer to the Effects tab of the Stylegrounds window in Ahorn here. Effects are listed together with parallax stylegrounds in Lönn.</i></div>
 <% } %>
 
 <% if (request.getParameter("missingfonts") != null) { %>

@@ -50,7 +50,7 @@
             folder
           </li>
           <li>
-            in Ahorn, use
+            in your map editor, use
             <code>MaxHelpingHand/CustomWipe:yournickname/wipename</code> as a
             wipe
           </li>
