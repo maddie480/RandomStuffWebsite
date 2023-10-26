@@ -291,7 +291,7 @@
                             <workingDirectory>${project.build.directory}/random-stuff-website-1.0.0/WEB-INF/classes</workingDirectory>
                             <arguments>
                                 <argument>-cp</argument>
-                                <argument>.:../../../dependency/snakeyaml-2.2.jar:../../../dependency/commons-io-2.14.0.jar</argument>
+                                <argument>.:../../../dependency/snakeyaml-2.2.jar:../../../dependency/commons-io-2.15.0.jar</argument>
                                 <argument>com.max480.randomstuff.gae.LuaCutscenesDocumentationIntegrator</argument>
                             </arguments>
                         </configuration>
@@ -308,7 +308,7 @@
                             <workingDirectory>${project.build.directory}/random-stuff-website-1.0.0/WEB-INF/classes</workingDirectory>
                             <arguments>
                                 <argument>-cp</argument>
-                                <argument>.:../../../dependency/commons-io-2.14.0.jar:../../../dependency/json-20231013.jar</argument>
+                                <argument>.:../../../dependency/commons-io-2.15.0.jar:../../../dependency/json-20231013.jar</argument>
                                 <argument>com.max480.randomstuff.gae.PrepareForRadioLNJ</argument>
                             </arguments>
                         </configuration>
@@ -325,7 +325,7 @@
                             <workingDirectory>${project.build.directory}/random-stuff-website-1.0.0/WEB-INF/classes</workingDirectory>
                             <arguments>
                                 <argument>-cp</argument>
-                                <argument>.:../../../dependency/commons-io-2.14.0.jar:../../../dependency/json-20231013.jar</argument>
+                                <argument>.:../../../dependency/commons-io-2.15.0.jar:../../../dependency/json-20231013.jar</argument>
                                 <argument>com.max480.randomstuff.gae.GraphicsDumpIntegrator</argument>
                             </arguments>
                         </configuration>
@@ -342,7 +342,7 @@
                             <workingDirectory>${project.build.directory}/random-stuff-website-1.0.0/WEB-INF/classes</workingDirectory>
                             <arguments>
                                 <argument>-cp</argument>
-                                <argument>.:../../../dependency/commons-io-2.14.0.jar:../../../dependency/commons-lang3-3.12.0.jar:../../../dependency/commons-text-1.10.0.jar:../../../dependency/jsoup-1.16.2.jar</argument>
+                                <argument>.:../../../dependency/commons-io-2.15.0.jar:../../../dependency/commons-lang3-3.12.0.jar:../../../dependency/commons-text-1.10.0.jar:../../../dependency/jsoup-1.16.2.jar</argument>
                                 <argument>com.max480.randomstuff.gae.ParrotQuickGenerator</argument>
                             </arguments>
                         </configuration>
@@ -467,7 +467,7 @@
                                     <workingDirectory>${project.build.directory}/random-stuff-website-1.0.0/WEB-INF/classes</workingDirectory>
                                     <arguments>
                                         <argument>-cp</argument>
-                                        <argument>.;../../../dependency/snakeyaml-2.2.jar;../../../dependency/commons-io-2.14.0.jar</argument>
+                                        <argument>.;../../../dependency/snakeyaml-2.2.jar;../../../dependency/commons-io-2.15.0.jar</argument>
                                         <argument>com.max480.randomstuff.gae.LuaCutscenesDocumentationIntegrator</argument>
                                     </arguments>
                                 </configuration>
@@ -484,7 +484,7 @@
                                     <workingDirectory>${project.build.directory}/random-stuff-website-1.0.0/WEB-INF/classes</workingDirectory>
                                     <arguments>
                                         <argument>-cp</argument>
-                                        <argument>.;../../../dependency/commons-io-2.14.0.jar;../../../dependency/json-20231013.jar</argument>
+                                        <argument>.;../../../dependency/commons-io-2.15.0.jar;../../../dependency/json-20231013.jar</argument>
                                         <argument>com.max480.randomstuff.gae.PrepareForRadioLNJ</argument>
                                     </arguments>
                                 </configuration>
@@ -501,7 +501,7 @@
                                     <workingDirectory>${project.build.directory}/random-stuff-website-1.0.0/WEB-INF/classes</workingDirectory>
                                     <arguments>
                                         <argument>-cp</argument>
-                                        <argument>.;../../../dependency/commons-io-2.14.0.jar;../../../dependency/json-20231013.jar</argument>
+                                        <argument>.;../../../dependency/commons-io-2.15.0.jar;../../../dependency/json-20231013.jar</argument>
                                         <argument>com.max480.randomstuff.gae.GraphicsDumpIntegrator</argument>
                                     </arguments>
                                 </configuration>
@@ -518,7 +518,7 @@
                                     <workingDirectory>${project.build.directory}/random-stuff-website-1.0.0/WEB-INF/classes</workingDirectory>
                                     <arguments>
                                         <argument>-cp</argument>
-                                        <argument>.;../../../dependency/commons-io-2.14.0.jar;../../../dependency/commons-lang3-3.12.0.jar;../../../dependency/commons-text-1.10.0.jar;../../../dependency/jsoup-1.16.2.jar</argument>
+                                        <argument>.;../../../dependency/commons-io-2.15.0.jar;../../../dependency/commons-lang3-3.12.0.jar;../../../dependency/commons-text-1.10.0.jar;../../../dependency/jsoup-1.16.2.jar</argument>
                                         <argument>com.max480.randomstuff.gae.ParrotQuickGenerator</argument>
                                     </arguments>
                                 </configuration>
