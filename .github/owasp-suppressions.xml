@@ -50,4 +50,18 @@
         <packageUrl regex="true">^pkg:maven/commons\-io/commons\-io@.*$</packageUrl>
         <cve>CVE-2021-29425</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+            Quest-related tool is affected, won't fix
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.json/json@.*$</packageUrl>
+        <cve>CVE-2022-45688</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+            Quest-related tool is affected, won't fix
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.json/json@.*$</packageUrl>
+       <cve>CVE-2023-5072</cve>
+    </suppress>
 </suppressions>
