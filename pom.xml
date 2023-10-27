@@ -231,7 +231,7 @@
                 </executions>
 
                 <configuration>
-                    <nodeVersion>v18.18.2</nodeVersion>
+                    <nodeVersion>v20.9.0</nodeVersion>
                     <workingDirectory>front-vue</workingDirectory>
                 </configuration>
             </plugin>
