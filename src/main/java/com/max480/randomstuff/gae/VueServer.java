@@ -50,6 +50,7 @@ public class VueServer extends HttpServlet {
                         .replace("${page_description}", StringEscapeUtils.escapeHtml4("See the raw contents of your map .bin as a tree to find out what is inside!"));
             }
 
+            response.setContentType("text/html");
             response.getWriter().write(contents);
         }
     }
