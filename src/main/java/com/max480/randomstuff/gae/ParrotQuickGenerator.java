@@ -92,9 +92,16 @@ public class ParrotQuickGenerator {
 
         Map<String, String> parrots = new LinkedHashMap<>();
 
-        for (Element elt : Jsoup.connect("https://cultofthepartyparrot.com/").get().select("article li img")) {
-            parrots.put(elt.attr("alt"), "https://cultofthepartyparrot.com" + elt.attr("data-src"));
+        // the content-encoding seems to be inconsistent, and be "br" most of the time.
+        // so... just retry until we get an answer we can actually read.
+        for (int i = 0; i < 100 && parrots.isEmpty(); i++) {
+            for (Element elt : Jsoup.connect("https://cultofthepartyparrot.com/").get().select("article li img")) {
+                parrots.put(elt.attr("alt"), "https://cultofthepartyparrot.com" + elt.attr("data-src"));
+            }
         }
+
+        if (parrots.isEmpty()) throw new IOException("Where did the parrots go?");
+
         parrots.putAll(extraParrots);
         logger.fine("There are " + parrots.size() + " parrots in my database :parrot_parrot:");
         return parrots;
