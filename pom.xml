@@ -153,9 +153,9 @@
         </dependency>
 
         <dependency>
-	   <groupId>com.nixxcode.jvmbrotli</groupId>
-	   <artifactId>jvmbrotli</artifactId>
-	   <version>0.2.0</version>
+            <groupId>com.nixxcode.jvmbrotli</groupId>
+            <artifactId>jvmbrotli</artifactId>
+            <version>0.2.0</version>
         </dependency>
     </dependencies>
 
