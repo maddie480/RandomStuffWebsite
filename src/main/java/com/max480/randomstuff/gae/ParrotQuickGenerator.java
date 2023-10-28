@@ -1,5 +1,7 @@
 package com.max480.randomstuff.gae;
 
+import com.nixxcode.jvmbrotli.common.BrotliLoader;
+import com.nixxcode.jvmbrotli.dec.BrotliInputStream;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.jsoup.Jsoup;
@@ -7,6 +9,7 @@ import org.jsoup.nodes.Element;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -82,6 +85,10 @@ public class ParrotQuickGenerator {
     }
 
     private static Map<String, String> getParrots() throws IOException {
+        if (!BrotliLoader.isBrotliAvailable()) {
+            throw new IOException("Brotli is not available!");
+        }
+
         final Map<String, String> extraParrots = new LinkedHashMap<>();
         extraParrots.put("OSEF Parrot", "https://maddie480.ovh/static/img/osef_parrot.gif");
         extraParrots.put("AH Parrot", "https://maddie480.ovh/static/img/ah_parrot.gif");
@@ -90,22 +97,14 @@ public class ParrotQuickGenerator {
         extraParrots.put("GitLab Parrot", "https://maddie480.ovh/static/img/gitlab_parrot.gif");
         extraParrots.put("Ember Parrot", "https://maddie480.ovh/static/img/ember_parrot.gif");
 
+        String html;
+        try (InputStream is = new BrotliInputStream(new URL("https://cultofthepartyparrot.com/").openStream())) {
+            html = IOUtils.toString(is, StandardCharsets.UTF_8);
+        }
+
         Map<String, String> parrots = new LinkedHashMap<>();
-
-        // the content-encoding seems to be inconsistent, and be "br" most of the time.
-        // so... just retry until we get an answer we can actually read.
-        for (int i = 0; i < 300 && parrots.isEmpty(); i++) {
-            logger.info("Trying to get parrots...");
-
-            for (Element elt : Jsoup.connect("https://cultofthepartyparrot.com/").get().select("article li img")) {
-                parrots.put(elt.attr("alt"), "https://cultofthepartyparrot.com" + elt.attr("data-src"));
-            }
-
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                throw new IOException(e);
-            }
+        for (Element elt : Jsoup.parse(html).select("article li img")) {
+            parrots.put(elt.attr("alt"), "https://cultofthepartyparrot.com" + elt.attr("data-src"));
         }
 
         if (parrots.isEmpty()) throw new IOException("Where did the parrots go?");
