@@ -94,16 +94,24 @@ public class ParrotQuickGenerator {
 
         // the content-encoding seems to be inconsistent, and be "br" most of the time.
         // so... just retry until we get an answer we can actually read.
-        for (int i = 0; i < 100 && parrots.isEmpty(); i++) {
+        for (int i = 0; i < 300 && parrots.isEmpty(); i++) {
+            logger.info("Trying to get parrots...");
+    
             for (Element elt : Jsoup.connect("https://cultofthepartyparrot.com/").get().select("article li img")) {
                 parrots.put(elt.attr("alt"), "https://cultofthepartyparrot.com" + elt.attr("data-src"));
+            }
+
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                throw new IOException(e);
             }
         }
 
         if (parrots.isEmpty()) throw new IOException("Where did the parrots go?");
 
         parrots.putAll(extraParrots);
-        logger.fine("There are " + parrots.size() + " parrots in my database :parrot_parrot:");
+        logger.info("There are " + parrots.size() + " parrots in my database :parrot_parrot:");
         return parrots;
     }
 }
