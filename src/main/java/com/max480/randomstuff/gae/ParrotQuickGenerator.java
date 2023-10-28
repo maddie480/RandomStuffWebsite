@@ -96,7 +96,7 @@ public class ParrotQuickGenerator {
         // so... just retry until we get an answer we can actually read.
         for (int i = 0; i < 300 && parrots.isEmpty(); i++) {
             logger.info("Trying to get parrots...");
-    
+
             for (Element elt : Jsoup.connect("https://cultofthepartyparrot.com/").get().select("article li img")) {
                 parrots.put(elt.attr("alt"), "https://cultofthepartyparrot.com" + elt.attr("data-src"));
             }
