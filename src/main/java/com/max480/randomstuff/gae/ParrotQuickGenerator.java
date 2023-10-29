@@ -10,6 +10,7 @@ import org.jsoup.nodes.Element;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -98,9 +99,19 @@ public class ParrotQuickGenerator {
         extraParrots.put("GitLab Parrot", "https://maddie480.ovh/static/img/gitlab_parrot.gif");
         extraParrots.put("Ember Parrot", "https://maddie480.ovh/static/img/ember_parrot.gif");
 
+        HttpURLConnection connection = (HttpURLConnection) new URL("https://cultofthepartyparrot.com/").openConnection();
+
         String html;
-        try (InputStream is = new BrotliInputStream(new URL("https://cultofthepartyparrot.com/").openStream())) {
-            html = IOUtils.toString(is, StandardCharsets.UTF_8);
+        try (InputStream is = connection.getInputStream()) {
+            if ("br".equals(connection.getHeaderField("Content-Encoding"))) {
+                try (BrotliInputStream realIS = new BrotliInputStream(is)) {
+                    logger.info("Reading Brotli-encoded Party Parrot response");
+                    html = IOUtils.toString(realIS, StandardCharsets.UTF_8);
+                }
+            } else {
+                logger.info("Reading uncompressed Party Parrot response");
+                html = IOUtils.toString(is, StandardCharsets.UTF_8);
+            }
         }
 
         Map<String, String> parrots = new LinkedHashMap<>();
