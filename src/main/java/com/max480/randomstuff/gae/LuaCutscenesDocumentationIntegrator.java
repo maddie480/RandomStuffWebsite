@@ -29,7 +29,7 @@ public class LuaCutscenesDocumentationIntegrator {
 
         // download Lua Cutscenes and go through its files
         logger.info("Downloading Lua Cutscenes from " + luaCutscenesDownloadUrl + "...");
-        try (ZipInputStream zip = new ZipInputStream(ConnectionUtils.openStreamWithTimeout(luaCutscenesDownloadUrl))) {
+        try (ZipInputStream zip = new ZipInputStream(PrepareForRadioLNJ.getFullInputStreamWithRetry(luaCutscenesDownloadUrl))) {
             ZipEntry entry;
             while ((entry = zip.getNextEntry()) != null) {
                 if (!entry.isDirectory() && entry.getName().toLowerCase(Locale.ROOT).startsWith("documentation/")) {

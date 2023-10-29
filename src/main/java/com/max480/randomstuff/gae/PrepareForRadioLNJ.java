@@ -5,6 +5,7 @@ import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -67,7 +68,7 @@ public class PrepareForRadioLNJ {
             } else {
                 logger.info("Downloading zip from " + source.getString("url"));
 
-                try (ZipInputStream zip = new ZipInputStream(ConnectionUtils.openStreamWithTimeout(source.getString("url")))) {
+                try (ZipInputStream zip = new ZipInputStream(getFullInputStreamWithRetry(source.getString("url")))) {
                     ZipEntry entry;
                     while ((entry = zip.getNextEntry()) != null) {
                         Path temp = Paths.get("/tmp/stuff.ogg");
@@ -80,11 +81,11 @@ public class PrepareForRadioLNJ {
                         musicIndex++;
 
                         new ProcessBuilder("ffmpeg", "-i", "/tmp/stuff.ogg", targetFile.toAbsolutePath().toString())
-                            .inheritIO()
-                            .start()
-                            .waitFor();
+                                .inheritIO()
+                                .start()
+                                .waitFor();
 
-                            Files.delete(temp);
+                        Files.delete(temp);
 
                         JSONObject meta = new JSONObject();
                         meta.put("trackName", source.getString("prefix") + entry.getName().substring(0, entry.getName().length() - 4));
@@ -113,5 +114,32 @@ public class PrepareForRadioLNJ {
         }
 
         return (int) (result * 1000.);
+    }
+
+    /**
+     * Downloads the entire file which link has been given into memory, with up to 3 tries,
+     * then returns an input stream to read the downloaded bytes from.
+     */
+    public static InputStream getFullInputStreamWithRetry(String url) throws IOException {
+        for (int i = 1; i < 3; i++) {
+            try (InputStream is = ConnectionUtils.openStreamWithTimeout(url)) {
+                return new ByteArrayInputStream(IOUtils.toByteArray(is));
+            } catch (IOException e) {
+                logger.warning("I/O exception while getting file contents (try " + i + "/3). " + e);
+
+                // wait a bit before retrying
+                try {
+                    logger.info("Waiting " + (i * 5) + " seconds before next try.");
+                    Thread.sleep(i * 5000);
+                } catch (InterruptedException e2) {
+                    logger.warning("Sleep interrupted: " + e2);
+                }
+            }
+        }
+
+        // 3rd try: this time, if it crashes, let it crash
+        try (InputStream is = ConnectionUtils.openStreamWithTimeout(url)) {
+            return new ByteArrayInputStream(IOUtils.toByteArray(is));
+        }
     }
 }
