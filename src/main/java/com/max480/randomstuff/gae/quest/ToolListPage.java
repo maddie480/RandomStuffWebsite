@@ -6,9 +6,6 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.commonmark.node.Node;
-import org.commonmark.parser.Parser;
-import org.commonmark.renderer.html.HtmlRenderer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,17 +33,6 @@ public class ToolListPage extends HttpServlet {
             List<Tool> tools = new ArrayList<>();
             while ((s = br.readLine()) != null) {
                 tools.add(new Tool(s));
-            }
-
-            Parser parser = Parser.builder().build();
-            HtmlRenderer renderer = HtmlRenderer.builder().build();
-            for (Tool tool : tools) {
-                Node node = parser.parse(replace(tool.longDescription));
-                tool.longDescription = renderer.render(node);
-                if (tool.moreInfoUrl != null && !tool.moreInfoUrl.startsWith("http")) {
-                    node = parser.parse(replace(tool.moreInfoUrl));
-                    tool.moreInfoUrl = renderer.render(node);
-                }
             }
 
             cache = tools;

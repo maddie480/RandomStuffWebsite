@@ -133,12 +133,6 @@
             <scope>test</scope>
         </dependency>
 
-        <dependency>
-            <groupId>org.commonmark</groupId>
-            <artifactId>commonmark</artifactId>
-            <version>0.21.0</version>
-        </dependency>
-
         <!-- Only required at compile time, won't be packaged with the website -->
         <dependency>
             <groupId>org.jsoup</groupId>
