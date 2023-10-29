@@ -84,12 +84,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-collections4</artifactId>
-            <version>4.4</version>
-        </dependency>
-
-        <dependency>
             <groupId>com.goterl</groupId>
             <artifactId>lazysodium-java</artifactId>
             <version>5.1.4</version>
@@ -140,18 +134,17 @@
         </dependency>
 
         <dependency>
-            <groupId>org.jsoup</groupId>
-            <artifactId>jsoup</artifactId>
-            <version>1.16.2</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <dependency>
             <groupId>org.commonmark</groupId>
             <artifactId>commonmark</artifactId>
             <version>0.21.0</version>
         </dependency>
 
+        <!-- Only required at compile time, won't be packaged with the website -->
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>1.16.2</version>
+        </dependency>
         <dependency>
             <groupId>com.nixxcode.jvmbrotli</groupId>
             <artifactId>jvmbrotli</artifactId>
@@ -160,6 +153,11 @@
         <dependency>
             <groupId>com.nixxcode.jvmbrotli</groupId>
             <artifactId>jvmbrotli-linux-x86-amd64</artifactId>
+            <version>0.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.nixxcode.jvmbrotli</groupId>
+            <artifactId>jvmbrotli-win32-x86-amd64</artifactId>
             <version>0.2.0</version>
         </dependency>
 
@@ -172,6 +170,9 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
                 <version>3.4.0</version>
+                <configuration>
+                    <packagingExcludes>WEB-INF/lib/jvmbrotli-0.2.0.jar,WEB-INF/lib/jvmbrotli-linux-x86-amd64-0.2.0.jar,WEB-INF/lib/jvmbrotli-win32-x86-amd64-0.2.0.jar,WEB-INF/lib/jsoup-1.16.2.jar</packagingExcludes>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -310,6 +311,23 @@
                     </execution>
 
                     <execution>
+                        <id>generate Parrot Quick Importer</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>java</executable>
+                            <workingDirectory>${project.build.directory}/random-stuff-website-1.0.0/WEB-INF/classes</workingDirectory>
+                            <arguments>
+                                <argument>-cp</argument>
+                                <argument>.:../../../dependency/commons-io-2.15.0.jar:../../../dependency/commons-lang3-3.12.0.jar:../../../dependency/commons-text-1.10.0.jar:../../../dependency/jsoup-1.16.2.jar:../../../dependency/jvmbrotli-0.2.0.jar:../../../dependency/jvmbrotli-linux-x86-amd64-0.2.0.jar</argument>
+                                <argument>com.max480.randomstuff.gae.ParrotQuickGenerator</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+
+                    <execution>
                         <id>prepare Radio LNJ</id>
                         <phase>prepare-package</phase>
                         <goals>
@@ -339,23 +357,6 @@
                                 <argument>-cp</argument>
                                 <argument>.:../../../dependency/commons-io-2.15.0.jar:../../../dependency/json-20231013.jar</argument>
                                 <argument>com.max480.randomstuff.gae.GraphicsDumpIntegrator</argument>
-                            </arguments>
-                        </configuration>
-                    </execution>
-
-                    <execution>
-                        <id>generate Parrot Quick Importer</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <configuration>
-                            <executable>java</executable>
-                            <workingDirectory>${project.build.directory}/random-stuff-website-1.0.0/WEB-INF/classes</workingDirectory>
-                            <arguments>
-                                <argument>-cp</argument>
-                                <argument>.:../../../dependency/commons-io-2.15.0.jar:../../../dependency/commons-lang3-3.12.0.jar:../../../dependency/commons-text-1.10.0.jar:../../../dependency/jsoup-1.16.2.jar:../../../dependency/jvmbrotli-0.2.0.jar:../../../dependency/jvmbrotli-linux-x86-amd64-0.2.0.jar</argument>
-                                <argument>com.max480.randomstuff.gae.ParrotQuickGenerator</argument>
                             </arguments>
                         </configuration>
                     </execution>
@@ -530,7 +531,7 @@
                                     <workingDirectory>${project.build.directory}/random-stuff-website-1.0.0/WEB-INF/classes</workingDirectory>
                                     <arguments>
                                         <argument>-cp</argument>
-                                        <argument>.;../../../dependency/commons-io-2.15.0.jar;../../../dependency/commons-lang3-3.12.0.jar;../../../dependency/commons-text-1.10.0.jar;../../../dependency/jsoup-1.16.2.jar;../../../dependency/jvmbrotli-0.2.0.jar</argument>
+                                        <argument>.;../../../dependency/commons-io-2.15.0.jar;../../../dependency/commons-lang3-3.12.0.jar;../../../dependency/commons-text-1.10.0.jar;../../../dependency/jsoup-1.16.2.jar;../../../dependency/jvmbrotli-0.2.0.jar;../../../dependency/jvmbrotli-win32-x86-amd64-0.2.0.jar</argument>
                                         <argument>com.max480.randomstuff.gae.ParrotQuickGenerator</argument>
                                     </arguments>
                                 </configuration>
