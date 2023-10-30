@@ -315,7 +315,7 @@
                             <workingDirectory>${project.build.directory}/random-stuff-website-1.0.0/WEB-INF/classes</workingDirectory>
                             <arguments>
                                 <argument>-cp</argument>
-                                <argument>.:../../../dependency/commons-io-2.15.0.jar:../../../dependency/commons-lang3-3.12.0.jar:../../../dependency/commons-text-1.11.0.jar:../../../dependency/jsoup-1.16.2.jar:../../../dependency/jvmbrotli-0.2.0.jar:../../../dependency/jvmbrotli-linux-x86-amd64-0.2.0.jar</argument>
+                                <argument>.:../../../dependency/commons-io-2.15.0.jar:../../../dependency/commons-lang3-3.12.0.jar:../../../dependency/commons-text-1.11.0.jar:../../../dependency/commons-lang3-3.13.0.jar:../../../dependency/jsoup-1.16.2.jar:../../../dependency/jvmbrotli-0.2.0.jar:../../../dependency/jvmbrotli-linux-x86-amd64-0.2.0.jar</argument>
                                 <argument>com.max480.randomstuff.gae.ParrotQuickGenerator</argument>
                             </arguments>
                         </configuration>
@@ -525,7 +525,7 @@
                                     <workingDirectory>${project.build.directory}/random-stuff-website-1.0.0/WEB-INF/classes</workingDirectory>
                                     <arguments>
                                         <argument>-cp</argument>
-                                        <argument>.;../../../dependency/commons-io-2.15.0.jar;../../../dependency/commons-lang3-3.12.0.jar;../../../dependency/commons-text-1.11.0.jar;../../../dependency/jsoup-1.16.2.jar;../../../dependency/jvmbrotli-0.2.0.jar;../../../dependency/jvmbrotli-win32-x86-amd64-0.2.0.jar</argument>
+                                        <argument>.;../../../dependency/commons-io-2.15.0.jar;../../../dependency/commons-lang3-3.12.0.jar;../../../dependency/commons-text-1.11.0.jar;../../../dependency/commons-lang3-3.13.0.jar;../../../dependency/jsoup-1.16.2.jar;../../../dependency/jvmbrotli-0.2.0.jar;../../../dependency/jvmbrotli-win32-x86-amd64-0.2.0.jar</argument>
                                         <argument>com.max480.randomstuff.gae.ParrotQuickGenerator</argument>
                                     </arguments>
                                 </configuration>
