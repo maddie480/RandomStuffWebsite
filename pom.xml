@@ -383,6 +383,8 @@
                 <configuration>
                     <failBuildOnCVSS>0</failBuildOnCVSS>
                     <suppressionFile>.github/owasp-suppressions.xml</suppressionFile>
+                    <retireJsForceUpdate>true</retireJsForceUpdate>
+                    <retireJsUrl>https://raw.githubusercontent.com/RetireJS/retire.js/0fe12bb575eda270536dc0ce47fca0dd17b6ab33/repository/jsrepository.json</retireJsUrl>
                 </configuration>
                 <executions>
                     <execution>
