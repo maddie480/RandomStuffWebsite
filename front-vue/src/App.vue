@@ -34,6 +34,18 @@
                 <a
                   :class="
                     'dropdown-item ' +
+                    (this.$route.path === '/celeste/asset-drive'
+                      ? 'active'
+                      : '')
+                  "
+                  href="/celeste/asset-drive"
+                  >Asset Drive Browser</a
+                >
+              </li>
+              <li>
+                <a
+                  :class="
+                    'dropdown-item ' +
                     (this.$route.path === '/celeste/banana-mirror-browser'
                       ? 'active'
                       : '')

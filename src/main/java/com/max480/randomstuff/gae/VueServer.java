@@ -17,7 +17,7 @@ import java.nio.charset.StandardCharsets;
  * into a vue-index.html within the project's classpath. So we just need to send that!
  */
 @WebServlet(name = "VueServer", urlPatterns = {"/celeste/wipe-converter", "/celeste/banana-mirror-browser",
-        "/celeste/map-tree-viewer", "/celeste/file-searcher", "/celeste/graphics-dump-browser"})
+        "/celeste/map-tree-viewer", "/celeste/file-searcher", "/celeste/graphics-dump-browser", "/celeste/asset-drive"})
 public class VueServer extends HttpServlet {
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -44,6 +44,11 @@ public class VueServer extends HttpServlet {
                         .replace("${page_title}", StringEscapeUtils.escapeHtml4("Celeste Graphics Dump Browser"))
                         .replace("${page_description}", StringEscapeUtils.escapeHtml4(
                                 "Browse the Celeste Graphics Dump online, download individual images or figure out their path."));
+            } else if (request.getRequestURI().equals("/celeste/asset-drive")) {
+                contents = contents
+                        .replace("${page_title}", StringEscapeUtils.escapeHtml4("Celeste Asset Drive Browser"))
+                        .replace("${page_description}", StringEscapeUtils.escapeHtml4(
+                                "Another way to browse the Celeste Asset Drive, allowing to view the assets across all folders more easily."));
             } else {
                 contents = contents
                         .replace("${page_title}", StringEscapeUtils.escapeHtml4("Celeste Map Tree Viewer"))

@@ -16,11 +16,11 @@ const routes = [
     },
   },
   {
-    path: "/celeste/mapping-sprite-resources",
+    path: "/celeste/asset-drive",
     name: "AssetBrowser",
-    component: () => import("../views/AssetBrowser.vue"),
+    component: () => import("../views/AssetDriveBrowser.vue"),
     meta: {
-      title: "Celeste Mapping Sprite Resources",
+      title: "Celeste Asset Drive Browser",
     },
   },
   {

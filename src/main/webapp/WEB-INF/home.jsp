@@ -20,6 +20,11 @@
 
     <ul>
         <li>
+            <b><a href="/celeste/asset-drive">Asset Drive Browser</a>:</b> Another way to browse the
+            <a href="https://drive.google.com/drive/folders/13A0feEXS3kUHb_Q4K2w4xP8DEuBlgTip" target="_blank">Celeste Asset Drive</a>,
+            allowing to view the assets across all folders more easily.
+        </li>
+        <li>
             <b><a href="/celeste/banana-mirror-browser">Banana Mirror Browser</a>:</b> a complete mirror of
             <a href="https://gamebanana.com/games/6460" target="_blank">Celeste mods on GameBanana</a>
             that you can use if GameBanana is slow or down.

@@ -52,6 +52,7 @@
                         href="#" id="celesteDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Celeste</a>
 
                     <ul class="dropdown-menu dropdown-menu-sm-end" aria-labelledby="celesteDropdown">
+                        <li><a class="dropdown-item" href="/celeste/asset-drive">Asset Drive Browser</a></li>
                         <li><a class="dropdown-item" href="/celeste/banana-mirror-browser">Banana Mirror Browser</a></li>
                         <li><a class="dropdown-item <%= "celeste-news-network-subscription".equals(request.getAttribute("navId")) ? "active" : "" %>"
                             href="/celeste/news-network-subscription">#celeste_news_network Subscription</a></li>
