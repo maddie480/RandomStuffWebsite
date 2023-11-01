@@ -32,8 +32,6 @@ public class SecretConstants {
     public static String GITHUB_SSH_PUBLIC_KEY = "";
     public static String GITHUB_SSH_PRIVATE_KEY = "";
 
-    public static String GOOGLE_DRIVE_API_KEY = "";
-
     static {
         // The SECRET_CONSTANTS environment variable has all secrets, in JSON format.
         String environment = System.getenv("SECRET_CONSTANTS");
@@ -64,7 +62,5 @@ public class SecretConstants {
         GITHUB_SSH_KNOWN_HOSTS = secrets.getString("GITHUB_SSH_KNOWN_HOSTS");
         GITHUB_SSH_PUBLIC_KEY = secrets.getString("GITHUB_SSH_PUBLIC_KEY");
         GITHUB_SSH_PRIVATE_KEY = secrets.getString("GITHUB_SSH_PRIVATE_KEY");
-
-        GOOGLE_DRIVE_API_KEY = secrets.getString("GOOGLE_DRIVE_API_KEY");
     }
 }

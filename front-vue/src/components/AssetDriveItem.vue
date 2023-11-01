@@ -375,7 +375,7 @@ export default {
       return (
         this.data.template !== undefined ||
         this.data.notes !== undefined ||
-        this.data.readme !== null
+        this.data.readme !== undefined
       );
     },
     fileNameWithoutExtension() {

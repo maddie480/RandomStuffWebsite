@@ -6,7 +6,6 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.input.TeeInputStream;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -14,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -56,21 +56,16 @@ public class AssetDriveService extends HttpServlet {
             log.debug("Looking for asset with id {}, found: {}", fileId, foundFile);
 
             if (foundFile != null) {
-                resp.setContentType(foundFile.getString("mimeType"));
-                resp.setHeader("Content-Disposition", "Content-Disposition: attachment; filename=\"" + foundFile.getString("name") + "\"");
+                Path cached = Paths.get("/shared/temp/asset-drive/cached-" + fileId + ".bin");
 
-                try (InputStream is = downloadFileWithCache(fileId)) {
-                    IOUtils.copy(is, resp.getOutputStream());
-                    return;
-                } catch (IOException e) {
-                    // get rid of the cached file, since it might be incomplete
-                    Path cached = Paths.get("/shared/temp/asset-drive/cached-" + fileId + ".bin");
-                    if (Files.exists(cached)) {
-                        log.warn("Deleting cached file {} due to I/O exception", cached);
-                        Files.delete(cached);
+                if (Files.exists(cached)) {
+                    resp.setContentType(foundFile.getString("mimeType"));
+                    resp.setHeader("Content-Disposition", "Content-Disposition: attachment; filename=\"" + foundFile.getString("name") + "\"");
+
+                    try (InputStream is = Files.newInputStream(cached)) {
+                        IOUtils.copy(is, resp.getOutputStream());
+                        return;
                     }
-
-                    throw e;
                 }
             }
         }
@@ -79,18 +74,5 @@ public class AssetDriveService extends HttpServlet {
         resp.setStatus(404);
         PageRenderer.render(req, resp, "page-not-found", "Page Not Found",
                 "Oops, this link seems invalid. Please try again!");
-    }
-
-    private static InputStream downloadFileWithCache(String fileId) throws IOException {
-        Path cached = Paths.get("/shared/temp/asset-drive/cached-" + fileId + ".bin");
-        if (Files.exists(cached)) {
-            return Files.newInputStream(cached);
-        } else {
-            log.debug("Downloading non-cached file with id {}", fileId);
-            return new TeeInputStream(
-                    ConnectionUtils.openStreamWithTimeout("https://www.googleapis.com/drive/v3/files/" + fileId + "?key=" + SecretConstants.GOOGLE_DRIVE_API_KEY + "&alt=media"),
-                    Files.newOutputStream(cached)
-            );
-        }
     }
 }
