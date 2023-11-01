@@ -123,7 +123,7 @@
     &lt;set mask="x1x-011-x0x" tiles="4,10; 5,10; 4,11; 5,11"/&gt;
     &lt;!-- corner bottom right --&gt;
     &lt;set mask="x1x-110-x0x" tiles="10,10; 11,10; 10,11; 11,11"/&gt;
-    
+
     &lt;!-- inside corner top left --&gt;
     &lt;set mask="111-111-110" tiles="1,3"/&gt;
     &lt;!-- inside corner bottom left --&gt;
@@ -215,7 +215,7 @@
     &lt;set mask="x1x-011-x0x" tiles="4,10; 5,10; 4,11; 5,11"/&gt;
     &lt;!-- corner bottom right --&gt;
     &lt;set mask="x1x-110-x0x" tiles="10,10; 11,10; 10,11; 11,11"/&gt;
-    
+
     &lt;!-- inside corner top left --&gt;
     &lt;set mask="111-111-110" tiles="1,3"/&gt;
     &lt;!-- inside corner bottom left --&gt;
@@ -248,7 +248,7 @@
     &lt;set mask="110-111-011" tiles="3,4"/&gt;
     &lt;!-- ???? --&gt;
     &lt;set mask="011-111-110" tiles="4,3"/&gt;
-	
+
     &lt;!-- ???? --&gt;
     &lt;set mask="x0x-111-011" tiles="2,10"/&gt;
     &lt;!-- ???? --&gt;
@@ -265,7 +265,7 @@
     &lt;set mask="x10-011-x11" tiles="10,2"/&gt;
     &lt;!-- ???? --&gt;
     &lt;set mask="01x-110-11x" tiles="11,2"/&gt;
-	
+
     &lt;!-- ???? --&gt;
     &lt;set mask="x0x-111-010" tiles="8,11"/&gt;
     &lt;!-- ???? --&gt;
@@ -274,7 +274,7 @@
     &lt;set mask="01x-110-01x" tiles="4,8"/&gt;
     &lt;!-- ???? --&gt;
     &lt;set mask="x10-011-x10" tiles="11,8"/&gt;
-	
+
     &lt;!-- ???? --&gt;
     &lt;set mask="x0x-011-x10" tiles="6,4"/&gt;
     &lt;!-- ???? --&gt;
