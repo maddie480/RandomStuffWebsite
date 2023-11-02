@@ -53,7 +53,7 @@ public class AssetDriveService extends HttpServlet {
 
         if (req.getRequestURI().startsWith("/celeste/asset-drive/list/")) {
             JSONObject allCategories;
-            try (InputStream is = Files.newInputStream(Paths.get("/shared/temp/asset-drive/categorized-assets.json"))) {
+            try (InputStream is = Files.newInputStream(Paths.get("/shared/celeste/asset-drive/categorized-assets.json"))) {
                 allCategories = new JSONObject(IOUtils.toString(is, StandardCharsets.UTF_8));
             }
             resp.setContentType("application/json");
@@ -67,13 +67,19 @@ public class AssetDriveService extends HttpServlet {
             log.debug("Looking for asset with id {}, found: {}", fileId, foundFile);
 
             if (foundFile != null) {
-                Path cached = Paths.get("/shared/temp/asset-drive/cached-" + fileId + ".bin");
+                String extension = switch (foundFile.getString("mimeType")) {
+                    case "image/png" -> "png";
+                    case "text/plain" -> "txt";
+                    case "text/yaml" -> "yaml";
+                    default -> "bin";
+                };
+                Path file = Paths.get("/shared/celeste/asset-drive/files/" + fileId + "." + extension);
 
-                if (Files.exists(cached)) {
+                if (Files.exists(file)) {
                     resp.setContentType(foundFile.getString("mimeType"));
                     resp.setHeader("Content-Disposition", "Content-Disposition: attachment; filename=\"" + foundFile.getString("name") + "\"");
 
-                    try (InputStream is = Files.newInputStream(cached)) {
+                    try (InputStream is = Files.newInputStream(file)) {
                         IOUtils.copy(is, resp.getOutputStream());
                         return;
                     }
@@ -89,7 +95,7 @@ public class AssetDriveService extends HttpServlet {
 
     private void buildAssetMap() throws IOException {
         JSONArray allFiles;
-        try (InputStream is = Files.newInputStream(Paths.get("/shared/temp/asset-drive/cached-list.json"))) {
+        try (InputStream is = Files.newInputStream(Paths.get("/shared/celeste/asset-drive/file-list.json"))) {
             allFiles = new JSONArray(IOUtils.toString(is, StandardCharsets.UTF_8));
         }
 
