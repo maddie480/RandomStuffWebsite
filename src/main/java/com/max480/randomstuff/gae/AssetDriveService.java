@@ -17,13 +17,14 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.zip.CRC32;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 @WebServlet(name = "AssetDriveService", loadOnStartup = 11, urlPatterns = {"/celeste/asset-drive/reload", "/celeste/asset-drive/list/decals",
         "/celeste/asset-drive/list/stylegrounds", "/celeste/asset-drive/list/fgtilesets", "/celeste/asset-drive/list/bgtilesets",
-        "/celeste/asset-drive/list/misc", "/celeste/asset-drive/files/*"})
+        "/celeste/asset-drive/list/misc", "/celeste/asset-drive/files/*", "/celeste/asset-drive/multi-download"})
 public class AssetDriveService extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(AssetDriveService.class);
 
@@ -62,35 +63,88 @@ public class AssetDriveService extends HttpServlet {
         }
 
         if (req.getRequestURI().startsWith("/celeste/asset-drive/files/")) {
-            String fileId = req.getRequestURI().substring(27);
-            JSONObject foundFile = fileAssetMap.getOrDefault(fileId, null);
-            log.debug("Looking for asset with id {}, found: {}", fileId, foundFile);
+            Asset asset = getAsset(req.getRequestURI().substring(27));
 
-            if (foundFile != null) {
-                String extension = switch (foundFile.getString("mimeType")) {
-                    case "image/png" -> "png";
-                    case "text/plain" -> "txt";
-                    case "text/yaml" -> "yaml";
-                    default -> "bin";
-                };
-                Path file = Paths.get("/shared/celeste/asset-drive/files/" + fileId + "." + extension);
+            if (asset != null) {
+                resp.setContentType(asset.mimeType);
+                resp.setHeader("Content-Disposition", "Content-Disposition: attachment; filename=\"" + asset.fileName + "\"");
 
-                if (Files.exists(file)) {
-                    resp.setContentType(foundFile.getString("mimeType"));
-                    resp.setHeader("Content-Disposition", "Content-Disposition: attachment; filename=\"" + foundFile.getString("name") + "\"");
+                try (InputStream is = Files.newInputStream(asset.file)) {
+                    IOUtils.copy(is, resp.getOutputStream());
+                    return;
+                }
+            }
+        }
 
-                    try (InputStream is = Files.newInputStream(file)) {
-                        IOUtils.copy(is, resp.getOutputStream());
-                        return;
+        if (req.getRequestURI().equals("/celeste/asset-drive/multi-download")) {
+            if (req.getQueryString() == null || !req.getQueryString().startsWith("files=")) {
+                log.warn("Missing files parameter");
+                resp.setStatus(400);
+                return;
+            }
+
+            List<Asset> matchingAssets = Arrays.stream(req.getQueryString().substring(6).split(","))
+                    .distinct()
+                    .limit(100)
+                    .map(this::getAsset)
+                    .toList();
+
+            if (matchingAssets.stream().noneMatch(Objects::isNull)) {
+                resp.setContentType("application/zip");
+
+                try (ZipOutputStream os = new ZipOutputStream(resp.getOutputStream())) {
+                    os.setMethod(ZipEntry.STORED); // PNG files barely compress anyway
+
+                    for (Asset asset : matchingAssets) {
+                        // Write the header. For stored entries, you need to set the size and CRC32.
+                        ZipEntry entry = new ZipEntry(asset.fileName);
+                        CRC32 crc = new CRC32();
+                        try (InputStream is = Files.newInputStream(asset.file)) {
+                            crc.update(IOUtils.toByteArray(is));
+                        }
+                        entry.setCrc(crc.getValue());
+                        entry.setSize(Files.size(asset.file));
+
+                        // Write the file.
+                        os.putNextEntry(entry);
+                        try (InputStream is = Files.newInputStream(asset.file)) {
+                            IOUtils.copy(is, os);
+                        }
+                        os.closeEntry();
                     }
                 }
             }
+
+            return;
         }
 
         log.warn("Not found");
         resp.setStatus(404);
         PageRenderer.render(req, resp, "page-not-found", "Page Not Found",
                 "Oops, this link seems invalid. Please try again!");
+    }
+
+    private record Asset(Path file, String fileName, String mimeType) {
+    }
+
+    private Asset getAsset(String fileId) {
+        JSONObject foundFile = fileAssetMap.getOrDefault(fileId, null);
+        log.debug("Looking for asset with id {}, found: {}", fileId, foundFile);
+
+        if (foundFile != null) {
+            String extension = switch (foundFile.getString("mimeType")) {
+                case "image/png" -> "png";
+                case "text/plain" -> "txt";
+                case "text/yaml" -> "yaml";
+                default -> "bin";
+            };
+            Path file = Paths.get("/shared/celeste/asset-drive/files/" + fileId + "." + extension);
+            if (Files.exists(file)) {
+                return new Asset(file, foundFile.getString("name"), foundFile.getString("mimeType"));
+            }
+        }
+
+        return null;
     }
 
     private void buildAssetMap() throws IOException {

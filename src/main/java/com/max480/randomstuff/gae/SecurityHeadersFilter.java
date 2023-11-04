@@ -105,6 +105,7 @@ public class SecurityHeadersFilter extends HttpFilter {
             res.setHeader("Access-Control-Allow-Origin", "*");
             res.setHeader("Access-Control-Expose-Headers", "X-Total-Count");
         }
+        res.setHeader("Access-Control-Allow-Origin", "http://localhost:8081");
 
         chain.doFilter(req, res);
     }

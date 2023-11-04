@@ -12,37 +12,12 @@
         :data="item"
         :category-display-name="categoryDisplayName"
       />
-    </div>
-    <div class="paginator">
-      <button
-        class="btn btn-outline-secondary"
-        :disabled="pageNumber <= 1"
-        v-on:click="changePage(1)"
-      >
-        &lt;&lt;
-      </button>
-      <button
-        class="btn btn-outline-secondary"
-        :disabled="pageNumber <= 1"
-        v-on:click="changePage(pageNumber - 1)"
-      >
-        &lt;
-      </button>
-      {{ pageNumber }} / {{ pageCount }}
-      <button
-        class="btn btn-outline-secondary"
-        :disabled="pageNumber >= pageCount"
-        v-on:click="changePage(pageNumber + 1)"
-      >
-        &gt;
-      </button>
-      <button
-        class="btn btn-outline-secondary"
-        :disabled="pageNumber >= pageCount"
-        v-on:click="changePage(pageCount)"
-      >
-        &gt;&gt;
-      </button>
+
+      <ListPaginator
+        :page-number="pageNumber"
+        :page-count="pageCount"
+        v-on:change-page="changePage"
+      />
     </div>
   </div>
 </template>
@@ -50,10 +25,11 @@
 <script>
 import axios from "axios";
 import config from "../config";
-import AssetDriveItem from "../components/AssetDriveItem.vue";
+import AssetDriveItem from "./AssetDriveItem.vue";
+import ListPaginator from "./ListPaginator.vue";
 
 export default {
-  components: { AssetDriveItem },
+  components: { AssetDriveItem, ListPaginator },
   props: ["category", "category-display-name"],
   data: () => ({
     loading: false,
@@ -99,19 +75,9 @@ export default {
 .loading,
 .error {
   margin-top: 30px;
-  font-size: 48pt;
+  font-size: 20pt;
 }
 .error {
   color: #ff8000;
-}
-
-.paginator {
-  font-size: 14pt;
-
-  .btn {
-    margin: 5px 2px;
-  }
-
-  margin-bottom: 30px;
 }
 </style>

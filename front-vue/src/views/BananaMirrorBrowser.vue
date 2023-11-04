@@ -85,37 +85,12 @@
             <ModListItem :mod="mod" :mirror="mirror.id" />
           </div>
         </div>
-        <div class="paginator" v-if="this.totalCount > 0">
-          <button
-            class="btn btn-outline-secondary"
-            :disabled="page <= 1"
-            v-on:click="firstPage"
-          >
-            &lt;&lt;
-          </button>
-          <button
-            class="btn btn-outline-secondary"
-            :disabled="page <= 1"
-            v-on:click="previousPage"
-          >
-            &lt;
-          </button>
-          {{ page }} / {{ pageCount }}
-          <button
-            class="btn btn-outline-secondary"
-            :disabled="page >= pageCount"
-            v-on:click="nextPage"
-          >
-            &gt;
-          </button>
-          <button
-            class="btn btn-outline-secondary"
-            :disabled="page >= pageCount"
-            v-on:click="lastPage"
-          >
-            &gt;&gt;
-          </button>
-        </div>
+        <ListPaginator
+          v-if="this.totalCount > 0"
+          :page-number="page"
+          :page-count="pageCount"
+          v-on:change-page="changePage"
+        />
       </div>
     </div>
   </div>
@@ -126,10 +101,11 @@ import axios from "axios";
 import yaml from "js-yaml";
 import config from "../config";
 import ModListItem from "../components/ModListItem.vue";
+import ListPaginator from "../components/ListPaginator.vue";
 import VueMultiselect from "vue-multiselect";
 
 const vue = {
-  components: { ModListItem, VueMultiselect },
+  components: { ModListItem, VueMultiselect, ListPaginator },
   name: "banana-mirror-browser",
   data: () => ({
     page: 1,
@@ -144,20 +120,8 @@ const vue = {
     error: false,
   }),
   methods: {
-    firstPage: function () {
-      this.page = 1;
-      this.reloadPage();
-    },
-    previousPage: function () {
-      this.page--;
-      this.reloadPage();
-    },
-    nextPage: function () {
-      this.page++;
-      this.reloadPage();
-    },
-    lastPage: function () {
-      this.page = this.pageCount;
+    changePage: function (newPage) {
+      this.page = newPage;
       this.reloadPage();
     },
     searchTriggered: function (event) {
