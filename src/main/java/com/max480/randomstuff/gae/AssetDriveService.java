@@ -113,9 +113,9 @@ public class AssetDriveService extends HttpServlet {
                         os.closeEntry();
                     }
                 }
-            }
 
-            return;
+                return;
+            }
         }
 
         log.warn("Not found");

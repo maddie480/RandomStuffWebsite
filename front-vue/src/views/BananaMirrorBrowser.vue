@@ -80,7 +80,7 @@
           <div
             v-bind:key="mod.id"
             v-for="mod in mods"
-            class="col-xl-4 col-md-6 col-sm-12"
+            class="col-xl-4 col-md-6 col-12"
           >
             <ModListItem :mod="mod" :mirror="mirror.id" />
           </div>

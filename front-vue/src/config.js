@@ -1,4 +1,4 @@
 export default {
-  backendUrl: "http://localhost:8080",
-  // backendUrl: "",
+  // backendUrl: "http://localhost:8080",
+  backendUrl: "",
 };

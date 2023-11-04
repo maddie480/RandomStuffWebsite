@@ -51,7 +51,9 @@ public class SecurityHeadersFilter extends HttpFilter {
                     "img-src 'self' data: https://*.0x0a.de; " +
                     "frame-ancestors 'none'; " +
                     "object-src 'none';");
-        } else if (Arrays.asList("/celeste/map-tree-viewer", "/celeste/file-searcher", "/celeste/graphics-dump-browser").contains(req.getRequestURI())) {
+        } else if (Arrays.asList("/celeste/map-tree-viewer", "/celeste/file-searcher", "/celeste/graphics-dump-browser", "/celeste/asset-drive")
+                .contains(req.getRequestURI())) {
+
             // default rules for the Vue app
             res.setHeader("Content-Security-Policy", "default-src 'self'; " +
                     "script-src 'self' https://cdn.jsdelivr.net; " +
@@ -105,7 +107,6 @@ public class SecurityHeadersFilter extends HttpFilter {
             res.setHeader("Access-Control-Allow-Origin", "*");
             res.setHeader("Access-Control-Expose-Headers", "X-Total-Count");
         }
-        res.setHeader("Access-Control-Allow-Origin", "http://localhost:8081");
 
         chain.doFilter(req, res);
     }

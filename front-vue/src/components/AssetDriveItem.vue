@@ -1,9 +1,9 @@
 <template>
-  <div class="col-xl-3 col-lg-4 col-md-6 col-xs-12 base">
+  <div class="col-xl-3 col-lg-4 col-md-6 col-12 base">
     <div class="card">
       <div class="card-body">
         <div class="image-container">
-          <img :src="imagePath" />
+          <img :src="imagePath" v-on:load="imageLoaded" />
         </div>
         <div class="title">
           <span
@@ -27,6 +27,12 @@
           </span>
         </div>
         <div class="secondary authorcredit">by {{ data.author }}</div>
+        <div
+          class="secondary authorcredit"
+          v-if="width !== null && height !== null"
+        >
+          {{ width }} x {{ height }} pixels
+        </div>
         <div class="tags">
           <span
             class="badge bg-primary"
@@ -345,6 +351,8 @@ export default {
   data: () => ({
     moreInfoShown: false,
     readme: null,
+    width: null,
+    height: null,
   }),
   methods: {
     openMoreInfo: async function () {
@@ -365,6 +373,10 @@ export default {
     },
     closeMoreInfo: function () {
       this.moreInfoShown = false;
+    },
+    imageLoaded(event) {
+      this.width = event.target.width;
+      this.height = event.target.height;
     },
   },
   computed: {
@@ -404,6 +416,8 @@ export default {
 }
 .image-container {
   text-align: center;
+  background: url("../../public/img/checkerboard.png");
+  padding: 10px;
 }
 
 img {
@@ -473,5 +487,9 @@ pre {
   .badge {
     margin: 0 2px;
   }
+}
+
+.modal div:not(:first-child) > h3 {
+  margin-top: 20px;
 }
 </style>
