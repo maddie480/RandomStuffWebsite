@@ -2,6 +2,22 @@
   <div>
     <h1>Asset Drive Browser</h1>
 
+    <div class="intro first">
+      This page allows you to browse the
+      <b
+        ><a
+          href="https://drive.google.com/drive/folders/13A0feEXS3kUHb_Q4K2w4xP8DEuBlgTip"
+          target="_blank"
+          >Celeste Community Asset Drive</a
+        ></b
+      >, with added features such as filtering, search and tags.
+    </div>
+    <div class="intro" v-if="lastUpdate !== null">
+      The list is updated <b>once an hour</b> from Google Drive. The last update
+      happened on <b>{{ lastUpdate }}</b
+      >.
+    </div>
+
     <div class="alert alert-info">
       <b>Make sure to check the "More Info" button for assets that have it!</b>
       It may contain instructions on how to use the assets, or may impose
@@ -92,6 +108,8 @@
 </template>
 
 <script>
+import axios from "axios";
+import config from "../config";
 import AssetDriveCategory from "../components/AssetDriveCategory.vue";
 
 export default {
@@ -99,11 +117,36 @@ export default {
   name: "asset-drive-browser",
   data: () => ({
     currentCategory: null,
+    lastUpdate: null,
   }),
+  mounted: async function () {
+    const lastUpdateISO = (
+      await axios.get(`${config.backendUrl}/celeste/asset-drive/last-updated`)
+    ).data;
+
+    this.lastUpdate = new Date(lastUpdateISO).toLocaleDateString("en-US", {
+      hour12: true,
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+      second: "2-digit",
+    });
+  },
 };
 </script>
 
 <style scoped lang="scss">
+.intro {
+  text-align: left;
+  margin: 10px 5px;
+
+  &.first {
+    margin-top: 20px;
+  }
+}
+
 .categories {
   margin: 10px 0;
 }

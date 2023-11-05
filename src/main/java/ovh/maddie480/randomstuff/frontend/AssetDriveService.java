@@ -17,6 +17,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
@@ -24,7 +26,7 @@ import java.util.zip.ZipOutputStream;
 
 @WebServlet(name = "AssetDriveService", loadOnStartup = 11, urlPatterns = {"/celeste/asset-drive/reload", "/celeste/asset-drive/list/decals",
         "/celeste/asset-drive/list/stylegrounds", "/celeste/asset-drive/list/fgtilesets", "/celeste/asset-drive/list/bgtilesets",
-        "/celeste/asset-drive/list/misc", "/celeste/asset-drive/files/*", "/celeste/asset-drive/multi-download"})
+        "/celeste/asset-drive/list/misc", "/celeste/asset-drive/last-updated", "/celeste/asset-drive/files/*", "/celeste/asset-drive/multi-download"})
 public class AssetDriveService extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(AssetDriveService.class);
 
@@ -52,9 +54,20 @@ public class AssetDriveService extends HttpServlet {
             return;
         }
 
+        Path categorizedAssetsFile = Paths.get("/shared/celeste/asset-drive/categorized-assets.json");
+
+        if (req.getRequestURI().equals("/celeste/asset-drive/last-updated")) {
+            resp.setContentType("text/plain");
+            resp.getWriter().write(
+                    Files.getLastModifiedTime(categorizedAssetsFile)
+                            .toInstant().atZone(ZoneId.of("UTC")).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
+            );
+            return;
+        }
+
         if (req.getRequestURI().startsWith("/celeste/asset-drive/list/")) {
             JSONObject allCategories;
-            try (InputStream is = Files.newInputStream(Paths.get("/shared/celeste/asset-drive/categorized-assets.json"))) {
+            try (InputStream is = Files.newInputStream(categorizedAssetsFile)) {
                 allCategories = new JSONObject(IOUtils.toString(is, StandardCharsets.UTF_8));
             }
             resp.setContentType("application/json");
