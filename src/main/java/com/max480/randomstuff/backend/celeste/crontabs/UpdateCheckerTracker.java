@@ -4,10 +4,10 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.Map;
 
-/**
- * The ModInfo class needs to be at the same place as on the backend to allow deserialization.
- */
 public class UpdateCheckerTracker {
+    /**
+     * A mod search database entry, read from a file serialized by the backend.
+     */
     public static class ModInfo implements Serializable {
         @Serial
         private static final long serialVersionUID = -2184804878021343630L;

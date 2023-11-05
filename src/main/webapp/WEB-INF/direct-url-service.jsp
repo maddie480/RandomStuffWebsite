@@ -1,4 +1,4 @@
-<%@ page import="java.util.List, java.util.Map, com.max480.randomstuff.gae.CelesteModCatalogService, static org.apache.commons.text.StringEscapeUtils.escapeHtml4"%>
+<%@ page import="java.util.List, java.util.Map, ovh.maddie480.randomstuff.frontend.CelesteModCatalogService, static org.apache.commons.text.StringEscapeUtils.escapeHtml4"%>
 
 <h1>Celeste Direct Link service</h1>
 

@@ -9,7 +9,7 @@
 
     <!-- This is a POM for another project I am hosting, that I would like to keep up-to-date with Dependabot as well. -->
 
-    <groupId>com.max480.questcommunitybot.gae</groupId>
+    <groupId>ovh.maddie480.questcommunitybot.gae</groupId>
     <artifactId>quest-community-bot-website</artifactId>
 
     <properties>

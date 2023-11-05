@@ -7,7 +7,7 @@
     <packaging>war</packaging>
     <version>1.0.0</version>
 
-    <groupId>com.max480.questcommunitybot.gae</groupId>
+    <groupId>ovh.maddie480.questcommunitybot.gae</groupId>
     <artifactId>site-web-chantal</artifactId>
 
     <properties>

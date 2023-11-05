@@ -1,4 +1,4 @@
-<%@ page import="java.util.List, com.max480.randomstuff.gae.GameBananaArbitraryModAppService.ModInfo, static org.apache.commons.text.StringEscapeUtils.escapeHtml4, static org.apache.commons.text.StringEscapeUtils.escapeEcmaScript"%>
+<%@ page import="java.util.List, ovh.maddie480.randomstuff.frontend.GameBananaArbitraryModAppService.ModInfo, static org.apache.commons.text.StringEscapeUtils.escapeHtml4, static org.apache.commons.text.StringEscapeUtils.escapeEcmaScript"%>
 
 <%@page session="false"%>
 

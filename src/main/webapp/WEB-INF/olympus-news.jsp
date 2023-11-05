@@ -1,4 +1,4 @@
-<%@ page import="java.util.List, java.time.LocalDate, java.time.format.DateTimeFormatter, java.time.format.FormatStyle, com.max480.randomstuff.gae.discord.newspublisher.OlympusNews, static org.apache.commons.text.StringEscapeUtils.escapeHtml4"%>
+<%@ page import="java.util.List, java.time.LocalDate, java.time.format.DateTimeFormatter, java.time.format.FormatStyle, ovh.maddie480.randomstuff.frontend.discord.newspublisher.OlympusNews, static org.apache.commons.text.StringEscapeUtils.escapeHtml4"%>
 
 <h1 class="mt-4">Olympus News</h1>
 

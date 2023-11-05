@@ -1,4 +1,4 @@
-<%@ page import="java.util.List, com.max480.randomstuff.gae.quest.Tool, static org.apache.commons.text.StringEscapeUtils.escapeHtml4, static com.max480.randomstuff.gae.quest.ModListPage.normalize"%>
+<%@ page import="java.util.List, ovh.maddie480.randomstuff.frontend.quest.Tool, static org.apache.commons.text.StringEscapeUtils.escapeHtml4, static ovh.maddie480.randomstuff.frontend.quest.ModListPage.normalize"%>
 
 <%@page session="false"%>
 

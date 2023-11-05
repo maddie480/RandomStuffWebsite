@@ -201,11 +201,6 @@
         on <a href="https://gamebanana.com/members/1698143" target="_blank">GameBanana</a>!
     </div>
 
-    <div class="text-secondary">
-        You might find quite a few references to my old nickname, max480, scattered everywhere.
-        This refers to me as well!
-    </div>
-
     <div>
         I hope you'll find this website useful, don't hesitate to report issues or to make suggestions on Discord! &#x2764;&#xFE0F;<br/>
         <span class="august">~ Maddie</span>

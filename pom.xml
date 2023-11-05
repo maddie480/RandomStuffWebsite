@@ -7,7 +7,7 @@
     <packaging>war</packaging>
     <version>1.0.0</version>
 
-    <groupId>com.max480.randomstuff.gae</groupId>
+    <groupId>ovh.maddie480.randomstuff.frontend</groupId>
     <artifactId>random-stuff-website</artifactId>
 
     <properties>
@@ -299,7 +299,7 @@
                             <arguments>
                                 <argument>-cp</argument>
                                 <argument>.:../../../dependency/snakeyaml-2.2.jar:../../../dependency/commons-io-2.15.0.jar</argument>
-                                <argument>com.max480.randomstuff.gae.LuaCutscenesDocumentationIntegrator</argument>
+                                <argument>ovh.maddie480.randomstuff.frontend.LuaCutscenesDocumentationIntegrator</argument>
                             </arguments>
                         </configuration>
                     </execution>
@@ -316,7 +316,7 @@
                             <arguments>
                                 <argument>-cp</argument>
                                 <argument>.:../../../dependency/commons-io-2.15.0.jar:../../../dependency/commons-lang3-3.12.0.jar:../../../dependency/commons-text-1.11.0.jar:../../../dependency/commons-lang3-3.13.0.jar:../../../dependency/jsoup-1.16.2.jar:../../../dependency/jvmbrotli-0.2.0.jar:../../../dependency/jvmbrotli-linux-x86-amd64-0.2.0.jar</argument>
-                                <argument>com.max480.randomstuff.gae.ParrotQuickGenerator</argument>
+                                <argument>ovh.maddie480.randomstuff.frontend.ParrotQuickGenerator</argument>
                             </arguments>
                         </configuration>
                     </execution>
@@ -333,7 +333,7 @@
                             <arguments>
                                 <argument>-cp</argument>
                                 <argument>.:../../../dependency/commons-io-2.15.0.jar:../../../dependency/json-20231013.jar</argument>
-                                <argument>com.max480.randomstuff.gae.PrepareForRadioLNJ</argument>
+                                <argument>ovh.maddie480.randomstuff.frontend.PrepareForRadioLNJ</argument>
                             </arguments>
                         </configuration>
                     </execution>
@@ -350,7 +350,7 @@
                             <arguments>
                                 <argument>-cp</argument>
                                 <argument>.:../../../dependency/commons-io-2.15.0.jar:../../../dependency/json-20231013.jar</argument>
-                                <argument>com.max480.randomstuff.gae.GraphicsDumpIntegrator</argument>
+                                <argument>ovh.maddie480.randomstuff.frontend.GraphicsDumpIntegrator</argument>
                             </arguments>
                         </configuration>
                     </execution>
@@ -366,10 +366,10 @@
                             <workingDirectory>${project.build.directory}/random-stuff-website-1.0.0/WEB-INF/classes</workingDirectory>
                             <arguments>
                                 <argument>-v</argument>
-                                <argument>com/max480/randomstuff/gae/LuaCutscenesDocumentationIntegrator.class</argument>
-                                <argument>com/max480/randomstuff/gae/GraphicsDumpIntegrator.class</argument>
-                                <argument>com/max480/randomstuff/gae/PrepareForRadioLNJ.class</argument>
-                                <argument>com/max480/randomstuff/gae/ParrotQuickGenerator.class</argument>
+                                <argument>ovh/maddie480/randomstuff/frontend/LuaCutscenesDocumentationIntegrator.class</argument>
+                                <argument>ovh/maddie480/randomstuff/frontend/GraphicsDumpIntegrator.class</argument>
+                                <argument>ovh/maddie480/randomstuff/frontend/PrepareForRadioLNJ.class</argument>
+                                <argument>ovh/maddie480/randomstuff/frontend/ParrotQuickGenerator.class</argument>
                             </arguments>
                         </configuration>
                     </execution>
@@ -475,7 +475,7 @@
                                     <arguments>
                                         <argument>-cp</argument>
                                         <argument>.;../../../dependency/snakeyaml-2.2.jar;../../../dependency/commons-io-2.15.0.jar</argument>
-                                        <argument>com.max480.randomstuff.gae.LuaCutscenesDocumentationIntegrator</argument>
+                                        <argument>ovh.maddie480.randomstuff.frontend.LuaCutscenesDocumentationIntegrator</argument>
                                     </arguments>
                                 </configuration>
                             </execution>
@@ -492,7 +492,7 @@
                                     <arguments>
                                         <argument>-cp</argument>
                                         <argument>.;../../../dependency/commons-io-2.15.0.jar;../../../dependency/json-20231013.jar</argument>
-                                        <argument>com.max480.randomstuff.gae.PrepareForRadioLNJ</argument>
+                                        <argument>ovh.maddie480.randomstuff.frontend.PrepareForRadioLNJ</argument>
                                     </arguments>
                                 </configuration>
                             </execution>
@@ -509,7 +509,7 @@
                                     <arguments>
                                         <argument>-cp</argument>
                                         <argument>.;../../../dependency/commons-io-2.15.0.jar;../../../dependency/json-20231013.jar</argument>
-                                        <argument>com.max480.randomstuff.gae.GraphicsDumpIntegrator</argument>
+                                        <argument>ovh.maddie480.randomstuff.frontend.GraphicsDumpIntegrator</argument>
                                     </arguments>
                                 </configuration>
                             </execution>
@@ -526,7 +526,7 @@
                                     <arguments>
                                         <argument>-cp</argument>
                                         <argument>.;../../../dependency/commons-io-2.15.0.jar;../../../dependency/commons-lang3-3.12.0.jar;../../../dependency/commons-text-1.11.0.jar;../../../dependency/commons-lang3-3.13.0.jar;../../../dependency/jsoup-1.16.2.jar;../../../dependency/jvmbrotli-0.2.0.jar;../../../dependency/jvmbrotli-win32-x86-amd64-0.2.0.jar</argument>
-                                        <argument>com.max480.randomstuff.gae.ParrotQuickGenerator</argument>
+                                        <argument>ovh.maddie480.randomstuff.frontend.ParrotQuickGenerator</argument>
                                     </arguments>
                                 </configuration>
                             </execution>

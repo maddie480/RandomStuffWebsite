@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <%@ page contentType="application/atom+xml" %>
-<%@ page import="java.util.List, com.max480.randomstuff.gae.discord.newspublisher.OlympusNews, static org.apache.commons.text.StringEscapeUtils.escapeXml10, static org.apache.commons.text.StringEscapeUtils.escapeHtml4"%>
+<%@ page import="java.util.List, ovh.maddie480.randomstuff.frontend.discord.newspublisher.OlympusNews, static org.apache.commons.text.StringEscapeUtils.escapeXml10, static org.apache.commons.text.StringEscapeUtils.escapeHtml4"%>
 
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
     <title>Olympus News</title>

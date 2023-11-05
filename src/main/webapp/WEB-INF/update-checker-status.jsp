@@ -1,4 +1,4 @@
-<%@ page import="java.util.List, java.text.DecimalFormat, static org.apache.commons.text.StringEscapeUtils.escapeHtml4, static com.max480.randomstuff.gae.UpdateCheckerStatusService.LatestUpdatesEntry"%>
+<%@ page import="java.util.List, java.text.DecimalFormat, static org.apache.commons.text.StringEscapeUtils.escapeHtml4, static ovh.maddie480.randomstuff.frontend.UpdateCheckerStatusService.LatestUpdatesEntry"%>
 
 <h1 class="mt-4">Everest Update Checker status page</h1>
 
