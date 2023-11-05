@@ -3,7 +3,12 @@
     <div class="card">
       <div class="card-body">
         <div class="image-container">
-          <img :src="imagePath" v-on:load="imageLoaded" />
+          <img
+            :src="imagePath"
+            v-on:load="imageLoaded"
+            :class="zoom ? 'zoomed' : ''"
+            :style="zoom ? 'margin: ' + height / 2 + 'px 0;' : ''"
+          />
         </div>
         <div class="title">
           <span
@@ -31,6 +36,10 @@
           class="secondary authorcredit"
           v-if="width !== null && height !== null"
         >
+          <span v-if="data.frames !== undefined && data.frames.length > 1"
+            ><span class="frame-count">{{ data.frames.length }} frames</span>
+            &#x2013;
+          </span>
           {{ width }} x {{ height }} pixels
         </div>
         <div class="tags">
@@ -41,7 +50,14 @@
             >{{ tag }}</span
           >
         </div>
-        <a class="btn btn-primary" target="_blank" :href="imagePath"
+        <a
+          class="btn btn-primary"
+          target="_blank"
+          :href="multiDownloadPath"
+          v-if="data.frames !== undefined && data.frames.length > 1"
+          >Download all</a
+        >
+        <a class="btn btn-primary" target="_blank" :href="imagePath" v-else
           >Download</a
         >
         <button
@@ -347,7 +363,7 @@ import axios from "axios";
 import config from "../config";
 
 export default {
-  props: ["data", "category-display-name"],
+  props: ["data", "category-display-name", "zoom"],
   data: () => ({
     moreInfoShown: false,
     readme: null,
@@ -383,6 +399,13 @@ export default {
     imagePath() {
       return config.backendUrl + "/celeste/asset-drive/files/" + this.data.id;
     },
+    multiDownloadPath() {
+      return (
+        config.backendUrl +
+        "/celeste/asset-drive/multi-download?files=" +
+        this.data.frames.map((f) => f.id).join(",")
+      );
+    },
     hasMoreInfo() {
       return (
         this.data.template !== undefined ||
@@ -402,6 +425,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+// base card style
 .card {
   margin: 0 5px 10px 5px;
 }
@@ -411,27 +435,37 @@ export default {
   display: inline-block;
 }
 
-.btn-secondary {
-  margin-left: 5px;
-}
+// card image
 .image-container {
   text-align: center;
   background: url("../../public/img/checkerboard.png");
   padding: 10px;
 }
-
 img {
   max-width: 100%;
   max-height: 400px;
 }
+.zoomed {
+  transform: scale(2);
+  image-rendering: pixelated;
+  max-width: 50%;
+  max-height: 200px;
+}
 
+// card text: base
 .title {
   margin-top: 10px;
 }
+
+// file name
+.file-name {
+  font-weight: bold;
+}
+
+// secondary text
 .authorcredit {
   font-style: italic;
 }
-
 .secondary {
   color: #666;
 
@@ -439,13 +473,44 @@ img {
     color: #888;
   }
 }
-
-.file-name {
+.frame-count {
   font-weight: bold;
 }
 
+// tags
+.tags {
+  margin-top: 5px;
+  margin-bottom: 10px;
+
+  .badge {
+    margin: 0 2px;
+  }
+}
+
+// card buttons
+.btn-secondary {
+  margin-left: 5px;
+}
+
+// "more info" modal dialog
+.modal {
+  text-align: left;
+}
 .show {
   display: block;
+}
+.author-notes {
+  white-space: pre-wrap;
+}
+pre {
+  background: var(--bs-info-bg-subtle);
+  border: solid var(--bs-info-border-subtle) 1px;
+  padding: 4px;
+  margin: 5px 0 25px 0;
+  white-space: pre;
+}
+.modal div:not(:first-child) > h3 {
+  margin-top: 20px;
 }
 
 // custom close button
@@ -462,34 +527,5 @@ img {
   &:hover {
     color: #888;
   }
-}
-
-.modal {
-  text-align: left;
-}
-
-.author-notes {
-  white-space: pre-wrap;
-}
-
-pre {
-  background: var(--bs-info-bg-subtle);
-  border: solid var(--bs-info-border-subtle) 1px;
-  padding: 4px;
-  margin: 5px 0 25px 0;
-  white-space: pre;
-}
-
-.tags {
-  margin-top: 5px;
-  margin-bottom: 10px;
-
-  .badge {
-    margin: 0 2px;
-  }
-}
-
-.modal div:not(:first-child) > h3 {
-  margin-top: 20px;
 }
 </style>

@@ -20,6 +20,30 @@
         <span class="current-search">{{ currentSearch }}</span>
       </div>
 
+      <div class="checkbox-options">
+        <div class="form-check">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            v-model="groupAssets"
+            v-on:change="filterList"
+            id="group-assets"
+          />
+          <label class="form-check-label" for="group-assets">
+            Group assets belonging to the same animation
+          </label>
+        </div>
+        <div class="form-check">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            v-model="zoom"
+            id="zoom-checkbox"
+          />
+          <label class="form-check-label" for="zoom-checkbox"> 2x zoom </label>
+        </div>
+      </div>
+
       <div class="tag-filters" v-if="allTags.length !== 0">
         Tags (click to filter):
         <span
@@ -41,12 +65,15 @@
         >
       </div>
 
-      <AssetDriveItem
-        v-for="item in this.page"
-        v-bind:key="item.id"
-        :data="item"
-        :category-display-name="categoryDisplayName"
-      />
+      <div id="asset-browser" class="row">
+        <AssetDriveItem
+          v-for="item in this.page"
+          v-bind:key="item.id"
+          :data="item"
+          :category-display-name="categoryDisplayName"
+          :zoom="zoom"
+        />
+      </div>
 
       <ListPaginator
         v-if="filteredList.length !== 0"
@@ -79,6 +106,8 @@ export default {
     pageCount: 0,
     page: [],
     pageNumber: 1,
+    groupAssets: false,
+    zoom: false,
   }),
   methods: {
     reload: async function () {
@@ -111,22 +140,61 @@ export default {
     },
     filterList: function () {
       this.filteredList = this.fullList
+        // search
         .filter((l) =>
           l.name.toLowerCase().includes(this.currentSearch.toLowerCase()),
         )
+        // filter by tag
         .filter((l) => {
           if (this.tagFilter === null) return true;
           if (l.tags === undefined) return false;
           return l.tags.includes(this.tagFilter);
         });
 
+      // group
+      if (this.groupAssets) {
+        const newAssetList = [];
+        const assetsByPrefix = {};
+        for (let i = 0; i < this.filteredList.length; i++) {
+          const item = this.filteredList[i];
+          const numberedSuffixRegex = item.name.match(/[0-9]+\.png$/);
+          if (numberedSuffixRegex === null) {
+            newAssetList.push(item);
+            continue;
+          }
+
+          const prefix = item.name.substr(
+            0,
+            item.name.length - numberedSuffixRegex[0].length,
+          );
+          if (assetsByPrefix[prefix] !== undefined) {
+            assetsByPrefix[prefix].frames.push(item);
+          } else {
+            newAssetList.push(item);
+            assetsByPrefix[prefix] = item;
+            item.frames = [item];
+          }
+        }
+        this.filteredList = newAssetList;
+      }
+
       this.pageCount = Math.floor((this.filteredList.length - 1) / 48) + 1;
-      this.changePage(1);
+      this.changePage(1, false);
     },
-    changePage(newPage) {
+    changePage(newPage, scrollTop = true) {
       this.pageNumber = newPage;
       const start = (this.pageNumber - 1) * 48;
       this.page = this.filteredList.slice(start, start + 48);
+
+      if (scrollTop) {
+        setTimeout(
+          () =>
+            document
+              .getElementById("asset-browser")
+              .scrollIntoView({ behavior: "smooth" }),
+          0,
+        );
+      }
     },
     searchTriggered(event) {
       event.preventDefault();
@@ -145,6 +213,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+// loading and error messages
 .loading,
 .error {
   margin-top: 30px;
@@ -154,11 +223,24 @@ export default {
   color: #ff8000;
 }
 
+// search bar
 .search {
   width: calc(100% - 10px);
-  margin: 20px 5px;
+  margin: 20px 5px 5px 5px;
 }
 
+.searching {
+  text-align: left;
+  margin: 5px;
+  font-style: italic;
+  color: gray;
+
+  .current-search {
+    font-weight: bold;
+  }
+}
+
+// filter by tags
 .tag-filters {
   text-align: left;
   margin: -15px 5px 20px 5px;
@@ -169,14 +251,16 @@ export default {
   }
 }
 
-.searching {
+// checkbox toggles
+.checkbox-options {
   text-align: left;
-  margin: -15px 5px 20px 5px;
-  font-style: italic;
-  color: gray;
+  margin: 0 5px 20px 5px;
+}
 
-  .current-search {
-    font-weight: bold;
+@media (min-width: 576px) {
+  .form-check {
+    display: inline-block;
+    margin-right: 20px;
   }
 }
 </style>
