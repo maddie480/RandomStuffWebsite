@@ -31,7 +31,7 @@
       the drive, etc.
       <br />
       Also make sure to <b>click the "More info" button</b> for assets that have
-      it! It may contain extra instructions on how to use the assets, or may
+      one! It may contain extra instructions on how to use the assets, or may
       impose conditions on their usage (such as crediting, notifying before
       usage or modification...).
     </div>
