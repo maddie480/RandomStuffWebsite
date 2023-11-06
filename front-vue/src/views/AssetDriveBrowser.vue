@@ -19,8 +19,11 @@
     </div>
 
     <div class="alert alert-info">
-      <b>Make sure to check the "More Info" button for assets that have it!</b>
-      It may contain instructions on how to use the assets, or may impose
+      <b>Check out <a href="https://drive.google.com/file/d/1e4bwS_Nvl0654yXu7SV9vBXtT5LBxkTJ/view" target="_blank">the README</a></b>
+      for more information about how to use the assets, how to add your own to the drive, etc.
+      <br>
+      Also make sure to <b>click the "More info" button</b> for assets that have it!
+      It may contain extra instructions on how to use the assets, or may impose
       conditions on their usage (such as crediting, notifying before usage or
       modification...).
     </div>
