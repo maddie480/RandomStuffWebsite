@@ -24,7 +24,7 @@
         <a
           href="https://drive.google.com/file/d/1e4bwS_Nvl0654yXu7SV9vBXtT5LBxkTJ/view"
           target="_blank"
-          >the·README</a
+          >the README</a
         ></b
       >
       for more information about how to use the assets, how to add your own to
