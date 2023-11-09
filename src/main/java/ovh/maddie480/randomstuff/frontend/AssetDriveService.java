@@ -146,15 +146,29 @@ public class AssetDriveService extends HttpServlet {
         log.debug("Looking for asset with id {}, found: {}", fileId, foundFile);
 
         if (foundFile != null) {
-            String extension = switch (foundFile.getString("mimeType")) {
+            String name = foundFile.getString("name");
+            String mimeType = foundFile.getString("mimeType");
+
+            if (mimeType.equals("application/vnd.openxmlformats-officedocument.wordprocessingml.document")) {
+                // the backend exports docx files to txt: change the MIME type and the file extension
+                mimeType = "text/plain";
+
+                if (name.toLowerCase(Locale.ROOT).endsWith(".docx")) {
+                    name = name.substring(0, name.length() - 5) + ".txt";
+                }
+            }
+
+            String extension = switch (mimeType) {
                 case "image/png" -> "png";
                 case "text/plain" -> "txt";
                 case "text/yaml" -> "yaml";
                 default -> "bin";
             };
+
+
             Path file = Paths.get("/shared/celeste/asset-drive/files/" + fileId + "." + extension);
             if (Files.exists(file)) {
-                return new Asset(file, foundFile.getString("name"), foundFile.getString("mimeType"));
+                return new Asset(file, name, mimeType);
             }
         }
 
