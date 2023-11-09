@@ -74,8 +74,7 @@
       </button>
       <button
         :class="
-          'btn ' +
-          (currentCategory === 'hires' ? 'btn-primary' : 'btn-link')
+          'btn ' + (currentCategory === 'hires' ? 'btn-primary' : 'btn-link')
         "
         v-on:click="currentCategory = 'hires'"
       >
