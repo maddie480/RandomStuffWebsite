@@ -516,10 +516,10 @@ export default {
 
     & > * {
       visibility: hidden;
+    }
 
-      &:hover {
-        visibility: visible;
-      }
+    &:hover > * {
+      visibility: visible;
     }
   }
 }
