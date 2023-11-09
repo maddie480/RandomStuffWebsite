@@ -74,6 +74,15 @@
       </button>
       <button
         :class="
+          'btn ' +
+          (currentCategory === 'hires' ? 'btn-primary' : 'btn-link')
+        "
+        v-on:click="currentCategory = 'hires'"
+      >
+        Hi-Res Art
+      </button>
+      <button
+        :class="
           'btn ' + (currentCategory === 'misc' ? 'btn-primary' : 'btn-link')
         "
         v-on:click="currentCategory = 'misc'"
@@ -105,6 +114,12 @@
       category="fgtilesets"
       category-display-name="tileset"
       v-else-if="currentCategory === 'fgtilesets'"
+    />
+    <AssetDriveCategory
+      class="category-listing"
+      category="hires"
+      category-display-name="asset"
+      v-else-if="currentCategory === 'hires'"
     />
     <AssetDriveCategory
       class="category-listing"

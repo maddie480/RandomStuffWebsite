@@ -26,7 +26,8 @@ import java.util.zip.ZipOutputStream;
 
 @WebServlet(name = "AssetDriveService", loadOnStartup = 11, urlPatterns = {"/celeste/asset-drive/reload", "/celeste/asset-drive/list/decals",
         "/celeste/asset-drive/list/stylegrounds", "/celeste/asset-drive/list/fgtilesets", "/celeste/asset-drive/list/bgtilesets",
-        "/celeste/asset-drive/list/misc", "/celeste/asset-drive/last-updated", "/celeste/asset-drive/files/*", "/celeste/asset-drive/multi-download"})
+        "/celeste/asset-drive/list/hires", "/celeste/asset-drive/list/misc", "/celeste/asset-drive/last-updated",
+        "/celeste/asset-drive/files/*", "/celeste/asset-drive/multi-download"})
 public class AssetDriveService extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(AssetDriveService.class);
 
