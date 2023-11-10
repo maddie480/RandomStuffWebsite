@@ -188,7 +188,7 @@ public final class GitOperator {
         );
     }
 
-    public static void commitChanges() throws IOException {
+    public static void commitChanges(NewsAuthor author, NewsAuthor committer) throws IOException {
         try {
             log.info("Adding");
             gitRepository.add()
@@ -198,8 +198,8 @@ public final class GitOperator {
             log.info("Committing");
             gitRepository.commit()
                     .setAll(true)
-                    .setAuthor("Nyan-Games", "24738390+nyan-games@users.noreply.github.com")
-                    .setCommitter("maddie480", "52103563+maddie480@users.noreply.github.com")
+                    .setAuthor(author.username(), author.email())
+                    .setCommitter(committer.username(), committer.email())
                     .setMessage("[Olympus News Manager Discord bot] Update Olympus news")
                     .call();
 

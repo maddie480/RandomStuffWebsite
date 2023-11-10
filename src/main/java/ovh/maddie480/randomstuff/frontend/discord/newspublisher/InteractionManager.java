@@ -1,5 +1,6 @@
 package ovh.maddie480.randomstuff.frontend.discord.newspublisher;
 
+import com.google.common.collect.ImmutableMap;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,10 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * This is the API that makes the Olympus News manager run.
@@ -36,6 +34,14 @@ import java.util.Optional;
 @WebServlet(name = "OlympusNewsManager", urlPatterns = {"/discord/olympus-news-manager"}, loadOnStartup = 7)
 public class InteractionManager extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(InteractionManager.class);
+
+    private static final NewsAuthor NEWS_COMMITTER = new NewsAuthor(52103563, "maddie480");
+    private static final Map<Long, NewsAuthor> NEWS_AUTHORS = ImmutableMap.of(
+            354341658352943115L, NEWS_COMMITTER,
+            191579321901514753L, new NewsAuthor(24738390, "Nyan-Games"),
+            633114231935336489L, new NewsAuthor(67283043, "campbell-godfrey"),
+            444598188452741180L, new NewsAuthor(127329763, "cellularAutomaton")
+    );
 
     @Override
     public void init() {
@@ -56,6 +62,7 @@ public class InteractionManager extends HttpServlet {
         log.debug("Guild {} used the Olympus News Manager!", data.getString("guild_id"));
 
         String interactionToken = data.getString("token");
+        long memberId = Long.parseLong(data.getJSONObject("member").getJSONObject("user").getString("id"));
 
         try {
             if (data.getInt("type") == 4) {
@@ -69,9 +76,9 @@ public class InteractionManager extends HttpServlet {
                 OlympusNews news = buildFromInteraction(contents);
 
                 if (interactionId.equals("new")) {
-                    runDeferred(interactionToken, resp, () -> create(news));
+                    runDeferred(interactionToken, resp, () -> create(news, memberId));
                 } else {
-                    searchSlugAndRun(interactionId, oldNews -> runDeferred(interactionToken, resp, () -> update(interactionId, oldNews.image(), news)), resp);
+                    searchSlugAndRun(interactionId, oldNews -> runDeferred(interactionToken, resp, () -> update(interactionId, oldNews.image(), news, memberId)), resp);
                 }
             } else {
                 // slash command invocation
@@ -83,7 +90,7 @@ public class InteractionManager extends HttpServlet {
                             searchSlugAndRun(data.getJSONObject("data").getJSONArray("options").getJSONObject(0).getString("value"),
                                     news -> sendEditOrCreateForm(resp, news), resp);
                     case "archive-news" ->
-                            archive(resp, interactionToken, data.getJSONObject("data").getJSONArray("options").getJSONObject(0).getString("value"));
+                            archive(resp, interactionToken, data.getJSONObject("data").getJSONArray("options").getJSONObject(0).getString("value"), memberId);
                 }
             }
         } catch (Exception e) {
@@ -93,7 +100,7 @@ public class InteractionManager extends HttpServlet {
         }
     }
 
-    public static void create(OlympusNews news) throws IOException {
+    public static void create(OlympusNews news, long memberId) throws IOException {
         byte[] image = null;
         if (news.image() != null) {
             try (InputStream is = ConnectionUtils.openStreamWithTimeout(news.image())) {
@@ -110,21 +117,21 @@ public class InteractionManager extends HttpServlet {
             list = GitOperator.listOlympusNews();
         }
 
-        GitOperator.commitChanges();
+        GitOperator.commitChanges(NEWS_AUTHORS.get(memberId), NEWS_COMMITTER);
     }
 
-    public static void update(String customId, String image, OlympusNews news) throws IOException {
+    public static void update(String customId, String image, OlympusNews news, long memberId) throws IOException {
         news = new OlympusNews(customId, news.title(), image, news.link(), news.shortDescription(), news.longDescription());
         GitOperator.init();
         GitOperator.updateOlympusNews(news);
-        GitOperator.commitChanges();
+        GitOperator.commitChanges(NEWS_AUTHORS.get(memberId), NEWS_COMMITTER);
     }
 
-    public static void archive(HttpServletResponse response, String interactionToken, String slug) throws IOException {
+    public static void archive(HttpServletResponse response, String interactionToken, String slug, long memberId) throws IOException {
         searchSlugAndRun(slug, news -> runDeferred(interactionToken, response, () -> {
             GitOperator.init();
             GitOperator.archiveOlympusNews(news);
-            GitOperator.commitChanges();
+            GitOperator.commitChanges(NEWS_AUTHORS.get(memberId), NEWS_COMMITTER);
         }), response);
     }
 
