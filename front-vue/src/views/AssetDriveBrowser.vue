@@ -13,7 +13,7 @@
       >, with added features such as filtering, search and tags.
     </div>
     <div class="intro" v-if="lastUpdate !== null">
-      The list is updated <b>once an hour</b> from Google Drive. The last update
+      The list is updated <b>once a day</b> from Google Drive. The last update
       happened on <b>{{ lastUpdate }}</b
       >.
     </div>
