@@ -138,8 +138,8 @@
                           file.Size > 1048576
                             ? (file.Size / 1048576).toFixed(2) + " MB"
                             : file.Size > 1024
-                            ? (file.Size / 1024).toFixed(2) + " KB"
-                            : file.Size + " B"
+                              ? (file.Size / 1024).toFixed(2) + " KB"
+                              : file.Size + " B"
                         }}
                         <span class="large-only"
                           >-
