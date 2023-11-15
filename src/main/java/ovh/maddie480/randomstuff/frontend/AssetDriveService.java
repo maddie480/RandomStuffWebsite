@@ -26,12 +26,19 @@ import java.util.zip.ZipOutputStream;
 
 @WebServlet(name = "AssetDriveService", loadOnStartup = 11, urlPatterns = {"/celeste/asset-drive/reload", "/celeste/asset-drive/list/decals",
         "/celeste/asset-drive/list/stylegrounds", "/celeste/asset-drive/list/fgtilesets", "/celeste/asset-drive/list/bgtilesets",
-        "/celeste/asset-drive/list/hires", "/celeste/asset-drive/list/misc", "/celeste/asset-drive/last-updated",
-        "/celeste/asset-drive/files/*", "/celeste/asset-drive/multi-download"})
+        "/celeste/asset-drive/list/hires", "/celeste/asset-drive/list/misc", "/celeste/asset-drive/folders",
+        "/celeste/asset-drive/last-updated", "/celeste/asset-drive/files/*", "/celeste/asset-drive/multi-download"})
 public class AssetDriveService extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(AssetDriveService.class);
 
+    private static final String FOLDER_MIME_TYPE = "application/vnd.google-apps.folder";
+
     private Map<String, JSONObject> fileAssetMap = Collections.emptyMap();
+    private Map<String, String> fileLists = Collections.emptyMap();
+    private String folderPathsToIds = "{}";
+
+    private final Path fileListFile = Paths.get("/shared/celeste/asset-drive/file-list.json");
+    private final Path categorizedAssetsFile = Paths.get("/shared/celeste/asset-drive/categorized-assets.json");
 
     @Override
     public void init() {
@@ -55,8 +62,6 @@ public class AssetDriveService extends HttpServlet {
             return;
         }
 
-        Path categorizedAssetsFile = Paths.get("/shared/celeste/asset-drive/categorized-assets.json");
-
         if (req.getRequestURI().equals("/celeste/asset-drive/last-updated")) {
             resp.setContentType("text/plain");
             resp.getWriter().write(
@@ -66,13 +71,15 @@ public class AssetDriveService extends HttpServlet {
             return;
         }
 
-        if (req.getRequestURI().startsWith("/celeste/asset-drive/list/")) {
-            JSONObject allCategories;
-            try (InputStream is = Files.newInputStream(categorizedAssetsFile)) {
-                allCategories = new JSONObject(IOUtils.toString(is, StandardCharsets.UTF_8));
-            }
+        if (req.getRequestURI().equals("/celeste/asset-drive/folders")) {
             resp.setContentType("application/json");
-            resp.getWriter().write(allCategories.getJSONArray(req.getRequestURI().substring(26)).toString());
+            resp.getWriter().write(folderPathsToIds);
+            return;
+        }
+
+        if (req.getRequestURI().startsWith("/celeste/asset-drive/list/")) {
+            resp.setContentType("application/json");
+            resp.getWriter().write(fileLists.get(req.getRequestURI().substring(26)));
             return;
         }
 
@@ -177,19 +184,37 @@ public class AssetDriveService extends HttpServlet {
 
     private void buildAssetMap() throws IOException {
         JSONArray allFiles;
-        try (InputStream is = Files.newInputStream(Paths.get("/shared/celeste/asset-drive/file-list.json"))) {
+        try (InputStream is = Files.newInputStream(fileListFile)) {
             allFiles = new JSONArray(IOUtils.toString(is, StandardCharsets.UTF_8));
         }
 
         Map<String, JSONObject> result = new HashMap<>();
+        Map<String, String> folders = new HashMap<>();
 
         for (Object o : allFiles) {
             JSONObject file = (JSONObject) o;
-            result.put(file.getString("id"), file);
+
+            if (file.getString("mimeType").equals(FOLDER_MIME_TYPE)) {
+                folders.put(file.getString("folder") + "/" + file.getString("name"), file.getString("id"));
+            } else {
+                result.put(file.getString("id"), file);
+            }
         }
 
-        log.debug("Loaded asset map with {} files.", result.size());
+        log.debug("Loaded asset map with {} files and {} folders.", result.size(), folders.size());
+
+        Map<String, String> responsePerCategory = new HashMap<>();
+
+        JSONObject allCategories;
+        try (InputStream is = Files.newInputStream(categorizedAssetsFile)) {
+            allCategories = new JSONObject(IOUtils.toString(is, StandardCharsets.UTF_8));
+        }
+        for (String category : Arrays.asList("misc", "decals", "stylegrounds", "bgtilesets", "fgtilesets", "hires")) {
+            responsePerCategory.put(category, allCategories.getJSONArray(category).toString());
+        }
 
         fileAssetMap = result;
+        folderPathsToIds = new JSONObject(folders).toString();
+        fileLists = responsePerCategory;
     }
 }

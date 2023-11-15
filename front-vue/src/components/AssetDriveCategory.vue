@@ -67,11 +67,12 @@
 
       <div id="asset-browser" class="row">
         <AssetDriveItem
-          v-for="item in this.page"
+          v-for="item in page"
           v-bind:key="item.id"
           :data="item"
           :category-display-name="categoryDisplayName"
           :zoom="zoom"
+          :folders="folders"
         />
       </div>
 
@@ -93,7 +94,7 @@ import ListPaginator from "./ListPaginator.vue";
 
 export default {
   components: { AssetDriveItem, ListPaginator },
-  props: ["category", "category-display-name"],
+  props: ["category", "category-display-name", "folders"],
   data: () => ({
     loading: false,
     error: false,

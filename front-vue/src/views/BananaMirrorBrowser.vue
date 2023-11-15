@@ -86,7 +86,7 @@
           </div>
         </div>
         <ListPaginator
-          v-if="this.totalCount > 0"
+          v-if="totalCount > 0"
           :page-number="page"
           :page-count="pageCount"
           v-on:change-page="changePage"

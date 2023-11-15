@@ -92,36 +92,42 @@
 
     <AssetDriveCategory
       class="category-listing"
+      :folders="folders"
       category="decals"
       category-display-name="decal"
       v-if="currentCategory === 'decals'"
     />
     <AssetDriveCategory
       class="category-listing"
+      :folders="folders"
       category="stylegrounds"
       category-display-name="styleground"
       v-else-if="currentCategory === 'stylegrounds'"
     />
     <AssetDriveCategory
       class="category-listing"
+      :folders="folders"
       category="bgtilesets"
       category-display-name="tileset"
       v-else-if="currentCategory === 'bgtilesets'"
     />
     <AssetDriveCategory
       class="category-listing"
+      :folders="folders"
       category="fgtilesets"
       category-display-name="tileset"
       v-else-if="currentCategory === 'fgtilesets'"
     />
     <AssetDriveCategory
       class="category-listing"
+      :folders="folders"
       category="hires"
       category-display-name="asset"
       v-else-if="currentCategory === 'hires'"
     />
     <AssetDriveCategory
       class="category-listing"
+      :folders="folders"
       category="misc"
       category-display-name="asset"
       v-else-if="currentCategory === 'misc'"
@@ -143,6 +149,7 @@ export default {
   data: () => ({
     currentCategory: null,
     lastUpdate: null,
+    folders: [],
   }),
   mounted: async function () {
     const lastUpdateISO = (
@@ -158,6 +165,10 @@ export default {
       minute: "2-digit",
       second: "2-digit",
     });
+
+    this.folders = (
+      await axios.get(`${config.backendUrl}/celeste/asset-drive/folders`)
+    ).data;
   },
 };
 </script>

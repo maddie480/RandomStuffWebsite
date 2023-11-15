@@ -6,19 +6,9 @@
 </template>
 
 <script>
-const vue = {
+export default {
   name: "route-not-found",
-
-  // hide navbar on this 404 page
-  mounted: function () {
-    document.getElementById("nav").style.display = "none";
-  },
-  unmounted: function () {
-    document.getElementById("nav").style.display = "block";
-  },
 };
-
-export default vue;
 </script>
 
 <style lang="scss" scoped>

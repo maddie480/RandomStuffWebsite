@@ -16,7 +16,7 @@
             <a
               :class="
                 'nav-link dropdown-toggle ' +
-                (this.$route.path.startsWith('/celeste') ? 'active' : '')
+                ($route.path.startsWith('/celeste') ? 'active' : '')
               "
               href="#"
               id="celesteDropdown"
@@ -34,9 +34,7 @@
                 <a
                   :class="
                     'dropdown-item ' +
-                    (this.$route.path === '/celeste/asset-drive'
-                      ? 'active'
-                      : '')
+                    ($route.path === '/celeste/asset-drive' ? 'active' : '')
                   "
                   href="/celeste/asset-drive"
                   >Asset Drive Browser</a
@@ -46,7 +44,7 @@
                 <a
                   :class="
                     'dropdown-item ' +
-                    (this.$route.path === '/celeste/banana-mirror-browser'
+                    ($route.path === '/celeste/banana-mirror-browser'
                       ? 'active'
                       : '')
                   "
@@ -85,9 +83,7 @@
                 <a
                   :class="
                     'dropdown-item ' +
-                    (this.$route.path === '/celeste/file-searcher'
-                      ? 'active'
-                      : '')
+                    ($route.path === '/celeste/file-searcher' ? 'active' : '')
                   "
                   href="/celeste/file-searcher"
                   >File Searcher</a
@@ -102,7 +98,7 @@
                 <a
                   :class="
                     'dropdown-item ' +
-                    (this.$route.path === '/celeste/graphics-dump-browser'
+                    ($route.path === '/celeste/graphics-dump-browser'
                       ? 'active'
                       : '')
                   "
@@ -114,9 +110,7 @@
                 <a
                   :class="
                     'dropdown-item ' +
-                    (this.$route.path === '/celeste/map-tree-viewer'
-                      ? 'active'
-                      : '')
+                    ($route.path === '/celeste/map-tree-viewer' ? 'active' : '')
                   "
                   href="/celeste/map-tree-viewer"
                   >Map Tree Viewer</a
@@ -141,9 +135,7 @@
                 <a
                   :class="
                     'dropdown-item ' +
-                    (this.$route.path === '/celeste/wipe-converter'
-                      ? 'active'
-                      : '')
+                    ($route.path === '/celeste/wipe-converter' ? 'active' : '')
                   "
                   href="/celeste/wipe-converter"
                   >Wipe Converter</a

@@ -12,21 +12,21 @@
         </div>
         <div class="title">
           <span
-            v-for="(part, index) in this.data.name.split('/')"
-            v-bind:key="`${this.data.name}/${part}/${index}`"
+            v-for="(part, index) in pathParts"
+            v-bind:key="`${data.name}/${part}/${index}`"
           >
-            <span
-              :class="
-                index === this.data.name.split('/').length - 1
-                  ? 'file-name'
-                  : ''
+            <a
+              :href="
+                'https://drive.google.com/drive/folders/' +
+                folders[parentFolders[index]]
               "
-              >{{ part }}</span
+              target="_blank"
+              v-if="index !== pathParts.length - 1"
             >
-            <span
-              v-if="index !== this.data.name.split('/').length - 1"
-              class="secondary"
-            >
+              {{ part }}
+            </a>
+            <span class="file-name" v-else>{{ part }}</span>
+            <span v-if="index !== pathParts.length - 1" class="secondary">
               /
             </span>
           </span>
@@ -45,7 +45,7 @@
         <div class="tags">
           <span
             class="badge bg-primary"
-            v-for="(tag, index) in this.data.tags"
+            v-for="(tag, index) in data.tags"
             v-bind:key="index + tag"
             >{{ tag }}</span
           >
@@ -87,7 +87,7 @@
             </button>
           </div>
           <div class="modal-body">
-            <div v-if="this.data.template === 'vanilla'">
+            <div v-if="data.template === 'vanilla'">
               <h3>Tileset Template</h3>
               <div>
                 This tileset uses the <b>vanilla template</b>. In order to use
@@ -103,7 +103,7 @@
                 >
               </div>
             </div>
-            <div v-else-if="this.data.template === 'better'">
+            <div v-else-if="data.template === 'better'">
               <h3>Tileset Template</h3>
               <div>
                 This tileset uses <b>jade's better template</b>. In order to use
@@ -196,7 +196,7 @@
                 >
               </div>
             </div>
-            <div v-else-if="this.data.template === 'alternate'">
+            <div v-else-if="data.template === 'alternate'">
               This tileset uses <b>pixelator's alternate template</b>. In order
               to use it, make sure you have this piece of XML in your tileset
               XML:
@@ -322,7 +322,7 @@
                 }}" sound="8"/&gt;</pre
               >
             </div>
-            <div v-else-if="this.data.template !== undefined">
+            <div v-else-if="data.template !== undefined">
               <h3>Tileset Template</h3>
               This tileset uses a <b>custom template</b>. In order to use it,
               make sure you have this piece of XML in your tileset XML:
@@ -340,11 +340,11 @@
               >
             </div>
 
-            <div v-if="this.data.notes !== undefined">
+            <div v-if="data.notes !== undefined">
               <h3>Author's Notes on this {{ categoryDisplayName }}</h3>
               <span class="author-notes">{{ data.notes }}</span>
             </div>
-            <div v-if="this.readme !== null">
+            <div v-if="readme !== null">
               <h3>
                 Author's Notes on this group of {{ categoryDisplayName }}s
               </h3>
@@ -363,7 +363,7 @@ import axios from "axios";
 import config from "../config";
 
 export default {
-  props: ["data", "category-display-name", "zoom"],
+  props: ["data", "category-display-name", "zoom", "folders"],
   data: () => ({
     moreInfoShown: false,
     readme: null,
@@ -419,6 +419,37 @@ export default {
         this.data.name.lastIndexOf("/") + 1,
         this.data.name.lastIndexOf("."),
       );
+    },
+    pathParts() {
+      return this.data.name.split("/");
+    },
+    parentFolders() {
+      const fullFolderPathParts = this.data.folder.split("/");
+      const displayedFolderPathParts = this.data.name.split("/");
+
+      // ditch the file name
+      displayedFolderPathParts.splice(displayedFolderPathParts.length - 1, 1);
+
+      // start with pathSoFar being set to the "hidden" part of the path
+      let pathSoFar = "";
+      for (
+        let i = 0;
+        i < fullFolderPathParts.length - displayedFolderPathParts.length;
+        i++
+      ) {
+        if (i !== 0) pathSoFar += "/";
+        pathSoFar += fullFolderPathParts[i];
+      }
+
+      let result = [];
+
+      // then return 1 element per "shown" part of the path, except the file name that we removed earlier
+      for (let i = 0; i < displayedFolderPathParts.length; i++) {
+        pathSoFar += "/" + this.pathParts[i];
+        result.push(pathSoFar);
+      }
+
+      return result;
     },
   },
 };

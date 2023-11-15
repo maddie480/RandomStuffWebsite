@@ -111,7 +111,7 @@
               <tbody>
                 <tr
                   v-bind:key="file.URL"
-                  v-for="file in this.getMirroredFiles(mod.Files)"
+                  v-for="file in getMirroredFiles(mod.Files)"
                 >
                   <td class="first">
                     <div>
