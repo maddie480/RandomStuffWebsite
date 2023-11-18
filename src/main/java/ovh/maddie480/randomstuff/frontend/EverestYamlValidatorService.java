@@ -227,7 +227,7 @@ public class EverestYamlValidatorService extends HttpServlet {
                 {
                     EverestModuleMetadata metadata = new EverestModuleMetadata();
                     metadata.Name = "EverestCore";
-                    metadata.Version = "1." + getMaximumEverestVersion(everestVersions) + ".0";
+                    metadata.Version = "1." + everestVersions.getInt("core") + ".0";
                     database.add(metadata);
                 }
                 for (EverestModuleMetadata mod : metadatas) {
@@ -478,7 +478,10 @@ public class EverestYamlValidatorService extends HttpServlet {
                         everestVersions.getInt("dev"),
                         everestVersions.getInt("beta")
                 ),
-                everestVersions.getInt("stable")
+                Math.max(
+                        everestVersions.getInt("stable"),
+                        everestVersions.getInt("core")
+                )
         );
     }
 
@@ -493,8 +496,10 @@ public class EverestYamlValidatorService extends HttpServlet {
             return everestVersions.getInt("stable");
         } else if (currentVersion <= everestVersions.getInt("beta")) {
             return everestVersions.getInt("beta");
-        } else {
+        } else if (currentVersion <= everestVersions.getInt("dev")) {
             return everestVersions.getInt("dev");
+        } else {
+            return everestVersions.getInt("core");
         }
     }
 }
