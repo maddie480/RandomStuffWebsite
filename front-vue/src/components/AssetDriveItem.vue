@@ -2,7 +2,7 @@
   <div class="col-xl-3 col-lg-4 col-md-6 col-12 base">
     <div class="card">
       <div class="card-body">
-        <div class="image-container">
+        <div :class="imagePath === downloadPath ? 'image-container' : ''">
           <img
             :src="imagePath"
             v-on:load="imageLoaded"
@@ -34,7 +34,7 @@
         <div class="secondary authorcredit">by {{ data.author }}</div>
         <div
           class="secondary authorcredit"
-          v-if="width !== null && height !== null"
+          v-if="imagePath === downloadPath && width !== null && height !== null"
         >
           <span v-if="data.frames !== undefined && data.frames.length > 1"
             ><span class="frame-count">{{ data.frames.length }} frames</span>
@@ -57,7 +57,7 @@
           v-if="data.frames !== undefined && data.frames.length > 1"
           >Download all</a
         >
-        <a class="btn btn-primary" target="_blank" :href="imagePath" v-else
+        <a class="btn btn-primary" target="_blank" :href="downloadPath" v-else
           >Download</a
         >
         <button
@@ -397,6 +397,11 @@ export default {
   },
   computed: {
     imagePath() {
+      const fileId =
+        this.data.preview !== undefined ? this.data.preview : this.data.id;
+      return config.backendUrl + "/celeste/asset-drive/files/" + fileId;
+    },
+    downloadPath() {
       return config.backendUrl + "/celeste/asset-drive/files/" + this.data.id;
     },
     multiDownloadPath() {

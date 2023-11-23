@@ -167,11 +167,11 @@ public class AssetDriveService extends HttpServlet {
 
             String extension = switch (mimeType) {
                 case "image/png" -> "png";
+                case "font/ttf" -> "ttf";
                 case "text/plain" -> "txt";
                 case "text/yaml" -> "yaml";
                 default -> "bin";
             };
-
 
             Path file = Paths.get("/shared/celeste/asset-drive/files/" + fileId + "." + extension);
             if (Files.exists(file)) {
