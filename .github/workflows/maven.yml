@@ -84,8 +84,4 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: target
-        path: |
-          target
-          .github/extra-1/target
-          .github/extra-2/target
-          .github/extra-3/target
+        path: target
