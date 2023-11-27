@@ -82,6 +82,21 @@ jobs:
     - name: Submit Dependency Snapshot
       uses: advanced-security/maven-dependency-submission-action@v3
 
+    - name: Submit Dependency Snapshot of Extra 1
+      uses: advanced-security/maven-dependency-submission-action@v3
+      with:
+        directory: .github/extra-1
+
+    - name: Submit Dependency Snapshot of Extra 2
+      uses: advanced-security/maven-dependency-submission-action@v3
+      with:
+        directory: .github/extra-2
+
+    - name: Submit Dependency Snapshot of Extra 3
+      uses: advanced-security/maven-dependency-submission-action@v3
+      with:
+        directory: .github/extra-3
+
     - name: Upload target folder as artifact
       if: always()
       uses: actions/upload-artifact@v3
