@@ -80,19 +80,23 @@ jobs:
         tags: max480/random-stuff-frontend:latest
 
     - name: Submit Dependency Snapshot
+      if: github.ref == 'refs/heads/main'
       uses: advanced-security/maven-dependency-submission-action@v3
 
     - name: Submit Dependency Snapshot of Extra 1
+      if: github.ref == 'refs/heads/main'
       uses: advanced-security/maven-dependency-submission-action@v3
       with:
         directory: .github/extra-1
 
     - name: Submit Dependency Snapshot of Extra 2
+      if: github.ref == 'refs/heads/main'
       uses: advanced-security/maven-dependency-submission-action@v3
       with:
         directory: .github/extra-2
 
     - name: Submit Dependency Snapshot of Extra 3
+      if: github.ref == 'refs/heads/main'
       uses: advanced-security/maven-dependency-submission-action@v3
       with:
         directory: .github/extra-3
