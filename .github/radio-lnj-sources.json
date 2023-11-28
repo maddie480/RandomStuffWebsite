@@ -1,0 +1,62 @@
+[
+   {
+      "url": "https://files.gamebanana.com/bitpit/scooter_war3z.zip",
+      "useYoutubeDl": false,
+      "prefix": "Scooter War3z - Piste "
+   },
+   {
+      "url": "https://files.gamebanana.com/bitpit/alpha_zylon.zip",
+      "useYoutubeDl": false,
+      "prefix":"Alpha Zylon - "
+   },
+   {
+      "url": "https://files.gamebanana.com/bitpit/glacier.zip",
+      "useYoutubeDl": false,
+      "prefix": "Glacier - "
+   },
+   {
+      "url": "https://files.gamebanana.com/bitpit/manhattan_chase.zip",
+      "useYoutubeDl": false,
+      "prefix": "Manhattan Chase - "
+   },
+   {
+      "url": "https://files.gamebanana.com/bitpit/forklift_racer.zip",
+      "useYoutubeDl": false,
+      "prefix": "Forklift Racer - "
+   },
+   {
+      "url": "https://files.gamebanana.com/bitpit/war_soldier.zip",
+      "useYoutubeDl": false,
+      "prefix": ""
+   },
+   {
+      "url": "https://files.gamebanana.com/bitpit/psycho_killer_d3ad5.zip",
+      "useYoutubeDl": false,
+      "prefix": "Psycho Killer - "
+   },
+   {
+      "url": "https://files.gamebanana.com/bitpit/flugratten.zip",
+      "useYoutubeDl": false,
+      "prefix": "Flugratten - "
+   },
+   {
+      "url": "https://files.gamebanana.com/bitpit/the_slaughtering_grounds_ost.zip",
+      "useYoutubeDl": false,
+      "prefix": ""
+   },
+   {
+      "url": "https://files.gamebanana.com/bitpit/the_pizza_courier.zip",
+      "useYoutubeDl": false,
+      "prefix": ""
+   },
+   {
+      "url": "https://youtube.com/playlist?list=PLQpJkz64P9c5OCTfMSLvo1i-IugPoB4pt",
+      "useYoutubeDl": true,
+      "prefix": ""
+   },
+   {
+      "url": "https://www.youtube.com/watch?v=8WJFufwpeoI",
+      "useYoutubeDl": true,
+      "prefix": ""
+   }
+]
