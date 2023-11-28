@@ -159,4 +159,8 @@
     }
 
     console.log('DJ Navet est prêt à tout balancer ! Enjoy ~ Maddie');
+
+    if (window.location.search === '?autoplay') {
+        audio.play();
+    }
 }
