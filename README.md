@@ -277,7 +277,6 @@ Two extra fields are specified for automatic builds made after a single change (
 - `description` is the description of the change, either the message of the commit or the title of the pull request.
 
 If the version of Everest/Olympus you are calling this API from supports installing native builds (.NET Core builds), you should pass the `supportsNativeBuilds=true` query parameter to include them.
-As of now, this adds an extra branch to the output of the API, called `core`.
 
 
 ## Olympus versions list API

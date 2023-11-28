@@ -25,7 +25,7 @@
         </li>
         <li>
             <a href="/celeste/download-everest?branch=stable">https://maddie480.ovh/celeste/download-everest?branch=stable</a>
-            downloads the latest stable version of Everest. Other options for branches are <code>beta</code>, <code>dev</code> and <code>core</code>.
+            downloads the latest stable version of Everest. Other options for branches are <code>beta</code> and <code>dev</code>.
         </li>
     </ul>
 </div>
