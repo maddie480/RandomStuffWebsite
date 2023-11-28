@@ -21,13 +21,13 @@ import java.util.zip.ZipInputStream;
 public class PrepareForRadioLNJ {
     private static final Logger logger = Logger.getLogger("PrepareForRadioLNJ");
 
+    private static final Path targetDirectory = Paths.get("resources/music");
+    private static int musicIndex = 0;
+
     public static void main(String[] args) throws IOException, InterruptedException {
         if (System.getenv("RADIO_LNJ_SOURCES") == null) return;
 
-        Path targetDirectory = Paths.get("resources/music");
         Files.createDirectory(targetDirectory);
-
-        int musicIndex = 0;
 
         JSONArray metadata = new JSONArray();
 
@@ -40,7 +40,7 @@ public class PrepareForRadioLNJ {
                 Path ytDlTarget = Paths.get("/tmp/yt-dlp-tmp");
                 Files.createDirectory(ytDlTarget);
 
-                new ProcessBuilder("/tmp/yt-dlp", "-f", "bestaudio*", "-x", "--audio-format", "mp3", "--no-windows-filenames", source.getString("url"))
+                new ProcessBuilder("/tmp/yt-dlp", "-f", "bestaudio*", source.getString("url"))
                         .inheritIO()
                         .directory(ytDlTarget.toFile())
                         .start()
@@ -48,19 +48,12 @@ public class PrepareForRadioLNJ {
 
                 try (Stream<Path> downloadedFiles = Files.list(ytDlTarget)) {
                     for (Path file : downloadedFiles.toList()) {
-                        Path targetFile = targetDirectory.resolve(musicIndex + ".mp3");
-                        musicIndex++;
-
-                        Files.copy(file, targetFile);
-
-                        JSONObject meta = new JSONObject();
-                        meta.put("trackName", source.getString("prefix") +
-                                file.getFileName().toString().substring(0, file.getFileName().toString().lastIndexOf("[") - 1));
-                        meta.put("path", "/music/" + targetFile.getFileName().toString());
-                        meta.put("duration", getMusicDuration(targetFile));
-
-                        logger.info("Track info: " + meta.toString(2));
-                        metadata.put(meta);
+                        addMetadataTo(metadata, file, source.getString("prefix") +
+                                file.getFileName().toString().substring(0, file.getFileName().toString().lastIndexOf("[") - 1)
+                                        .replace("＂", "\"")
+                                        .replace("：", ":")
+                                        .replace("⧸", "/")
+                                        .replace("｜", "|"));
                     }
                 }
 
@@ -71,29 +64,13 @@ public class PrepareForRadioLNJ {
                 try (ZipInputStream zip = new ZipInputStream(getFullInputStreamWithRetry(source.getString("url")))) {
                     ZipEntry entry;
                     while ((entry = zip.getNextEntry()) != null) {
-                        Path temp = Paths.get("/tmp/stuff.ogg");
-
+                        Path temp = Paths.get("/tmp/stuff.bin");
                         try (OutputStream os = Files.newOutputStream(temp)) {
                             IOUtils.copy(zip, os);
                         }
 
-                        Path targetFile = targetDirectory.resolve(musicIndex + ".mp3");
-                        musicIndex++;
-
-                        new ProcessBuilder("ffmpeg", "-i", "/tmp/stuff.ogg", targetFile.toAbsolutePath().toString())
-                                .inheritIO()
-                                .start()
-                                .waitFor();
-
-                        Files.delete(temp);
-
-                        JSONObject meta = new JSONObject();
-                        meta.put("trackName", source.getString("prefix") + entry.getName().substring(0, entry.getName().length() - 4));
-                        meta.put("path", "/music/" + targetFile.getFileName().toString());
-                        meta.put("duration", getMusicDuration(targetFile));
-
-                        logger.info("Track info: " + meta.toString(2));
-                        metadata.put(meta);
+                        addMetadataTo(metadata, temp,
+                                source.getString("prefix") + entry.getName().substring(0, entry.getName().length() - 4));
                     }
                 }
             }
@@ -102,6 +79,37 @@ public class PrepareForRadioLNJ {
         try (OutputStream os = Files.newOutputStream(Paths.get("radio_lnj_meta.json"))) {
             IOUtils.write(metadata.toString(), os, StandardCharsets.UTF_8);
         }
+    }
+
+    private static void addMetadataTo(JSONArray output, Path inputFile, String trackName) throws IOException, InterruptedException {
+        logger.info("Processing track " + inputFile.toAbsolutePath() + " (" + trackName + ")");
+
+        Path targetFile = targetDirectory.resolve(musicIndex + ".mp3");
+
+        convertAndNormalize(inputFile, targetFile);
+        Files.delete(inputFile);
+
+        JSONObject meta = new JSONObject();
+        meta.put("trackName", trackName);
+        meta.put("path", "/music/" + targetFile.getFileName().toString());
+        meta.put("duration", getMusicDuration(targetFile));
+
+        logger.info("Track info: " + meta.toString(2));
+        output.put(meta);
+
+        musicIndex++;
+    }
+
+    private static void convertAndNormalize(Path source, Path target) throws InterruptedException, IOException {
+        new ProcessBuilder(
+                "ffmpeg-normalize",
+                source.toAbsolutePath().toString(),
+                "-o", target.toAbsolutePath().toString(),
+                "-pr", "-c:a", "mp3", "-vn"
+        )
+                .inheritIO()
+                .start()
+                .waitFor();
     }
 
     private static int getMusicDuration(Path musicPath) throws IOException {
