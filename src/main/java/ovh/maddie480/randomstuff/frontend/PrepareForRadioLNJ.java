@@ -40,11 +40,13 @@ public class PrepareForRadioLNJ {
                 Path ytDlTarget = Paths.get("/tmp/yt-dlp-tmp");
                 Files.createDirectory(ytDlTarget);
 
-                new ProcessBuilder("/tmp/yt-dlp", "-f", "bestaudio*", source.getString("url"))
+                int exitCode = new ProcessBuilder("/tmp/yt-dlp", "-f", "bestaudio*", source.getString("url"))
                         .inheritIO()
                         .directory(ytDlTarget.toFile())
                         .start()
                         .waitFor();
+
+                if (exitCode != 0) throw new IOException("yt-dlp exited with code " + exitCode);
 
                 try (Stream<Path> downloadedFiles = Files.list(ytDlTarget)) {
                     for (Path file : downloadedFiles.toList()) {
@@ -101,7 +103,7 @@ public class PrepareForRadioLNJ {
     }
 
     private static void convertAndNormalize(Path source, Path target) throws InterruptedException, IOException {
-        new ProcessBuilder(
+        int exitCode = new ProcessBuilder(
                 "ffmpeg-normalize",
                 source.toAbsolutePath().toString(),
                 "-o", target.toAbsolutePath().toString(),
@@ -110,9 +112,11 @@ public class PrepareForRadioLNJ {
                 .inheritIO()
                 .start()
                 .waitFor();
+
+        if (exitCode != 0) throw new IOException("ffmpeg-normalize exited with code " + exitCode);
     }
 
-    private static int getMusicDuration(Path musicPath) throws IOException {
+    private static int getMusicDuration(Path musicPath) throws InterruptedException, IOException {
         Process p = new ProcessBuilder("ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "default=noprint_wrappers=1:nokey=1",
                 musicPath.toAbsolutePath().toString()).start();
 
@@ -120,6 +124,9 @@ public class PrepareForRadioLNJ {
         try (InputStream is = p.getInputStream()) {
             result = Double.parseDouble(IOUtils.toString(is, StandardCharsets.UTF_8));
         }
+
+        int exitCode = p.waitFor();
+        if (exitCode != 0) throw new IOException("ffprobe exited with code " + exitCode);
 
         return (int) (result * 1000.);
     }
