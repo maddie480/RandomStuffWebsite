@@ -25,7 +25,7 @@ public class PrepareForRadioLNJ {
     private static int musicIndex = 0;
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        if (System.getenv("RADIO_LNJ_SOURCES") == null) return;
+        if (System.getenv("RADIO_LNJ_SOURCES") == null || Files.exists(targetDirectory)) return;
 
         Files.createDirectory(targetDirectory);
 
