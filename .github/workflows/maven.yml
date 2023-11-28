@@ -50,7 +50,7 @@ jobs:
       if: github.ref == 'refs/heads/main'
       env:
         GOOGLE_DRIVE_API_KEY: ${{ secrets.GOOGLE_DRIVE_API_KEY }}
-        RADIO_LNJ_SOURCES: ${{ secrets.RADIO_LNJ_SOURCES }}
+        RADIO_LNJ_SOURCES: ${{ vars.RADIO_LNJ_SOURCES }}
       run: mvn -B verify --file pom.xml
 
     - name: Build with Maven (no graphics dump)
