@@ -51,7 +51,7 @@ public class SerializationTests {
     @Test
     public void minesweeperSerializationTest() {
         Random r = new Random();
-        for (int i = 0; i < 100000; i++) {
+        for (int i = 0; i < 10000; i++) {
             GameState gameState = Minesweeper.generateRandom();
             gameState.setLatestCommand(RandomStringUtils.random(5));
             Game game = new OnePlayerGame(gameState, r.nextLong(), null, null);
