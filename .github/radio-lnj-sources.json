@@ -50,12 +50,12 @@
       "prefix": ""
    },
    {
-      "url": "https://youtube.com/playlist?list=PLQpJkz64P9c5OCTfMSLvo1i-IugPoB4pt",
-      "useYoutubeDl": true,
+      "url": "https://files.gamebanana.com/bitpit/lnj-20231129.zip",
+      "useYoutubeDl": false,
       "prefix": ""
    },
    {
-      "url": "https://www.youtube.com/watch?v=8WJFufwpeoI",
+      "url": "https://youtube.com/playlist?list=PLQpJkz64P9c5OCTfMSLvo1i-IugPoB4pt",
       "useYoutubeDl": true,
       "prefix": ""
    }
