@@ -25,7 +25,14 @@ public class PrepareForRadioLNJ {
     private static int musicIndex = 0;
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        if (System.getenv("RADIO_LNJ_SOURCES") == null || Files.exists(targetDirectory)) return;
+        if (System.getenv("RADIO_LNJ_SOURCES") == null) return;
+
+        Path cachedRadioLNJ = Paths.get("/tmp/old-target/random-stuff-website-1.0.0/WEB-INF/classes/resources/music");
+        if (Files.isDirectory(cachedRadioLNJ)) {
+            copyRecursive(cachedRadioLNJ, targetDirectory);
+            copyRecursive(cachedRadioLNJ.resolve("../../radio_lnj_meta.json"), Paths.get("radio_lnj_meta.json"));
+            return;
+        }
 
         Files.createDirectory(targetDirectory);
 
@@ -100,6 +107,19 @@ public class PrepareForRadioLNJ {
         output.put(meta);
 
         musicIndex++;
+    }
+
+     private static void copyRecursive(Path source, Path target) throws InterruptedException, IOException {
+        int exitCode = new ProcessBuilder(
+                "cp", "-rv",
+                source.toAbsolutePath().toString(),
+                target.toAbsolutePath().toString()
+        )
+                .inheritIO()
+                .start()
+                .waitFor();
+
+        if (exitCode != 0) throw new IOException("cp exited with code " + exitCode);
     }
 
     private static void convertAndNormalize(Path source, Path target) throws InterruptedException, IOException {
