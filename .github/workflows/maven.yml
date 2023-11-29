@@ -34,6 +34,7 @@ jobs:
 
     - name: Cache Radio LNJ
       uses: actions/cache@v3
+      if: github.ref == 'refs/heads/main'
       with:
         path: |
           target/random-stuff-website-1.0.0/WEB-INF/classes/resources/music/*
@@ -60,7 +61,8 @@ jobs:
         GOOGLE_DRIVE_API_KEY: ${{ secrets.GOOGLE_DRIVE_API_KEY }}
       run: |
         export RADIO_LNJ_SOURCES=`cat .github/radio-lnj-sources.json`
-        mvn -B verify --file pom.xml
+        mv -v target /tmp/old-target | echo "No existing target folder"
+        mvn -B clean verify --file pom.xml
 
     - name: Build with Maven (no graphics dump)
       if: github.ref != 'refs/heads/main'
