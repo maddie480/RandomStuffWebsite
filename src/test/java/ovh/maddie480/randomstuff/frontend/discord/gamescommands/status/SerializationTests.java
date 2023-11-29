@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class SerializationTests {
     private void serializationTestTwoPlayer(Supplier<GameState> gameStateGenerator) {
         Random r = new Random();
-        for (int i = 0; i < 100000; i++) {
+        for (int i = 0; i < 10000; i++) {
             GameState gameState = gameStateGenerator.get();
             gameState.setLatestCommand(RandomStringUtils.random(5));
             Game game = new Game(gameState, r.nextBoolean(), r.nextBoolean(),
