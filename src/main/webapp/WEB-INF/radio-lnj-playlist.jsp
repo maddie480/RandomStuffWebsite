@@ -11,7 +11,7 @@
     <% for (JSONObject track : (List<JSONObject>) request.getAttribute("elements")) { %>
         <tr>
             <td>
-                <audio controls src="<%= escapeHtml4(track.getString("path")) %>" preload="none"></audio>
+                <audio controls src="<%= escapeHtml4(track.getString("path")) %>" data-trackname="<%= escapeHtml4(track.getString("trackName")) %>" preload="none"></audio>
                 <span class="track-name"><%= escapeHtml4(track.getString("trackName")) %></span>
             </td>
             <td>

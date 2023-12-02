@@ -15,30 +15,12 @@
     {
         // === music progress timer
 
-        let updateTimerTimeoutHandle;
-
-        const updateTimer = () => {
-            if (audio.paused) {
-                console.log('[timer] Stopped timer updating from updateTimer');
-                return;
-            }
-
+        audio.addEventListener('timeupdate', () => {
             const progress = audio.currentTime;
             document.getElementById('timer').innerText = formatTime(progress, ' ');
-
-            const millisUntilNextSecond = 1000 - ((progress - Math.floor(progress)) * 1000);
-            updateTimerTimeoutHandle = setTimeout(updateTimer, millisUntilNextSecond);
-        };
-
-        audio.addEventListener('play', () => {
-            updateTimer();
-            console.log('[timer] Started timer updating');
         });
 
         audio.addEventListener('pause', () => {
-            clearTimeout(updateTimerTimeoutHandle);
-            console.log('[timer] Stopped timer updating');
-
             document.getElementById('timer').innerText = '-- --';
             document.getElementById('title').innerText = '--';
         });
@@ -49,8 +31,6 @@
 
         let playlist = [];
         let nextSongTimeoutHandle;
-        let playInitiatedByCode = false;
-        let pauseInitiatedByCode = false;
 
         const getTrackName = () => {
             const length = (playlist[0].duration - 1000) / 1000;
@@ -63,7 +43,6 @@
             // actually stop playing the music
             if (!audio.paused) {
                 audio.pause();
-                pauseInitiatedByCode = true;
             }
 
             // give up on switching to the next song
@@ -73,6 +52,14 @@
             document.getElementById('play').removeEventListener('click', stopPlaying);
             document.getElementById('play').addEventListener('click', startPlaying);
             document.getElementById('play').innerText = 'Play';
+
+            // remove current song info from the media session
+            if ('mediaSession' in navigator) {
+                navigator.mediaSession.metadata = new MediaMetadata({
+                    title: 'Radio LNJ'
+                });
+                navigator.mediaSession.playbackState = 'paused';
+            }
         };
 
         const playHeadOfPlaylist = (seekTo) => {
@@ -81,14 +68,21 @@
             document.getElementById('title').innerText = getTrackName();
 
             if (audio.paused) {
-                playInitiatedByCode = true;
-
                 audio.play().catch(e => {
                     // display the error to the user and stop the radio
                     console.error('Error starting to play:', e);
                     stopPlaying();
                     document.getElementById('title').innerText = 'Error starting to play radio: ' + e.message;
                 });
+            }
+
+            // put up info about the current song in the media session
+            if ('mediaSession' in navigator) {
+                navigator.mediaSession.metadata = new MediaMetadata({
+                    title: playlist[0].trackName,
+                    artist: 'Radio LNJ'
+                });
+                navigator.mediaSession.playbackState = 'playing';
             }
         };
 
@@ -126,31 +120,12 @@
             document.getElementById('play').innerText = 'Stop';
         };
 
-        audio.addEventListener('play', () => {
-            if (playInitiatedByCode) {
-                console.log('[event] Play event triggered by code');
-            } else {
-                console.log('[event] Play event triggered by user');
-                startPlaying();
-            }
-
-            playInitiatedByCode = false;
-        });
-
-        audio.addEventListener('pause', () => {
-            if (pauseInitiatedByCode) {
-                console.log('[event] Pause event initiated by code');
-            } else if (audio.currentTime === audio.duration) {
-                console.log('[event] Pause event initiated by end of media');
-            } else {
-                console.log('[event] Pause event initiated by user');
-                stopPlaying();
-            }
-
-            pauseInitiatedByCode = false;
-        });
-
         document.getElementById('play').addEventListener('click', startPlaying);
+
+        if ('mediaSession' in navigator) {
+            navigator.mediaSession.setActionHandler('play', startPlaying);
+            navigator.mediaSession.setActionHandler('pause', stopPlaying);
+        }
     }
 
     if (navigator.userAgent.includes('Windows')) {
