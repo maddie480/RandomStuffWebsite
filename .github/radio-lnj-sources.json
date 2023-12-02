@@ -55,9 +55,9 @@
       "prefix": ""
    },
    {
-      "url": "https://files.gamebanana.com/bitpit/stalin_vs_martians.zip",
-      "useYoutubeDl": false,
-      "prefix": "Stalin vs. Martians - "
+      "url": "https://youtube.com/playlist?list=PLA423290E18CD6DFF",
+      "useYoutubeDl": true,
+      "prefix": ""
    },
    {
       "url": "https://youtu.be/_0Jx8YjnP_0",
