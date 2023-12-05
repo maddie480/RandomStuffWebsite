@@ -41,6 +41,12 @@ jobs:
           target/random-stuff-website-1.0.0/WEB-INF/classes/radio_lnj_meta.json
         key: radio-lnj-${{ hashFiles('.github/radio-lnj-sources.json') }}
 
+    - name: Cache node_modules
+      uses: actions/cache@v3
+      with:
+        path: front-vue/node_modules/*
+        key: node-modules-${{ hashFiles('front-vue/package-lock.json') }}
+
     - name: Set up JDK 17
       uses: actions/setup-java@v4
       with:
