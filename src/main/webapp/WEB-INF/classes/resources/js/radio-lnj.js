@@ -126,6 +126,10 @@
             navigator.mediaSession.setActionHandler('play', startPlaying);
             navigator.mediaSession.setActionHandler('pause', stopPlaying);
         }
+
+        if (window.location.search === '?autoplay') {
+            startPlaying();
+        }
     }
 
     if (navigator.userAgent.includes('Windows')) {
@@ -134,8 +138,4 @@
     }
 
     console.log('DJ Navet est prêt à tout balancer ! Enjoy ~ Maddie');
-
-    if (window.location.search === '?autoplay') {
-        audio.play();
-    }
 }
