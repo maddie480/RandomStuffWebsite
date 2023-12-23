@@ -10,14 +10,26 @@
         <input
           v-model="query"
           class="search form-control"
-          :placeholder="'Filter ' + categoryDisplayName + 's by name...'"
+          :placeholder="
+            'Filter ' + categoryDisplayName + 's by name or @author...'
+          "
           :disabled="loading"
         />
       </form>
 
-      <div class="searching" v-if="currentSearch.length !== 0">
+      <div
+        class="searching"
+        v-if="currentSearch.length !== 0 && !currentSearch.startsWith('@')"
+      >
         Currently searching:
         <span class="current-search">{{ currentSearch }}</span>
+      </div>
+      <div
+        class="searching"
+        v-else-if="currentSearch.length > 1 && currentSearch.startsWith('@')"
+      >
+        Currently searching for author:
+        <span class="current-search">{{ currentSearch.substring(1) }}</span>
       </div>
 
       <div class="checkbox-options">
@@ -140,11 +152,18 @@ export default {
       }
     },
     filterList: function () {
+      // a query starting with @ indicates we should search by author instead of by name
+      const filterFunction = this.currentSearch.startsWith("@")
+        ? (l) =>
+            l.author
+              .toLowerCase()
+              .includes(this.currentSearch.substring(1).toLowerCase())
+        : (l) =>
+            l.name.toLowerCase().includes(this.currentSearch.toLowerCase());
+
       this.filteredList = this.fullList
-        // search
-        .filter((l) =>
-          l.name.toLowerCase().includes(this.currentSearch.toLowerCase()),
-        )
+        // search by name or author
+        .filter(filterFunction)
         // filter by tag
         .filter((l) => {
           if (this.tagFilter === null) return true;
