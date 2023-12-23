@@ -55,17 +55,17 @@
       "prefix": ""
    },
    {
+      "url": "https://files.gamebanana.com/bitpit/shs.zip",
+      "useYoutubeDl": false,
+      "prefix": "Streatham Hill Stories - "
+   },
+   {
       "url": "https://youtube.com/playlist?list=PLA423290E18CD6DFF",
       "useYoutubeDl": true,
       "prefix": ""
    },
    {
       "url": "https://youtu.be/_0Jx8YjnP_0",
-      "useYoutubeDl": true,
-      "prefix": ""
-   },
-   {
-      "url": "https://www.youtube.com/watch?v=PzQTX6QoLMY",
       "useYoutubeDl": true,
       "prefix": ""
    },
