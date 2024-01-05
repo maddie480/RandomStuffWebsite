@@ -177,9 +177,9 @@
     </div>
 
     <div>
-        Back when it was active (and before getting into Celeste &#x1F61B;), I made a mod loader and a bot to upload and list QUEST mods.
+        Back when it was active (and before getting into Celeste), I made a mod loader and a bot to upload and list QUEST mods.
         There also was a website tied to that bot... those all still exist! I eventually made them read-only, though.
-        No one is making mods anymore anyway. &#x1F61B;
+        No one is making mods anymore anyway.
     </div>
 
     <div>
