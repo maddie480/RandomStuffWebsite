@@ -152,7 +152,7 @@
         <b><a href="https://github.com/maddie480/BazarLNJ" target="_blank">dedicated GitHub repository</a></b> (in French).
         This includes console commands, stuff hidden in the games, ways to mod them (including what are probably the only mods ever made
         for <a href="https://store.steampowered.com/app/1423980/Streatham_Hill_Stories/" target="_blank">Streatham Hill Stories</a>,
-        <a href="https://www.youtube.com/watch?v=_YrYAT8YtC0">Pizza Dude</a> (link in French)
+        <a href="https://www.youtube.com/watch?v=_YrYAT8YtC0" target="_blank">Pizza Dude</a> (link in French)
         and <a href="https://www.gamespot.com/games/air-control-2013/" target="_blank">Air Control</a>) and some explanations for their quirks.
     </div>
 
