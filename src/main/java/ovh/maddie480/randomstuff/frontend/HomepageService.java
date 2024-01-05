@@ -52,8 +52,6 @@ public class HomepageService {
                 Comparator.<Pair<String, Integer>>comparingInt(Pair::getValue).reversed()
         ));
 
-        request.setAttribute("gitlabEventCount", allTheStats.get("gitlabActionsCount"));
-
         PageRenderer.render(request, response, "home", "Maddie's Random Stuff",
                 "The website where Maddie throws all of her random stuff, I guess.");
     }

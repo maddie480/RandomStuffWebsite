@@ -8,14 +8,25 @@
         And this is the website where most of said random stuff ends up. &#x1F61B;
     </div>
 
-    <h3>So, what can I find here?</h3>
+    <div>
+        Here is a quick rundown of what I do and what you'll find on the website:
+    </div>
+
+    <h3>Celeste-related stuff</h3>
 
     <div>
-        This website has a lot of tools and APIs related to <b>Celeste modding</b>.
+        <b>Celeste modding</b> is the thing I'm the most involved in.
         <a href="https://www.celestegame.com/" target="_blank">Celeste</a> is a platformer about climbing a mountain and
         overcoming your inner demons.
         If you own the game on PC, you can check <a href="https://everestapi.github.io" target="_blank">the mod loader's website</a>
         to get started with modding!
+    </div>
+
+    <div>
+        You can check <b><a href="https://gamebanana.com/members/1698143" target="_blank">my GameBanana profile</a></b>
+        to see my Celeste mods. I don't make maps, but rather "helpers": entities and tools other people can use in their maps.
+        This very website hosts the <b>Everest Update Checker</b>, which allows the mod loader to check for mod updates or install
+        missing dependencies, as well as a few <b>modding tools</b>:
     </div>
 
     <ul>
@@ -96,9 +107,87 @@
         Those are what allow the Everest mod updater, the "install missing dependencies" button, and the Olympus mod browser to work!
     </div>
 
+    <h3>Discord bots</h3>
+
     <div>
-        You can also find information on the five <b><a href="/discord-bots">Discord bots</a></b> I made here, and invites for them.
-        Some of them are HTTP-based, and are run on this website directly!
+        I run five small <b><a href="https://discord.com" target="_blank">Discord</a> bots</b> that you can invite in your discussion server:
+    </div>
+
+    <ul>
+        <li>
+            <b><a href="/discord-bots#timezone-bot">Timezone Bot</a>:</b> a bot that lets you know what time it is for other people
+            or in other places in the world, with (optionally) a timezone role that you can refer to.
+        </li>
+        <li>
+            <b><a href="/discord-bots#games-bot">Games Bot</a>:</b> a bot made as an experiment with HTTP-only bots more than anything,
+            it allows you to play Connect 4, Tic-Tac-Toe, Reversi or Minesweeper with Discord interactions.
+        </li>
+        <li>
+            <b><a href="/discord-bots#custom-slash-commands">Custom Slash Commands</a>:</b> a bot that allows you to create slash commands
+            giving fixed responses. This is used by the Celeste community to answer frequently asked questions.
+        </li>
+        <li>
+            <b><a href="/discord-bots#mod-structure-verifier">Mod Structure Verifier</a>:</b> a Celeste bot to check your mod structure and
+            catch some common mistakes. It can also be used to enforce folder names, for example in the context of a collab.
+            Also available online <a href="/celeste/mod-structure-verifier">on this website</a>.
+        </li>
+        <li>
+            <b><a href="/discord-bots#bananabot">BananaBot</a>:</b> a Celeste bot that allows you to search for a mod on
+            <a href="https://gamebanana.com/games/6460" target="_blank">GameBanana</a> and post its link to a channel without leaving Discord.
+        </li>
+    </ul>
+
+    <h3>Les Navets Jouables (aka "messing around with obscure games")</h3>
+
+    <div>
+        <b>Les Navets Jouables</b> is a small French channel that messes around with bad games ("navet" designates bad films in French...
+        and also means "turnip", so the name literally translates to "The Playable Turnips" &#x1F61B;).
+        They're making <a href="https://www.youtube.com/@LesNavetsJouables" target="_blank">YouTube videos</a>, and have a
+        <a href="https://twitch.tv/lesnavetsjouables" target="_blank">Twitch channel</a>.
+    </div>
+
+    <div>
+        ... and I've had some fun with a few games they tested, that happen to mostly be abandonware.
+        My findings and (dubious) achievements are grouped on a 
+        <b><a href="https://github.com/maddie480/BazarLNJ" target="_blank">dedicated GitHub repository</a></b> (in French).
+        This includes console commands, stuff hidden in the games, ways to mod them (including what are probably the only mods ever made
+        for <a href="https://store.steampowered.com/app/1423980/Streatham_Hill_Stories/" target="_blank"></a>Streatham Hill Stories</a>,
+        <a href="https://www.youtube.com/watch?v=_YrYAT8YtC0">Pizza Dude</a> (link in French)
+        and <a href="https://www.gamespot.com/games/air-control-2013/" target="_blank">Air Control</a>) and some explanations for their quirks.
+    </div>
+
+    <div>
+        For Pizza Dude in particular, <a href="https://www.youtube.com/watch?v=Sot_qMJoq7o" target="_blank">a video was made on the channel</a>
+        (again, in French) to showcase the findings we made with some other community members.
+    </div>
+
+    <div>
+        ... oh, and <a href="/radio-lnj">there's a radio too</a>. It broadcasts music from the games tested on the channel.
+        And it's also not actually a radio, but more like a shared playlist that plays MP3s, but eh, close enough.
+    </div>
+
+    <h3>QUEST by Laupok</h3>
+
+    <div>
+        A French YouTuber called Laupok once released a pre-alpha version of a multiplayer Zelda-style game, with the placeholder name of... QUEST.
+        A quite small community (in the double digits) formed around this game, and made several mods, since the game was rather easy to mod 
+        (it's mostly made of txt / bmp / wav files that can be edited).
+        Today, the game was silently abandoned, the official website of the YouTuber doesn't exist anymore (the game can still be downloaded from
+        <a href="/quest/download/Quest-setup.exe">this very website</a> though), and the community disappeared.
+    </div>
+
+    <div>
+        Back when it was active (and before getting into Celeste &#x1F61B;), I made a mod loader and a bot to upload and list QUEST mods.
+        There also was a website tied to that bot... those all still exist! I eventually made them read-only, though.
+        No one is making mods anymore anyway. &#x1F61B;
+    </div>
+
+    <div>
+        You can check people's mods <a href="/quest/mods">here</a>, and modding tools <a href="/quest/tools">here</a> (in French).
+        The bot was eventually reworked and made open-source 
+        <a href="https://github.com/maddie480/RandomBackendStuff/tree/main/src/main/java/ovh/maddie480/randomstuff/backend/discord/questcommunitybot" target="_blank">over here</a>,
+        but it still cannot be invited in other servers. It has stuff like leveling, profiles, Discord presence stats, reminders, countdowns / timers...
+        and amazingly enough, a handful of people <i>still</i> collect their daily rewards on the QUEST Discord server, despite <i>absolutely nothing else</i> happening there. &#x1F61B;
     </div>
 
     <h3>Some Stats (updated hourly)</h3>
@@ -155,58 +244,24 @@
         <% } %>
     </ul>
 
-    <% if (((int) request.getAttribute("gitlabEventCount")) > 0) { %>
-        <% int gitlabEventCount = (int) request.getAttribute("gitlabEventCount"); %>
-        <div>
-            In addition, I made
-            <b><%= new DecimalFormat("#,##0").format(gitlabEventCount) %></b> event<% if (gitlabEventCount != 1) { %>s<% } %>
-            happen last week at my work's GitLab repositories. Nothing to show here though, they're private. &#x1F61B;
-        </div>
-    <% } %>
-
-    <h2>And who are you exactly?</h2>
+    <h3>Links</h3>
 
     <div>
-        Just a girl in her late twenties that likes programming, video games and silly stuff. &#x1F61D;
-        I've got a bit of a hyperfocus on Celeste as you can see here, but I sometimes mess with obscure glitchy games,
-        leading to rather <i>interesting</i> things like <a href="/vids/pizza-dude.webm" target="_blank">stacking cars</a> or
-        <a href="/vids/forklift-racer.webm" target="_blank">shooting forklifts into space</a>.
-    </div>
-
-    <div>
-        Maintaining all of that stuff takes time, but this is what I like doing &#x1F604;
-        And at the end of the day, I don't really play video games that much, even Celeste. &#x1F914;
-    </div>
-
-    <div>
-        As far as programming languages go, I'm using:
+        You can find me on:
     </div>
 
     <ul>
-        <li><b>Java</b> for the backend and part of the frontend</li>
-        <li><b>VueJS</b> for the more dynamic parts of the frontend</li>
-        <li><b>C#</b> for Celeste modding, as this game runs on the .NET Framework</li>
-        <li><b>PHP</b> with Symfony at work</li>
+        <li><b>Discord</b>: maddie480 ~ the main way to contact me, join the <a href="https://discord.gg/celeste" target="_blank">Celeste server</a> to be able to reach me</li>
+        <li><b>GitHub</b>: <a href="https://github.com/maddie480" target="_blank">maddie480</a> ~ all of my code (including this website) is there</li>
+        <li><b>GameBanana</b>: <a href="https://gamebanana.com/members/1698143" target="_blank">maddie480</a> ~ all of my Celeste mods</li>
     </ul>
 
     <div>
-        I also messed around in other languages like Ruby or Python. I don't have a real preference, as long as the language allows
-        me to do what I want. &#x1F61B;
-    </div>
-
-    <div>
-        You can find me on Discord, I'm <b>maddie480</b> and I hang out quite a bit on the
-        <a href="https://discord.gg/celeste" target="_blank">Celeste server</a>.
-        I'm also on <a href="https://github.com/maddie480" target="_blank">GitHub</a>, and my Celeste mods are showcased
-        on <a href="https://gamebanana.com/members/1698143" target="_blank">GameBanana</a>!
-    </div>
-
-    <div>
-        I hope you'll find this website useful, don't hesitate to report issues or to make suggestions on Discord! &#x2764;&#xFE0F;<br/>
+        I hope you'll find this website useful, don't hesitate to report issues or to make suggestions on Discord!<br/>
         <span class="august">~ Maddie</span>
     </div>
 
-    <h2>Credits</h2>
+    <h3>Credits</h3>
 
     <ul>
         <li>Avatar: <a href="/picrew" target="_blank">&#x5409;&#x7530;&#x541b; on Picrew</a></li>
