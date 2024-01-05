@@ -148,7 +148,7 @@
 
     <div>
         ... and I've had some fun with a few games they tested, that happen to mostly be abandonware.
-        My findings and (dubious) achievements are grouped on a 
+        My findings and (dubious) achievements are grouped on a
         <b><a href="https://github.com/maddie480/BazarLNJ" target="_blank">dedicated GitHub repository</a></b> (in French).
         This includes console commands, stuff hidden in the games, ways to mod them (including what are probably the only mods ever made
         for <a href="https://store.steampowered.com/app/1423980/Streatham_Hill_Stories/" target="_blank"></a>Streatham Hill Stories</a>,
@@ -170,7 +170,7 @@
 
     <div>
         A French YouTuber called Laupok once released a pre-alpha version of a multiplayer Zelda-style game, with the placeholder name of... QUEST.
-        A quite small community (in the double digits) formed around this game, and made several mods, since the game was rather easy to mod 
+        A quite small community (in the double digits) formed around this game, and made several mods, since the game was rather easy to mod
         (it's mostly made of txt / bmp / wav files that can be edited).
         Today, the game was silently abandoned, the official website of the YouTuber doesn't exist anymore (the game can still be downloaded from
         <a href="/quest/download/Quest-setup.exe">this very website</a> though), and the community disappeared.
@@ -184,7 +184,7 @@
 
     <div>
         You can check people's mods <a href="/quest/mods">here</a>, and modding tools <a href="/quest/tools">here</a> (in French).
-        The bot was eventually reworked and made open-source 
+        The bot was eventually reworked and made open-source
         <a href="https://github.com/maddie480/RandomBackendStuff/tree/main/src/main/java/ovh/maddie480/randomstuff/backend/discord/questcommunitybot" target="_blank">over here</a>,
         but it still cannot be invited in other servers. It has stuff like leveling, profiles, Discord presence stats, reminders, countdowns / timers...
         and amazingly enough, a handful of people <i>still</i> collect their daily rewards on the QUEST Discord server, despite <i>absolutely nothing else</i> happening there. &#x1F61B;
