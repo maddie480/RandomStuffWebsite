@@ -13,12 +13,13 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.time.Instant;
 import java.util.*;
 
-@WebServlet(name = "RadioLNJService", urlPatterns = {"/radio-lnj", "/radio-lnj/playlist.json", "/radio-lnj/playlist"}, loadOnStartup = 8)
+@WebServlet(name = "RadioLNJService", urlPatterns = {"/radio-lnj", "/radio-lnj/playlist.json", "/radio-lnj/playlist.m3u", "/radio-lnj/playlist"}, loadOnStartup = 8)
 public class RadioLNJService extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(RadioLNJService.class);
 
@@ -67,12 +68,7 @@ public class RadioLNJService extends HttpServlet {
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         if (request.getRequestURI().equals("/radio-lnj/playlist.json")) {
             synchronized (playlist) {
-                while (nextItemStartsAt < System.currentTimeMillis()) {
-                    JSONObject pastItem = playlist.remove(0);
-                    nextItemStartsAt += playlist.get(0).getInt("duration");
-                    playlist.add(pastItem);
-                    log.info("Updated playlist: head of playlist is now " + playlist.get(0) + " until " + Instant.ofEpochMilli(nextItemStartsAt));
-                }
+                updatePlaylistPosition();
 
                 int timeLeft = (int) (nextItemStartsAt - System.currentTimeMillis());
 
@@ -83,6 +79,16 @@ public class RadioLNJService extends HttpServlet {
                 response.setContentType("application/json");
                 response.getWriter().write(body.toString());
             }
+        } else if (request.getRequestURI().equals("/radio-lnj/playlist.m3u")) {
+            synchronized (playlist) {
+                updatePlaylistPosition();
+
+                response.setContentType("text/plain");
+                Writer output = response.getWriter();
+                for (JSONObject element : playlist) {
+                    output.write("https://maddie480.ovh" + element.getString("path") + "\r\n");
+                }
+            }
         } else {
             request.setAttribute("elementCount", elementCount);
             request.setAttribute("totalDuration", totalDuration);
@@ -90,11 +96,20 @@ public class RadioLNJService extends HttpServlet {
 
             if (request.getRequestURI().equals("/radio-lnj/playlist")) {
                 PageRenderer.render(request, response, "radio-lnj-playlist", "Radio LNJ – Playlist",
-                        "Consultez la liste des chansons qui passent sur Radio LNJ, et écoutez celles que vous voulez !");
+                        "Consultez la liste des chansons qui passent sur la Radio LNJ, et écoutez celles que vous voulez !");
             } else {
                 PageRenderer.render(request, response, "radio-lnj", "Radio LNJ",
                         "La radio de référence pour vous enjailler sur des musiques de navets !");
             }
+        }
+    }
+
+    private void updatePlaylistPosition() {
+        while (nextItemStartsAt < System.currentTimeMillis()) {
+            JSONObject pastItem = playlist.remove(0);
+            nextItemStartsAt += playlist.get(0).getInt("duration");
+            playlist.add(pastItem);
+            log.info("Updated playlist: head of playlist is now " + playlist.get(0) + " until " + Instant.ofEpochMilli(nextItemStartsAt));
         }
     }
 }
