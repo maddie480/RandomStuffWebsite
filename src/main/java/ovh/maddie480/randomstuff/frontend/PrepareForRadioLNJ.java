@@ -95,7 +95,7 @@ public class PrepareForRadioLNJ {
 
         Path targetFile = targetDirectory.resolve(musicIndex + ".mp3");
 
-        convertAndNormalize(inputFile, targetFile);
+        convertAndNormalize(inputFile, targetFile, trackName);
         Files.delete(inputFile);
 
         JSONObject meta = new JSONObject();
@@ -122,12 +122,19 @@ public class PrepareForRadioLNJ {
         if (exitCode != 0) throw new IOException("cp exited with code " + exitCode);
     }
 
-    private static void convertAndNormalize(Path source, Path target) throws InterruptedException, IOException {
+    private static void convertAndNormalize(Path source, Path target, String trackName) throws InterruptedException, IOException {
+        JSONArray extraParameters = new JSONArray();
+        extraParameters.put("-metadata");
+        extraParameters.put("title=\"" + trackName.replace("\"", "\\\"") + "\"");
+        extraParameters.put("-metadata");
+        extraParameters.put("album=\"Radio LNJ\"");
+
         int exitCode = new ProcessBuilder(
                 "ffmpeg-normalize",
                 source.toAbsolutePath().toString(),
                 "-o", target.toAbsolutePath().toString(),
-                "-pr", "-c:a", "mp3", "-vn"
+                "-pr", "-c:a", "mp3", "-vn",
+                "-e", extraParameters.toString()
         )
                 .inheritIO()
                 .start()
