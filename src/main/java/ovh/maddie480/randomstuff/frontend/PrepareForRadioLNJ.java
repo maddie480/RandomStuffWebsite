@@ -125,9 +125,9 @@ public class PrepareForRadioLNJ {
     private static void convertAndNormalize(Path source, Path target, String trackName) throws InterruptedException, IOException {
         JSONArray extraParameters = new JSONArray();
         extraParameters.put("-metadata");
-        extraParameters.put("title=\"" + trackName.replace("\"", "\\\"") + "\"");
+        extraParameters.put("title=" + trackName);
         extraParameters.put("-metadata");
-        extraParameters.put("album=\"Radio LNJ\"");
+        extraParameters.put("album=Radio LNJ");
 
         int exitCode = new ProcessBuilder(
                 "ffmpeg-normalize",
