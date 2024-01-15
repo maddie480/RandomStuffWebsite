@@ -34,7 +34,7 @@
     "@vue/cli-plugin-eslint": "^5.0.8",
     "@vue/cli-plugin-router": "^5.0.7",
     "@vue/cli-service": "^5.0.8",
-    "@vue/compiler-sfc": "^3.4.10",
+    "@vue/compiler-sfc": "^3.4.13",
     "@vue/eslint-config-prettier": "^9.0.0",
     "@vue/test-utils": "^2.4.3",
     "eslint": "^8.56.0",
