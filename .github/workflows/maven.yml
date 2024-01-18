@@ -34,7 +34,7 @@ jobs:
 
     - name: Cache Radio LNJ
       id: radiocache
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       if: github.ref == 'refs/heads/main'
       with:
         path: |
@@ -43,7 +43,7 @@ jobs:
         key: radio-lnj-${{ hashFiles('.github/radio-lnj-sources.json') }}
 
     - name: Cache node_modules
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: front-vue/node_modules/*
         key: node-modules-${{ hashFiles('front-vue/package-lock.json') }}
