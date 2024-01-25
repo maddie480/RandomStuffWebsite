@@ -12,7 +12,7 @@
     "@jimp/custom": "^0.22.10",
     "@jimp/types": "^0.22.10",
     "assert": "^2.1.0",
-    "axios": "^1.6.5",
+    "axios": "^1.6.6",
     "browserify-zlib": "^0.2.0",
     "buffer": "^6.0.3",
     "core-js": "^3.35.1",
