@@ -77,11 +77,11 @@ public class SecurityHeadersFilter extends HttpFilter {
                     "frame-ancestors 'none'; " +
                     "object-src 'none';");
         } else if (Arrays.asList("/quest/mods", "/quest/tools", "/quest/backgrounds").contains(req.getRequestURI())) {
-            // legacy stuff *has* to use jQuery (and there are some images from Discord)
+            // legacy stuff *has* to use jQuery
             res.setHeader("Content-Security-Policy", "default-src 'self'; " +
                     "script-src 'self' https://cdn.jsdelivr.net https://code.jquery.com; " +
                     "style-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; " +
-                    "img-src 'self' data: https://cdn.discordapp.com; " +
+                    "img-src 'self' data:; " +
                     "frame-ancestors 'none'; " +
                     "object-src 'none';");
         } else {
@@ -96,6 +96,9 @@ public class SecurityHeadersFilter extends HttpFilter {
         if (Arrays.asList("/celeste/update-checker-status", "/fonts/Renogare.otf").contains(req.getRequestURI())) {
             // allow those to be accessed from GameBanana.
             res.setHeader("Access-Control-Allow-Origin", "https://gamebanana.com");
+        }
+        if ("/fonts/VT323-Regular.ttf".equals(req.getRequestURI())) {
+            res.setHeader("Access-Control-Allow-Origin", "http://live-chat.maddie480.ovh:11587");
         }
         if (Arrays.asList("/celeste/gamebanana-search", "/celeste/gamebanana-list", "/celeste/gamebanana-featured", "/celeste/gamebanana-categories",
                         "/celeste/gamebanana-info", "/celeste/bin-to-json", "/celeste/custom-entity-catalog.json", "/celeste/everest-versions",

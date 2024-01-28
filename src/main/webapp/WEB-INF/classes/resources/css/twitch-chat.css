@@ -1,0 +1,66 @@
+@font-face {
+    font-family: "VT323";
+    src: url('https://maddie480.ovh/fonts/VT323-Regular.ttf');
+}
+
+body {
+    position: fixed;
+    bottom: -24px;
+    left: 0;
+    right: 0;
+    margin: 0;
+    font-size: 27pt;
+    color: white;
+    overflow-wrap: break-word;
+    font-family: "VT323", sans-serif;
+}
+
+.standby {
+    margin-left: -100%;
+}
+.leadout {
+    opacity: 0;
+}
+body > div {
+    transition: margin-left 0.5s cubic-bezier(.22, .61, .36,1), opacity 0.2s ease-in;
+    width: calc(100% - 63px);
+    padding: 5px;
+    margin: 10px;
+}
+
+.author {
+    background-color: #323232;
+    border-radius: 7px;
+    padding: 2px 7px;
+}
+.author img {
+    margin: 2px;
+}
+.author span {
+    margin: 0 10px;
+}
+
+.message {
+    display: block;
+    background-color: #32323266;
+    border-radius: 7px;
+    margin-top: -10px;
+    margin-left: 15px;
+    padding: 5px 10px;
+}
+
+.color-0 { color: Blue; }
+.color-1 { color: Coral; }
+.color-2 { color: DodgerBlue; }
+.color-3 { color: SpringGreen; }
+.color-4 { color: YellowGreen; }
+.color-5 { color: Green; }
+.color-6 { color: OrangeRed; }
+.color-7 { color: Red; }
+.color-8 { color: GoldenRod; }
+.color-9 { color: HotPink; }
+.color-10 { color: CadetBlue; }
+.color-11 { color: SeaGreen; }
+.color-12 { color: Chocolate; }
+.color-13 { color: BlueViolet; }
+.color-14 { color: Firebrick; }
