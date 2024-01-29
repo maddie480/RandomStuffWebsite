@@ -88,7 +88,7 @@ public class AssetDriveService extends HttpServlet {
 
             if (asset != null) {
                 resp.setContentType(asset.mimeType);
-                resp.setHeader("Content-Disposition", "Content-Disposition: attachment; filename=\"" + asset.fileName + "\"");
+                resp.setHeader("Content-Disposition", "attachment; filename=\"" + asset.fileName + "\"");
 
                 try (InputStream is = Files.newInputStream(asset.file)) {
                     IOUtils.copy(is, resp.getOutputStream());
