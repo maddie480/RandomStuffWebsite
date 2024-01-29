@@ -13,6 +13,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.DecimalFormat;
+import java.util.Arrays;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
@@ -57,7 +59,7 @@ public class PrepareForRadioLNJ {
 
                 try (Stream<Path> downloadedFiles = Files.list(ytDlTarget)) {
                     for (Path file : downloadedFiles.toList()) {
-                        addMetadataTo(metadata, file, source.getString("prefix") +
+                        cutAndProcess(source, metadata, file, source.getString("prefix") +
                                 file.getFileName().toString().substring(0, file.getFileName().toString().lastIndexOf("[") - 1)
                                         .replace("＂", "\"")
                                         .replace("：", ":")
@@ -78,7 +80,7 @@ public class PrepareForRadioLNJ {
                             IOUtils.copy(zip, os);
                         }
 
-                        addMetadataTo(metadata, temp,
+                        cutAndProcess(source, metadata, temp,
                                 source.getString("prefix") + entry.getName().substring(0, entry.getName().length() - 4));
                     }
                 }
@@ -88,6 +90,59 @@ public class PrepareForRadioLNJ {
         try (OutputStream os = Files.newOutputStream(Paths.get("radio_lnj_meta.json"))) {
             IOUtils.write(metadata.toString(), os, StandardCharsets.UTF_8);
         }
+    }
+
+    private static void cutAndProcess(JSONObject source, JSONArray output, Path inputFile, String trackName) throws IOException, InterruptedException {
+        if (!source.has("cuts") || !source.getJSONObject("cuts").has(trackName)) {
+            // no cutting to be done
+            addMetadataTo(output, inputFile, trackName);
+            return;
+        }
+
+        Path temp = Paths.get("/tmp/cutemp.mkv");
+
+        JSONArray timeCodes = source.getJSONObject("cuts").getJSONArray(trackName);
+        for (int i = 0; i < timeCodes.length() - 1; i++) {
+            cut(inputFile, temp, timeCodes.getString(i), timeCodes.getString(i + 1));
+            addMetadataTo(output, temp, trackName + " - " + (i + 1));
+        }
+        Files.delete(inputFile);
+    }
+
+    private static void cut(Path source, Path destination, String from, String to) throws IOException, InterruptedException {
+        // calculate the difference between both times
+        int t1 = Arrays.stream(from.split(":"))
+                .mapToInt(Integer::parseInt)
+                .reduce((a, b) -> a * 60 + b)
+                .orElse(0);
+
+        int t2 = Arrays.stream(to.split(":"))
+                .mapToInt(Integer::parseInt)
+                .reduce((a, b) -> a * 60 + b)
+                .orElse(0);
+
+        int diff = t2 - t1;
+        int hours = diff / 3600;
+        int minutes = (diff / 60) - (hours * 60);
+        int seconds = (diff % 60);
+
+        DecimalFormat f = new DecimalFormat("00");
+        String difference = (f.format(hours) + ":" + f.format(minutes) + ":" + f.format(seconds));
+
+        // run ffmpeg to do the cut
+        int exitCode = new ProcessBuilder(
+                "ffmpeg",
+                "-ss", from,
+                "-i", source.toAbsolutePath().toString(),
+                "-to", difference,
+                "-c", "copy",
+                destination.toAbsolutePath().toString()
+        )
+                .inheritIO()
+                .start()
+                .waitFor();
+
+        if (exitCode != 0) throw new IOException("ffmpeg exited with code " + exitCode);
     }
 
     private static void addMetadataTo(JSONArray output, Path inputFile, String trackName) throws IOException, InterruptedException {
@@ -109,7 +164,7 @@ public class PrepareForRadioLNJ {
         musicIndex++;
     }
 
-     private static void copyRecursive(Path source, Path target) throws InterruptedException, IOException {
+    private static void copyRecursive(Path source, Path target) throws InterruptedException, IOException {
         int exitCode = new ProcessBuilder(
                 "cp", "-rv",
                 source.toAbsolutePath().toString(),
