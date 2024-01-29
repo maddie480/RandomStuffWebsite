@@ -63,7 +63,10 @@
             addElement(author, message.author, 'color-' + (Math.abs(hashCode(message.author)) % 15));
             currentMessageDOM.appendChild(author);
 
-            addElement(currentMessageDOM, message.message, 'message');
+            const messageContainer = document.createElement('div');
+            addElement(messageContainer, message.message, 'message');
+            currentMessageDOM.appendChild(messageContainer);
+
             currentMessageDOM.className = 'shown';
             expireMessage(currentMessageDOM);
             currentMessageDOM = makeMessage();
