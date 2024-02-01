@@ -128,7 +128,7 @@
         <dependency>
             <groupId>io.grpc</groupId>
             <artifactId>grpc-xds</artifactId>
-            <version>1.60.1</version>
+            <version>1.61.0</version>
         </dependency>
 
         <dependency>
