@@ -215,12 +215,6 @@
     </nav>
 
     <div id="app" class="container">
-      <div class="alert alert-warning ovh-warning" v-if="isLegacyOvhWebsite">
-        <b>The max480.ovh domain will expire on January 31, 2024.</b>
-        Before then, update your bookmarks / links / scripts to point to
-        <a href="https://maddie480.ovh/">maddie480.ovh</a> instead! Thanks
-        &#x1F604;
-      </div>
       <router-view />
     </div>
   </div>
@@ -229,9 +223,6 @@
 <script>
 const vue = {
   name: "app",
-  computed: {
-    isLegacyOvhWebsite: () => document.location.host === "max480.ovh",
-  },
 };
 
 export default vue;
