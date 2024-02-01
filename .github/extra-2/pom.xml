@@ -161,7 +161,7 @@
             <plugin>
                 <groupId>com.google.cloud.tools</groupId>
                 <artifactId>appengine-maven-plugin</artifactId>
-                <version>2.5.1</version>
+                <version>2.8.0</version>
             </plugin>
 
             <plugin>
@@ -180,7 +180,7 @@
                     <plugin>
                         <groupId>com.google.cloud.tools</groupId>
                         <artifactId>appengine-maven-plugin</artifactId>
-                        <version>2.5.1</version>
+                        <version>2.8.0</version>
                         <configuration>
                             <cloudSdkHome>C:\Users\csouc\gcloud\google-cloud-sdk</cloudSdkHome>
                         </configuration>
