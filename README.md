@@ -248,16 +248,17 @@ This API is available at `https://maddie480.ovh/celeste/everest-versions`, and r
 ```json
 [
     {
-        "date": "2023-07-15T20:47:39.2562228Z",
-        "mainFileSize": 19034073,
-        "mainDownload": "https://dev.azure.com/EverestAPI/Everest/_apis/build/builds/3371/artifacts?artifactName=main&api-version=5.0&%24format=zip",
-        "olympusMetaDownload": "https://dev.azure.com/EverestAPI/Everest/_apis/build/builds/3371/artifacts?artifactName=olympus-meta&api-version=5.0&%24format=zip",
+        "date": "2024-01-26T18:46:18.3018918Z",
+        "mainFileSize": 78971450,
+        "mainDownload": "https://dev.azure.com/EverestAPI/Everest/_apis/build/builds/3896/artifacts?artifactName=main&api-version=5.0&%24format=zip",
+        "olympusMetaDownload": "https://dev.azure.com/EverestAPI/Everest/_apis/build/builds/3896/artifacts?artifactName=olympus-meta&api-version=5.0&%24format=zip",
         "author": "Kalobi",
-        "olympusBuildDownload": "https://dev.azure.com/EverestAPI/Everest/_apis/build/builds/3371/artifacts?artifactName=olympus-build&api-version=5.0&%24format=zip",
-        "description": "Fix update notification not showing on older installs",
+        "commit": "10aeb773c39bc4011bb0664ae2d1495ab6c6e789",
+        "olympusBuildDownload": "https://dev.azure.com/EverestAPI/Everest/_apis/build/builds/3896/artifacts?artifactName=olympus-build&api-version=5.0&%24format=zip",
+        "description": "Use Piton version targeting macOS 10.12",
         "branch": "dev",
-        "version": 4071,
-        "isNative": false
+        "version": 4596,
+        "isNative": true
     },
     [...]
 ]
@@ -265,14 +266,15 @@ This API is available at `https://maddie480.ovh/celeste/everest-versions`, and r
 
 - `version` is the Everest version number.
 - `branch` is either `dev`, `beta` or `stable`. Other branches might be created to test specific features in the future.
-- `isNative` indicates whether this is a .NET Core build. Native builds (using .NET Core) are currently experimental, but non-native builds (.NET Framework) will be deprecated in the future.
+- `isNative` indicates whether this is a .NET Core build. Non-native builds are called "legacy" in Olympus.
 - `mainDownload` is the download for use by Everest to install an update.
 - `mainFileSize` is the size of the `mainDownload` file, in bytes.
 - `date` is the date at which the version was published, in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format.
+- `commit` is the hash of the commit that was used to build this version.
 - `olympusMetaDownload` is the download that Olympus uses to get the build size.
 - `olympusBuildDownload` is the download for use by Olympus to install Everest.
 
-Two extra fields are specified for automatic builds made after a single change (commit or pull request merge):
+Two extra fields are specified for automatic builds made after a single change on the `dev` branch (commit or pull request merge):
 - `author` is the author of the change (GitHub username), either the author of the commit or the creator of the pull request.
 - `description` is the description of the change, either the message of the commit or the title of the pull request.
 
