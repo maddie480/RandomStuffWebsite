@@ -19,11 +19,11 @@
 
     let currentMessageDOM = makeMessage();
 
-    const addElement = function (into, text, className) {
-        const element = document.createElement('span');
-        element.innerText = text;
-        element.className = className;
-        into.appendChild(element);
+    const element = function (name, attrs, children = []) {
+        const el = document.createElement(name);
+        Object.entries(attrs).forEach(attr => el[attr[0]] = attr[1]);
+        children.forEach(child => el.appendChild(child));
+        return el;
     }
 
     const expireMessage = function (element) {
@@ -53,19 +53,30 @@
                 message.badges.splice(0, 0, 'https://maddie480.ovh/img/youtube.ico');
             }
 
-            const author = document.createElement('span');
-            author.className = 'author';
-            for (let i = 0; i < message.badges.length; i++) {
-                const image = document.createElement('img');
-                image.src = message.badges[i];
-                author.appendChild(image);
+            let splicedMessage = [];
+            let nextStartIndex = 0;
+            message.emotes.sort((a, b) => a.startIndex - b.startIndex);
+            message.emotes.forEach(emote => {
+                if (nextStartIndex !== emote.startIndex) {
+                    splicedMessage.push(element('span', {innerText: message.message.substring(nextStartIndex, emote.startIndex)}));
+                }
+                splicedMessage.push(element('img', {src: emote.url}));
+                nextStartIndex = emote.endIndex;
+            });
+            if (nextStartIndex !== message.message.length) {
+                splicedMessage.push(element('span', {innerText: message.message.substring(nextStartIndex)}));
             }
-            addElement(author, message.author, 'color-' + (Math.abs(hashCode(message.author)) % 15));
-            currentMessageDOM.appendChild(author);
+            console.log("Message spliced into ", splicedMessage);
 
-            const messageContainer = document.createElement('div');
-            addElement(messageContainer, message.message, 'message');
-            currentMessageDOM.appendChild(messageContainer);
+            currentMessageDOM.appendChild(element('div', {}, [
+                element('span', {className: 'author'}, [
+                    ...message.badges.map(badge => element('img', {src: badge})),
+                    element('span', {className: 'color-' + (Math.abs(hashCode(message.author)) % 15), innerText: message.author})
+                ]),
+                element('div', {}, [
+                    element('span', {className: 'message'}, splicedMessage)
+                ])
+            ]));
 
             currentMessageDOM.className = 'shown';
             expireMessage(currentMessageDOM);

@@ -50,6 +50,12 @@ body > div {
     min-width: 240px;
 }
 
+.message img {
+    margin-bottom: -2px;
+    max-width: 22px;
+    max-height: 22px;
+}
+
 .color-0 { color: Blue; }
 .color-1 { color: Coral; }
 .color-2 { color: DodgerBlue; }
