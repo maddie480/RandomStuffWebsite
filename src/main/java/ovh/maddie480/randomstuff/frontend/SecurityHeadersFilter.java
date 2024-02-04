@@ -84,6 +84,14 @@ public class SecurityHeadersFilter extends HttpFilter {
                     "img-src 'self' data:; " +
                     "frame-ancestors 'none'; " +
                     "object-src 'none';");
+        } else if ("/lnj-emotes".equals(req.getRequestURI())) {
+            // the emotes come from Discord, actually
+            res.setHeader("Content-Security-Policy", "default-src 'self'; " +
+                    "script-src 'self' https://cdn.jsdelivr.net; " +
+                    "style-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; " +
+                    "img-src 'self' https://cdn.discordapp.com; " +
+                    "frame-ancestors 'none'; " +
+                    "object-src 'none';");
         } else {
             // default rules
             res.setHeader("Content-Security-Policy", "default-src 'self'; " +

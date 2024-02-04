@@ -1,0 +1,19 @@
+h1 {
+    margin-bottom: 20px;
+}
+
+.mini {
+    max-width: 300px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.emote-name, .header th {
+    font-style: normal;
+    color: var(--bs-body-color);
+}
+
+.emote-name::before, .emote-name::after {
+    content: ":";
+    color: #999;
+}
