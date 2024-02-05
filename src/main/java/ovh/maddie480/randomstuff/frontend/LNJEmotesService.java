@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Comparator;
 
 @WebServlet(name = "LNJEmotesService", urlPatterns = {"/lnj-emotes"})
 public class LNJEmotesService extends HttpServlet {
@@ -49,7 +50,7 @@ public class LNJEmotesService extends HttpServlet {
                         slevy;854306615951622144
                         tanner;854309585753735168"""
                         .split("\n")
-                ).sorted().toList());
+                ).sorted(Comparator.comparing(l -> l.split(";")[0]).toList());
 
         PageRenderer.render(req, resp, "lnj-emotes", "Emotes du chat LNJ",
                 "La liste de toutes les emotes personnalisées disponibles dans le chat des lives LNJ !");
