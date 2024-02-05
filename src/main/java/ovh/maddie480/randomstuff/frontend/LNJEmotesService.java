@@ -17,7 +17,6 @@ public class LNJEmotesService extends HttpServlet {
         // same emotes as https://github.com/maddie480/RandomBackendStuff/blob/main/src/main/java/ovh/maddie480/randomstuff/backend/streams/features/CustomEmotes.java
         req.setAttribute("emotes",
                 Arrays.stream("""
-                        1000tipla;854303924365688832
                         bigrigs;852891851002609716
                         taxi2;854315889351327754
                         verajones;852891183494856744
@@ -40,14 +39,12 @@ public class LNJEmotesService extends HttpServlet {
                         lesvisiteurs2;854317610518446131
                         ljn;649739143844462593
                         lnj;649738827488952320
-                        multipla;854304375941890068
                         navet;587332261817483283
                         navet2;811236063636619294
                         phoenixgames;854311078191038464
                         pizzadude;852893957053743157
                         psychokiller;852895322057605120
                         samantha;852974896216670208
-                        slevy;854306615951622144
                         tanner;854309585753735168"""
                         .split("\n")
                 ).sorted(Comparator.comparing(l -> l.split(";")[0])).toList());
