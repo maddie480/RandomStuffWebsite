@@ -11,8 +11,9 @@ body {
     margin: 0;
     font-size: 22pt;
     color: white;
-    overflow-wrap: break-word;
+    overflow-wrap: anywhere;
     font-family: "VT323", sans-serif;
+    font-variant-ligatures: none;
 }
 
 .standby {
