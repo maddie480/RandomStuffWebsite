@@ -38,24 +38,13 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  */
 @WebServlet(name = "MattermostService", urlPatterns = {
         "/mattermost/exploit", "/mattermost/absents", "/mattermost/lock", "/mattermost/unlock",
-        "/mattermost/consistencycheck"}, loadOnStartup = 1)
+        "/mattermost/consistencycheck"})
 public class MattermostService extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(MattermostService.class);
 
 
     // those are the resources that can be locked or unlocked through /lock and /unlock
     private final List<String> resources = Arrays.asList("integ1", "integ2");
-
-    public static PlanningExploit cachedPlanningExploit;
-
-    @Override
-    public void init() {
-        try {
-            cachedPlanningExploit = retrievePlanningExploit();
-        } catch (Exception e) {
-            log.warn("Warming up failed!", e);
-        }
-    }
 
     public static PlanningExploit retrievePlanningExploit() throws IOException {
         PlanningExploit exploit;
@@ -72,14 +61,6 @@ public class MattermostService extends HttpServlet {
         log.info("Holiday entries count: {}", exploit.holidays.values().stream().mapToInt(List::size).sum());
 
         return exploit;
-    }
-
-    private PlanningExploit getPlanningExploitCached() throws IOException {
-        if (cachedPlanningExploit == null) {
-            cachedPlanningExploit = retrievePlanningExploit();
-        }
-
-        return cachedPlanningExploit;
     }
 
     @Override
@@ -242,7 +223,7 @@ public class MattermostService extends HttpServlet {
     private String commandExploit() {
         PlanningExploit exploit;
         try {
-            exploit = getPlanningExploitCached();
+            exploit = retrievePlanningExploit();
         } catch (IOException e) {
             log.error("Problem while getting exploit planning", e);
 
@@ -271,7 +252,7 @@ public class MattermostService extends HttpServlet {
     private String commandAbsents() {
         PlanningExploit exploit;
         try {
-            exploit = getPlanningExploitCached();
+            exploit = retrievePlanningExploit();
         } catch (IOException e) {
             log.error("Problem while getting exploit planning", e);
 
@@ -317,7 +298,7 @@ public class MattermostService extends HttpServlet {
     private String commandConsistencyCheck(String calendarString) {
         PlanningExploit exploit;
         try {
-            exploit = getPlanningExploitCached();
+            exploit = retrievePlanningExploit();
         } catch (IOException e) {
             log.error("Problem while getting exploit planning", e);
 
