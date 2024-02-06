@@ -92,6 +92,13 @@ public class SecurityHeadersFilter extends HttpFilter {
                     "img-src 'self' https://cdn.discordapp.com; " +
                     "frame-ancestors 'none'; " +
                     "object-src 'none';");
+        } else if ("/static/get-mod-dl-links-with-gbapi.html".equals(req.getRequestURI())) {
+            // this one is pretty weird... it only needs access to jQuery and GameBanana.
+            res.setHeader("Content-Security-Policy", "default-src 'self'; " +
+                    "script-src 'self' https://code.jquery.com; " +
+                    "connect-src 'self' https://gamebanana.com; " +
+                    "frame-ancestors 'none'; " +
+                    "object-src 'none';");
         } else {
             // default rules
             res.setHeader("Content-Security-Policy", "default-src 'self'; " +
