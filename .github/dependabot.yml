@@ -11,19 +11,9 @@ updates:
       interval: "daily"
 
   - package-ecosystem: "maven"
-    directory: "/.github/extra-1"
+    directory: "/.github/extra"
     schedule:
-      interval: "monthly"
-
-  - package-ecosystem: "maven"
-    directory: "/.github/extra-2"
-    schedule:
-      interval: "monthly"
-
-  - package-ecosystem: "maven"
-    directory: "/.github/extra-3"
-    schedule:
-      interval: "monthly"
+      interval: "daily"
 
   - package-ecosystem: "npm"
     directory: "/front-vue"

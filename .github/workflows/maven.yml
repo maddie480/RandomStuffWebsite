@@ -103,23 +103,11 @@ jobs:
       if: github.ref == 'refs/heads/main'
       uses: advanced-security/maven-dependency-submission-action@v4
 
-    - name: Submit Dependency Snapshot of Extra 1
+    - name: Submit Dependency Snapshot of Extra
       if: github.ref == 'refs/heads/main'
       uses: advanced-security/maven-dependency-submission-action@v4
       with:
-        directory: .github/extra-1
-
-    - name: Submit Dependency Snapshot of Extra 2
-      if: github.ref == 'refs/heads/main'
-      uses: advanced-security/maven-dependency-submission-action@v4
-      with:
-        directory: .github/extra-2
-
-    - name: Submit Dependency Snapshot of Extra 3
-      if: github.ref == 'refs/heads/main'
-      uses: advanced-security/maven-dependency-submission-action@v4
-      with:
-        directory: .github/extra-3
+        directory: .github/extra
 
     - name: Upload target folder as artifact
       if: always()
