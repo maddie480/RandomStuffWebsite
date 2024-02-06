@@ -26,11 +26,15 @@ public class SecretConstants {
     public static String OLYMPUS_NEWS_MANAGER_CLIENT_ID = "";
     public static String OLYMPUS_NEWS_MANAGER_PUBLIC_KEY = "";
 
-    public static String RSS_AGGREGATOR_SECRET = "";
-
     public static String GITHUB_SSH_KNOWN_HOSTS = "";
     public static String GITHUB_SSH_PUBLIC_KEY = "";
     public static String GITHUB_SSH_PRIVATE_KEY = "";
+
+    public static String MATTERMOST_TOKEN_LOCK = "";
+    public static String MATTERMOST_TOKEN_UNLOCK = "";
+    public static String MATTERMOST_TOKEN_EXPLOIT = "";
+    public static String MATTERMOST_TOKEN_CONSISTENCYCHECK = "";
+    public static String MATTERMOST_TOKEN_ABSENTS = "";
 
     static {
         // The SECRET_CONSTANTS environment variable has all secrets, in JSON format.
@@ -57,10 +61,14 @@ public class SecretConstants {
 
         SRC_MOD_LIST_KEY = secrets.getString("SRC_MOD_LIST_KEY");
 
-        RSS_AGGREGATOR_SECRET = secrets.getString("RSS_AGGREGATOR_SECRET");
-
         GITHUB_SSH_KNOWN_HOSTS = secrets.getString("GITHUB_SSH_KNOWN_HOSTS");
         GITHUB_SSH_PUBLIC_KEY = secrets.getString("GITHUB_SSH_PUBLIC_KEY");
         GITHUB_SSH_PRIVATE_KEY = secrets.getString("GITHUB_SSH_PRIVATE_KEY");
+
+        MATTERMOST_TOKEN_LOCK = secrets.getString("MATTERMOST_TOKEN_LOCK");
+        MATTERMOST_TOKEN_UNLOCK = secrets.getString("MATTERMOST_TOKEN_UNLOCK");
+        MATTERMOST_TOKEN_EXPLOIT = secrets.getString("MATTERMOST_TOKEN_EXPLOIT");
+        MATTERMOST_TOKEN_CONSISTENCYCHECK = secrets.getString("MATTERMOST_TOKEN_CONSISTENCYCHECK");
+        MATTERMOST_TOKEN_ABSENTS = secrets.getString("MATTERMOST_TOKEN_ABSENTS");
     }
 }
