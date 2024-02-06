@@ -332,7 +332,7 @@
                             <workingDirectory>${project.build.directory}/random-stuff-website-1.0.0/WEB-INF/classes</workingDirectory>
                             <arguments>
                                 <argument>-cp</argument>
-                                <argument>.:../../../dependency/commons-io-2.15.1.jar:../../../dependency/json-20231013.jar</argument>
+                                <argument>.:../../../dependency/commons-io-2.15.1.jar:../../../dependency/json-20240205.jar</argument>
                                 <argument>ovh.maddie480.randomstuff.frontend.PrepareForRadioLNJ</argument>
                             </arguments>
                         </configuration>
@@ -349,7 +349,7 @@
                             <workingDirectory>${project.build.directory}/random-stuff-website-1.0.0/WEB-INF/classes</workingDirectory>
                             <arguments>
                                 <argument>-cp</argument>
-                                <argument>.:../../../dependency/commons-io-2.15.1.jar:../../../dependency/json-20231013.jar</argument>
+                                <argument>.:../../../dependency/commons-io-2.15.1.jar:../../../dependency/json-20240205.jar</argument>
                                 <argument>ovh.maddie480.randomstuff.frontend.GraphicsDumpIntegrator</argument>
                             </arguments>
                         </configuration>
@@ -474,7 +474,7 @@
                                     <workingDirectory>${project.build.directory}/random-stuff-website-1.0.0/WEB-INF/classes</workingDirectory>
                                     <arguments>
                                         <argument>-cp</argument>
-                                        <argument>.;../../../dependency/commons-io-2.15.1.jar;../../../dependency/json-20231013.jar</argument>
+                                        <argument>.;../../../dependency/commons-io-2.15.1.jar;../../../dependency/json-20240205.jar</argument>
                                         <argument>ovh.maddie480.randomstuff.frontend.PrepareForRadioLNJ</argument>
                                     </arguments>
                                 </configuration>
@@ -491,7 +491,7 @@
                                     <workingDirectory>${project.build.directory}/random-stuff-website-1.0.0/WEB-INF/classes</workingDirectory>
                                     <arguments>
                                         <argument>-cp</argument>
-                                        <argument>.;../../../dependency/commons-io-2.15.1.jar;../../../dependency/json-20231013.jar</argument>
+                                        <argument>.;../../../dependency/commons-io-2.15.1.jar;../../../dependency/json-20240205.jar</argument>
                                         <argument>ovh.maddie480.randomstuff.frontend.GraphicsDumpIntegrator</argument>
                                     </arguments>
                                 </configuration>
