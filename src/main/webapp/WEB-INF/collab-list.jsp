@@ -29,7 +29,7 @@
                         <span class="badge bg-danger">Cancelled</span>
                     <% } %>
 
-                    <% if ("yes".equals(collab.getString("lookingForPeople"))) { %>
+                    <% if ("yes".equals(collab.getString("lookingForPeople")) && Arrays.asList("in-progress", "paused").contains(collab.getString("status"))) { %>
                         <span class="badge bg-secondary">Open</span>
                     <% } %>
                 </button>
