@@ -45,7 +45,7 @@ public class GraphicsDumpBrowserService extends HttpServlet {
 
             if (searchedFileName.equals("list.json")) {
                 List<String> fileListing = new ArrayList<>();
-                Enumeration<ZipEntry> entries = zip.entries();
+                Enumeration<? extends ZipEntry> entries = zip.entries();
 
                 while (entries.hasMoreElements()) {
                     ZipEntry entry = entries.nextElement();
