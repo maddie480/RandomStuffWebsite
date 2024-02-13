@@ -9,7 +9,7 @@
         <a
           class="btn btn-primary"
           target="_blank"
-          :href="'/vanilla-graphics-dump/' + path"
+          :href="'/celeste/graphics-dump-browser/' + path"
           >Open</a
         >
         <button class="btn btn-secondary" v-on:click="copyPath">

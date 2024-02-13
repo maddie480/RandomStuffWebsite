@@ -339,23 +339,6 @@
                     </execution>
 
                     <execution>
-                        <id>integrate vanilla graphics dump</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <configuration>
-                            <executable>java</executable>
-                            <workingDirectory>${project.build.directory}/random-stuff-website-1.0.0/WEB-INF/classes</workingDirectory>
-                            <arguments>
-                                <argument>-cp</argument>
-                                <argument>.:../../../dependency/commons-io-2.15.1.jar:../../../dependency/json-20240205.jar</argument>
-                                <argument>ovh.maddie480.randomstuff.frontend.GraphicsDumpIntegrator</argument>
-                            </arguments>
-                        </configuration>
-                    </execution>
-
-                    <execution>
                         <id>delete integrators code</id>
                         <phase>prepare-package</phase>
                         <goals>
@@ -367,7 +350,6 @@
                             <arguments>
                                 <argument>-v</argument>
                                 <argument>ovh/maddie480/randomstuff/frontend/LuaCutscenesDocumentationIntegrator.class</argument>
-                                <argument>ovh/maddie480/randomstuff/frontend/GraphicsDumpIntegrator.class</argument>
                                 <argument>ovh/maddie480/randomstuff/frontend/PrepareForRadioLNJ.class</argument>
                                 <argument>ovh/maddie480/randomstuff/frontend/ParrotQuickGenerator.class</argument>
                             </arguments>
@@ -481,23 +463,6 @@
                             </execution>
 
                             <execution>
-                                <id>integrate vanilla graphics dump</id>
-                                <phase>prepare-package</phase>
-                                <goals>
-                                    <goal>exec</goal>
-                                </goals>
-                                <configuration>
-                                    <executable>java</executable>
-                                    <workingDirectory>${project.build.directory}/random-stuff-website-1.0.0/WEB-INF/classes</workingDirectory>
-                                    <arguments>
-                                        <argument>-cp</argument>
-                                        <argument>.;../../../dependency/commons-io-2.15.1.jar;../../../dependency/json-20240205.jar</argument>
-                                        <argument>ovh.maddie480.randomstuff.frontend.GraphicsDumpIntegrator</argument>
-                                    </arguments>
-                                </configuration>
-                            </execution>
-
-                            <execution>
                                 <id>generate Parrot Quick Importer</id>
                                 <phase>prepare-package</phase>
                                 <goals>
@@ -512,25 +477,6 @@
                                         <argument>ovh.maddie480.randomstuff.frontend.ParrotQuickGenerator</argument>
                                     </arguments>
                                 </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>no-graphics-dump</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>exec-maven-plugin</artifactId>
-                        <version>3.1.1</version>
-
-                        <executions>
-                            <execution>
-                                <id>integrate vanilla graphics dump</id>
-                                <phase>none</phase>
                             </execution>
                         </executions>
                     </plugin>

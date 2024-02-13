@@ -4,11 +4,7 @@
 
     <div class="alert alert-info">
       You can download the full graphics dump
-      <a
-        href="https://drive.google.com/file/d/1ITwCI2uJ7YflAG0OwBR4uOUEJBjwTCet/view"
-        target="_blank"
-        >here</a
-      >.
+      <a href="/static/graphics-dump.zip" target="_blank">here</a>.
     </div>
 
     <div>
@@ -67,7 +63,7 @@ const vue = {
 
         const texturePaths = (
           await axios.get(
-            `${config.backendUrl}/vanilla-graphics-dump/list.json`,
+            `${config.backendUrl}/celeste/graphics-dump-browser/list.json`,
           )
         ).data;
 
