@@ -71,7 +71,7 @@ export default {
   },
   computed: {
     imagePath() {
-      return config.backendUrl + "/vanilla-graphics-dump/" + this.path;
+      return config.backendUrl + "/celeste/graphics-dump-browser/" + this.path;
     },
   },
 };

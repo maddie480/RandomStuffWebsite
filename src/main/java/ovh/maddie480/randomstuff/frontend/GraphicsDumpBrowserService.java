@@ -11,42 +11,59 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-@WebServlet(name = "GraphicsDumpBrowserService", urlPatterns = {"/celeste/graphics-dump-browser/*"})
+@WebServlet(name = "GraphicsDumpBrowserService", urlPatterns = {"/celeste/graphics-dump-browser/*"}, loadOnStartup = 12)
 public class GraphicsDumpBrowserService extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(GraphicsDumpBrowserService.class);
 
     @Override
+    public void init() {
+        try (ObjectInputStream is = new ObjectInputStream(GraphicsDumpBrowserService.class.getClassLoader().getResourceAsStream("resources/static/graphics-dump.zip"));
+            OutputStream os = Files.newOutputStream(Paths.get("/tmp/graphics-dump.zip"))) {
+
+            IOUtils.copy(is, os);
+
+        } catch (IOException e) {
+            log.warn("Preparing graphics dump browser failed!", e);
+        }
+    }
+
+    @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        try (ZipInputStream zip = new ZipInputStream(GraphicsDumpBrowserService.class.getClassLoader().getResourceAsStream("resources/static/graphics-dump.zip"))) {
+        try (ZipFile zip = new ZipFile("/tmp/graphics-dump.zip")) {
             String searchedFileName = req.getRequestURI().substring(31);
 
             if (searchedFileName.equals("list.json")) {
                 List<String> fileListing = new ArrayList<>();
+                Enumeration<ZipEntry> entries = zip.entries();
 
-                ZipEntry entry;
-                while ((entry = zip.getNextEntry()) != null) {
+                while (entries.hasMoreElements()) {
+                    ZipEntry entry = entries.nextElement();
                     if (!entry.isDirectory()) {
                         fileListing.add(entry.getName());
                     }
                 }
 
                 log.debug("Responding with file listing, containing {} elements", fileListing.size());
-                resp.setContentType("image/png");
+                resp.setContentType("application/json");
                 resp.getWriter().write(new JSONArray(fileListing).toString());
                 return;
             }
 
-            ZipEntry entry;
-            while ((entry = zip.getNextEntry()) != null) {
-                if (!entry.isDirectory() && searchedFileName.equals(entry.getName())) {
+            ZipEntry entry = zip.getEntry(searchedFileName);
+            if (entry != null && !entry.isDirectory()) {
+                try (InputStream is = zip.getInputStream(entry)) {
                     log.debug("File found in graphics dump: {}", searchedFileName);
                     resp.setContentType("image/png");
-                    IOUtils.copy(zip, resp.getOutputStream());
+                    IOUtils.copy(is, resp.getOutputStream());
                     return;
                 }
             }

@@ -118,7 +118,7 @@ public class SecurityHeadersFilter extends HttpFilter {
         if (Arrays.asList("/celeste/gamebanana-search", "/celeste/gamebanana-list", "/celeste/gamebanana-featured", "/celeste/gamebanana-categories",
                         "/celeste/gamebanana-info", "/celeste/bin-to-json", "/celeste/custom-entity-catalog.json", "/celeste/everest-versions",
                         "/celeste/update-checker-status.json", "/celeste/everest_update.yaml", "/celeste/mod_search_database.yaml",
-                        "/celeste/mod_dependency_graph.yaml", "/celeste/olympus-news.json", "/vanilla-graphics-dump/list.json",
+                        "/celeste/mod_dependency_graph.yaml", "/celeste/olympus-news.json", "/celeste/graphics-dump-browser/list.json",
                         "/celeste/olympus-versions")
                 .contains(req.getRequestURI())) {
             // allow most JSON and YAML APIs to be called from anywhere.
