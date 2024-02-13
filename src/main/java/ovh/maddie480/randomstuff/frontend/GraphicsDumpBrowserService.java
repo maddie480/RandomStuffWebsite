@@ -41,7 +41,7 @@ public class GraphicsDumpBrowserService extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try (ZipFile zip = new ZipFile("/tmp/graphics-dump.zip")) {
-            String searchedFileName = req.getRequestURI().substring(31);
+            String searchedFileName = req.getRequestURI().substring(31).replace("%20", " ");
 
             if (searchedFileName.equals("list.json")) {
                 List<String> fileListing = new ArrayList<>();
