@@ -11,6 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -18,7 +20,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
+import java.util.zip.ZipFile;
 
 @WebServlet(name = "GraphicsDumpBrowserService", urlPatterns = {"/celeste/graphics-dump-browser/*"}, loadOnStartup = 12)
 public class GraphicsDumpBrowserService extends HttpServlet {
@@ -26,7 +28,7 @@ public class GraphicsDumpBrowserService extends HttpServlet {
 
     @Override
     public void init() {
-        try (ObjectInputStream is = new ObjectInputStream(GraphicsDumpBrowserService.class.getClassLoader().getResourceAsStream("resources/static/graphics-dump.zip"));
+        try (InputStream is = GraphicsDumpBrowserService.class.getClassLoader().getResourceAsStream("resources/static/graphics-dump.zip");
             OutputStream os = Files.newOutputStream(Paths.get("/tmp/graphics-dump.zip"))) {
 
             IOUtils.copy(is, os);
