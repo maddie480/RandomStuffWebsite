@@ -1,0 +1,1 @@
+8966f46698f7873676cddbe0c20e1688330fdcb785c2110864083876db1ad779 *src/main/webapp/WEB-INF/classes/resources/static/graphics-dump.zip
