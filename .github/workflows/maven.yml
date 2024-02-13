@@ -16,8 +16,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-      with:
-        lfs: true
 
     - name: Check for tabs
       run: |
@@ -33,6 +31,12 @@ jobs:
       run: |
         find "(" -name "*.java" -or -name "*.jsp" -or -name "*.html" -or -name "*.css" -or -name "*.js" -or -name "*.vue" -or -name "*.xml" -or -name "*.yaml" -or -name "*.yml" -or -name "*.txt" -or -name "*.md" ")" -exec grep -Pl " $" {} \; > matches.txt
         grep "" matches.txt && exit 1 || echo "No trailing space found!"
+
+    - name: Download graphics dump
+      run: |
+        curl --fail --connect-timeout 10 --retry 3 --retry-delay 10 https://files.gamebanana.com/bitpit/graphics-dump-001.zip > src/main/webapp/WEB-INF/classes/resources/static/graphics-dump.zip
+        curl --fail --connect-timeout 10 --retry 3 --retry-delay 10 https://files.gamebanana.com/bitpit/graphics-dump-002.zip >> src/main/webapp/WEB-INF/classes/resources/static/graphics-dump.zip
+        sha256sum src/main/webapp/WEB-INF/classes/resources/static/graphics-dump.zip
 
     - name: Cache Radio LNJ
       id: radiocache

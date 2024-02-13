@@ -1,1 +1,0 @@
-src/main/webapp/WEB-INF/classes/resources/static/graphics-dump.zip filter=lfs diff=lfs merge=lfs -text
