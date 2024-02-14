@@ -65,6 +65,11 @@
       }
    },
    {
+      "url": "https://files.gamebanana.com/bitpit/dit.zip",
+      "useYoutubeDl": false,
+      "prefix": "Driving In Tehran - Level "
+   },
+   {
       "url": "https://youtube.com/playlist?list=PLA423290E18CD6DFF",
       "useYoutubeDl": true,
       "prefix": ""
