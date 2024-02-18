@@ -70,6 +70,11 @@
       "prefix": "Driving In Tehran - Level "
    },
    {
+      "url": "https://files.gamebanana.com/bitpit/darkyears.zip",
+      "useYoutubeDl": false,
+      "prefix": "Dark Years - "
+   },
+   {
       "url": "https://youtube.com/playlist?list=PLA423290E18CD6DFF",
       "useYoutubeDl": true,
       "prefix": ""
