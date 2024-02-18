@@ -2,6 +2,7 @@ package ovh.maddie480.randomstuff.frontend;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -102,9 +103,10 @@ public class PrepareForRadioLNJ {
         Path temp = Paths.get("/tmp/cutemp.mkv");
 
         JSONArray timeCodes = source.getJSONObject("cuts").getJSONArray(trackName);
+        DecimalFormat countFormat = new DecimalFormat(StringUtils.repeat("0", Integer.toString(timeCodes.length() - 1).length()));
         for (int i = 0; i < timeCodes.length() - 1; i++) {
             cut(inputFile, temp, timeCodes.getString(i), timeCodes.getString(i + 1));
-            addMetadataTo(output, temp, trackName + " - " + (i + 1));
+            addMetadataTo(output, temp, trackName + " - " + countFormat.format(i + 1));
         }
         Files.delete(inputFile);
     }
