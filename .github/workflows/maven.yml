@@ -108,11 +108,11 @@ jobs:
 
     - name: Submit Dependency Snapshot
       if: github.ref == 'refs/heads/main'
-      uses: advanced-security/maven-dependency-submission-action@v4.0.0
+      uses: advanced-security/maven-dependency-submission-action@v4.0.1
 
     - name: Submit Dependency Snapshot of Extra
       if: github.ref == 'refs/heads/main'
-      uses: advanced-security/maven-dependency-submission-action@v4.0.0
+      uses: advanced-security/maven-dependency-submission-action@v4.0.1
       with:
         directory: .github/extra
 
