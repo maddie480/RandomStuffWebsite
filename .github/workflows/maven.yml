@@ -77,7 +77,12 @@ jobs:
         curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /tmp/yt-dlp
         chmod +x /tmp/yt-dlp
 
+    - name: Build with Maven (w/ Radio LNJ)
+      if: github.ref == 'refs/heads/main'
+      run: mvn -B clean verify --file pom.xml
+
     - name: Build with Maven
+      if: github.ref != 'refs/heads/main'
       run: |
         export RADIO_LNJ_SOURCES=`cat .github/radio-lnj-sources.json`
         mv -v target /tmp/old-target || echo "No existing target folder"
