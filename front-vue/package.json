@@ -9,7 +9,7 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
-    "@jimp/custom": "^0.22.10",
+    "@jimp/custom": "^0.22.12",
     "@jimp/types": "^0.22.10",
     "assert": "^2.1.0",
     "axios": "^1.6.7",
