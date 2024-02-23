@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@jimp/custom": "^0.22.12",
-    "@jimp/types": "^0.22.10",
+    "@jimp/types": "^0.22.12",
     "assert": "^2.1.0",
     "axios": "^1.6.7",
     "browserify-zlib": "^0.2.0",
