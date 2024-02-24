@@ -218,7 +218,12 @@ export default {
     closeDownloads() {
       this.downloadsShown = false;
     },
-    getLabelFor(featuredCategory) {
+    getLabelFor(featured) {
+      let featuredCategory = null;
+      if (featured !== undefined) {
+        featuredCategory = featured.Category;
+      }
+
       switch (featuredCategory) {
         case "today":
           return "Best of today";
@@ -238,7 +243,12 @@ export default {
           return "";
       }
     },
-    getPictureFor(featuredCategory) {
+    getPictureFor(featured) {
+      let featuredCategory = null;
+      if (featured !== undefined) {
+        featuredCategory = featured.Category;
+      }
+
       switch (featuredCategory) {
         case "today":
           return "";
