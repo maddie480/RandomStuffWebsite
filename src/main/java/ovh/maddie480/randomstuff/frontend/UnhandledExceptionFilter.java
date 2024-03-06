@@ -23,6 +23,12 @@ public class UnhandledExceptionFilter extends HttpFilter {
         try {
             chain.doFilter(req, res);
         } catch (Exception e) {
+            // trying to use the type directly yields a "class not found exception", so here we are.
+            if ("org.eclipse.jetty.io.EofException".equals(e.getClass().getName())) {
+                // "connection reset by peer" kinds of errors, do not log or try to handle those
+                return;
+            }
+
             log.error("Uncaught exception happened!", e);
 
             res.setStatus(500);
