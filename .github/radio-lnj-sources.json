@@ -75,6 +75,11 @@
       "prefix": "Dark Years - "
    },
    {
+      "url": "https://files.gamebanana.com/bitpit/nightmare_simulator.zip",
+      "useYoutubeDl": false,
+      "prefix": "Nightmare Simulator - "
+   },
+   {
       "url": "https://youtube.com/playlist?list=PLA423290E18CD6DFF",
       "useYoutubeDl": true,
       "prefix": ""
