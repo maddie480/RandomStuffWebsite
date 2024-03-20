@@ -1,4 +1,10 @@
 {
+    const artwork = [{
+        src: "https://maddie480.ovh/img/lnj-512.png",
+        sizes: "512x512",
+        type: "image/png"
+    }];
+
     const audio = new Audio();
 
     const formatTime = (totalSeconds, separator) => {
@@ -56,7 +62,8 @@
             // remove current song info from the media session
             if ('mediaSession' in navigator) {
                 navigator.mediaSession.metadata = new MediaMetadata({
-                    title: 'Radio LNJ'
+                    title: 'Radio LNJ',
+                    artwork
                 });
                 navigator.mediaSession.playbackState = 'paused';
             }
@@ -80,7 +87,8 @@
             if ('mediaSession' in navigator) {
                 navigator.mediaSession.metadata = new MediaMetadata({
                     title: playlist[0].trackName,
-                    artist: 'Radio LNJ'
+                    artist: 'Radio LNJ',
+                    artwork
                 });
                 navigator.mediaSession.playbackState = 'playing';
             }

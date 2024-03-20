@@ -422,7 +422,13 @@
                         <artifactId>jetty-maven-plugin</artifactId>
                         <version>11.0.20</version>
                     </plugin>
-
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>windows</id>
+            <build>
+                <plugins>
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>exec-maven-plugin</artifactId>

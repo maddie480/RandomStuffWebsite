@@ -1,4 +1,10 @@
 {
+    const artwork = [{
+        src: "https://maddie480.ovh/img/lnj-512.png",
+        sizes: "512x512",
+        type: "image/png"
+    }];
+
     // when playing a track, reset all other tracks
     const allAudioElements = document.getElementsByTagName('audio');
 
@@ -18,7 +24,8 @@
             if ('mediaSession' in navigator) {
                 navigator.mediaSession.metadata = new MediaMetadata({
                     title: audioElementBeingPlayed.dataset.trackname,
-                    artist: 'Radio LNJ \u2013 Playlist'
+                    artist: 'Radio LNJ \u2013 Playlist',
+                    artwork
                 });
 
                 navigator.mediaSession.setActionHandler("play", () => {
