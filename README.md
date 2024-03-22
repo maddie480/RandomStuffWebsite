@@ -1,5 +1,5 @@
 # Maddie's Random Stuff Website
-This is the source code for the [maddie480.ovh](https://maddie480.ovh/) website, an app running on Java 17 using [Eclipse Jetty](https://www.eclipse.org/jetty/).
+This is the source code for the [maddie480.ovh](https://maddie480.ovh/) website, an app running on Java 21 using [Eclipse Jetty](https://www.eclipse.org/jetty/).
 
 The `src` folder contains the source for everything provided by the Java servlet:
 - [the Everest Update Checker frontend service](https://maddie480.ovh/celeste/everest_update.yaml), exposing files produced by the Update Checker
