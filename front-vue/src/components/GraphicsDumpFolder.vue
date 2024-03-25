@@ -26,7 +26,7 @@
         >
         <span v-else class="item-name">{{ folder.name }}</span>
 
-        <span class="smaller">({{ folder.files.length }})</span>
+        <span class="smaller">({{ fileCount }})</span>
       </span>
     </div>
 
@@ -43,6 +43,14 @@
 </template>
 
 <script>
+const countFilesRecursive = function (folder) {
+  let count = folder.files.length;
+  for (let i = 0; i < folder.children.length; i++) {
+    count += countFilesRecursive(folder.children[i]);
+  }
+  return count;
+};
+
 export default {
   props: ["folder", "selectedFolder"],
   data: () => ({
@@ -51,6 +59,11 @@ export default {
   methods: {
     expandOrCollapse: function () {
       this.expanded = !this.expanded;
+    },
+  },
+  computed: {
+    fileCount: function () {
+      return countFilesRecursive(this.folder);
     },
   },
 };
