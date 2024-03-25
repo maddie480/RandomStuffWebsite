@@ -15,7 +15,6 @@ import org.apache.commons.lang3.NotImplementedException;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.stream.Stream;
 import java.util.zip.GZIPOutputStream;
 
 @WebFilter(filterName = "CacheEtagFilter", urlPatterns = "/*")
@@ -124,15 +123,16 @@ public class CacheAndCompressionFilter extends HttpFilter {
 
     @Override
     protected void doFilter(HttpServletRequest req, HttpServletResponse res, FilterChain chain) throws IOException, ServletException {
-        if (Stream.of(".mp3", ".webm", ".zip", ".exe", ".jar").anyMatch(req.getRequestURI()::endsWith)
-                || req.getRequestURI().equals("/celeste/bundle-download")) {
-
+        if (req.getRequestURI().endsWith(".zip") || req.getRequestURI().equals("/celeste/bundle-download")) {
             // big media; we shouldn't try compressing or caching it
             chain.doFilter(req, res);
             return;
         }
 
-        boolean compress = req.getHeader("Accept-Encoding") != null && req.getHeader("Accept-Encoding").matches(".*(^|[, ])gzip($|[ ;,]).*");
+        // only compress the output if the requester said they supported it, and if it isn't on a format that isn't worth compressing
+        boolean compress = StaticAssetsAndRouteNotFoundServlet.FORMATS_NOT_WORTH_COMPRESSING.stream().noneMatch(req.getRequestURI()::endsWith)
+                && req.getHeader("Accept-Encoding") != null
+                && req.getHeader("Accept-Encoding").matches(".*(^|[, ])gzip($|[ ;,]).*");
 
         CachingServletResponse placeholderResponse = new CachingServletResponse(res, compress);
         chain.doFilter(req, placeholderResponse);

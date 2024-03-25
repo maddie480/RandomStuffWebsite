@@ -6,13 +6,13 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.tuple.Triple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -25,26 +25,39 @@ import java.util.stream.Stream;
 @WebServlet(name = "StaticAssetsAndRouteNotFound", urlPatterns = {"/"})
 public class StaticAssetsAndRouteNotFoundServlet extends HttpServlet {
     public static final Map<String, String> CONTENT_TYPES;
+    public static final Set<String> FORMATS_NOT_WORTH_COMPRESSING;
 
     static {
+        // (extension, MIME type, should we compress this?)
+        List<Triple<String, String, Boolean>> contentTypesList = new ArrayList<>();
+        contentTypesList.add(Triple.of("css", "text/css", true));
+        contentTypesList.add(Triple.of("otf", "font/otf", true));
+        contentTypesList.add(Triple.of("ttf", "font/ttf", true));
+        contentTypesList.add(Triple.of("png", "image/png", false));
+        contentTypesList.add(Triple.of("gif", "image/gif", false));
+        contentTypesList.add(Triple.of("jpg", "image/jpeg", false));
+        contentTypesList.add(Triple.of("ico", "image/x-icon", false));
+        contentTypesList.add(Triple.of("svg", "image/svg+xml", true));
+        contentTypesList.add(Triple.of("js", "application/javascript", true));
+        contentTypesList.add(Triple.of("webm", "video/webm", false));
+        contentTypesList.add(Triple.of("html", "text/html", true));
+        contentTypesList.add(Triple.of("json", "application/json", true));
+        contentTypesList.add(Triple.of("mp3", "audio/mpeg", false));
+        contentTypesList.add(Triple.of("zip", "application/zip", false));
+        contentTypesList.add(Triple.of("exe", "application/vnd.microsoft.portable-executable", false));
+        contentTypesList.add(Triple.of("jar", "application/java-archive", false));
+        contentTypesList.add(Triple.of("csv", "text/csv", true));
+
         CONTENT_TYPES = new HashMap<>();
-        CONTENT_TYPES.put("css", "text/css");
-        CONTENT_TYPES.put("otf", "font/otf");
-        CONTENT_TYPES.put("ttf", "font/ttf");
-        CONTENT_TYPES.put("png", "image/png");
-        CONTENT_TYPES.put("gif", "image/gif");
-        CONTENT_TYPES.put("jpg", "image/jpeg");
-        CONTENT_TYPES.put("ico", "image/x-icon");
-        CONTENT_TYPES.put("svg", "image/svg+xml");
-        CONTENT_TYPES.put("js", "application/javascript");
-        CONTENT_TYPES.put("webm", "video/webm");
-        CONTENT_TYPES.put("html", "text/html");
-        CONTENT_TYPES.put("json", "application/json");
-        CONTENT_TYPES.put("mp3", "audio/mpeg");
-        CONTENT_TYPES.put("zip", "application/zip");
-        CONTENT_TYPES.put("exe", "application/vnd.microsoft.portable-executable");
-        CONTENT_TYPES.put("jar", "application/java-archive");
-        CONTENT_TYPES.put("csv", "text/csv");
+        for (Triple<String, String, Boolean> contentType : contentTypesList) {
+            CONTENT_TYPES.put(contentType.getLeft(), contentType.getMiddle());
+        }
+        FORMATS_NOT_WORTH_COMPRESSING = new HashSet<>();
+        for (Triple<String, String, Boolean> contentType : contentTypesList) {
+            if (!contentType.getRight()) {
+                FORMATS_NOT_WORTH_COMPRESSING.add("." + contentType.getLeft());
+            }
+        }
     }
 
     private static final Logger log = LoggerFactory.getLogger(StaticAssetsAndRouteNotFoundServlet.class);
