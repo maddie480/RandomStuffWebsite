@@ -426,21 +426,21 @@ public class EverestYamlValidatorService extends HttpServlet {
             EverestModuleMetadata metadata = new EverestModuleMetadata();
 
             // parse Name
+            if (!object.containsKey("Name")) {
+                throw new IllegalArgumentException("One of the entries has no Name");
+            }
             try {
-                metadata.Name = object.getOrDefault("Name", null).toString();
-                if (metadata.Name == null) {
-                    throw new Exception("The mod has no Name");
-                }
+                metadata.Name = object.get("Name").toString();
             } catch (Exception e) {
                 throw new IllegalArgumentException("Cannot parse Name: " + e.getMessage());
             }
 
             // parse Version
+            if (!object.containsKey("Version")) {
+                throw new IllegalArgumentException("No Version is specified for " + metadata.Name);
+            }
             try {
-                metadata.Version = object.getOrDefault("Version", null).toString();
-                if (metadata.Version == null) {
-                    throw new Exception("The mod has no Version");
-                }
+                metadata.Version = object.get("Version").toString();
             } catch (Exception e) {
                 throw new IllegalArgumentException("Cannot parse Version for " + metadata.Name + ": " + e.getMessage());
             }
