@@ -38,13 +38,14 @@ public class CelesteModSearchService extends HttpServlet {
 
     private static List<ModInfo> modDatabaseForSorting = Collections.emptyList();
 
-    private static final SecureRandom secureRandom = new SecureRandom();
     private Map<Integer, String> modCategories;
 
     private byte[] everestVersionsNoNative;
     private byte[] everestVersionsWithNative;
 
     private static final Pattern SUPPORT_NATIVE_REGEX = Pattern.compile("(^|&)supportsNativeBuilds=true($|&)");
+
+    private static final SecureRandom secureRandom = new SecureRandom();
 
     @Override
     public void init() {
