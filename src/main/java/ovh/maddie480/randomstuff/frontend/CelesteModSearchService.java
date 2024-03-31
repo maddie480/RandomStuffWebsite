@@ -37,7 +37,6 @@ public class CelesteModSearchService extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(CelesteModSearchService.class);
 
     private static List<ModInfo> modDatabaseForSorting = Collections.emptyList();
-
     private Map<Integer, String> modCategories;
 
     private byte[] everestVersionsNoNative;
