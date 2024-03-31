@@ -17,6 +17,7 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.security.SecureRandom;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
@@ -36,6 +37,8 @@ public class CelesteModSearchService extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(CelesteModSearchService.class);
 
     private static List<ModInfo> modDatabaseForSorting = Collections.emptyList();
+
+    private static final SecureRandom secureRandom = new SecureRandom();
     private Map<Integer, String> modCategories;
 
     private byte[] everestVersionsNoNative;
@@ -72,7 +75,7 @@ public class CelesteModSearchService extends HttpServlet {
                     .toList();
 
             // pick a map and redirect to it. that's it.
-            ModInfo drawnMod = maps.get((int) (Math.random() * maps.size()));
+            ModInfo drawnMod = maps.get(secureRandom.nextInt(maps.size()));
             response.setStatus(302);
             response.setHeader("Location", "https://gamebanana.com/mods/" + drawnMod.id);
             return;
