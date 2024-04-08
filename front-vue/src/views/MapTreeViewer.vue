@@ -14,8 +14,8 @@
       <input
         type="file"
         accept=".bin"
-        @change="selectFile"
         :disabled="loading"
+        @change="selectFile"
       />
     </label>
 
@@ -35,15 +35,15 @@
       Convert to JSON
     </button>
 
-    <div class="error" v-if="error">
+    <div v-if="error" class="error">
       <div class="warning">
         An error occurred. Check that you uploaded a valid Celeste map.
       </div>
     </div>
 
-    <div class="loading" v-if="loading">Loading...</div>
+    <div v-if="loading" class="loading">Loading...</div>
 
-    <form v-on:submit="searchTriggered" v-if="mapContents !== null">
+    <form v-if="mapContents !== null" @submit="searchTriggered">
       <input
         v-model="highlightLive"
         class="search form-control"
@@ -51,17 +51,17 @@
       />
     </form>
 
-    <div class="searching" v-if="highlight.length !== 0">
+    <div v-if="highlight.length !== 0" class="searching">
       Currently searching: <span class="search">{{ highlight }}</span>
     </div>
 
-    <div class="search-options" v-if="mapContents !== null">
+    <div v-if="mapContents !== null" class="search-options">
       <div class="form-check">
         <input
+          id="only-show-highlight"
+          v-model="onlyShowHighlight"
           class="form-check-input"
           type="checkbox"
-          v-model="onlyShowHighlight"
-          id="only-show-highlight"
         />
         <label class="form-check-label" for="only-show-highlight">
           Only show search results
@@ -70,10 +70,10 @@
 
       <div class="form-check">
         <input
+          id="highlight-oob"
+          v-model="outOfBoundsOnly"
           class="form-check-input"
           type="checkbox"
-          v-model="outOfBoundsOnly"
-          id="highlight-oob"
         />
         <label class="form-check-label" for="highlight-oob">
           Out-of-bounds only
@@ -82,14 +82,14 @@
     </div>
 
     <MapItemCollapsible
+      v-if="mapContents !== null"
       class="map-tree"
       :item="mapContents"
       :parent="{ name: 'none' }"
       :grandparent="{ name: 'none' }"
       :highlight="highlight"
-      :onlyShowHighlight="onlyShowHighlight"
-      :outOfBoundsOnly="outOfBoundsOnly"
-      v-if="mapContents !== null"
+      :only-show-highlight="onlyShowHighlight"
+      :out-of-bounds-only="outOfBoundsOnly"
     />
   </div>
 </template>

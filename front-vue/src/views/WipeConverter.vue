@@ -63,8 +63,8 @@
         type="file"
         accept="image/png"
         multiple
-        @change="selectFile"
         :disabled="converting"
+        @change="selectFile"
       />
     </label>
 
@@ -76,14 +76,14 @@
       Convert!
     </button>
 
-    <div class="error" v-if="error">
+    <div v-if="error" class="error">
       <div class="warning">
         An error occurred. Check that your images are valid.
       </div>
     </div>
 
-    <div class="converting" v-if="converting">Converting...</div>
-    <div class="progress" v-if="converting">
+    <div v-if="converting" class="converting">Converting...</div>
+    <div v-if="converting" class="progress">
       <div
         class="progress-bar progress-bar-info"
         role="progressbar"

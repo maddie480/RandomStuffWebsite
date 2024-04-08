@@ -7,6 +7,7 @@
         <div class="mb-3 col-lg-4 combo-box">
           <label for="category" class="form-label">Mod category</label>
           <VueMultiselect
+            id="category"
             v-model="categoryFilter"
             track-by="name"
             label="name"
@@ -16,13 +17,13 @@
             :allow-empty="false"
             :disabled="query !== '' || loading"
             @select="categoryFilterChanged"
-            id="category"
           >
           </VueMultiselect>
         </div>
         <div class="mb-3 col-lg-4 combo-box">
           <label for="sort" class="form-label">Sort by</label>
           <VueMultiselect
+            id="category"
             v-model="sort"
             track-by="id"
             label="name"
@@ -37,13 +38,13 @@
             :allow-empty="false"
             :disabled="query !== '' || loading"
             @select="sortChanged"
-            id="category"
           >
           </VueMultiselect>
         </div>
         <div class="mb-3 col-lg-4 combo-box">
           <label for="mirror" class="form-label">Mirror to use</label>
           <VueMultiselect
+            id="mirror"
             v-model="mirror"
             track-by="id"
             label="name"
@@ -55,13 +56,12 @@
             :searchable="false"
             :allow-empty="false"
             :disabled="loading"
-            id="mirror"
           >
           </VueMultiselect>
         </div>
       </div>
 
-      <form v-on:submit="searchTriggered">
+      <form @submit="searchTriggered">
         <input
           v-model="query"
           class="search form-control"
@@ -70,16 +70,16 @@
         />
       </form>
 
-      <div class="loading" v-if="loading">Loading...</div>
-      <div class="error" v-else-if="error">
+      <div v-if="loading" class="loading">Loading...</div>
+      <div v-else-if="error" class="error">
         <div class="warning">An error occurred.</div>
-        <button class="btn btn-warning" v-on:click="reloadPage">Retry</button>
+        <button class="btn btn-warning" @click="reloadPage">Retry</button>
       </div>
       <div v-else>
         <div class="row">
           <div
-            v-bind:key="mod.id"
             v-for="mod in mods"
+            :key="mod.id"
             class="col-xl-4 col-md-6 col-12"
           >
             <ModListItem :mod="mod" :mirror="mirror.id" />
@@ -89,7 +89,7 @@
           v-if="totalCount > 0"
           :page-number="page"
           :page-count="pageCount"
-          v-on:change-page="changePage"
+          @change-page="changePage"
         />
       </div>
     </div>

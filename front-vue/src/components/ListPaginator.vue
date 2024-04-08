@@ -3,38 +3,38 @@
     <button
       class="btn btn-outline-secondary"
       :disabled="pageNumber <= 1"
-      v-on:click="$emit('change-page', 1)"
+      @click="$emit('change-page', 1)"
     >
       &lt;&lt;
     </button>
     <button
       class="btn btn-outline-secondary"
       :disabled="pageNumber <= 1"
-      v-on:click="$emit('change-page', pageNumber - 1)"
+      @click="$emit('change-page', pageNumber - 1)"
     >
       &lt;
     </button>
-    <form v-on:submit="goToPage">
+    <form @submit="goToPage">
       <input
+        v-model="gotoPage"
         type="number"
         min="1"
         :max="pageCount"
-        v-model="gotoPage"
-        v-on:blur="gotoPage = pageNumber"
+        @blur="gotoPage = pageNumber"
       />
       / {{ pageCount }}
     </form>
     <button
       class="btn btn-outline-secondary"
       :disabled="pageNumber >= pageCount"
-      v-on:click="$emit('change-page', pageNumber + 1)"
+      @click="$emit('change-page', pageNumber + 1)"
     >
       &gt;
     </button>
     <button
       class="btn btn-outline-secondary"
       :disabled="pageNumber >= pageCount"
-      v-on:click="$emit('change-page', pageCount)"
+      @click="$emit('change-page', pageCount)"
     >
       &gt;&gt;
     </button>
@@ -47,12 +47,6 @@ export default {
   data: () => ({
     gotoPage: 0,
   }),
-  methods: {
-    goToPage(event) {
-      event.preventDefault();
-      this.$emit("change-page", this.gotoPage);
-    },
-  },
   watch: {
     pageNumber(page) {
       this.gotoPage = page;
@@ -60,6 +54,12 @@ export default {
   },
   mounted() {
     this.gotoPage = this.pageNumber;
+  },
+  methods: {
+    goToPage(event) {
+      event.preventDefault();
+      this.$emit("change-page", this.gotoPage);
+    },
   },
 };
 </script>

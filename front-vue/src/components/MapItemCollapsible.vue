@@ -1,16 +1,16 @@
 <template>
-  <div class="collapsible" v-if="shown">
+  <div v-if="shown" class="collapsible">
     <div class="line">
       <span
-        v-on:click="expandOrCollapse"
         :class="
           'tree-item ' +
           (item.children.length !== 0 ? 'clickable' : '') +
           ' ' +
           (highlighted ? 'highlight' : '')
         "
+        @click="expandOrCollapse"
       >
-        <span class="arrow" v-if="item.children.length === 0">–</span>
+        <span v-if="item.children.length === 0" class="arrow">–</span>
         <span v-else>
           <img
             :class="'arrow pointer dark' + (expanded ? '' : ' collapsed')"
@@ -27,9 +27,9 @@
     </div>
     <div class="attributes">
       <span
-        class="attribute"
-        v-bind:key="attribute.key"
         v-for="(attribute, index) in orderedAttributes"
+        :key="attribute.key"
+        class="attribute"
       >
         {{ attribute.key }}:
         <span class="att-value">
@@ -48,14 +48,14 @@
 
     <div v-if="expanded" class="child">
       <MapItemCollapsible
-        v-bind:key="child"
         v-for="child in item.children"
+        :key="child"
         :item="child"
         :parent="item"
         :grandparent="parent"
         :highlight="highlight"
-        :onlyShowHighlight="onlyShowHighlight"
-        :outOfBoundsOnly="outOfBoundsOnly"
+        :only-show-highlight="onlyShowHighlight"
+        :out-of-bounds-only="outOfBoundsOnly"
       />
     </div>
   </div>
@@ -173,11 +173,6 @@ export default {
   data: () => ({
     expanded: false,
   }),
-  methods: {
-    expandOrCollapse: function () {
-      this.expanded = !this.expanded;
-    },
-  },
   computed: {
     orderedAttributes() {
       const specialKeys = ["name", "x", "y", "width", "height", "id"];
@@ -219,6 +214,11 @@ export default {
         this.highlight.toLowerCase(),
         this.outOfBoundsOnly,
       );
+    },
+  },
+  methods: {
+    expandOrCollapse: function () {
+      this.expanded = !this.expanded;
     },
   },
 };

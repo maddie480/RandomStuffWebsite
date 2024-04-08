@@ -1,8 +1,8 @@
 <template>
   <div :class="'month-' + (new Date().getMonth() + 1)">
     <nav
-      class="navbar navbar-expand navbar-light bg-light border-bottom shadow-sm"
       id="nav"
+      class="navbar navbar-expand navbar-light bg-light border-bottom shadow-sm"
     >
       <div class="container-fluid">
         <h5 class="navbar-brand m-0">
@@ -14,12 +14,12 @@
         <ul class="navbar-nav">
           <li class="nav-item dropdown">
             <a
+              id="celesteDropdown"
               :class="
                 'nav-link dropdown-toggle ' +
                 ($route.path.startsWith('/celeste') ? 'active' : '')
               "
               href="#"
-              id="celesteDropdown"
               role="button"
               data-bs-toggle="dropdown"
               data-bs-target="#celesteDropdown"
@@ -148,9 +148,9 @@
           </li>
           <li class="nav-item dropdown">
             <a
+              id="linksDropdown"
               class="nav-link dropdown-toggle"
               href="#"
-              id="linksDropdown"
               role="button"
               data-bs-toggle="dropdown"
               aria-expanded="false"

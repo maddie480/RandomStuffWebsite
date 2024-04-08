@@ -2,8 +2,8 @@
   <div class="collapsible">
     <div class="line">
       <span>
-        <span class="arrow" v-if="folder.children.length === 0">–</span>
-        <span class="clickable" v-on:click="expandOrCollapse" v-else>
+        <span v-if="folder.children.length === 0" class="arrow">–</span>
+        <span v-else class="clickable" @click="expandOrCollapse">
           <img
             :class="'arrow pointer dark' + (expanded ? '' : ' collapsed')"
             src="/img/arrow-white.svg"
@@ -20,8 +20,8 @@
             'item-name' +
             (selectedFolder.path === folder.path ? ' selected' : '')
           "
-          v-on:click="$emit('select-folder', folder)"
           href="#"
+          @click="$emit('select-folder', folder)"
           >{{ folder.name }}</a
         >
         <span v-else class="item-name">{{ folder.name }}</span>
@@ -32,11 +32,11 @@
 
     <div v-if="expanded" class="child">
       <GraphicsDumpFolder
-        v-bind:key="child"
         v-for="child in folder.children"
+        :key="child"
         :folder="child"
-        :selectedFolder="selectedFolder"
-        v-on:select-folder="(folder) => $emit('select-folder', folder)"
+        :selected-folder="selectedFolder"
+        @select-folder="(folder) => $emit('select-folder', folder)"
       />
     </div>
   </div>
@@ -56,14 +56,14 @@ export default {
   data: () => ({
     expanded: false,
   }),
-  methods: {
-    expandOrCollapse: function () {
-      this.expanded = !this.expanded;
-    },
-  },
   computed: {
     fileCount: function () {
       return countFilesRecursive(this.folder);
+    },
+  },
+  methods: {
+    expandOrCollapse: function () {
+      this.expanded = !this.expanded;
     },
   },
 };

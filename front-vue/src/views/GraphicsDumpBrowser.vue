@@ -8,19 +8,19 @@
     </div>
 
     <div>
-      <div class="loading" v-if="loading">Loading...</div>
-      <div class="error" v-else-if="error">
+      <div v-if="loading" class="loading">Loading...</div>
+      <div v-else-if="error" class="error">
         <div class="warning">An error occurred.</div>
-        <button class="btn btn-warning" v-on:click="reloadPage">Retry</button>
+        <button class="btn btn-warning" @click="reloadPage">Retry</button>
       </div>
-      <div class="row" v-else>
+      <div v-else class="row">
         <div class="col-xl-3 col-lg-4 col-sm-6 col-xs-12 column">
           <div class="card tree">
             <div class="card-body">
               <GraphicsDumpFolder
                 :folder="folderStructure"
-                :selectedFolder="selectedFolder"
-                v-on:select-folder="(folder) => (selectedFolder = folder)"
+                :selected-folder="selectedFolder"
+                @select-folder="(folder) => (selectedFolder = folder)"
               />
             </div>
           </div>
@@ -28,8 +28,8 @@
         <div class="col-xl-9 col-lg-8 col-sm-6 col-xs-12 column">
           <div class="row">
             <GraphicsDumpItem
-              v-bind:key="file"
               v-for="file in selectedFolder.files"
+              :key="file"
               :name="file"
               :path="selectedFolder.path + '/' + file + '.png'"
             />

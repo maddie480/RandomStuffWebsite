@@ -1,11 +1,5 @@
 import SWorker from "simple-web-worker";
-import configure from "@jimp/custom";
-import types from "@jimp/types";
-
-const jimp = configure({
-  types: [types],
-  plugins: [],
-});
+import Jimp from "jimp/es";
 
 /**
  * Converts a wipe image to an array of triangles
@@ -17,7 +11,7 @@ const jimp = configure({
  * @returns {Array{Number}} An array of triangles, flattened and ready to be written to the bin file
  */
 const convertWipeToTriangles = async (input) => {
-  let image = await jimp.read(input);
+  let image = await Jimp.read(input);
 
   // try scanning vertically, then horizontally.
   const solution1 = await findTrianglesInWorker(image.clone(), true);
@@ -53,7 +47,7 @@ const findTrianglesInWorker = (image, verticalScan) => {
 
       /**
        * Runs a function on every pixel of the zone.
-       * Taken from @jimp/utils.
+       * Taken from @Jimp/utils.
        * @param {Object} bitmap The bitmap to scan
        * @param {number} x The left of the area to scan
        * @param {number} y The top of the area to scan

@@ -1,12 +1,12 @@
 <template>
   <div>
-    <div class="loading" v-if="loading">Loading...</div>
-    <div class="error" v-else-if="error">
+    <div v-if="loading" class="loading">Loading...</div>
+    <div v-else-if="error" class="error">
       <div>An error occurred.</div>
-      <button class="btn btn-warning" v-on:click="reload">Retry</button>
+      <button class="btn btn-warning" @click="reload">Retry</button>
     </div>
     <div v-else>
-      <form v-on:submit="searchTriggered">
+      <form @submit="searchTriggered">
         <input
           v-model="query"
           class="search form-control"
@@ -18,15 +18,15 @@
       </form>
 
       <div
-        class="searching"
         v-if="currentSearch.length !== 0 && !currentSearch.startsWith('@')"
+        class="searching"
       >
         Currently searching:
         <span class="current-search">{{ currentSearch }}</span>
       </div>
       <div
-        class="searching"
         v-else-if="currentSearch.length > 1 && currentSearch.startsWith('@')"
+        class="searching"
       >
         Currently searching for author:
         <span class="current-search">{{ currentSearch.substring(1) }}</span>
@@ -35,11 +35,11 @@
       <div class="checkbox-options">
         <div class="form-check">
           <input
+            id="group-assets"
+            v-model="groupAssets"
             class="form-check-input"
             type="checkbox"
-            v-model="groupAssets"
-            v-on:change="filterList"
-            id="group-assets"
+            @change="filterList"
           />
           <label class="form-check-label" for="group-assets">
             Group assets belonging to the same animation
@@ -47,32 +47,32 @@
         </div>
         <div class="form-check">
           <input
+            id="zoom-checkbox"
+            v-model="zoom"
             class="form-check-input"
             type="checkbox"
-            v-model="zoom"
-            id="zoom-checkbox"
           />
           <label class="form-check-label" for="zoom-checkbox"> 2x zoom </label>
         </div>
       </div>
 
-      <div class="tag-filters" v-if="allTags.length !== 0">
+      <div v-if="allTags.length !== 0" class="tag-filters">
         Tags (click to filter):
         <span
           :class="
             'tag badge bg-' + (tagFilter === null ? 'primary' : 'secondary')
           "
-          v-on:click="filterOnTag(null)"
+          @click="filterOnTag(null)"
           >Do not filter</span
         >
 
         <span
           v-for="tag in allTags"
-          v-bind:key="tag"
-          v-on:click="filterOnTag(tag)"
+          :key="tag"
           :class="
             'tag badge bg-' + (tagFilter === tag ? 'primary' : 'secondary')
           "
+          @click="filterOnTag(tag)"
           >{{ tag }}</span
         >
       </div>
@@ -80,7 +80,7 @@
       <div id="asset-browser" class="row">
         <AssetDriveItem
           v-for="item in page"
-          v-bind:key="item.id"
+          :key="item.id"
           :data="item"
           :category-display-name="categoryDisplayName"
           :zoom="zoom"
@@ -92,7 +92,7 @@
         v-if="filteredList.length !== 0"
         :page-number="pageNumber"
         :page-count="pageCount"
-        v-on:change-page="changePage"
+        @change-page="changePage"
       />
     </div>
   </div>
@@ -122,6 +122,9 @@ export default {
     groupAssets: false,
     zoom: false,
   }),
+  mounted: async function () {
+    await this.reload();
+  },
   methods: {
     reload: async function () {
       try {
@@ -225,9 +228,6 @@ export default {
       this.tagFilter = tag;
       this.filterList();
     },
-  },
-  mounted: async function () {
-    await this.reload();
   },
 };
 </script>

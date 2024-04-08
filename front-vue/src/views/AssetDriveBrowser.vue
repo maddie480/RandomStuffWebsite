@@ -12,7 +12,7 @@
         ></b
       >, with added features such as filtering, search and tags.
     </div>
-    <div class="intro" v-if="lastUpdate !== null">
+    <div v-if="lastUpdate !== null" class="intro">
       The list is updated <b>once a day</b> from Google Drive. The last update
       happened on <b>{{ lastUpdate }}</b
       >.
@@ -41,7 +41,7 @@
         :class="
           'btn ' + (currentCategory === 'decals' ? 'btn-primary' : 'btn-link')
         "
-        v-on:click="currentCategory = 'decals'"
+        @click="currentCategory = 'decals'"
       >
         Decals
       </button>
@@ -50,7 +50,7 @@
           'btn ' +
           (currentCategory === 'stylegrounds' ? 'btn-primary' : 'btn-link')
         "
-        v-on:click="currentCategory = 'stylegrounds'"
+        @click="currentCategory = 'stylegrounds'"
       >
         Stylegrounds
       </button>
@@ -59,7 +59,7 @@
           'btn ' +
           (currentCategory === 'bgtilesets' ? 'btn-primary' : 'btn-link')
         "
-        v-on:click="currentCategory = 'bgtilesets'"
+        @click="currentCategory = 'bgtilesets'"
       >
         Background Tilesets
       </button>
@@ -68,7 +68,7 @@
           'btn ' +
           (currentCategory === 'fgtilesets' ? 'btn-primary' : 'btn-link')
         "
-        v-on:click="currentCategory = 'fgtilesets'"
+        @click="currentCategory = 'fgtilesets'"
       >
         Foreground Tilesets
       </button>
@@ -76,7 +76,7 @@
         :class="
           'btn ' + (currentCategory === 'hires' ? 'btn-primary' : 'btn-link')
         "
-        v-on:click="currentCategory = 'hires'"
+        @click="currentCategory = 'hires'"
       >
         Hi-Res Art
       </button>
@@ -84,55 +84,55 @@
         :class="
           'btn ' + (currentCategory === 'misc' ? 'btn-primary' : 'btn-link')
         "
-        v-on:click="currentCategory = 'misc'"
+        @click="currentCategory = 'misc'"
       >
         Misc
       </button>
     </div>
 
     <AssetDriveCategory
+      v-if="currentCategory === 'decals'"
       class="category-listing"
       :folders="folders"
       category="decals"
       category-display-name="decal"
-      v-if="currentCategory === 'decals'"
     />
     <AssetDriveCategory
+      v-else-if="currentCategory === 'stylegrounds'"
       class="category-listing"
       :folders="folders"
       category="stylegrounds"
       category-display-name="styleground"
-      v-else-if="currentCategory === 'stylegrounds'"
     />
     <AssetDriveCategory
+      v-else-if="currentCategory === 'bgtilesets'"
       class="category-listing"
       :folders="folders"
       category="bgtilesets"
       category-display-name="tileset"
-      v-else-if="currentCategory === 'bgtilesets'"
     />
     <AssetDriveCategory
+      v-else-if="currentCategory === 'fgtilesets'"
       class="category-listing"
       :folders="folders"
       category="fgtilesets"
       category-display-name="tileset"
-      v-else-if="currentCategory === 'fgtilesets'"
     />
     <AssetDriveCategory
+      v-else-if="currentCategory === 'hires'"
       class="category-listing"
       :folders="folders"
       category="hires"
       category-display-name="asset"
-      v-else-if="currentCategory === 'hires'"
     />
     <AssetDriveCategory
+      v-else-if="currentCategory === 'misc'"
       class="category-listing"
       :folders="folders"
       category="misc"
       category-display-name="asset"
-      v-else-if="currentCategory === 'misc'"
     />
-    <div class="category-empty" v-else>
+    <div v-else class="category-empty">
       Select a category above to see the assets.
     </div>
   </div>
@@ -144,8 +144,8 @@ import config from "../config";
 import AssetDriveCategory from "../components/AssetDriveCategory.vue";
 
 export default {
+  name: "AssetDriveBrowser",
   components: { AssetDriveCategory },
-  name: "asset-drive-browser",
   data: () => ({
     currentCategory: null,
     lastUpdate: null,

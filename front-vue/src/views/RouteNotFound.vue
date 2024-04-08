@@ -7,7 +7,7 @@
 
 <script>
 export default {
-  name: "route-not-found",
+  name: "RouteNotFound",
 };
 </script>
 

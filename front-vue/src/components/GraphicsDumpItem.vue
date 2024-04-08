@@ -12,24 +12,22 @@
           :href="'/celeste/graphics-dump-browser/' + path"
           >Open</a
         >
-        <button class="btn btn-secondary" v-on:click="copyPath">
-          Copy path
-        </button>
+        <button class="btn btn-secondary" @click="copyPath">Copy path</button>
       </div>
 
       <div
+        :id="'success-' + path.replace('/', '-')"
         class="toast fade hide"
         style="position: fixed; bottom: 10px; right: 10px"
-        :id="'success-' + path.replace('/', '-')"
       >
         <div class="toast-body bg-success">
           Path "{{ path }}" copied to the clipboard!
         </div>
       </div>
       <div
+        :id="'failure-' + path.replace('/', '-')"
         class="toast fade hide"
         style="position: fixed; bottom: 10px; right: 10px"
-        :id="'failure-' + path.replace('/', '-')"
       >
         <div class="toast-body bg-danger">
           Failed to copy path "{{ path }}" to the clipboard!
@@ -47,6 +45,11 @@ export default {
   data: () => ({
     expanded: false,
   }),
+  computed: {
+    imagePath() {
+      return config.backendUrl + "/celeste/graphics-dump-browser/" + this.path;
+    },
+  },
   methods: {
     async copyPath() {
       const slugifiedPath = this.path.replace("/", "-");
@@ -67,11 +70,6 @@ export default {
           toastBootstrap.show();
         },
       );
-    },
-  },
-  computed: {
-    imagePath() {
-      return config.backendUrl + "/celeste/graphics-dump-browser/" + this.path;
     },
   },
 };

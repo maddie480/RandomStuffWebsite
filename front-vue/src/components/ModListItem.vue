@@ -1,15 +1,15 @@
 <template>
   <div class="mod-container">
     <div
-      class="bg"
       v-if="mod.MirroredScreenshots.length >= 2"
+      class="bg"
       :style="
         'background: url(\'' +
         mod.MirroredScreenshots[1] +
         '\') center / cover;'
       "
     />
-    <div class="darken" v-if="mod.MirroredScreenshots.length >= 2" />
+    <div v-if="mod.MirroredScreenshots.length >= 2" class="darken" />
 
     <div
       class="contents"
@@ -59,16 +59,14 @@
         :title="getLabelFor(mod.Featured)"
       />
       <div class="actions">
-        <button class="btn btn-secondary" v-on:click="openDescription">
+        <button class="btn btn-secondary" @click="openDescription">
           Description
         </button>
-        <button class="btn btn-primary" v-on:click="openDownloads">
-          Download
-        </button>
+        <button class="btn btn-primary" @click="openDownloads">Download</button>
       </div>
     </div>
 
-    <div class="modal fade show" tabindex="-1" v-if="descriptionShown">
+    <div v-if="descriptionShown" class="modal fade show" tabindex="-1">
       <div class="modal-dialog modal-lg">
         <div class="modal-content">
           <div class="modal-header">
@@ -77,7 +75,7 @@
               type="button"
               class="btn btn-link close"
               aria-label="Close"
-              v-on:click="closeDescription"
+              @click="closeDescription"
             >
               ×
             </button>
@@ -89,7 +87,7 @@
       </div>
     </div>
 
-    <div class="modal fade show" tabindex="-1" v-if="downloadsShown">
+    <div v-if="downloadsShown" class="modal fade show" tabindex="-1">
       <div class="modal-dialog modal-lg">
         <div class="modal-content">
           <div class="modal-header">
@@ -98,21 +96,18 @@
               type="button"
               class="btn btn-link close"
               aria-label="Close"
-              v-on:click="closeDownloads"
+              @click="closeDownloads"
             >
               ×
             </button>
           </div>
           <div class="modal-body">
             <table
-              class="table table-striped"
               v-if="getMirroredFiles(mod.Files).length !== 0"
+              class="table table-striped"
             >
               <tbody>
-                <tr
-                  v-bind:key="file.URL"
-                  v-for="file in getMirroredFiles(mod.Files)"
-                >
+                <tr v-for="file in getMirroredFiles(mod.Files)" :key="file.URL">
                   <td class="first">
                     <div>
                       <div>
@@ -123,8 +118,8 @@
                             : file.Name
                         }}</span>
                         <span
-                          class="secondary smaller large-only"
                           v-if="'EverestYamlId' in file"
+                          class="secondary smaller large-only"
                         >
                           ({{ file.EverestYamlId }})</span
                         >
@@ -160,7 +155,7 @@
                       </div>
                     </div>
                   </td>
-                  <td class="second" v-if="getMirrorLink(file) !== null">
+                  <td v-if="getMirrorLink(file) !== null" class="second">
                     <a
                       class="btn btn-primary"
                       :href="'everest:' + getMirrorLink(file)"
@@ -192,8 +187,8 @@
       </div>
     </div>
     <div
-      class="modal-backdrop fade show"
       v-if="descriptionShown || downloadsShown"
+      class="modal-backdrop fade show"
     />
   </div>
 </template>

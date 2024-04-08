@@ -1,6 +1,6 @@
-var webpack = require("webpack");
+import webpack from "webpack";
 
-module.exports = {
+export default {
   productionSourceMap: false,
   configureWebpack: {
     plugins: [

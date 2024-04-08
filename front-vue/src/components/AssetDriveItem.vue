@@ -5,27 +5,27 @@
         <div :class="imagePath === downloadPath ? 'image-container' : ''">
           <img
             :src="imagePath"
-            v-on:load="imageLoaded"
             :class="zoom ? 'zoomed' : ''"
             :style="zoom ? 'margin: ' + height / 2 + 'px 0;' : ''"
+            @load="imageLoaded"
           />
         </div>
         <div class="title">
           <span
             v-for="(part, index) in pathParts"
-            v-bind:key="`${data.name}/${part}/${index}`"
+            :key="`${data.name}/${part}/${index}`"
           >
             <a
+              v-if="index !== pathParts.length - 1"
               :href="
                 'https://drive.google.com/drive/folders/' +
                 folders[parentFolders[index]]
               "
               target="_blank"
-              v-if="index !== pathParts.length - 1"
             >
               {{ part }}
             </a>
-            <span class="file-name" v-else>{{ part }}</span>
+            <span v-else class="file-name">{{ part }}</span>
             <span v-if="index !== pathParts.length - 1" class="secondary">
               /
             </span>
@@ -33,8 +33,8 @@
         </div>
         <div class="secondary authorcredit">by {{ data.author }}</div>
         <div
-          class="secondary authorcredit"
           v-if="imagePath === downloadPath && width !== null && height !== null"
+          class="secondary authorcredit"
         >
           <span v-if="data.frames !== undefined && data.frames.length > 1"
             ><span class="frame-count">{{ data.frames.length }} frames</span>
@@ -44,33 +44,33 @@
         </div>
         <div class="tags">
           <span
-            class="badge bg-primary"
             v-for="(tag, index) in data.tags"
-            v-bind:key="index + tag"
+            :key="index + tag"
+            class="badge bg-primary"
             >{{ tag }}</span
           >
         </div>
         <a
+          v-if="data.frames !== undefined && data.frames.length > 1"
           class="btn btn-primary"
           target="_blank"
           :href="multiDownloadPath"
-          v-if="data.frames !== undefined && data.frames.length > 1"
           >Download all</a
         >
-        <a class="btn btn-primary" target="_blank" :href="downloadPath" v-else
+        <a v-else class="btn btn-primary" target="_blank" :href="downloadPath"
           >Download</a
         >
         <button
-          class="btn btn-secondary"
           v-if="hasMoreInfo"
-          v-on:click="openMoreInfo"
+          class="btn btn-secondary"
+          @click="openMoreInfo"
         >
           More info
         </button>
       </div>
     </div>
 
-    <div class="modal fade show" tabindex="-1" v-if="moreInfoShown">
+    <div v-if="moreInfoShown" class="modal fade show" tabindex="-1">
       <div class="modal-dialog modal-lg">
         <div class="modal-content">
           <div class="modal-header">
@@ -81,7 +81,7 @@
               type="button"
               class="btn btn-link close"
               aria-label="Close"
-              v-on:click="closeMoreInfo"
+              @click="closeMoreInfo"
             >
               ×
             </button>
@@ -354,7 +354,7 @@
         </div>
       </div>
     </div>
-    <div class="modal-backdrop fade show" v-if="moreInfoShown" />
+    <div v-if="moreInfoShown" class="modal-backdrop fade show" />
   </div>
 </template>
 
@@ -370,31 +370,6 @@ export default {
     width: null,
     height: null,
   }),
-  methods: {
-    openMoreInfo: async function () {
-      this.moreInfoShown = true;
-      if (this.data.readme !== undefined && this.readme === null) {
-        try {
-          this.readme = (
-            await axios.get(
-              config.backendUrl +
-                "/celeste/asset-drive/files/" +
-                this.data.readme,
-            )
-          ).data;
-        } catch (e) {
-          this.readme = null;
-        }
-      }
-    },
-    closeMoreInfo: function () {
-      this.moreInfoShown = false;
-    },
-    imageLoaded(event) {
-      this.width = event.target.width;
-      this.height = event.target.height;
-    },
-  },
   computed: {
     imagePath() {
       const fileId =
@@ -455,6 +430,31 @@ export default {
       }
 
       return result;
+    },
+  },
+  methods: {
+    openMoreInfo: async function () {
+      this.moreInfoShown = true;
+      if (this.data.readme !== undefined && this.readme === null) {
+        try {
+          this.readme = (
+            await axios.get(
+              config.backendUrl +
+                "/celeste/asset-drive/files/" +
+                this.data.readme,
+            )
+          ).data;
+        } catch (e) {
+          this.readme = null;
+        }
+      }
+    },
+    closeMoreInfo: function () {
+      this.moreInfoShown = false;
+    },
+    imageLoaded(event) {
+      this.width = event.target.width;
+      this.height = event.target.height;
     },
   },
 };

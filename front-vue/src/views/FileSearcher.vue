@@ -11,7 +11,7 @@
       mod a decal/styleground comes from!
     </p>
 
-    <form v-on:submit="searchTriggered">
+    <form @submit="searchTriggered">
       <input
         v-model="query"
         class="search form-control"
@@ -22,10 +22,10 @@
     <div class="search-options">
       <div class="form-check">
         <input
+          id="exact-option"
+          v-model="exact"
           class="form-check-input"
           type="checkbox"
-          v-model="exact"
-          id="exact-option"
         />
         <label class="form-check-label" for="exact-option">
           Exact matches only
@@ -35,30 +35,30 @@
 
     <button
       class="btn btn-primary"
-      v-on:click="searchTriggered"
       :disabled="loading || query.length === 0"
+      @click="searchTriggered"
     >
       Search
     </button>
 
-    <div class="loading" v-if="loading">Searching...</div>
+    <div v-if="loading" class="loading">Searching...</div>
 
-    <div class="error" v-if="error">
+    <div v-if="error" class="error">
       <div class="warning">An error occurred.</div>
     </div>
 
-    <div class="results" v-if="results !== null">
+    <div v-if="results !== null" class="results">
       <div v-if="truncated">
         <b>Showing first 100 results only.</b> Try searching for something more
         precise to get a full list!
       </div>
 
       <ul v-if="results.length > 0">
-        <li v-for="result in results" v-bind:key="result.fileid">
+        <li v-for="result in results" :key="result.fileid">
           <b>
             <a :href="result.url" target="_blank">{{ result.name }}</a>
           </b>
-          <div v-for="file in result.files" v-bind:key="file.id" class="result">
+          <div v-for="file in result.files" :key="file.id" class="result">
             ➡
             <span v-if="file.url !== undefined">
               <a :href="file.url" target="_blank">{{ file.name }}</a>
@@ -70,7 +70,7 @@
           </div>
         </li>
       </ul>
-      <div class="no-results" v-else>
+      <div v-else class="no-results">
         <b>No results.</b>
       </div>
     </div>
