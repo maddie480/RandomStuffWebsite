@@ -15,6 +15,10 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -101,14 +105,40 @@ public class WipeConverterService extends HttpServlet {
      * @return An array of triangles, flattened and ready to be written to the bin file
      */
     private static List<Integer> convertWipeToTriangles(InputStream input) throws IOException {
-        Color[][] pixels = readImagePixelColors(ImageIO.read(input));
-        Color[][] pixelsCopy = new Color[pixels.length][pixels[0].length];
-        for (int i = 0; i < pixels.length; i++) {
-            System.arraycopy(pixels[i], 0, pixelsCopy[i], 0, pixels[0].length);
+        Path tempFile = Paths.get("/tmp/wipe_converter_" + System.currentTimeMillis());
+
+        try (InputStream is = input;
+             OutputStream os = Files.newOutputStream(tempFile)) {
+
+            IOUtils.copy(is, os);
+            log.debug("Image downloaded");
         }
 
-        List<Integer> solution1 = findTriangles(pixels, true);
-        List<Integer> solution2 = findTriangles(pixelsCopy, false);
+        List<Integer> solution1, solution2;
+
+        {
+            Color[][] pixels;
+            try (InputStream is = Files.newInputStream(tempFile)) {
+                pixels = readImagePixelColors(ImageIO.read(is));
+            }
+            log.debug("Image read for Solution 1");
+
+            solution1 = findTriangles(pixels, true);
+            log.debug("Solution 1 computed");
+        }
+
+        {
+            Color[][] pixels;
+            try (InputStream is = Files.newInputStream(tempFile)) {
+                pixels = readImagePixelColors(ImageIO.read(is));
+            }
+            log.debug("Image read for Solution 2");
+
+            solution2 = findTriangles(pixels, false);
+            log.debug("Solution 2 computed");
+        }
+
+        Files.delete(tempFile);
 
         return solution1.size() < solution2.size() ? solution1 : solution2;
     }
