@@ -162,14 +162,14 @@ const isHighlighted = function (
 };
 
 export default {
-  props: [
-    "item",
-    "highlight",
-    "parent",
-    "grandparent",
-    "onlyShowHighlight",
-    "outOfBoundsOnly",
-  ],
+  props: {
+    item: { type: Object, required: true },
+    highlight: { type: String, required: true },
+    parent: { type: Object, required: true },
+    grandparent: { type: Object, required: true },
+    onlyShowHighlight: { type: Boolean, required: true },
+    outOfBoundsOnly: { type: Boolean, required: true },
+  },
   data: () => ({
     expanded: false,
   }),

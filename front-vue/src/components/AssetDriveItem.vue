@@ -363,7 +363,12 @@ import axios from "axios";
 import config from "../config";
 
 export default {
-  props: ["data", "category-display-name", "zoom", "folders"],
+  props: {
+    data: { type: Object, required: true },
+    categoryDisplayName: { type: Object, required: true },
+    zoom: { type: Boolean, required: true },
+    folders: { type: Array, required: true },
+  },
   data: () => ({
     moreInfoShown: false,
     readme: null,
@@ -444,7 +449,7 @@ export default {
                 this.data.readme,
             )
           ).data;
-        } catch (e) {
+        } catch {
           this.readme = null;
         }
       }

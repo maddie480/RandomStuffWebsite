@@ -70,7 +70,7 @@ public class StaticAssetsAndRouteNotFoundServlet extends HttpServlet {
             HomepageService.doGet(request, response);
         } else {
             String extension = request.getRequestURI().substring(request.getRequestURI().lastIndexOf(".") + 1);
-            if (CONTENT_TYPES.containsKey(extension) && Stream.of("/css/", "/fonts/", "/img/", "/js/", "/vids/", "/music/", "/quest/", "/lua-cutscenes-documentation/", "/static/")
+            if (CONTENT_TYPES.containsKey(extension) && Stream.of("/assets/", "/css/", "/fonts/", "/img/", "/js/", "/vids/", "/music/", "/quest/", "/lua-cutscenes-documentation/", "/static/")
                     .anyMatch(request.getRequestURI()::startsWith)) {
 
                 long size;

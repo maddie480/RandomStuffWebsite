@@ -194,7 +194,7 @@ const vue = {
         this.loading = false;
         this.totalCount = result.headers["x-total-count"];
         this.mods = mods;
-      } catch (e) {
+      } catch {
         this.error = true;
         this.loading = false;
       }

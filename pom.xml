@@ -243,12 +243,12 @@
                 </configuration>
             </plugin>
 
-            <!-- Move the index.html of the Vue app at a place where the Java app can grab it -->
             <plugin>
                 <groupId>com.coderplus.maven.plugins</groupId>
                 <artifactId>copy-rename-maven-plugin</artifactId>
                 <version>1.0.1</version>
                 <executions>
+                    <!-- Move the index.html of the Vue app at a place where the Java app can grab it -->
                     <execution>
                         <id>move vue index.html</id>
                         <phase>generate-resources</phase>
@@ -258,6 +258,18 @@
                         <configuration>
                             <sourceFile>target/random-stuff-website-1.0.0/WEB-INF/classes/resources/index.html</sourceFile>
                             <destinationFile>target/random-stuff-website-1.0.0/WEB-INF/classes/vue-index.html</destinationFile>
+                        </configuration>
+                    </execution>
+                    <!-- Replace placeholder Maddie from front-vue/public with the actual one, since the Vue build replaced it -->
+                    <execution>
+                        <id>copy maddie-avatar.png</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <sourceFile>src/main/webapp/WEB-INF/classes/resources/img/maddie-avatar.png</sourceFile>
+                            <destinationFile>target/random-stuff-website-1.0.0/WEB-INF/classes/resources/img/maddie-avatar.png</destinationFile>
                         </configuration>
                     </execution>
                 </executions>
@@ -405,6 +417,10 @@
                         <executions>
                             <execution>
                                 <id>move vue index.html</id>
+                                <phase>none</phase>
+                            </execution>
+                            <execution>
+                                <id>copy maddie-avatar.png</id>
                                 <phase>none</phase>
                             </execution>
                         </executions>

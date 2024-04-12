@@ -43,7 +43,11 @@
 
 <script>
 export default {
-  props: ["page-number", "page-count"],
+  props: {
+    pageNumber: { type: Number, required: true },
+    pageCount: { type: Number, required: true },
+  },
+  emits: ["change-page"],
   data: () => ({
     gotoPage: 0,
   }),

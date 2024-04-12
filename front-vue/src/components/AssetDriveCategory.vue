@@ -106,7 +106,11 @@ import ListPaginator from "./ListPaginator.vue";
 
 export default {
   components: { AssetDriveItem, ListPaginator },
-  props: ["category", "category-display-name", "folders"],
+  props: {
+    category: { type: String, required: true },
+    categoryDisplayName: { type: String, required: true },
+    folders: { type: Array, required: true },
+  },
   data: () => ({
     loading: false,
     error: false,
@@ -149,7 +153,7 @@ export default {
         this.filterList();
 
         this.loading = false;
-      } catch (e) {
+      } catch {
         this.error = true;
         this.loading = false;
       }

@@ -99,8 +99,9 @@
 </template>
 
 <script>
+import axios from "axios";
+import config from "../config";
 import download from "downloadjs";
-import wipeConverter from "../services/wipe-converter";
 
 const vue = {
   name: "wipe-converter",
@@ -137,25 +138,13 @@ const vue = {
         for (let i = 0; i < selectedFiles.length; i++) {
           this.fileProgress = i;
 
-          // read the image as an ArrayBuffer
-          const fileBuffer = await new Promise((resolve, reject) => {
-            const reader = new FileReader();
-
-            reader.onload = (e) => {
-              resolve(e.target.result);
-            };
-
-            reader.onerror = (error) => {
-              reject(error);
-            };
-
-            reader.readAsArrayBuffer(selectedFiles[i]);
-          });
-
-          // convert it to triangles
-          const coordinates = await wipeConverter.convertWipeToTriangles(
-            Buffer.from(fileBuffer),
-          );
+          // convert the image to triangles
+          const coordinates = (
+            await axios.post(
+              `${config.backendUrl}/celeste/convert-wipe`,
+              selectedFiles[i],
+            )
+          ).data;
 
           // add the coordinate count, then the coordinates themselves, to the array.
           result.push(coordinates.length % 65536);
@@ -171,7 +160,7 @@ const vue = {
           "wipe.bin",
           "application/octet-stream",
         );
-      } catch (e) {
+      } catch {
         this.error = true;
       }
       this.converting = false;

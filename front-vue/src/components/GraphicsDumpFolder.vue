@@ -52,7 +52,11 @@ const countFilesRecursive = function (folder) {
 };
 
 export default {
-  props: ["folder", "selectedFolder"],
+  props: {
+    folder: { type: Array, required: true },
+    selectedFolder: { type: Object, required: true },
+  },
+  emits: ["select-folder"],
   data: () => ({
     expanded: false,
   }),

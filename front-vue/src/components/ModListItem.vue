@@ -81,6 +81,8 @@
             </button>
           </div>
           <div class="modal-body">
+            <!-- Let's trust GameBanana on that one... If I'm vulnerable, they are too. -->
+            <!-- eslint-disable-next-line vue/no-v-html -->
             <p class="gamebanana-description-html" v-html="mod.Text"></p>
           </div>
         </div>
@@ -195,7 +197,10 @@
 
 <script>
 export default {
-  props: ["mod", "mirror"],
+  props: {
+    mod: { type: Object, required: true },
+    mirror: { type: String, required: true },
+  },
   data: () => ({
     descriptionShown: false,
     downloadsShown: false,

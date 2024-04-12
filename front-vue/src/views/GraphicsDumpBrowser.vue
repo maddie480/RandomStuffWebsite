@@ -105,7 +105,7 @@ const vue = {
         this.folderStructure = folderStructure.children[0];
 
         this.loading = false;
-      } catch (e) {
+      } catch {
         this.error = true;
         this.loading = false;
       }

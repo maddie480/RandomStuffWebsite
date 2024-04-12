@@ -41,7 +41,10 @@
 import config from "../config";
 
 export default {
-  props: ["name", "path"],
+  props: {
+    name: { type: String, required: true },
+    path: { type: String, required: true },
+  },
   data: () => ({
     expanded: false,
   }),
