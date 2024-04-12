@@ -225,9 +225,11 @@ const vue = {
 export default vue;
 </script>
 
-<style scoped lang="scss">
+<style>
 @import "../../node_modules/vue-multiselect/dist/vue-multiselect.css";
+</style>
 
+<style scoped lang="scss">
 .loading,
 .error {
   margin-top: 30px;
