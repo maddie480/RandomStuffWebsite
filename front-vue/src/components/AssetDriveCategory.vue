@@ -150,6 +150,8 @@ export default {
           });
         });
 
+        this.allTags.sort((a, b) => a.localeCompare(b, "en"));
+
         this.filterList();
 
         this.loading = false;
