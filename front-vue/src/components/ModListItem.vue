@@ -73,12 +73,10 @@
             <h5 class="modal-title">{{ mod.Name }}</h5>
             <button
               type="button"
-              class="btn btn-link close"
+              class="btn-close"
               aria-label="Close"
               @click="closeDescription"
-            >
-              ×
-            </button>
+            ></button>
           </div>
           <div class="modal-body">
             <!-- Let's trust GameBanana on that one... If I'm vulnerable, they are too. -->
@@ -96,12 +94,10 @@
             <h5 class="modal-title">Download {{ mod.Name }}</h5>
             <button
               type="button"
-              class="btn btn-link close"
+              class="btn-close"
               aria-label="Close"
               @click="closeDownloads"
-            >
-              ×
-            </button>
+            ></button>
           </div>
           <div class="modal-body">
             <table
