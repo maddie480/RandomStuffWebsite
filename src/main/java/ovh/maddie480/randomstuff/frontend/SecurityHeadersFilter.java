@@ -69,12 +69,20 @@ public class SecurityHeadersFilter extends HttpFilter {
                     "script-src 'self' https://code.jquery.com; " +
                     "frame-ancestors 'none'; " +
                     "object-src 'none';");
-        } else if (Arrays.asList("/quest/mods", "/quest/tools", "/quest/backgrounds").contains(req.getRequestURI())) {
+        } else if (Arrays.asList("/quest/mods", "/quest/tools").contains(req.getRequestURI())) {
             // legacy stuff *has* to use jQuery
             res.setHeader("Content-Security-Policy", "default-src 'self'; " +
                     "script-src 'self' https://cdn.jsdelivr.net https://code.jquery.com; " +
                     "style-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; " +
                     "img-src 'self' data:; " +
+                    "frame-ancestors 'none'; " +
+                    "object-src 'none';");
+        } else if ("/quest/backgrounds".equals(req.getRequestURI())) {
+            // jQuery + access to Discord images
+            res.setHeader("Content-Security-Policy", "default-src 'self'; " +
+                    "script-src 'self' https://cdn.jsdelivr.net https://code.jquery.com; " +
+                    "style-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; " +
+                    "img-src 'self' https://cdn.discordapp.com data:; " +
                     "frame-ancestors 'none'; " +
                     "object-src 'none';");
         } else if ("/lnj-emotes".equals(req.getRequestURI())) {
