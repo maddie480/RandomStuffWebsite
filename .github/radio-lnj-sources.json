@@ -85,6 +85,11 @@
       "prefix": "FlatOut 3 - "
    },
    {
+      "url": "https://files.gamebanana.com/bitpit/turbo_trucks_soundtrackwav.zip",
+      "useYoutubeDl": false,
+      "prefix": ""
+   },
+   {
       "url": "https://youtube.com/playlist?list=PLA423290E18CD6DFF",
       "useYoutubeDl": true,
       "prefix": ""
