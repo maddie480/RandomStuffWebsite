@@ -4,7 +4,6 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.function.IOConsumer;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -16,6 +15,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ovh.maddie480.randomstuff.frontend.ConnectionUtils;
@@ -574,7 +574,7 @@ public class InteractionManager extends HttpServlet {
 
             JSONArray osmResults;
             try (InputStream is = ConnectionUtils.connectionToInputStream(osm)) {
-                osmResults = new JSONArray(IOUtils.toString(is, StandardCharsets.UTF_8));
+                osmResults = new JSONArray(new JSONTokener(is));
             }
 
             if (osmResults.isEmpty()) {
@@ -593,7 +593,7 @@ public class InteractionManager extends HttpServlet {
                 try (InputStream is = ConnectionUtils.openStreamWithTimeout("https://api.timezonedb.com/v2.1/get-time-zone?key="
                         + SecretConstants.TIMEZONEDB_API_KEY + "&format=json&by=position&lat=" + latitude + "&lng=" + longitude)) {
 
-                    timezoneDBResult = new JSONObject(IOUtils.toString(is, StandardCharsets.UTF_8));
+                    timezoneDBResult = new JSONObject(new JSONTokener(is));
                 }
 
                 if (timezoneDBResult.getString("status").equals("OK")) {

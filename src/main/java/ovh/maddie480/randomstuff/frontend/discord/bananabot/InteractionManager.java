@@ -4,9 +4,9 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ovh.maddie480.randomstuff.frontend.CelesteModSearchService;
@@ -17,6 +17,7 @@ import ovh.maddie480.randomstuff.frontend.discord.DiscordProtocolHandler;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -66,11 +67,13 @@ public class InteractionManager extends HttpServlet {
                             connection.setRequestProperty("Content-Type", "application/json");
                             connection.setRequestMethod("POST");
                             connection.setDoOutput(true);
-                            try (OutputStream os = connection.getOutputStream()) {
-                                IOUtils.write(followupMessageData.toString(), os, StandardCharsets.UTF_8);
+                            try (OutputStream os = connection.getOutputStream();
+                                 OutputStreamWriter bw = new OutputStreamWriter(os, StandardCharsets.UTF_8)) {
+
+                                followupMessageData.write(bw);
                             }
                             try (InputStream is = ConnectionUtils.connectionToInputStream(connection)) {
-                                JSONObject discordResponse = new JSONObject(IOUtils.toString(is, StandardCharsets.UTF_8));
+                                JSONObject discordResponse = new JSONObject(new JSONTokener(is));
                                 log.debug("Got response: {}", discordResponse.toString(2));
                             }
                         } catch (IOException | InterruptedException e) {

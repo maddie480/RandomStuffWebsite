@@ -9,6 +9,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -199,7 +200,7 @@ public class GameBananaArbitraryModAppService extends HttpServlet {
                 log.info("Could not retrieve mod by ID from cache, querying GameBanana directly");
                 try (InputStream is = openStreamWithTimeout("https://gamebanana.com/apiv8/Mod/" + modId +
                         "?_csvProperties=_sProfileUrl,_sName,_aPreviewMedia,_tsDateAdded,_tsDateUpdated,_aGame,_aRootCategory,_aSubmitter,_bIsWithheld,_bIsTrashed,_bIsPrivate,_nViewCount,_nLikeCount,_nPostCount")) {
-                    return new JSONObject(IOUtils.toString(is, UTF_8));
+                    return new JSONObject(new JSONTokener(is));
                 }
             }
         } catch (IOException e) {
@@ -386,7 +387,7 @@ public class GameBananaArbitraryModAppService extends HttpServlet {
         while (true) {
             JSONObject userList;
             try (InputStream is = ConnectionUtils.openStreamWithTimeout("https://gamebanana.com/apiv10/App/752/Users?_nPerpage=50&_nPage=" + page)) {
-                userList = new JSONObject(IOUtils.toString(is, UTF_8));
+                userList = new JSONObject(new JSONTokener(is));
             }
 
             JSONArray members = userList.getJSONArray("_aRecords");

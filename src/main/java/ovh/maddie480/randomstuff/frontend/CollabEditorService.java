@@ -6,16 +6,15 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -76,8 +75,8 @@ public class CollabEditorService extends HttpServlet {
             request.setAttribute("bad_request", !valid);
             request.setAttribute("saved", valid);
             if (valid) {
-                try (OutputStream os = Files.newOutputStream(Paths.get("/shared/celeste/collab-list/" + request.getQueryString().substring(4) + ".json"))) {
-                    IOUtils.write(collabInfo.toString(), os, StandardCharsets.UTF_8);
+                try (BufferedWriter bw = Files.newBufferedWriter(Paths.get("/shared/celeste/collab-list/" + request.getQueryString().substring(4) + ".json"))) {
+                    collabInfo.write(bw);
                 }
             }
 
@@ -87,8 +86,8 @@ public class CollabEditorService extends HttpServlet {
 
     private static void retrieveAndRespond(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         JSONObject collabInfo;
-        try (InputStream is = Files.newInputStream(Paths.get("/shared/celeste/collab-list/" + request.getQueryString().substring(4) + ".json"))) {
-            collabInfo = new JSONObject(IOUtils.toString(is, StandardCharsets.UTF_8));
+        try (BufferedReader br = Files.newBufferedReader(Paths.get("/shared/celeste/collab-list/" + request.getQueryString().substring(4) + ".json"))) {
+            collabInfo = new JSONObject(new JSONTokener(br));
         }
 
         for (String attribute : Arrays.asList("name", "status", "contact", "notes", "reqMappers", "reqCoders", "reqArtists",

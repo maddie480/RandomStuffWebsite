@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
@@ -134,8 +135,10 @@ public class CelesteFontGeneratorService extends HttpServlet {
         // publish the message to the backend!
         try (Socket socket = new Socket()) {
             socket.connect(new InetSocketAddress("127.0.1.1", 44480));
-            try (OutputStream os = socket.getOutputStream()) {
-                IOUtils.write(message.toString(), os, StandardCharsets.UTF_8);
+            try (OutputStream os = socket.getOutputStream();
+                 OutputStreamWriter bw = new OutputStreamWriter(os, StandardCharsets.UTF_8)) {
+
+                message.write(bw);
             }
         }
 
@@ -166,8 +169,10 @@ public class CelesteFontGeneratorService extends HttpServlet {
         // publish the message to the backend!
         try (Socket socket = new Socket()) {
             socket.connect(new InetSocketAddress("127.0.1.1", 44480));
-            try (OutputStream os = socket.getOutputStream()) {
-                IOUtils.write(message.toString(), os, StandardCharsets.UTF_8);
+            try (OutputStream os = socket.getOutputStream();
+                 OutputStreamWriter bw = new OutputStreamWriter(os, StandardCharsets.UTF_8)) {
+
+                message.write(bw);
             }
         }
 

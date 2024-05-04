@@ -8,13 +8,14 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.ObjectInputStream;
-import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -162,8 +163,8 @@ public class MattermostService extends HttpServlet {
             data.put("lockedBy", user);
             data.put("lockTime", System.currentTimeMillis());
 
-            try (OutputStream os = Files.newOutputStream(Paths.get("/shared/mattermost/lock_" + resource + ".json"))) {
-                IOUtils.write(data.toString(), os, UTF_8);
+            try (BufferedWriter bw = Files.newBufferedWriter(Paths.get("/shared/mattermost/lock_" + resource + ".json"))) {
+                data.write(bw);
             }
 
             jsonObject.put("text", ":lock: @" + user + " a verrouillé la ressource **" + resource + "**.");
@@ -209,8 +210,8 @@ public class MattermostService extends HttpServlet {
         }
 
         JSONObject lockData;
-        try (InputStream is = Files.newInputStream(lockFile)) {
-            lockData = new JSONObject(IOUtils.toString(is, UTF_8));
+        try (BufferedReader br = Files.newBufferedReader(lockFile)) {
+            lockData = new JSONObject(new JSONTokener(br));
         }
 
         // locks expire after 12 hours.

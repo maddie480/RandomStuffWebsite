@@ -8,12 +8,13 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -184,8 +185,8 @@ public class AssetDriveService extends HttpServlet {
 
     private void buildAssetMap() throws IOException {
         JSONArray allFiles;
-        try (InputStream is = Files.newInputStream(fileListFile)) {
-            allFiles = new JSONArray(IOUtils.toString(is, StandardCharsets.UTF_8));
+        try (BufferedReader br = Files.newBufferedReader(fileListFile)) {
+            allFiles = new JSONArray(new JSONTokener(br));
         }
 
         Map<String, JSONObject> result = new HashMap<>();
@@ -206,8 +207,8 @@ public class AssetDriveService extends HttpServlet {
         Map<String, String> responsePerCategory = new HashMap<>();
 
         JSONObject allCategories;
-        try (InputStream is = Files.newInputStream(categorizedAssetsFile)) {
-            allCategories = new JSONObject(IOUtils.toString(is, StandardCharsets.UTF_8));
+        try (BufferedReader br = Files.newBufferedReader(categorizedAssetsFile)) {
+            allCategories = new JSONObject(new JSONTokener(br));
         }
         for (String category : Arrays.asList("misc", "decals", "stylegrounds", "bgtilesets", "fgtilesets", "hires")) {
             responsePerCategory.put(category, allCategories.getJSONArray(category).toString());

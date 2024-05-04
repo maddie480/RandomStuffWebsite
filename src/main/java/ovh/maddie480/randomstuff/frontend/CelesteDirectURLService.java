@@ -5,12 +5,13 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLEncoder;
@@ -62,8 +63,8 @@ public class CelesteDirectURLService extends HttpServlet {
         } else if (request.getRequestURI().equals("/celeste/download-everest")) {
             JSONObject branch;
 
-            try (InputStream is = Files.newInputStream(Paths.get("/shared/celeste/everest-versions-with-native.json"))) {
-                JSONArray versions = new JSONArray(IOUtils.toString(is, StandardCharsets.UTF_8));
+            try (BufferedReader br = Files.newBufferedReader(Paths.get("/shared/celeste/everest-versions-with-native.json"))) {
+                JSONArray versions = new JSONArray(new JSONTokener(br));
                 branch = getBranch(versions, request.getParameter("branch"));
             }
 
@@ -76,8 +77,8 @@ public class CelesteDirectURLService extends HttpServlet {
         } else if (request.getRequestURI().equals("/celeste/download-olympus")) {
             JSONObject branch;
 
-            try (InputStream is = Files.newInputStream(Paths.get("/shared/celeste/olympus-versions.json"))) {
-                JSONArray versions = new JSONArray(IOUtils.toString(is, StandardCharsets.UTF_8));
+            try (BufferedReader br = Files.newBufferedReader(Paths.get("/shared/celeste/olympus-versions.json"))) {
+                JSONArray versions = new JSONArray(new JSONTokener(br));
                 branch = getBranch(versions, request.getParameter("branch"));
             }
 

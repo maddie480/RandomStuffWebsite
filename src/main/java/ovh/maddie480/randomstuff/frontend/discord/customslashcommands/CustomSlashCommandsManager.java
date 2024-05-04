@@ -10,6 +10,7 @@ import ovh.maddie480.randomstuff.frontend.SecretConstants;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
@@ -47,8 +48,10 @@ public class CustomSlashCommandsManager {
         connection.setRequestProperty("User-Agent", USER_AGENT);
         connection.setDoOutput(true);
 
-        try (OutputStream os = connection.getOutputStream()) {
-            IOUtils.write(commandObject.toString(), os, StandardCharsets.UTF_8);
+        try (OutputStream os = connection.getOutputStream();
+             OutputStreamWriter bw = new OutputStreamWriter(os, StandardCharsets.UTF_8)) {
+
+            commandObject.write(bw);
         }
 
         try (InputStream is = ConnectionUtils.connectionToInputStream(connection)) {

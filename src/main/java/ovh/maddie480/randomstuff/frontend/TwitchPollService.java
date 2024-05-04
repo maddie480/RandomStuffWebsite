@@ -8,11 +8,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -42,8 +43,8 @@ public class TwitchPollService extends HttpServlet {
         } else {
             // display it as a page
             JSONObject pollInfo;
-            try (InputStream is = Files.newInputStream(pollFile)) {
-                pollInfo = new JSONObject(IOUtils.toString(is, StandardCharsets.UTF_8));
+            try (BufferedReader br = Files.newBufferedReader(pollFile)) {
+                pollInfo = new JSONObject(new JSONTokener(br));
             }
 
             request.setAttribute("title", pollInfo.getString("name"));

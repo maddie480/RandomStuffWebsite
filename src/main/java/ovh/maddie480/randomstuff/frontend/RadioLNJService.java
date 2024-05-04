@@ -5,16 +5,15 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
-import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.time.Instant;
 import java.util.*;
@@ -35,7 +34,7 @@ public class RadioLNJService extends HttpServlet {
         try (InputStream is = RadioLNJService.class.getClassLoader().getResourceAsStream("radio_lnj_meta.json")) {
             playlist = new ArrayList<>();
 
-            JSONArray array = new JSONArray(IOUtils.toString(is, StandardCharsets.UTF_8));
+            JSONArray array = new JSONArray(new JSONTokener(is));
             for (Object o : array) {
                 JSONObject item = (JSONObject) o;
                 item.put("duration", item.getInt("duration") + 1000);

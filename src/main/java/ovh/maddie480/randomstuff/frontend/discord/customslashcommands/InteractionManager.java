@@ -5,18 +5,17 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ovh.maddie480.randomstuff.frontend.SecretConstants;
 import ovh.maddie480.randomstuff.frontend.discord.DiscordProtocolHandler;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -179,8 +178,8 @@ public class InteractionManager extends HttpServlet {
                 return null;
             }
 
-            try (InputStream is = Files.newInputStream(info.getStoragePath())) {
-                JSONObject commandInfo = new JSONObject(IOUtils.toString(is, StandardCharsets.UTF_8));
+            try (BufferedReader br = Files.newBufferedReader(info.getStoragePath())) {
+                JSONObject commandInfo = new JSONObject(new JSONTokener(br));
                 info.id = commandInfo.getLong("id");
                 info.isPublic = commandInfo.getBoolean("isPublic");
 

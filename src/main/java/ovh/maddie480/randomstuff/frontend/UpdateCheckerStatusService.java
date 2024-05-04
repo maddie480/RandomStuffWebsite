@@ -6,13 +6,12 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Instant;
@@ -64,8 +63,8 @@ public class UpdateCheckerStatusService extends HttpServlet {
         JSONObject updaterStatusJson;
 
         // retrieve the update checker status from storage!
-        try (InputStream is = Files.newInputStream(Paths.get("/shared/celeste/updater/status.json"))) {
-            updaterStatusJson = new JSONObject(IOUtils.toString(is, StandardCharsets.UTF_8));
+        try (BufferedReader br = Files.newBufferedReader(Paths.get("/shared/celeste/updater/status.json"))) {
+            updaterStatusJson = new JSONObject(new JSONTokener(br));
 
             lastFullCheckTimestamp = updaterStatusJson.getLong("lastFullCheckTimestamp");
             lastIncrementalCheckTimestamp = updaterStatusJson.getLong("lastIncrementalCheckTimestamp");

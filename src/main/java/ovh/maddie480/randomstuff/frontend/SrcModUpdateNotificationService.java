@@ -6,11 +6,12 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
+import org.json.JSONTokener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -23,7 +24,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.max480.randomstuff.backend.celeste.crontabs.UpdateCheckerTracker.ModInfo;
-import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * Allows the speedrun.com moderator team to manage which mods they want to be notified about.
@@ -77,8 +77,8 @@ public class SrcModUpdateNotificationService extends HttpServlet {
                 List<String> modList;
                 Path modUpdateNotificationIdsFile = Paths.get("/shared/celeste/src-mod-update-notification-ids.json");
 
-                try (InputStream is = Files.newInputStream(modUpdateNotificationIdsFile)) {
-                    modList = new JSONArray(IOUtils.toString(is, UTF_8)).toList()
+                try (BufferedReader br = Files.newBufferedReader(modUpdateNotificationIdsFile)) {
+                    modList = new JSONArray(new JSONTokener(br)).toList()
                             .stream()
                             .map(Object::toString)
                             .collect(Collectors.toCollection(ArrayList::new));
@@ -132,8 +132,8 @@ public class SrcModUpdateNotificationService extends HttpServlet {
 
     private void populateModList(HttpServletRequest request) throws IOException {
         List<String> modList;
-        try (InputStream is = Files.newInputStream(Paths.get("/shared/celeste/src-mod-update-notification-ids.json"))) {
-            modList = new JSONArray(IOUtils.toString(is, UTF_8)).toList()
+        try (BufferedReader br = Files.newBufferedReader(Paths.get("/shared/celeste/src-mod-update-notification-ids.json"))) {
+            modList = new JSONArray(new JSONTokener(br)).toList()
                     .stream()
                     .map(Object::toString)
                     .collect(Collectors.toCollection(ArrayList::new));

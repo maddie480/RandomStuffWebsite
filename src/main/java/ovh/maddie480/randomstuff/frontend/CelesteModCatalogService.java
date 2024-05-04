@@ -10,9 +10,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -102,8 +104,8 @@ public class CelesteModCatalogService extends HttpServlet {
 
     private Pair<List<QueriedModInfo>, ZonedDateTime> loadList() throws IOException {
         // just load and parse the custom entity catalog JSON.
-        try (InputStream is = Files.newInputStream(Paths.get("/shared/celeste/custom-entity-catalog.json"))) {
-            JSONObject obj = new JSONObject(IOUtils.toString(is, UTF_8));
+        try (BufferedReader br = Files.newBufferedReader(Paths.get("/shared/celeste/custom-entity-catalog.json"))) {
+            JSONObject obj = new JSONObject(new JSONTokener(br));
             ZonedDateTime lastUpdated = ZonedDateTime.parse(obj.getString("lastUpdated")).withZoneSameInstant(ZoneId.of("UTC"));
             List<QueriedModInfo> modInfo = obj.getJSONArray("modInfo").toList().stream()
                     .map(item -> (HashMap<String, Object>) item)

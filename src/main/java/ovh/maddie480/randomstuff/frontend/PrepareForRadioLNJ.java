@@ -6,10 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -88,8 +85,8 @@ public class PrepareForRadioLNJ {
             }
         }
 
-        try (OutputStream os = Files.newOutputStream(Paths.get("radio_lnj_meta.json"))) {
-            IOUtils.write(metadata.toString(), os, StandardCharsets.UTF_8);
+        try (BufferedWriter bw = Files.newBufferedWriter(Paths.get("radio_lnj_meta.json"))) {
+            metadata.write(bw);
         }
     }
 

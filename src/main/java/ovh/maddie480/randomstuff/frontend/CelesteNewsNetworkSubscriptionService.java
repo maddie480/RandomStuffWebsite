@@ -6,14 +6,14 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
+import org.json.JSONTokener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.nio.file.Files;
@@ -22,8 +22,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * Servlet allowing to subscribe to the #celeste_news_network channel from Celestecord.
@@ -71,8 +69,8 @@ public class CelesteNewsNetworkSubscriptionService extends HttpServlet {
             Path subscriberDatabase = Paths.get("/shared/celeste/celeste-news-network-subscribers.json");
 
             List<String> webhookUrls;
-            try (InputStream is = Files.newInputStream(subscriberDatabase)) {
-                webhookUrls = new JSONArray(IOUtils.toString(is, UTF_8)).toList()
+            try (BufferedReader br = Files.newBufferedReader(subscriberDatabase)) {
+                webhookUrls = new JSONArray(new JSONTokener(br)).toList()
                         .stream()
                         .map(Object::toString)
                         .collect(Collectors.toCollection(ArrayList::new));
@@ -151,8 +149,8 @@ public class CelesteNewsNetworkSubscriptionService extends HttpServlet {
     }
 
     private int countSubscribers() throws IOException {
-        try (InputStream is = Files.newInputStream(Paths.get("/shared/celeste/celeste-news-network-subscribers.json"))) {
-            return new JSONArray(IOUtils.toString(is, UTF_8)).length();
+        try (BufferedReader br = Files.newBufferedReader(Paths.get("/shared/celeste/celeste-news-network-subscribers.json"))) {
+            return new JSONArray(new JSONTokener(br)).length();
         }
     }
 }

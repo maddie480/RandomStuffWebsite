@@ -6,16 +6,15 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -35,8 +34,8 @@ public class CollabListService extends HttpServlet {
         List<JSONObject> contents = new ArrayList<>();
 
         for (String s : new File("/shared/celeste/collab-list").list()) {
-            try (InputStream is = Files.newInputStream(Paths.get("/shared/celeste/collab-list/" + s))) {
-                JSONObject o = new JSONObject(IOUtils.toString(is, StandardCharsets.UTF_8));
+            try (BufferedReader br = Files.newBufferedReader(Paths.get("/shared/celeste/collab-list/" + s))) {
+                JSONObject o = new JSONObject(new JSONTokener(br));
                 if (!"hidden".equals(o.getString("status"))) {
                     contents.add(o);
                     o.put("notes", escapeHtmlAndHighlightLinks(o.getString("notes")));

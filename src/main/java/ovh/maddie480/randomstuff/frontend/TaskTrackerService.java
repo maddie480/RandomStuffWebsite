@@ -9,9 +9,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -81,8 +83,8 @@ public class TaskTrackerService extends HttpServlet {
 
                     // parse the result
                     JSONObject result;
-                    try (InputStream is = Files.newInputStream(report)) {
-                        result = new JSONObject(IOUtils.toString(is, StandardCharsets.UTF_8));
+                    try (BufferedReader br = Files.newBufferedReader(report)) {
+                        result = new JSONObject(new JSONTokener(br));
                     }
                     request.setAttribute("taskResult", result.getString("responseText"));
                     request.setAttribute("taskResultType", getResultType(result.getString("responseText")));
@@ -108,8 +110,8 @@ public class TaskTrackerService extends HttpServlet {
             } else {
                 // parse the task result
                 JSONObject result;
-                try (InputStream is = Files.newInputStream(report)) {
-                    result = new JSONObject(IOUtils.toString(is, StandardCharsets.UTF_8));
+                try (BufferedReader br = Files.newBufferedReader(report)) {
+                    result = new JSONObject(new JSONTokener(br));
                 }
 
                 JSONArray attachmentNames = result.getJSONArray("attachments");

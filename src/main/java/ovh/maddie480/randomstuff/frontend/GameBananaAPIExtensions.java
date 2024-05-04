@@ -4,16 +4,16 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -57,7 +57,10 @@ public class GameBananaAPIExtensions extends HttpServlet {
                 \t\t<title>GameBanana API RSS Feed</title>
                 """);
 
-        JSONArray modList = new JSONArray(IOUtils.toString(ConnectionUtils.connectionToInputStream(connection), StandardCharsets.UTF_8));
+        JSONArray modList;
+        try (InputStream is = ConnectionUtils.connectionToInputStream(connection)) {
+            modList = new JSONArray(new JSONTokener(is));
+        }
 
         for (Object item : modList) {
             JSONObject mod = (JSONObject) item;

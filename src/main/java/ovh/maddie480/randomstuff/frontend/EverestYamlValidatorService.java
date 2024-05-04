@@ -10,9 +10,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -121,7 +123,7 @@ public class EverestYamlValidatorService extends HttpServlet {
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         // generate a sample everest.yaml that depends on latest Everest stable
-        try (InputStream is = Files.newInputStream(Paths.get("/shared/celeste/latest-everest-versions.json"));
+        try (BufferedReader br = Files.newBufferedReader(Paths.get("/shared/celeste/latest-everest-versions.json"));
              ByteArrayOutputStream os = new ByteArrayOutputStream()) {
 
             YamlUtil.dump(Collections.singletonList(ImmutableMap.of(
@@ -129,7 +131,7 @@ public class EverestYamlValidatorService extends HttpServlet {
                     "Version", "1.0.0",
                     "Dependencies", Collections.singletonList(ImmutableMap.of(
                             "Name", "Everest",
-                            "Version", "1." + new JSONObject(IOUtils.toString(is, UTF_8)).getInt("stable") + ".0"
+                            "Version", "1." + new JSONObject(new JSONTokener(br)).getInt("stable") + ".0"
                     ))
             )), os);
 
@@ -196,8 +198,8 @@ public class EverestYamlValidatorService extends HttpServlet {
                         .collect(Collectors.toCollection(ArrayList::new));
 
                 // add private mods that come from GitHub directly.
-                try (InputStream is = Files.newInputStream(Paths.get("/shared/celeste/everest-yamls-from-github.json"))) {
-                    JSONObject modsFromGitHub = new JSONObject(IOUtils.toString(is, UTF_8));
+                try (BufferedReader br = Files.newBufferedReader(Paths.get("/shared/celeste/everest-yamls-from-github.json"))) {
+                    JSONObject modsFromGitHub = new JSONObject(new JSONTokener(br));
                     for (String key : modsFromGitHub.keySet()) {
                         EverestModuleMetadata metadata = new EverestModuleMetadata();
                         metadata.Name = key;
@@ -207,8 +209,8 @@ public class EverestYamlValidatorService extends HttpServlet {
                 }
 
                 JSONObject everestVersions;
-                try (InputStream is = Files.newInputStream(Paths.get("/shared/celeste/latest-everest-versions.json"))) {
-                    everestVersions = new JSONObject(IOUtils.toString(is, UTF_8));
+                try (BufferedReader br = Files.newBufferedReader(Paths.get("/shared/celeste/latest-everest-versions.json"))) {
+                    everestVersions = new JSONObject(new JSONTokener(br));
                 }
 
                 // add entries that don't come from the database: Celeste, Everest, and things declared by the yaml itself.

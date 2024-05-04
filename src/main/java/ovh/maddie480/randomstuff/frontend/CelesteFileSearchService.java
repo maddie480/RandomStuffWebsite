@@ -4,13 +4,13 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URLEncoder;
@@ -66,8 +66,10 @@ public class CelesteFileSearchService extends HttpServlet {
 
                 try (Socket socket = new Socket()) {
                     socket.connect(new InetSocketAddress("127.0.1.1", 44480));
-                    try (OutputStream os = socket.getOutputStream()) {
-                        IOUtils.write(message.toString(), os, StandardCharsets.UTF_8);
+                    try (OutputStream os = socket.getOutputStream();
+                         OutputStreamWriter bw = new OutputStreamWriter(os, StandardCharsets.UTF_8)) {
+
+                        message.write(bw);
                     }
                 }
 
