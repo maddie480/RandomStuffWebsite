@@ -306,3 +306,10 @@ This API is available at `https://maddie480.ovh/celeste/olympus-versions`, and r
 - `windowsDownload`, `macDownload` and `linuxDownload` are download links for each platform.
 - `date` is the date at which the version was published, in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format.
 - `changelog` is the changelog of the version, pulled straight from the `changelog.txt` file on the repository. (That's where in-app update changelogs come from.)
+
+## Lönn versions list API
+
+This API is available at `https://maddie480.ovh/celeste/loenn-versions`. It is a mirror of the GitHub API listing [Lönn releases](https://github.com/CelestialCartographers/Loenn/releases), refreshed once an hour.
+
+The original API is available [here](https://api.github.com/repos/CelestialCartographers/Loenn/releases/latest).
+Check [the GitHub docs](https://docs.github.com/en/rest/releases/releases#list-releases) for more info about the format of the response.

@@ -32,7 +32,7 @@ import static com.max480.randomstuff.backend.celeste.crontabs.UpdateCheckerTrack
 @WebServlet(name = "CelesteModSearchService", loadOnStartup = 2, urlPatterns = {"/celeste/gamebanana-search",
         "/celeste/gamebanana-search-reload", "/celeste/gamebanana-list", "/celeste/gamebanana-categories", "/celeste/gamebanana-info",
         "/celeste/random-map", "/celeste/gamebanana-featured", "/celeste/everest-versions", "/celeste/everest-versions-reload",
-        "/celeste/olympus-versions"})
+        "/celeste/olympus-versions", "/celeste/loenn-versions"})
 public class CelesteModSearchService extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(CelesteModSearchService.class);
 
@@ -305,6 +305,15 @@ public class CelesteModSearchService extends HttpServlet {
             response.setHeader("Content-Type", "application/json");
 
             try (InputStream is = Files.newInputStream(Paths.get("/shared/celeste/olympus-versions.json"))) {
+                IOUtils.copy(is, response.getOutputStream());
+            }
+        }
+
+        if ("/celeste/loenn-versions".equals(request.getRequestURI())) {
+            // send loenn-versions.json
+            response.setHeader("Content-Type", "application/json");
+
+            try (InputStream is = Files.newInputStream(Paths.get("/shared/celeste/loenn-versions.json"))) {
                 IOUtils.copy(is, response.getOutputStream());
             }
         }

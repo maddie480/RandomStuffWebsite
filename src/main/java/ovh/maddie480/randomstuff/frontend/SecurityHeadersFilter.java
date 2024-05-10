@@ -120,7 +120,7 @@ public class SecurityHeadersFilter extends HttpFilter {
                         "/celeste/gamebanana-info", "/celeste/bin-to-json", "/celeste/custom-entity-catalog.json", "/celeste/everest-versions",
                         "/celeste/update-checker-status.json", "/celeste/everest_update.yaml", "/celeste/mod_search_database.yaml",
                         "/celeste/mod_dependency_graph.yaml", "/celeste/olympus-news.json", "/celeste/graphics-dump-browser/list.json",
-                        "/celeste/olympus-versions")
+                        "/celeste/olympus-versions", "/celeste/loenn-versions")
                 .contains(req.getRequestURI())) {
             // allow most JSON and YAML APIs to be called from anywhere.
             res.setHeader("Access-Control-Allow-Origin", "*");
