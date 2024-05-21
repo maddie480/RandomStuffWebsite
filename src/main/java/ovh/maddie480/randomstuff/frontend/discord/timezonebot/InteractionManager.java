@@ -6,12 +6,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.io.function.IOConsumer;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpPatch;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
+import org.apache.hc.client5.http.classic.methods.HttpPatch;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.core5.http.ContentType;
+import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -964,11 +963,13 @@ public class InteractionManager extends HttpServlet {
             HttpPatch httpPatch = new HttpPatch(new URI(url));
             httpPatch.setHeader("User-Agent", "DiscordBot (https://maddie480.ovh/discord-bots/#timezone-bot, 1.0)");
             httpPatch.setEntity(new StringEntity(message, ContentType.APPLICATION_JSON));
-            CloseableHttpResponse httpResponse = httpClient.execute(httpPatch);
+            httpClient.execute(httpPatch, httpResponse -> {
+                if (httpResponse.getCode() != 200) {
+                    log.error("Discord responded with {} to our edit request!", httpResponse.getCode());
+                }
+                return null;
+            });
 
-            if (httpResponse.getStatusLine().getStatusCode() != 200) {
-                log.error("Discord responded with " + httpResponse.getStatusLine().getStatusCode() + " to our edit request!");
-            }
         } catch (URISyntaxException e) {
             throw new IOException(e);
         }
