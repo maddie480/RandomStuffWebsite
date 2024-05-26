@@ -70,7 +70,9 @@
     <h2>Your map is not in the right folder</h2>
 
     <div>
-        Make sure your map .bin file is placed in <pre>Maps/<%= escapeHtml4(request.getParameter("collabMapName")) %>/[subfolder]/mapname.bin</pre>.
+        Make sure your map .bin file is placed in <pre>Maps/<%=
+            escapeHtml4(request.getParameter(request.getParameter("collabMapName") != null ? "collabMapName" : "collabName"))
+        %>/[subfolder]/mapname.bin</pre>.
     </div>
 <% } %>
 
