@@ -41,6 +41,11 @@
         The official Mastodon account of EXOK Games, the developer of Celeste
     </li>
     <li>
+        <!-- I'm aware it's supposed to be called X now, but like... no -->
+        <b><a href="https://twitter.com/celeste_game" target="_blank">@celeste_game</a></b> &#x2013;
+        The official Twitter account for Celeste
+    </li>
+    <li>
         <b><a href="/celeste/olympus-news" target="_blank">Olympus News</a></b> &#x2013; Celeste modding news that appear in
         <a href="https://gamebanana.com/tools/6449" target="_blank">Olympus</a>, a mod manager and installer for
         the <a href="https://everestapi.github.io" target="_blank">Everest</a> mod loader.

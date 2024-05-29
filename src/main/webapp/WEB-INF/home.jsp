@@ -42,7 +42,7 @@
         </li>
         <li>
             <b><a href="/celeste/news-network-subscription">#celeste_news_network Subscription</a>:</b> register a Discord
-            webhook there to receive posts from EXOK's Mastodon account, and Celeste modding news. This service is what powers the
+            webhook there to receive posts from EXOK's Mastodon and Twitter accounts, and Celeste modding news. This service is what powers the
             <code>#celeste_news_network</code> channel in the <a href="https://discord.gg/celeste" target="_blank">Celeste Discord</a>.
         </li>
         <li>
