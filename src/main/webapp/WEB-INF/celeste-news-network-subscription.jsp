@@ -12,13 +12,13 @@
     <div class="alert alert-warning">
         Your webhook is not registered! You cannot unregister it.
     </div>
-<% } else if((boolean) request.getAttribute("already_registered")) { %>
-    <div class="alert alert-info">
-        Your webhook is already registered!
-    </div>
 <% } else if((boolean) request.getAttribute("subscribe_success")) { %>
     <div class="alert alert-success">
-        Your webhook was registered successfully! You should have received the test message on it.
+        <% if((boolean) request.getAttribute("already_registered")) { %>
+            Your webhook subscription has been successfully updated! You should have received the test message on it.
+        <% } else { %>
+            Your webhook was registered successfully! You should have received the test message on it.
+        <% } %>
     </div>
 <% } else if((boolean) request.getAttribute("unsubscribe_success")) { %>
     <div class="alert alert-success">
@@ -32,7 +32,7 @@
 </p>
 
 <p class="last">
-    This webhook will receive messages from:
+    This webhook can receive messages from:
 </p>
 
 <ul>
@@ -75,7 +75,26 @@
         <label for="url"><b>Discord Webhook URL</b></label>
         <input type="text" class="form-control" id="url" name="url" required pattern="^https:\/\/discord\.com\/api\/webhooks\/[0-9]+/[A-Za-z0-9-_]+$">
     </div>
+    <b>Subscribe to:</b>
+    <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="mastodon" name="mastodon" />
+        <label class="form-check-label" for="mastodon">Mastodon</label>
+    </div>
+    <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="twitter" name="twitter" />
+        <label class="form-check-label" for="twitter">Twitter</label>
+    </div>
+    <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="olympus" name="olympus" />
+        <label class="form-check-label" for="olympus">Olympus News</label>
+    </div>
 
-    <input type="submit" class="btn btn-success" name="action" value="Subscribe">
+    <p>
+        <i>You can change your choices later by coming back to this page and subscribing again. This will update your subscription.</i>
+    </p>
+
+    <input type="submit" class="btn btn-success" name="action" value="Subscribe" disabled>
     <input type="submit" class="btn btn-danger" name="action" value="Unsubscribe">
 </form>
+
+<script src="/js/celeste-news-network-subscription.js"></script>
