@@ -32,11 +32,12 @@ import static com.max480.randomstuff.backend.celeste.crontabs.UpdateCheckerTrack
 @WebServlet(name = "CelesteModSearchService", loadOnStartup = 2, urlPatterns = {"/celeste/gamebanana-search",
         "/celeste/gamebanana-search-reload", "/celeste/gamebanana-list", "/celeste/gamebanana-categories", "/celeste/gamebanana-info",
         "/celeste/random-map", "/celeste/gamebanana-featured", "/celeste/everest-versions", "/celeste/everest-versions-reload",
-        "/celeste/olympus-versions", "/celeste/loenn-versions"})
+        "/celeste/olympus-versions", "/celeste/loenn-versions", "/celeste/helper-list"})
 public class CelesteModSearchService extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(CelesteModSearchService.class);
 
     private static List<ModInfo> modDatabaseForSorting = Collections.emptyList();
+    private List<String> helperList = Collections.emptyList();
     private Map<Integer, String> modCategories;
 
     private byte[] everestVersionsNoNative;
@@ -278,6 +279,11 @@ public class CelesteModSearchService extends HttpServlet {
             YamlUtil.dump(responseBody, response.getOutputStream());
         }
 
+        if (request.getRequestURI().equals("/celeste/helper-list")) {
+            response.setHeader("Content-Type", "application/json");
+            new JSONArray(helperList).write(response.getWriter());
+        }
+
         if (request.getRequestURI().equals("/celeste/everest-versions-reload")) {
             if (("key=" + SecretConstants.RELOAD_SHARED_SECRET).equals(request.getQueryString())) {
                 refreshEverestVersions();
@@ -413,10 +419,49 @@ public class CelesteModSearchService extends HttpServlet {
         try (ObjectInputStream is = new ObjectInputStream(Files.newInputStream(Paths.get("/shared/celeste/mod-search-database.ser")))) {
             modDatabaseForSorting = (List<ModInfo>) is.readObject();
             modCategories = (Map<Integer, String>) is.readObject();
-            log.debug("There are " + modDatabaseForSorting.size() + " mods in the search database.");
+            log.debug("There are {} mods in the search database.", modDatabaseForSorting.size());
         } catch (ClassNotFoundException e) {
             throw new IOException(e);
         }
+
+        Map<String, Map<String, Object>> updaterDatabase;
+        try (InputStream is = Files.newInputStream(Paths.get("/shared/celeste/updater/everest-update.yaml"))) {
+            updaterDatabase = YamlUtil.load(is);
+        }
+
+        Set<String> helpers = modDatabaseForSorting.stream()
+                // 1. Only keep Helper mods
+                .filter(mod -> mod.categoryId == 5081)
+
+                // 2. Find the entry in everest_update.yaml that matches the Helper mods
+                .map(mod -> updaterDatabase.entrySet().stream()
+                        .filter(entry -> mod.type.equals(entry.getValue().get("GameBananaType"))
+                                && mod.id == (int) entry.getValue().get("GameBananaId"))
+                        .findFirst().orElse(null))
+                .filter(Objects::nonNull)
+
+                // 3. Take their everest.yaml names and turn that into a list
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toSet());
+
+        // add a few manually
+        helpers.add("AurorasHelper"); // categorized as Tool
+        helpers.add("BGswitch"); // Other/Misc
+        helpers.add("ColoredLights"); // Other/Misc
+        helpers.add("corkr900GraphicsPack"); // Asset
+        helpers.add("DisposableTheo"); // Mechanic
+        helpers.add("ExtendedVariantMode"); // Other/Misc
+        helpers.add("memorialHelper"); // Other/Misc
+        helpers.add("NovasUtils"); // Lönn Plugin
+        helpers.add("Portaline"); // Mechanic
+        helpers.add("ShaderHelper"); // Other/Misc
+        helpers.add("CutsceneHelper"); // Other/Misc
+
+        List<String> helpersList = new ArrayList<>(helpers);
+        helpersList.sort(Comparator.naturalOrder());
+        helperList = helpersList;
+
+        log.debug("Found {} helpers in the database.", helperList.size());
     }
 
     private void refreshEverestVersions() throws IOException {
