@@ -1,4 +1,4 @@
-<%@ page import="java.util.List, java.util.Map, ovh.maddie480.randomstuff.frontend.CelesteModCatalogService, static org.apache.commons.text.StringEscapeUtils.escapeHtml4"%>
+<%@ page import="java.util.List, java.util.Map, ovh.maddie480.randomstuff.frontend.CelesteModCatalogService, ovh.maddie480.randomstuff.frontend.CelesteModSearchService, static org.apache.commons.text.StringEscapeUtils.escapeHtml4"%>
 
 <% if((boolean) request.getAttribute("error")) { %>
     <div class="alert alert-danger">
@@ -53,9 +53,9 @@
         <% for(CelesteModCatalogService.QueriedModInfo mod : (List<CelesteModCatalogService.QueriedModInfo>) request.getAttribute("mods")) { %>
             <li>
                 <a href="#<%= CelesteModCatalogService.dasherize(mod.modName) %>"><%= escapeHtml4(mod.modName) %></a>
-                <% if(mod.categoryId == 5081) { %>
+                <% if (mod.categoryId == 5081) { %>
                     <span class="badge bg-success"><%= escapeHtml4(mod.categoryName) %></span>
-                <% } else if(mod.categoryId == 6800) { %>
+                <% } else if (CelesteModSearchService.mapCategories.contains(mod.categoryId)) { %>
                     <span class="badge bg-danger"><%= escapeHtml4(mod.categoryName) %></span>
                 <% } else { %>
                     <span class="badge bg-warning"><%= escapeHtml4(mod.categoryName) %></span>
