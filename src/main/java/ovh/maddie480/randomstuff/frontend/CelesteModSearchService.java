@@ -39,7 +39,6 @@ public class CelesteModSearchService extends HttpServlet {
     private static List<ModInfo> modDatabaseForSorting = Collections.emptyList();
     private List<String> helperList = Collections.emptyList();
     private Map<Integer, String> modCategories;
-    public static Set<Integer> mapCategories;
 
     private byte[] everestVersionsNoNative;
     private byte[] everestVersionsWithNative;
@@ -73,7 +72,7 @@ public class CelesteModSearchService extends HttpServlet {
 
         if (request.getRequestURI().equals("/celeste/random-map")) {
             List<ModInfo> maps = modDatabaseForSorting.stream()
-                    .filter(i -> "Mod".equals(i.type) && mapCategories.contains(i.categoryId))
+                    .filter(i -> "Mod".equals(i.type) && i.categoryId == 6800) // Map
                     .toList();
 
             // pick a map and redirect to it. that's it.
@@ -424,13 +423,6 @@ public class CelesteModSearchService extends HttpServlet {
         } catch (ClassNotFoundException e) {
             throw new IOException(e);
         }
-
-        mapCategories = modCategories.entrySet().stream()
-                .filter(category -> category.getValue().startsWith("Maps – "))
-                .map(Map.Entry::getKey)
-                .collect(Collectors.toSet());
-
-        log.debug("Map categories are: {}", mapCategories);
 
         Map<String, Map<String, Object>> updaterDatabase;
         try (InputStream is = Files.newInputStream(Paths.get("/shared/celeste/updater/everest-update.yaml"))) {
