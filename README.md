@@ -85,10 +85,11 @@ This API allows to get a sorted list of most downloaded, liked or viewed Celeste
 
 If you want to retrieve the latest mod with no type filter, it is recommended to use [the real GameBanana API](https://api.gamebanana.com/docs/endpoints/Core/List/New) instead, for more up-to-date information.
 
-The URL is `https://maddie480.ovh/celeste/gamebanana-list?sort=[sort]&type=[type]&category=[category]&page=[page]` where:
+The URL is `https://maddie480.ovh/celeste/gamebanana-list?sort=[sort]&type=[type]&category=[category]&subcategory=[subcategory]&page=[page]` where:
 - `sort` is the info to sort on (**mandatory**). It can be `latest`, `likes`, `views` or `downloads`
 - `type` (or `itemtype`) is the GameBanana type to filter on (optional and case-insensitive). For example `Map`, `Gamefile` or `Tool`
-- `category` is the GameBanana mod category ID to filter on (optional), this is returned by [the GameBanana categories list API](#gamebanana-categories-list-api). For example `944`
+- `category` is the GameBanana mod category ID to filter on (optional), this is returned by [the GameBanana categories list API](#gamebanana-categories-list-api). For example `6800`
+- `subcategory` is the GameBanana mod subcategory ID to filter on (optional), this is returned by [the GameBanana subcategories list API](#gamebanana-subcategories-list-api). For example `6801`
 - `page` is the page to get, first page being 1 (optional, default is 1). Each page contains 20 elements.
 
 The output format is the same as the GameBanana search API, [see the previous section](#gamebanana-search-api). You also get the total amount of mods in the list, as a `X-Total-Count` header.
@@ -215,6 +216,54 @@ The URL is `https://maddie480.ovh/celeste/gamebanana-categories` and the result 
   formatted: Tools
   count: 30
 ...
+```
+
+## GameBanana subcategories list API
+
+This API allows getting a list of GameBanana categories for a given item type (`Mod`, `Tool` or `Wip`), or a list of subcategories for a given category (`6800` is Maps for example).
+
+When only passing an item type, the returned `id` can be used as a `category` filter for the [list API](#gamebanana-sorted-list-api). When passing a category id, the `id` can be used as a `subcategory` filter.
+
+Note that the count for "All" might not match the sum of count for all subcategories. That's because mods can belong to the root category directly, without being in any subcategory.
+
+The URL is `https://maddie480.ovh/celeste/gamebanana-subcategories`. For example, the result for `https://maddie480.ovh/celeste/gamebanana-subcategories?itemtype=Mod&categoryId=6800` looks like:
+```yaml
+- name: All
+  count: 2368
+- id: 6802
+  name: Campaign
+  count: 320
+- id: 6803
+  name: Collab/Contest
+  count: 166
+- id: 15667
+  name: Multiplayer
+  count: 18
+- id: 6801
+  name: Standalone
+  count: 1398
+```
+
+And the result for `https://maddie480.ovh/celeste/gamebanana-subcategories?itemtype=Tool` looks like:
+
+```yaml
+- name: All
+  count: 56
+- id: 653
+  name: Ahorn Plugin
+  count: 6
+- id: 1098
+  name: Lönn Plugin
+  count: 13
+- id: 1654
+  name: Mod Installer
+  count: 4
+- id: 575
+  name: Other/Misc
+  count: 32
+- id: 859
+  name: Twitch Integration
+  count: 1
 ```
 
 ## GameBanana category RSS feed API
