@@ -4,7 +4,9 @@
 
     <div>
       <div class="row mt-4 filters">
-        <div class="mb-3 col-lg-4 combo-box">
+        <div
+          :class="'mb-3 combo-box col-lg-' + (subcategoryFilterVisible ? 3 : 4)"
+        >
           <label for="category" class="form-label">Mod category</label>
           <VueMultiselect
             id="category"
@@ -20,7 +22,25 @@
           >
           </VueMultiselect>
         </div>
-        <div class="mb-3 col-lg-4 combo-box">
+        <div v-if="subcategoryFilterVisible" class="mb-3 combo-box col-lg-3">
+          <label for="category" class="form-label">Mod subcategory</label>
+          <VueMultiselect
+            id="category"
+            v-model="subcategoryFilter"
+            track-by="name"
+            label="name"
+            :options="subcategories"
+            :show-labels="false"
+            :searchable="false"
+            :allow-empty="false"
+            :disabled="query !== '' || loading"
+            @select="subcategoryFilterChanged"
+          >
+          </VueMultiselect>
+        </div>
+        <div
+          :class="'mb-3 combo-box col-lg-' + (subcategoryFilterVisible ? 3 : 4)"
+        >
           <label for="sort" class="form-label">Sort by</label>
           <VueMultiselect
             id="category"
@@ -41,7 +61,9 @@
           >
           </VueMultiselect>
         </div>
-        <div class="mb-3 col-lg-4 combo-box">
+        <div
+          :class="'mb-3 combo-box col-lg-' + (subcategoryFilterVisible ? 3 : 4)"
+        >
           <label for="mirror" class="form-label">Mirror to use</label>
           <VueMultiselect
             id="mirror"
@@ -115,7 +137,9 @@ const vue = {
     mirror: { id: "jade", name: "Germany (0x0a.de)" },
     sort: { id: "latest", name: "Creation date" },
     categoryFilter: { name: "All" },
+    subcategoryFilter: { name: "All" },
     categories: [{ name: "All" }],
+    subcategories: [{ name: "All" }],
     loading: true,
     error: false,
   }),
@@ -131,16 +155,25 @@ const vue = {
     },
     categoryFilterChanged: function (newComboBoxValue) {
       this.page = 1;
-      this.reload(newComboBoxValue, this.sort.id);
+      this.reloadSubcategories(newComboBoxValue);
+      this.reload(newComboBoxValue, this.subcategoryFilter, this.sort.id);
+    },
+    subcategoryFilterChanged: function (newComboBoxValue) {
+      this.page = 1;
+      this.reload(this.categoryFilter, newComboBoxValue, this.sort.id);
     },
     sortChanged: function (newComboBoxValue) {
       this.page = 1;
-      this.reload(this.categoryFilter, newComboBoxValue.id);
+      this.reload(
+        this.categoryFilter,
+        this.subcategoryFilter,
+        newComboBoxValue.id,
+      );
     },
     reloadPage: function () {
-      this.reload(this.categoryFilter, this.sort.id);
+      this.reload(this.categoryFilter, this.subcategoryFilter, this.sort.id);
     },
-    reload: async function (categoryFilter, sort) {
+    reload: async function (categoryFilter, subcategoryFilter, sort) {
       try {
         this.loading = true;
         this.error = false;
@@ -151,14 +184,27 @@ const vue = {
 
         let result;
 
+        let categoryFilterId = categoryFilter.categoryid;
+        let subcategoryFilterId = subcategoryFilter.id;
+        if (
+          categoryFilterId === undefined &&
+          subcategoryFilterId !== undefined
+        ) {
+          categoryFilterId = subcategoryFilterId;
+          subcategoryFilterId = undefined;
+        }
+
         if (this.query === "") {
           result = await axios.get(
             `${config.backendUrl}/celeste/gamebanana-list?sort=${sort}&page=${this.page}&full=true` +
               (categoryFilter.itemtype !== undefined
                 ? `&type=${categoryFilter.itemtype}`
                 : "") +
-              (categoryFilter.categoryid
-                ? `&category=${categoryFilter.categoryid}`
+              (categoryFilterId !== undefined
+                ? `&category=${categoryFilterId}`
+                : "") +
+              (subcategoryFilterId !== undefined
+                ? `&subcategory=${subcategoryFilterId}`
                 : ""),
           );
         } else {
@@ -199,10 +245,38 @@ const vue = {
         this.loading = false;
       }
     },
+    reloadSubcategories: async function (category) {
+      this.subcategories = [{ name: "All" }];
+      this.subcategoryFilter = { name: "All" };
+
+      if (category.itemtype === undefined) return;
+
+      // also load the category list.
+      const gamebananaSubcategories = await axios
+        .get(
+          `${config.backendUrl}/celeste/gamebanana-subcategories?itemtype=${category.itemtype}` +
+            (category.categoryid !== undefined
+              ? `&categoryId=${category.categoryid}`
+              : ""),
+        )
+        .then((result) => yaml.load(result.data));
+
+      for (const subcategory of gamebananaSubcategories) {
+        subcategory.name =
+          subcategory.name +
+          (subcategory.id !== undefined ? ` (${subcategory.count})` : "");
+      }
+
+      this.subcategories = gamebananaSubcategories;
+      this.subcategoryFilter = gamebananaSubcategories[0];
+    },
   },
   computed: {
     pageCount: function () {
       return Math.max(1, Math.floor((this.totalCount - 1) / 20 + 1));
+    },
+    subcategoryFilterVisible: function () {
+      return this.subcategories.length > 1;
     },
   },
   mounted: async function () {
