@@ -574,6 +574,13 @@ public class CelesteModSearchService extends HttpServlet {
         helpers.add("ShaderHelper"); // Other/Misc
         helpers.add("CutsceneHelper"); // Other/Misc
 
+        // we don't want the demo map for Fancy Tile Entities, we want the helper itself
+        helpers.add("FancyTileEntities");
+        helpers.remove("FancyTileEntities_Demo");
+
+        // this is an April Fools mod that's not even a helper, come on
+        helpers.remove("LagHelper");
+
         List<String> helpersList = new ArrayList<>(helpers);
         helpersList.sort(Comparator.naturalOrder());
         helperList = helpersList;
