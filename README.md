@@ -340,7 +340,7 @@ This API is available at `https://maddie480.ovh/celeste/olympus-versions`, and r
     {
         "date": "2023-09-14T22:04:54.9319239Z",
         "windowsDownload": "https://dev.azure.com/EverestAPI/Olympus/_apis/build/builds/3518/artifacts?artifactName=windows.main&api-version=5.0&%24format=zip",
-        "macDownload": "https://dev.azure.com/EverestAPI/Olympus/_apis/build/builds/3518/artifacts?artifactName=macos.main&api-version=5.0&%24format=zip",
+        "macosDownload": "https://dev.azure.com/EverestAPI/Olympus/_apis/build/builds/3518/artifacts?artifactName=macos.main&api-version=5.0&%24format=zip",
         "linuxDownload": "https://dev.azure.com/EverestAPI/Olympus/_apis/build/builds/3518/artifacts?artifactName=linux.main&api-version=5.0&%24format=zip"
         "changelog": "Make sure Lonn is run with the same Love2d install as Olympus itself on Linux",
         "branch": "main",

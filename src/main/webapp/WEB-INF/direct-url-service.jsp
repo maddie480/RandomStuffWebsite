@@ -21,7 +21,7 @@
         <li>
             <a href="/celeste/download-olympus?branch=stable&platform=windows">https://maddie480.ovh/celeste/download-olympus?branch=stable&platform=windows</a>
             downloads the latest stable version of Olympus for Windows. Other options for branches are <code>main</code> and <code>windows-init</code>,
-            and other options for platforms are <code>mac</code> and <code>linux</code>.
+            and other options for platforms are <code>macos</code> and <code>linux</code>.
         </li>
         <li>
             <a href="/celeste/download-everest?branch=stable">https://maddie480.ovh/celeste/download-everest?branch=stable</a>
