@@ -118,7 +118,7 @@ public class SecurityHeadersFilter extends HttpFilter {
             res.setHeader("Access-Control-Allow-Origin", "http://live-chat.maddie480.ovh:11587");
         }
         if (Arrays.asList("/celeste/gamebanana-search", "/celeste/gamebanana-list", "/celeste/gamebanana-featured", "/celeste/gamebanana-categories",
-                        "/celeste/gamebanana-info", "/celeste/bin-to-json", "/celeste/custom-entity-catalog.json", "/celeste/everest-versions",
+                        "/celeste/gamebanana-info", "/celeste/bin-to-json", "/celeste/json-to-bin", "/celeste/custom-entity-catalog.json", "/celeste/everest-versions",
                         "/celeste/update-checker-status.json", "/celeste/everest_update.yaml", "/celeste/mod_search_database.yaml",
                         "/celeste/mod_dependency_graph.yaml", "/celeste/olympus-news.json", "/celeste/graphics-dump-browser/list.json",
                         "/celeste/olympus-versions", "/celeste/loenn-versions", "/celeste/helper-list", "/celeste/gamebanana-subcategories")
