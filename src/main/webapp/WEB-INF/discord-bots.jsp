@@ -33,6 +33,9 @@
     <span class="badge bg-secondary big-badge">
         <%= request.getAttribute("timezoneBotLiteServerCount") %>
         server<%= ((int) request.getAttribute("timezoneBotLiteServerCount")) == 1 ? "" : "s" %>
+        &#x2013;
+        <%= request.getAttribute("timezoneBotLiteUserCount") %>
+        user<%= ((int) request.getAttribute("timezoneBotLiteUserCount")) == 1 ? "" : "s" %>
     </span>
 </h2>
 
@@ -40,11 +43,18 @@
     <span class="badge bg-secondary">
         <%= request.getAttribute("timezoneBotLiteServerCount") %>
         server<%= ((int) request.getAttribute("timezoneBotLiteServerCount")) == 1 ? "" : "s" %>
+        &#x2013;
+        <%= request.getAttribute("timezoneBotLiteUserCount") %>
+        user<%= ((int) request.getAttribute("timezoneBotLiteUserCount")) == 1 ? "" : "s" %>
     </span>
 </p>
 
 <p>
-    This bot allows you to get Discord timestamps and check the time it is in other parts of the world and for other members of your server!
+    You can install this bot to your Discord account, and you'll be able to get Discord timestamps and check the time it is in
+    other parts of the world, from any server or DM!
+</p>
+<p>
+    You can also invite the bot to your server to let everyone there use it, and see each other's local time as well.
 </p>
 
 <p>
@@ -59,12 +69,12 @@
     </li>
     <li><code>/remove-timezone</code> - deletes your timezone from the bot's database</li>
     <li><code>/discord-timestamp [date_time]</code> - gives a <a href="https://discord.com/developers/docs/reference#message-formatting-timestamp-styles" target="_blank">Discord timestamp</a>, to tell a date/time to other people regardless of their timezone</li>
+    <li><code>/world-clock [place]</code> - gives the time it is in another place in the world (a city or a country) and the difference with the time it is for you</li>
     <li>
-        <code>/time-for [member]</code> - gives the time it is now for another member of the server (if they have a timezone configured) and the difference with the time it is for you.
+        <code>/time-for [member]</code> <i>(only available on servers the bot was added to)</i> - gives the time it is now for another member of the server (if they have a timezone configured) and the difference with the time it is for you.
         You can also see someone's local time by <b>right-clicking on them</b> (or tapping them on mobile), then selecting <b>Apps &gt; Get Local Time</b>.
     </li>
-    <li><code>/world-clock [place]</code> - gives the time it is in another place in the world (a city or a country) and the difference with the time it is for you</li>
-    <li><code>/list-timezones</code> - lists all members on the server with a timezone configured, sorting them by timezone with local time for each</li>
+    <li><code>/list-timezones</code> <i>(only available on servers the bot was added to)</i> - lists all members on the server with a timezone configured, sorting them by timezone with local time for each</li>
 </ul>
 
 <p>
@@ -96,7 +106,7 @@
     and <a href="https://timezonedb.com/" target="_blank">TimeZoneDB.com</a> to turn the resulting position into a timezone.
 </p>
 
-<a class="btn btn-primary" href="https://discord.com/api/oauth2/authorize?client_id=1021154491040534649&scope=applications.commands" target="_blank">Invite</a>
+<a class="btn btn-primary" href="https://discord.com/api/oauth2/authorize?client_id=1021154491040534649" target="_blank">Invite</a>
 
 <h2 class="space">
     With timezone roles

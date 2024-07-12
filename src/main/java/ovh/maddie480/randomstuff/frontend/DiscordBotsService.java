@@ -28,6 +28,7 @@ public class DiscordBotsService extends HttpServlet {
         }
 
         request.setAttribute("timezoneBotLiteServerCount", serverCounts.get("TimezoneBotLite"));
+        request.setAttribute("timezoneBotLiteUserCount", serverCounts.get("TimezoneBotUser"));
         request.setAttribute("timezoneBotFullServerCount", serverCounts.get("TimezoneBotFull"));
         request.setAttribute("modStructureVerifierServerCount", serverCounts.get("ModStructureVerifier"));
         request.setAttribute("gamesBotServerCount", serverCounts.get("GamesBot"));
