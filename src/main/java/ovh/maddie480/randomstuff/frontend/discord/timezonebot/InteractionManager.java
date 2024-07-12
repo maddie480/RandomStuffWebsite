@@ -109,7 +109,26 @@ public class InteractionManager extends HttpServlet {
         JSONObject data = DiscordProtocolHandler.validateRequest(req, resp, SecretConstants.TIMEZONE_BOT_PUBLIC_KEY);
         if (data == null) return;
 
-        log.debug("Guild {} used the Timezone Bot!", data.getString("guild_id"));
+        // authorizing_integration_owners.0 = we were added in the server, so handle this as a server command
+        boolean isUserCommand = !data.getJSONObject("authorizing_integration_owners").has("0");
+
+        long serverId = Long.parseLong(isUserCommand ? "0" : data.getString("guild_id"));
+
+        // if we are invoked in a server, we get a "member" field that contains the user
+        // if we are invoked in a DM, we directly get the user
+        // discord, why :landeline:
+        long memberId;
+        if (data.has("user")) {
+            memberId = Long.parseLong(data.getJSONObject("user").getString("id"));
+        } else {
+            memberId = Long.parseLong(data.getJSONObject("member").getJSONObject("user").getString("id"));
+        }
+
+        if (isUserCommand) {
+            log.debug("User {} used the Timezone Bot!", memberId);
+        } else {
+            log.debug("Guild {} used the Timezone Bot!", serverId);
+        }
 
         String locale = data.getString("locale");
 
@@ -126,7 +145,6 @@ public class InteractionManager extends HttpServlet {
                     int page = Integer.parseInt(data.getJSONObject("data").getString("custom_id").split("\\|")[0]);
                     String action = data.getJSONObject("data").getString("custom_id").split("\\|")[1];
 
-                    long serverId = Long.parseLong(data.getString("guild_id"));
                     if ("list".equals(action)) {
                         listTimezones(response -> resp.getWriter().write(response), serverId, page, locale, true);
                     } else {
@@ -151,8 +169,6 @@ public class InteractionManager extends HttpServlet {
             } else {
                 // slash command invocation OR user command
                 String commandName = data.getJSONObject("data").getString("name");
-                long serverId = Long.parseLong(data.getString("guild_id"));
-                long memberId = Long.parseLong(data.getJSONObject("member").getJSONObject("user").getString("id"));
 
                 switch (commandName) {
                     case "set-timezone" ->
