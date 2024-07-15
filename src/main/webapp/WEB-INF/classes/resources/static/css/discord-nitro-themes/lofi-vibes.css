@@ -1,0 +1,15 @@
+:root {
+    --custom-theme-background: linear-gradient(179.52deg, var(--bg-gradient-lofi-vibes-1) 7.08%, var(--bg-gradient-lofi-vibes-2) 34.94%, var(--bg-gradient-lofi-vibes-3) 65.12%, var(--bg-gradient-lofi-vibes-4) 96.23%);
+
+    --theme-base-color-light-hsl: 75.29411764705885 100% 90%;
+    --theme-base-color-light: rgb(242,255,204);
+    --theme-text-color-light: rgb(0,77,12);
+    --theme-base-color-dark-hsl: 129.23076923076923 100% 5.098039215686274%;
+    --theme-base-color-dark: rgb(0,26,4);
+    --theme-text-color-dark: rgb(248,255,229);
+    --theme-base-color-amount: 50%;
+    --theme-text-color-amount: 38%;
+    --bg-overlay-selected: unset;
+    --bg-overlay-hover: unset;
+    --bg-overlay-active: unset;
+}
