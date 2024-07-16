@@ -13,6 +13,7 @@ RUN java -jar "$JETTY_HOME/start.jar" --add-modules=requestlog,console-capture,h
   && echo "jetty.console-capture.retainDays=30" >> /var/lib/jetty/start.d/console-capture.ini \
   && echo "jetty.console-capture.append=true" >> /var/lib/jetty/start.d/console-capture.ini \
   && echo "jetty.requestlog.retainDays=30" >> /var/lib/jetty/start.d/requestlog.ini \
+  && echo 'jetty.requestlog.formatString=%{client}a - %u %{dd/MMM/yyyy:HH:mm:ss ZZZ|GMT}t "%r" %s %IB/%OB %{ms}Tms "%{Referer}i" "%{User-Agent}i"' >> /var/lib/jetty/start.d/requestlog.ini \
   && echo "jetty.requestlog.append=true" >> /var/lib/jetty/start.d/requestlog.ini \
   && echo "jetty.deploy.scanInterval=0" >> /var/lib/jetty/start.d/ee10-deploy.ini
 
