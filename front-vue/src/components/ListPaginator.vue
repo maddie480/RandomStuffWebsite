@@ -71,12 +71,11 @@ export default {
 <style lang="scss" scoped>
 .paginator {
   font-size: 14pt;
+  margin-bottom: 30px;
 
   .btn {
     margin: 5px 2px;
   }
-
-  margin-bottom: 30px;
 }
 
 // inline input used to jump to a specific page

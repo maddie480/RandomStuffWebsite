@@ -315,12 +315,11 @@ export default vue;
 
 .paginator {
   font-size: 14pt;
+  margin-bottom: 30px;
 
   .btn {
     margin: 5px 2px;
   }
-
-  margin-bottom: 30px;
 }
 
 .search {
