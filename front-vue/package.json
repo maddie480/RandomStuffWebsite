@@ -14,7 +14,7 @@
     "axios": "^1.7.2",
     "downloadjs": "^1.4.7",
     "js-yaml": "^4.1.0",
-    "vue": "^3.4.34",
+    "vue": "^3.4.35",
     "vue-multiselect": "^3.0.0",
     "vue-router": "^4.4.0",
     "vuex": "^4.1.0"
