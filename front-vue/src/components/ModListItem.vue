@@ -270,7 +270,12 @@ export default {
       }
 
       if ("EverestYamlId" in file) {
-        return `https://celestemodupdater.0x0a.de/banana-mirror/${file.GameBananaFileId}.zip`;
+        if (this.mirror === "jade") {
+          return `https://celestemodupdater.0x0a.de/banana-mirror/${file.GameBananaFileId}.zip`;
+        }
+        if (this.mirror === "otobot") {
+          return `https://banana-mirror-mods.celestemods.com/${file.GameBananaFileId}.zip`;
+        }        
       }
 
       return null;

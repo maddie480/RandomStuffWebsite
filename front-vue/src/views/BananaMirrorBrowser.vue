@@ -73,6 +73,7 @@
             :options="[
               { id: 'jade', name: 'Germany (0x0a.de)' },
               { id: 'wegfan', name: 'China (weg.fan)' },
+              { id: 'otobot', name: 'WIP (celestemods.com)' },
             ]"
             :show-labels="false"
             :searchable="false"
