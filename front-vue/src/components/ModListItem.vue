@@ -275,7 +275,7 @@ export default {
         }
         if (this.mirror === "otobot") {
           return `https://banana-mirror-mods.celestemods.com/${file.GameBananaFileId}.zip`;
-        }        
+        }
       }
 
       return null;
