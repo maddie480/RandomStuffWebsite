@@ -264,6 +264,9 @@ export default {
           return "";
       }
     },
+    // Make sure to keep this in sync with
+    // - https://github.com/EverestAPI/Olympus/blob/main/sharp/CmdUpdateAllMods.cs :: getAllMirrorUrls
+    // - https://github.com/EverestAPI/Everest/blob/dev/Celeste.Mod.mm/Mod/Helpers/ModUpdaterHelper.cs :: getAllMirrorUrls
     getMirrorLink(file) {
       if (this.mirror === "wegfan") {
         return `https://celeste.weg.fan/api/v2/download/gamebanana-files/${file.GameBananaFileId}`;
