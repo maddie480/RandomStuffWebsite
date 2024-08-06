@@ -11,7 +11,6 @@
 .reaction_ec6b19.reactionMe_ec6b19 .reactionCount_ec6b19 {
     color: var(--text-brand)
 }
-
 .popout_c5b389 {
     border: 1px solid var(--border-strong)
 }
@@ -200,7 +199,7 @@
     --__spoiler-background-color--hidden--hover: hsl(var(--primary-630-hsl) / 0.8)
 }
 
-.attachment_a4623d {
+.attachment_b52bef {
     background-color: var(--bg-mod-faint);
     border-color: var(--border-subtle)
 }
@@ -327,6 +326,6 @@
     color: var(--primary-330)
 }
 
-.embedFull_ad0b71 {
+.embedFull_b0068a {
     background-color: var(--bg-mod-faint)
 }
