@@ -7,15 +7,18 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.SecureRandom;
@@ -33,16 +36,18 @@ import static com.max480.randomstuff.backend.celeste.crontabs.UpdateCheckerTrack
 @WebServlet(name = "CelesteModSearchService", loadOnStartup = 2, urlPatterns = {"/celeste/gamebanana-search",
         "/celeste/gamebanana-search-reload", "/celeste/gamebanana-list", "/celeste/gamebanana-categories", "/celeste/gamebanana-info",
         "/celeste/random-map", "/celeste/gamebanana-featured", "/celeste/everest-versions", "/celeste/everest-versions-reload",
-        "/celeste/olympus-versions", "/celeste/loenn-versions", "/celeste/helper-list", "/celeste/gamebanana-subcategories"})
+        "/celeste/olympus-versions", "/celeste/loenn-versions", "/celeste/helper-list", "/celeste/gamebanana-subcategories",
+        "/celeste/mod_ids_to_names.yaml"})
 public class CelesteModSearchService extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(CelesteModSearchService.class);
 
     private static List<ModInfo> modDatabaseForSorting = Collections.emptyList();
-    private List<String> helperList = Collections.emptyList();
     private Map<Integer, String> modCategories;
 
     private byte[] everestVersionsNoNative;
     private byte[] everestVersionsWithNative;
+    private byte[] helperList;
+    private byte[] modIdsToNames;
 
     private static final Pattern SUPPORT_NATIVE_REGEX = Pattern.compile("(^|&)supportsNativeBuilds=true($|&)");
 
@@ -110,6 +115,10 @@ public class CelesteModSearchService extends HttpServlet {
         }
         if ("/celeste/loenn-versions".equals(request.getRequestURI())) {
             handleOlympusAndLoennVersionsList(response, "/shared/celeste/loenn-versions.json");
+            return;
+        }
+        if ("/celeste/mod_ids_to_names.yaml".equals(request.getRequestURI())) {
+            handleModIdsToNamesList(response);
             return;
         }
     }
@@ -409,7 +418,7 @@ public class CelesteModSearchService extends HttpServlet {
 
     private void handleHelperList(HttpServletResponse response) throws IOException {
         response.setHeader("Content-Type", "application/json");
-        new JSONArray(helperList).write(response.getWriter());
+        response.getOutputStream().write(helperList);
     }
 
     private void handleEverestVersionsReload(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -453,6 +462,11 @@ public class CelesteModSearchService extends HttpServlet {
         try (InputStream is = Files.newInputStream(Paths.get(first))) {
             IOUtils.copy(is, response.getOutputStream());
         }
+    }
+
+    private void handleModIdsToNamesList(HttpServletResponse response) throws IOException {
+        response.setHeader("Content-Type", "text/yaml");
+        response.getOutputStream().write(modIdsToNames);
     }
 
     private static String[] tokenize(String string) {
@@ -546,6 +560,11 @@ public class CelesteModSearchService extends HttpServlet {
             updaterDatabase = YamlUtil.load(is);
         }
 
+        refreshHelperList(updaterDatabase);
+        refreshModIDsToNamesMap(updaterDatabase);
+    }
+
+    private void refreshHelperList(Map<String, Map<String, Object>> updaterDatabase) {
         Set<String> helpers = modDatabaseForSorting.stream()
                 // 1. Only keep Helper mods
                 .filter(mod -> mod.categoryId == 5081)
@@ -583,9 +602,27 @@ public class CelesteModSearchService extends HttpServlet {
 
         List<String> helpersList = new ArrayList<>(helpers);
         helpersList.sort(Comparator.naturalOrder());
-        helperList = helpersList;
+        helperList = new JSONArray(helpersList).toString().getBytes(StandardCharsets.UTF_8);
 
-        log.debug("Found {} helpers in the database.", helperList.size());
+        log.debug("Found {} helpers in the database.", helpersList.size());
+    }
+
+    private void refreshModIDsToNamesMap(Map<String, Map<String, Object>> updaterDatabase) throws IOException {
+        Map<String, String> modIdsToNamesMap = updaterDatabase.entrySet().stream()
+                .map(entry -> Pair.of(entry.getKey(), modDatabaseForSorting.stream()
+                        .filter(mod -> mod.type.equals(entry.getValue().get("GameBananaType")) && mod.id == (int) entry.getValue().get("GameBananaId"))
+                        .findFirst()
+                        .map(mod -> (String) mod.fullInfo.get("Name"))
+                        .orElse(null)))
+                .filter(entry -> entry.getValue() != null)
+                .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
+
+        try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
+            YamlUtil.dump(modIdsToNamesMap, os);
+            modIdsToNames = os.toByteArray();
+        }
+
+        log.debug("Associated {} mod IDs with their names.", modIdsToNamesMap.size());
     }
 
     private void refreshEverestVersions() throws IOException {

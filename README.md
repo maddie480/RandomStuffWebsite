@@ -367,3 +367,27 @@ Check [the GitHub docs](https://docs.github.com/en/rest/releases/releases#get-th
 
 This API is available at `https://maddie480.ovh/celeste/helper-list`. It gives a list of everest.yaml `Name`s for helper mods, in JSON format.
 It is automatically generated based on the "Helpers" category on GameBanana, with some exceptions manually added.
+
+## Celeste Mod ID to Name API
+
+This API is available at `https://maddie480.ovh/celeste/mod_ids_to_names.yaml`. It gives a dictionary that allows to find the titles of the GameBanana
+pages from everest.yaml `Name`s, in YAML format:
+
+```yaml
+CSRC Frog: CSRC Complete
+viewpoint-dreampoint-point: Minute Viewpoint
+WitheredPassage: Withered Passage - Red Booster Contest Submission
+IAccidentallyFourCassetteBlocks: I Accidentally Four Cassette Blocks
+resverie story contest: Madeline's Floriography
+Aftermath Ch3: 'Aftermath Ch3: Internal Void'
+QueesleAmityCollab: Queesle & Amity Birthday Collab
+alice-xolipark: Xoli's Birthday Special - a walk in the pÃ¦rk
+izumisQOL: izumi's quality of life
+Core Temple: The Hidden Temple
+Condensation: Condensation
+CelesteToggleableHair: Toggleable Hair
+MappingPrompts_Package_Mar24: 'March 2024 Mapping Prompt Package: Cutting Corners'
+Myna's MareLine: 'MareLine: Far away from Summit'
+VoltaicWastelandANCHOR: Voltaic Wasteland
+[...]
+```
