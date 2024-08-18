@@ -14,7 +14,6 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -37,7 +36,7 @@ import static com.max480.randomstuff.backend.celeste.crontabs.UpdateCheckerTrack
         "/celeste/gamebanana-search-reload", "/celeste/gamebanana-list", "/celeste/gamebanana-categories", "/celeste/gamebanana-info",
         "/celeste/random-map", "/celeste/gamebanana-featured", "/celeste/everest-versions", "/celeste/everest-versions-reload",
         "/celeste/olympus-versions", "/celeste/loenn-versions", "/celeste/helper-list", "/celeste/gamebanana-subcategories",
-        "/celeste/mod_ids_to_names.yaml"})
+        "/celeste/mod_ids_to_names.json"})
 public class CelesteModSearchService extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(CelesteModSearchService.class);
 
@@ -117,7 +116,7 @@ public class CelesteModSearchService extends HttpServlet {
             handleOlympusAndLoennVersionsList(response, "/shared/celeste/loenn-versions.json");
             return;
         }
-        if ("/celeste/mod_ids_to_names.yaml".equals(request.getRequestURI())) {
+        if ("/celeste/mod_ids_to_names.json".equals(request.getRequestURI())) {
             handleModIdsToNamesList(response);
             return;
         }
@@ -465,7 +464,7 @@ public class CelesteModSearchService extends HttpServlet {
     }
 
     private void handleModIdsToNamesList(HttpServletResponse response) throws IOException {
-        response.setHeader("Content-Type", "text/yaml");
+        response.setHeader("Content-Type", "application/json");
         response.getOutputStream().write(modIdsToNames);
     }
 
@@ -617,11 +616,7 @@ public class CelesteModSearchService extends HttpServlet {
                 .filter(entry -> entry.getValue() != null)
                 .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
 
-        try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
-            YamlUtil.dump(modIdsToNamesMap, os);
-            modIdsToNames = os.toByteArray();
-        }
-
+        modIdsToNames = new JSONObject(modIdsToNamesMap).toString().getBytes(StandardCharsets.UTF_8);
         log.debug("Associated {} mod IDs with their names.", modIdsToNamesMap.size());
     }
 
