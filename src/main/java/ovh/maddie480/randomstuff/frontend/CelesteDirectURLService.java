@@ -157,7 +157,7 @@ public class CelesteDirectURLService extends HttpServlet {
 
         for (Map.Entry<String, Map<String, String>> element : everestUpdate.entrySet()) {
             newDlUrls.put(element.getKey(), element.getValue().get("URL"));
-            newMirrorUrls.put(element.getKey(), element.getValue().get("MirrorURL"));
+            newMirrorUrls.put(element.getKey(), element.getValue().get("URL").replace("https://gamebanana.com/mmdl/", "https://celestemodupdater.0x0a.de/banana-mirror/") + ".zip");
         }
 
         log.debug("There are now {} URLs and {} mirror URLs.", newDlUrls.size(), newMirrorUrls.size());

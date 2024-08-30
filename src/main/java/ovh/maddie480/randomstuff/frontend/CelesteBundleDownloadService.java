@@ -93,7 +93,7 @@ public class CelesteBundleDownloadService extends HttpServlet {
             return;
         }
 
-        result.put(modId, everestUpdate.get(modId).get("MirrorURL"));
+        result.put(modId, everestUpdate.get(modId).get("URL").replace("https://gamebanana.com/mmdl/", "https://celestemodupdater.0x0a.de/banana-mirror/") + ".zip");
 
         for (Map<String, String> dependency : modDependencyGraph.get(modId).get("Dependencies")) {
             String dependencyName = dependency.get("Name");
