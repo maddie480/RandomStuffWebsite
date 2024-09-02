@@ -35,7 +35,7 @@ public class PrepareForRadioLNJ {
         }
 
         boolean useCookies = false;
-        if (System.getenv("YT_DLP_COOKIES") == null) {
+        if (!System.getenv("YT_DLP_COOKIES").isEmpty()) {
             logger.info("Writing YouTube cookies");
             FileUtils.writeStringToFile(new File("/tmp/youtube_cookies.txt"), System.getenv("YT_DLP_COOKIES"), StandardCharsets.UTF_8);
             useCookies = true;
