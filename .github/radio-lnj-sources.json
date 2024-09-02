@@ -1,5 +1,28 @@
 [
    {
+      "url": "https://youtube.com/playlist?list=PLA423290E18CD6DFF",
+      "useYoutubeDl": true,
+      "prefix": ""
+   },
+   {
+      "url": "https://youtu.be/_0Jx8YjnP_0",
+      "useYoutubeDl": true,
+      "prefix": ""
+   },
+   {
+      "url": "https://youtube.com/playlist?list=PLQpJkz64P9c5OCTfMSLvo1i-IugPoB4pt",
+      "useYoutubeDl": true,
+      "prefix": "",
+      "cuts": {
+         "Trespasser 1998 Full OST": ["0:00", "0:24", "1:23", "2:29","3:11", "3:51", "4:53", "5:26", "6:01", "6:40",
+            "7:20", "8:04", "8:40", "9:13", "9:50", "10:32", "10:59", "11:24", "11:57", "12:34", "13:36", "14:14",
+            "14:48", "15:26", "16:01", "16:38", "17:15", "17:50", "18:23", "19:18", "19:53", "20:37", "21:19",
+            "21:48", "22:24", "22:58", "23:34", "24:08", "24:39", "25:44", "26:23", "27:09", "28:04", "28:40",
+            "29:27", "30:57", "31:51", "32:13", "33:24", "34:06", "34:41", "35:52", "38:44", "39:27", "41:14",
+            "42:22", "43:05"]
+      }
+   },
+   {
       "url": "https://files.gamebanana.com/bitpit/scooter_war3z.zip",
       "useYoutubeDl": false,
       "prefix": "Scooter War3z - Piste "
@@ -88,28 +111,5 @@
       "url": "https://files.gamebanana.com/bitpit/turbo_trucks_soundtrackwav.zip",
       "useYoutubeDl": false,
       "prefix": ""
-   },
-   {
-      "url": "https://youtube.com/playlist?list=PLA423290E18CD6DFF",
-      "useYoutubeDl": true,
-      "prefix": ""
-   },
-   {
-      "url": "https://youtu.be/_0Jx8YjnP_0",
-      "useYoutubeDl": true,
-      "prefix": ""
-   },
-   {
-      "url": "https://youtube.com/playlist?list=PLQpJkz64P9c5OCTfMSLvo1i-IugPoB4pt",
-      "useYoutubeDl": true,
-      "prefix": "",
-      "cuts": {
-         "Trespasser 1998 Full OST": ["0:00", "0:24", "1:23", "2:29","3:11", "3:51", "4:53", "5:26", "6:01", "6:40",
-            "7:20", "8:04", "8:40", "9:13", "9:50", "10:32", "10:59", "11:24", "11:57", "12:34", "13:36", "14:14",
-            "14:48", "15:26", "16:01", "16:38", "17:15", "17:50", "18:23", "19:18", "19:53", "20:37", "21:19",
-            "21:48", "22:24", "22:58", "23:34", "24:08", "24:39", "25:44", "26:23", "27:09", "28:04", "28:40",
-            "29:27", "30:57", "31:51", "32:13", "33:24", "34:06", "34:41", "35:52", "38:44", "39:27", "41:14",
-            "42:22", "43:05"]
-      }
    }
 ]
