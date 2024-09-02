@@ -34,6 +34,13 @@ public class PrepareForRadioLNJ {
             return;
         }
 
+        boolean useCookies = false;
+        if (System.getenv("YT_DLP_COOKIES") == null) {
+            logger.info("Writing YouTube cookies");
+            FileUtils.writeStringToFile(new File("/tmp/youtube_cookies.txt"), System.getenv("YT_DLP_COOKIES"), StandardCharsets.UTF_8);
+            useCookies = true;
+        }
+
         Files.createDirectory(targetDirectory);
 
         JSONArray metadata = new JSONArray();
@@ -47,7 +54,14 @@ public class PrepareForRadioLNJ {
                 Path ytDlTarget = Paths.get("/tmp/yt-dlp-tmp");
                 Files.createDirectory(ytDlTarget);
 
-                int exitCode = new ProcessBuilder("/tmp/yt-dlp", "-f", "bestaudio*", source.getString("url"))
+                ProcessBuilder process;
+                if (useCookies) {
+                    process = new ProcessBuilder("/tmp/yt-dlp", "-f", "bestaudio*", "--cookies", "/tmp/youtube_cookies.txt", source.getString("url"));
+                } else {
+                    process = new ProcessBuilder("/tmp/yt-dlp", "-f", "bestaudio*", source.getString("url"));
+                }
+
+                int exitCode = process
                         .inheritIO()
                         .directory(ytDlTarget.toFile())
                         .start()
