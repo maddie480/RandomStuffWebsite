@@ -81,7 +81,7 @@
         <dependency>
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
-            <version>2.2</version>
+            <version>2.3</version>
         </dependency>
 
         <dependency>
@@ -311,7 +311,7 @@
                             <workingDirectory>${project.build.directory}/random-stuff-website-1.0.0/WEB-INF/classes</workingDirectory>
                             <arguments>
                                 <argument>-cp</argument>
-                                <argument>.:../../../dependency/snakeyaml-2.2.jar:../../../dependency/commons-io-2.16.1.jar</argument>
+                                <argument>.:../../../dependency/snakeyaml-2.3.jar:../../../dependency/commons-io-2.16.1.jar</argument>
                                 <argument>ovh.maddie480.randomstuff.frontend.LuaCutscenesDocumentationIntegrator</argument>
                             </arguments>
                         </configuration>
@@ -462,7 +462,7 @@
                                     <workingDirectory>${project.build.directory}/random-stuff-website-1.0.0/WEB-INF/classes</workingDirectory>
                                     <arguments>
                                         <argument>-cp</argument>
-                                        <argument>.;../../../dependency/snakeyaml-2.2.jar;../../../dependency/commons-io-2.16.1.jar</argument>
+                                        <argument>.;../../../dependency/snakeyaml-2.3.jar;../../../dependency/commons-io-2.16.1.jar</argument>
                                         <argument>ovh.maddie480.randomstuff.frontend.LuaCutscenesDocumentationIntegrator</argument>
                                     </arguments>
                                 </configuration>
