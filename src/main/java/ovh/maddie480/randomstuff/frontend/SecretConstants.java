@@ -32,9 +32,6 @@ public class SecretConstants {
 
     public static String MATTERMOST_TOKEN_LOCK = "";
     public static String MATTERMOST_TOKEN_UNLOCK = "";
-    public static String MATTERMOST_TOKEN_EXPLOIT = "";
-    public static String MATTERMOST_TOKEN_CONSISTENCYCHECK = "";
-    public static String MATTERMOST_TOKEN_ABSENTS = "";
 
     static {
         // The SECRET_CONSTANTS environment variable has all secrets, in JSON format.
@@ -67,8 +64,5 @@ public class SecretConstants {
 
         MATTERMOST_TOKEN_LOCK = secrets.getString("MATTERMOST_TOKEN_LOCK");
         MATTERMOST_TOKEN_UNLOCK = secrets.getString("MATTERMOST_TOKEN_UNLOCK");
-        MATTERMOST_TOKEN_EXPLOIT = secrets.getString("MATTERMOST_TOKEN_EXPLOIT");
-        MATTERMOST_TOKEN_CONSISTENCYCHECK = secrets.getString("MATTERMOST_TOKEN_CONSISTENCYCHECK");
-        MATTERMOST_TOKEN_ABSENTS = secrets.getString("MATTERMOST_TOKEN_ABSENTS");
     }
 }
