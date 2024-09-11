@@ -26,7 +26,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.*;
 
-import static com.max480.discord.slashcommandbot.SlashCommandBot.PlanningExploit;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
