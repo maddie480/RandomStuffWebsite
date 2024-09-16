@@ -78,6 +78,11 @@
             online, download individual images or figure out their path.
         </li>
         <li>
+            <b><a href="/lua-cutscenes-documentation/index.html" target="_blank">Lua Cutscenes Documentation</a>:</b>
+            The API documentation for <a href="https://gamebanana.com/mods/53678" target="_blank">Lua Cutscenes</a>, written by Cruor.
+            It is included in the Lua Cutscenes zip file, and a copy of it is hosted on this website for convenience.
+        </li>
+        <li>
             <b><a href="/celeste/map-tree-viewer">Map Tree Viewer</a>:</b> this tool displays a Celeste map as a tree, allowing you to see
             how those are structured, and to search for entities by name. You can also convert maps to JSON.
         </li>

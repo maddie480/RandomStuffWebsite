@@ -108,6 +108,14 @@
               </li>
               <li>
                 <a
+                  class="dropdown-item"
+                  href="/lua-cutscenes-documentation/index.html"
+                  target="_blank"
+                  >Lua Cutscenes Documentation</a
+                >
+              </li>
+              <li>
+                <a
                   :class="
                     'dropdown-item ' +
                     ($route.path === '/celeste/map-tree-viewer' ? 'active' : '')
