@@ -31,7 +31,7 @@
 
     <ul>
         <li>
-            <b><a href="/celeste/asset-drive">Asset Drive Browser</a>:</b> Another way to browse the
+            <b><a href="/celeste/asset-drive">Asset Drive Browser</a>:</b> another way to browse the
             <a href="https://drive.google.com/drive/folders/13A0feEXS3kUHb_Q4K2w4xP8DEuBlgTip" target="_blank">Celeste Asset Drive</a>,
             allowing to view the assets across all folders more easily.
         </li>
@@ -79,7 +79,7 @@
         </li>
         <li>
             <b><a href="/lua-cutscenes-documentation/index.html" target="_blank">Lua Cutscenes Documentation</a>:</b>
-            The API documentation for <a href="https://gamebanana.com/mods/53678" target="_blank">Lua Cutscenes</a>, written by Cruor.
+            the API documentation for <a href="https://gamebanana.com/mods/53678" target="_blank">Lua Cutscenes</a>, written by Cruor.
             It is included in the Lua Cutscenes zip file, and a copy of it is hosted on this website for convenience.
         </li>
         <li>
