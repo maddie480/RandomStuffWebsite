@@ -5,7 +5,6 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -28,7 +27,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.max480.randomstuff.gae.GameBananaArbitraryModAppService.ArbitraryModAppSettings;
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static ovh.maddie480.randomstuff.frontend.ConnectionUtils.openStreamWithTimeout;
 
 @WebServlet(name = "GameBananaArbitraryModAppService", loadOnStartup = 6, urlPatterns = {"/gamebanana/arbitrary-mod-app",
