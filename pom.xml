@@ -60,7 +60,7 @@
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.16.1</version>
+            <version>2.17.0</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-text -->
@@ -311,7 +311,7 @@
                             <workingDirectory>${project.build.directory}/random-stuff-website-1.0.0/WEB-INF/classes</workingDirectory>
                             <arguments>
                                 <argument>-cp</argument>
-                                <argument>.:../../../dependency/snakeyaml-2.3.jar:../../../dependency/commons-io-2.16.1.jar</argument>
+                                <argument>.:../../../dependency/snakeyaml-2.3.jar:../../../dependency/commons-io-2.17.0.jar</argument>
                                 <argument>ovh.maddie480.randomstuff.frontend.LuaCutscenesDocumentationIntegrator</argument>
                             </arguments>
                         </configuration>
@@ -328,7 +328,7 @@
                             <workingDirectory>${project.build.directory}/random-stuff-website-1.0.0/WEB-INF/classes</workingDirectory>
                             <arguments>
                                 <argument>-cp</argument>
-                                <argument>.:../../../dependency/commons-io-2.16.1.jar:../../../dependency/commons-lang3-3.14.0.jar:../../../dependency/commons-text-1.12.0.jar:../../../dependency/jsoup-1.18.1.jar:../../../dependency/jvmbrotli-0.2.0.jar:../../../dependency/jvmbrotli-linux-x86-amd64-0.2.0.jar</argument>
+                                <argument>.:../../../dependency/commons-io-2.17.0.jar:../../../dependency/commons-lang3-3.14.0.jar:../../../dependency/commons-text-1.12.0.jar:../../../dependency/jsoup-1.18.1.jar:../../../dependency/jvmbrotli-0.2.0.jar:../../../dependency/jvmbrotli-linux-x86-amd64-0.2.0.jar</argument>
                                 <argument>ovh.maddie480.randomstuff.frontend.ParrotQuickGenerator</argument>
                             </arguments>
                         </configuration>
@@ -345,7 +345,7 @@
                             <workingDirectory>${project.build.directory}/random-stuff-website-1.0.0/WEB-INF/classes</workingDirectory>
                             <arguments>
                                 <argument>-cp</argument>
-                                <argument>.:../../../dependency/commons-io-2.16.1.jar:../../../dependency/commons-lang3-3.14.0.jar:../../../dependency/json-20240303.jar</argument>
+                                <argument>.:../../../dependency/commons-io-2.17.0.jar:../../../dependency/commons-lang3-3.14.0.jar:../../../dependency/json-20240303.jar</argument>
                                 <argument>ovh.maddie480.randomstuff.frontend.PrepareForRadioLNJ</argument>
                             </arguments>
                         </configuration>
@@ -462,7 +462,7 @@
                                     <workingDirectory>${project.build.directory}/random-stuff-website-1.0.0/WEB-INF/classes</workingDirectory>
                                     <arguments>
                                         <argument>-cp</argument>
-                                        <argument>.;../../../dependency/snakeyaml-2.3.jar;../../../dependency/commons-io-2.16.1.jar</argument>
+                                        <argument>.;../../../dependency/snakeyaml-2.3.jar;../../../dependency/commons-io-2.17.0.jar</argument>
                                         <argument>ovh.maddie480.randomstuff.frontend.LuaCutscenesDocumentationIntegrator</argument>
                                     </arguments>
                                 </configuration>
@@ -479,7 +479,7 @@
                                     <workingDirectory>${project.build.directory}/random-stuff-website-1.0.0/WEB-INF/classes</workingDirectory>
                                     <arguments>
                                         <argument>-cp</argument>
-                                        <argument>.;../../../dependency/commons-io-2.16.1.jar;../../../dependency/commons-lang3-3.14.0.jar;../../../dependency/json-20240303.jar</argument>
+                                        <argument>.;../../../dependency/commons-io-2.17.0.jar;../../../dependency/commons-lang3-3.14.0.jar;../../../dependency/json-20240303.jar</argument>
                                         <argument>ovh.maddie480.randomstuff.frontend.PrepareForRadioLNJ</argument>
                                     </arguments>
                                 </configuration>
@@ -496,7 +496,7 @@
                                     <workingDirectory>${project.build.directory}/random-stuff-website-1.0.0/WEB-INF/classes</workingDirectory>
                                     <arguments>
                                         <argument>-cp</argument>
-                                        <argument>.;../../../dependency/commons-io-2.16.1.jar;../../../dependency/commons-lang3-3.14.0.jar;../../../dependency/commons-text-1.12.0.jar;../../../dependency/jsoup-1.18.1.jar;../../../dependency/jvmbrotli-0.2.0.jar;../../../dependency/jvmbrotli-win32-x86-amd64-0.2.0.jar</argument>
+                                        <argument>.;../../../dependency/commons-io-2.17.0.jar;../../../dependency/commons-lang3-3.14.0.jar;../../../dependency/commons-text-1.12.0.jar;../../../dependency/jsoup-1.18.1.jar;../../../dependency/jvmbrotli-0.2.0.jar;../../../dependency/jvmbrotli-win32-x86-amd64-0.2.0.jar</argument>
                                         <argument>ovh.maddie480.randomstuff.frontend.ParrotQuickGenerator</argument>
                                     </arguments>
                                 </configuration>
