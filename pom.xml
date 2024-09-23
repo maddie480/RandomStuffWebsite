@@ -177,7 +177,7 @@
             <plugin>
                 <groupId>com.github.eirslett</groupId>
                 <artifactId>frontend-maven-plugin</artifactId>
-                <version>1.15.0</version>
+                <version>1.15.1</version>
 
                 <executions>
                     <!-- Install Node -->
@@ -381,7 +381,7 @@
                     <plugin>
                         <groupId>com.github.eirslett</groupId>
                         <artifactId>frontend-maven-plugin</artifactId>
-                        <version>1.15.0</version>
+                        <version>1.15.1</version>
 
                         <executions>
                             <execution>
