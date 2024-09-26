@@ -48,7 +48,8 @@ public class StaticAssetsAndRouteNotFoundServlet extends HttpServlet {
         contentTypesList.add(Triple.of("jar", "application/java-archive", false));
         contentTypesList.add(Triple.of("csv", "text/csv", true));
         contentTypesList.add(Triple.of("xml", "application/xml", true));
-        contentTypesList.add(Triple.of("bmfc", "text/plain", true));
+        contentTypesList.add(Triple.of("bmfc", "application/octet-stream", true));
+        contentTypesList.add(Triple.of("obj", "application/octet-stream", true));
         contentTypesList.add(Triple.of("txt", "text/plain", true));
 
         CONTENT_TYPES = new HashMap<>();
