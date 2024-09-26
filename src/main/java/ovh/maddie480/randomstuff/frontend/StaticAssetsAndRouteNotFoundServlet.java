@@ -47,6 +47,9 @@ public class StaticAssetsAndRouteNotFoundServlet extends HttpServlet {
         contentTypesList.add(Triple.of("exe", "application/vnd.microsoft.portable-executable", false));
         contentTypesList.add(Triple.of("jar", "application/java-archive", false));
         contentTypesList.add(Triple.of("csv", "text/csv", true));
+        contentTypesList.add(Triple.of("xml", "application/xml", true));
+        contentTypesList.add(Triple.of("bmfc", "text/plain", true));
+        contentTypesList.add(Triple.of("txt", "text/plain", true));
 
         CONTENT_TYPES = new HashMap<>();
         for (Triple<String, String, Boolean> contentType : contentTypesList) {
@@ -70,7 +73,7 @@ public class StaticAssetsAndRouteNotFoundServlet extends HttpServlet {
             HomepageService.doGet(request, response);
         } else {
             String extension = request.getRequestURI().substring(request.getRequestURI().lastIndexOf(".") + 1);
-            if (CONTENT_TYPES.containsKey(extension) && Stream.of("/assets/", "/css/", "/fonts/", "/img/", "/js/", "/vids/", "/music/", "/quest/", "/lua-cutscenes-documentation/", "/static/")
+            if (CONTENT_TYPES.containsKey(extension) && Stream.of("/assets/", "/css/", "/fonts/", "/img/", "/js/", "/vids/", "/music/", "/quest/", "/lua-cutscenes-documentation/", "/static/", "/resources/")
                     .anyMatch(request.getRequestURI()::startsWith)) {
 
                 long size;
