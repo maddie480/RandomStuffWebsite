@@ -15,11 +15,10 @@ jobs:
         HEALTHCHECK_DISCORD_WEBHOOK_URL: ${{ secrets.HEALTHCHECK_DISCORD_WEBHOOK_URL }}
         DISCORD_USER_ID: ${{ secrets.DISCORD_USER_ID }}
       run: |
-        set -x
         if ! curl --fail -o /dev/null https://maddie480.ovh/
         then
           echo "Health check OK!"
         else
           echo "Health check KO, sending alert!"
-          curl --fail -o /dev/null -d "{\"content\":\":fire: <@$DISCORD_USER_ID> **maddie480.ovh is down!**\"}" $HEALTHCHECK_DISCORD_WEBHOOK_URL
+          curl --fail -o /dev/null -H 'Content-Type: application/json' -d "{\"content\":\":fire: <@$DISCORD_USER_ID> **maddie480.ovh is down!**\"}" $HEALTHCHECK_DISCORD_WEBHOOK_URL
         fi
