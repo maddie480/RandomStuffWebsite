@@ -15,6 +15,7 @@ jobs:
         HEALTHCHECK_DISCORD_WEBHOOK_URL: ${{ secrets.HEALTHCHECK_DISCORD_WEBHOOK_URL }}
         DISCORD_USER_ID: ${{ secrets.DISCORD_USER_ID }}
       run: |
+        set -x
         if ! curl --fail -o /dev/null https://maddie480.ovh/
         then
           echo "Health check OK!"
