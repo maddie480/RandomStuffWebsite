@@ -13,7 +13,7 @@ jobs:
         HEALTHCHECK_DISCORD_WEBHOOK_URL: ${{ secrets.HEALTHCHECK_DISCORD_WEBHOOK_URL }}
         DISCORD_USER_ID: ${{ secrets.DISCORD_USER_ID }}
       run: |
-        if curl --fail -o /dev/null https://maddie480.ovh/
+        if curl --fail -o /dev/null -H 'User-Agent: GitHub-Actions-Healthcheck/1.0 (+https://github.com/maddie480/RandomStuffWebsite)' https://maddie480.ovh/
         then
           echo "Health check OK!"
         else
