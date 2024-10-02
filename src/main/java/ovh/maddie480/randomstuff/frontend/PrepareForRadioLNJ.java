@@ -227,15 +227,15 @@ public class PrepareForRadioLNJ {
     }
 
     /**
-     * Downloads the entire file which link has been given into memory, with up to 10 tries,
+     * Downloads the entire file which link has been given into memory, with up to 3 tries,
      * then returns an input stream to read the downloaded bytes from.
      */
     public static InputStream getFullInputStreamWithRetry(String url) throws IOException {
-        for (int i = 1; i < 10; i++) {
+        for (int i = 1; i < 3; i++) {
             try (InputStream is = ConnectionUtils.openStreamWithTimeout(url)) {
                 return new ByteArrayInputStream(IOUtils.toByteArray(is));
             } catch (IOException e) {
-                logger.warning("I/O exception while getting file contents (try " + i + "/10). " + e);
+                logger.warning("I/O exception while getting file contents (try " + i + "/3). " + e);
 
                 // wait a bit before retrying
                 try {
@@ -247,7 +247,7 @@ public class PrepareForRadioLNJ {
             }
         }
 
-        // 10th try: this time, if it crashes, let it crash
+        // 3rd try: this time, if it crashes, let it crash
         try (InputStream is = ConnectionUtils.openStreamWithTimeout(url)) {
             return new ByteArrayInputStream(IOUtils.toByteArray(is));
         }
