@@ -43,7 +43,12 @@
       "prefix": "Manhattan Chase - "
    },
    {
-      "url": "https://files.gamebanana.com/bitpit/forklift_racer.zip",
+      "url": "https://files.gamebanana.com/bitpit/forklift_1.zip",
+      "useYoutubeDl": false,
+      "prefix": "Forklift Racer - "
+   },
+   {
+      "url": "https://files.gamebanana.com/bitpit/fprklift2.zip",
       "useYoutubeDl": false,
       "prefix": "Forklift Racer - "
    },
@@ -111,5 +116,10 @@
       "url": "https://files.gamebanana.com/bitpit/turbo_trucks_soundtrackwav.zip",
       "useYoutubeDl": false,
       "prefix": ""
+   },
+   {
+      "url": "https://files.gamebanana.com/bitpit/archive_348c5.zip",
+      "useYoutubeDl": false,
+      "prefix": "Western Desperado - "
    }
 ]
