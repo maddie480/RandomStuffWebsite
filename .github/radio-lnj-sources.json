@@ -121,5 +121,10 @@
       "url": "https://files.gamebanana.com/bitpit/archive_348c5.zip",
       "useYoutubeDl": false,
       "prefix": "Western Desperado - "
+   },
+   {
+      "url": "https://files.gamebanana.com/bitpit/archive_348c5.zip",
+      "useYoutubeDl": false,
+      "prefix": "https://files.gamebanana.com/bitpit/the_town_with_no_name_-_introogg.zip"
    }
 ]
