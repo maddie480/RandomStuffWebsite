@@ -41,7 +41,6 @@ public class EverestYamlValidatorService extends HttpServlet {
         public String Name;
         public String Version;
         public String LatestVersion;
-        public String UpdatedVersion;
         public List<EverestModuleMetadata> Dependencies;
         public List<EverestModuleMetadata> OptionalDependencies;
 
@@ -208,9 +207,9 @@ public class EverestYamlValidatorService extends HttpServlet {
                     }
                 }
 
-                JSONObject everestVersions;
+                int latestEverestStable;
                 try (BufferedReader br = Files.newBufferedReader(Paths.get("/shared/celeste/latest-everest-versions.json"))) {
-                    everestVersions = new JSONObject(new JSONTokener(br));
+                    latestEverestStable = new JSONObject(new JSONTokener(br)).getInt("stable");
                 }
 
                 // add entries that don't come from the database: Celeste, Everest, and things declared by the yaml itself.
@@ -223,13 +222,13 @@ public class EverestYamlValidatorService extends HttpServlet {
                 {
                     EverestModuleMetadata metadata = new EverestModuleMetadata();
                     metadata.Name = "Everest";
-                    metadata.Version = "1." + getMaximumEverestVersion(everestVersions) + ".0";
+                    metadata.Version = "1." + latestEverestStable + ".0";
                     database.add(metadata);
                 }
                 {
                     EverestModuleMetadata metadata = new EverestModuleMetadata();
                     metadata.Name = "EverestCore";
-                    metadata.Version = "1." + getMaximumEverestVersion(everestVersions) + ".0";
+                    metadata.Version = "1." + latestEverestStable + ".0";
                     database.add(metadata);
                 }
                 for (EverestModuleMetadata mod : metadatas) {
@@ -307,13 +306,6 @@ public class EverestYamlValidatorService extends HttpServlet {
                                     problems.add("The dependency downloader won't be able to get the version you requested for \"" + dependency.Name + "\": " + problem);
                                 } else {
                                     dependency.LatestVersion = databaseDependency.Version;
-
-                                    if (dependency.Name.equals("Everest")) {
-                                        // the most relevant version for Everest might be latest stable rather than latest dev.
-                                        dependency.UpdatedVersion = "1." + getUpdatedEverestVersion(everestVersions, requiredVersion.parts[1]) + ".0";
-                                    } else {
-                                        dependency.UpdatedVersion = databaseDependency.Version;
-                                    }
                                 }
                             }
                         }
@@ -333,13 +325,13 @@ public class EverestYamlValidatorService extends HttpServlet {
                     boolean allDependenciesAreUpToDate = true;
                     for (EverestModuleMetadata metadata : metadatas) {
                         for (EverestModuleMetadata dependency : metadata.Dependencies) {
-                            if (!dependency.Version.equals(dependency.UpdatedVersion)) {
+                            if (!dependency.Version.equals(dependency.LatestVersion)) {
                                 allDependenciesAreUpToDate = false;
                                 break;
                             }
                         }
                         for (EverestModuleMetadata dependency : metadata.OptionalDependencies) {
-                            if (!dependency.Version.equals(dependency.UpdatedVersion)) {
+                            if (!dependency.Version.equals(dependency.LatestVersion)) {
                                 allDependenciesAreUpToDate = false;
                                 break;
                             }
@@ -358,7 +350,7 @@ public class EverestYamlValidatorService extends HttpServlet {
                                         updatedYaml.put("Dependencies", mod.Dependencies.stream()
                                                 .map(dependency -> ImmutableMap.of(
                                                         "Name", dependency.Name,
-                                                        "Version", dependency.UpdatedVersion
+                                                        "Version", dependency.LatestVersion
                                                 ))
                                                 .collect(Collectors.toList()));
                                     }
@@ -367,7 +359,7 @@ public class EverestYamlValidatorService extends HttpServlet {
                                         updatedYaml.put("OptionalDependencies", mod.OptionalDependencies.stream()
                                                 .map(dependency -> ImmutableMap.of(
                                                         "Name", dependency.Name,
-                                                        "Version", dependency.UpdatedVersion
+                                                        "Version", dependency.LatestVersion
                                                 ))
                                                 .collect(Collectors.toList()));
                                     }
@@ -469,34 +461,5 @@ public class EverestYamlValidatorService extends HttpServlet {
         }
 
         return castedList;
-    }
-
-    /**
-     * Returns the latest Everest version across all branches.
-     */
-    private static int getMaximumEverestVersion(JSONObject everestVersions) {
-        return Math.max(
-                Math.max(
-                        everestVersions.getInt("dev"),
-                        everestVersions.getInt("beta")
-                ),
-                everestVersions.getInt("stable")
-        );
-    }
-
-    /**
-     * Updates the given Everest version, using the most relevant branch:
-     * - stable if the given version is older than (or same as) stable
-     * - otherwise beta if the given version is older than (or same as) beta
-     * - otherwise dev
-     */
-    private static int getUpdatedEverestVersion(JSONObject everestVersions, int currentVersion) {
-        if (currentVersion <= everestVersions.getInt("stable")) {
-            return everestVersions.getInt("stable");
-        } else if (currentVersion <= everestVersions.getInt("beta")) {
-            return everestVersions.getInt("beta");
-        } else {
-            return everestVersions.getInt("dev");
-        }
     }
 }
