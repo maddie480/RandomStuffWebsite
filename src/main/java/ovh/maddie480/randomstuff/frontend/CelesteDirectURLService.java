@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @WebServlet(name = "CelesteDirectURLService", urlPatterns = {"/celeste/direct-link-service", "/celeste/dl", "/picrew",
-        "/celeste/download-olympus", "/celeste/download-everest"})
+        "/celeste/download-olympus", "/celeste/download-everest", "/aon-helper-github"})
 public class CelesteDirectURLService extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(CelesteDirectURLService.class);
 
@@ -59,6 +59,11 @@ public class CelesteDirectURLService extends HttpServlet {
         } else if (request.getRequestURI().equals("/picrew")) {
             // Hard-coded DIY URL shortener to the rescue
             response.sendRedirect("https://picrew.me/en/image_maker/1387003");
+
+        } else if (request.getRequestURI().equals("/aon-helper-github")) {
+            // GameBanana has a janky anti-XSS protection that ... completely prevents pages from containing "onHelp"
+            // (it's presumably an HTML event listener attribute?) which is unfortunate when your helper is called a"onHelp"er
+            response.sendRedirect("https://github.com/aonkeeper4/aonHelper");
 
         } else if (request.getRequestURI().equals("/celeste/download-everest")) {
             JSONObject branch;
