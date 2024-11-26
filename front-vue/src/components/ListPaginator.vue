@@ -20,7 +20,7 @@
         type="number"
         min="1"
         :max="pageCount"
-        @blur="gotoPage = pageNumber"
+        @blur="(gotoPage = pageNumber)"
       />
       / {{ pageCount }}
     </form>
