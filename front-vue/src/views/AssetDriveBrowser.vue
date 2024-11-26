@@ -41,7 +41,7 @@
         :class="
           'btn ' + (currentCategory === 'decals' ? 'btn-primary' : 'btn-link')
         "
-        @click="(currentCategory = 'decals')"
+        @click="currentCategory = 'decals'"
       >
         Decals
       </button>
@@ -50,7 +50,7 @@
           'btn ' +
           (currentCategory === 'stylegrounds' ? 'btn-primary' : 'btn-link')
         "
-        @click="(currentCategory = 'stylegrounds')"
+        @click="currentCategory = 'stylegrounds'"
       >
         Stylegrounds
       </button>
@@ -59,7 +59,7 @@
           'btn ' +
           (currentCategory === 'bgtilesets' ? 'btn-primary' : 'btn-link')
         "
-        @click="(currentCategory = 'bgtilesets')"
+        @click="currentCategory = 'bgtilesets'"
       >
         Background Tilesets
       </button>
@@ -68,7 +68,7 @@
           'btn ' +
           (currentCategory === 'fgtilesets' ? 'btn-primary' : 'btn-link')
         "
-        @click="(currentCategory = 'fgtilesets')"
+        @click="currentCategory = 'fgtilesets'"
       >
         Foreground Tilesets
       </button>
@@ -76,7 +76,7 @@
         :class="
           'btn ' + (currentCategory === 'hires' ? 'btn-primary' : 'btn-link')
         "
-        @click="(currentCategory = 'hires')"
+        @click="currentCategory = 'hires'"
       >
         Hi-Res Art
       </button>
@@ -84,7 +84,7 @@
         :class="
           'btn ' + (currentCategory === 'misc' ? 'btn-primary' : 'btn-link')
         "
-        @click="(currentCategory = 'misc')"
+        @click="currentCategory = 'misc'"
       >
         Misc
       </button>
