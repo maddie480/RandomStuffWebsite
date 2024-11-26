@@ -1,18 +1,18 @@
 /* remove many buttons in the message bar */
 button[aria-label="Ouvrir le sélecteur d'autocollant"],
 button[aria-label="Ouvrir l'onglet des GIF"],
-    /* I don't care about quests, Discord */
+/* I don't care about quests, Discord */
 div[aria-label="A terminé une quête"],
-    /* hide a few buttons from the top bar of channels */
+/* hide a few buttons from the top bar of channels */
 div[aria-label="Paramètres de notification"],
 html:not(.is-mobile) div[aria-label="Masquer la liste des membres"],
 div[aria-label="Aide"],
-    /* hide the activity list thingy on top of the member list, they're not members */
+/* hide the activity list thingy on top of the member list, they're not members */
 .membersGroup_cbd271:has(.headerContainer_bc6acb),
-    /* do not display reaction suggestions */
+/* do not display reaction suggestions */
 .hoverBarButton_e986d9:has(.buttonContent_e986d9),
 .buttonContainer_f9f2ca .separator_e986d9,
-    /* that app launcher thing just makes the message field smaller */
+/* that app launcher thing just makes the message field smaller */
 .channelAppLauncher_df39bd {
     display: none;
 }
