@@ -137,7 +137,7 @@ public class CacheAndCompressionFilter extends HttpFilter {
         CachingServletResponse placeholderResponse = new CachingServletResponse(res, compress);
         chain.doFilter(req, placeholderResponse);
 
-        if (req.getRequestURI().startsWith("/static/css/discord-nitro-themes/")) {
+        if (req.getRequestURI().startsWith("/static/css/discord-nitro-themes/") || req.getRequestURI().equals("/static/css/vencord-quick-css.css")) {
             // 304 responses make Vendroid angry
             placeholderResponse.sendResponse();
             return;
