@@ -1,0 +1,148 @@
+/* remove many buttons in the message bar */
+button[aria-label="Ouvrir le sélecteur d'autocollant"],
+button[aria-label="Ouvrir l'onglet des GIF"],
+    /* I don't care about quests, Discord */
+div[aria-label="A terminé une quête"],
+    /* hide a few buttons from the top bar of channels */
+div[aria-label="Paramètres de notification"],
+html:not(.is-mobile) div[aria-label="Masquer la liste des membres"],
+div[aria-label="Aide"],
+    /* hide the activity list thingy on top of the member list, they're not members */
+.membersGroup_cbd271:has(.headerContainer_bc6acb),
+    /* do not display reaction suggestions */
+.hoverBarButton_e986d9:has(.buttonContent_e986d9),
+.buttonContainer_f9f2ca .separator_e986d9,
+    /* that app launcher thing just makes the message field smaller */
+.channelAppLauncher_df39bd {
+    display: none;
+}
+.jumpToPresentBar_cf58b5 {
+    right: 16px;
+}
+
+/* gray out extra tags that are injected by MoreUserTags */
+.botTag_a31c43:not([data-tag="app"]):not([data-tag="webhook"]):not([data-tag="ai"]), .botTag_f9f2ca:not([data-tag="app"]):not([data-tag="webhook"]):not([data-tag="ai"]) {
+    background: var(--bg-mod-strong);
+}
+.botTag_a31c43:not([data-tag="app"]):not([data-tag="webhook"]):not([data-tag="ai"]) span, .botTag_f9f2ca:not([data-tag="app"]):not([data-tag="webhook"]):not([data-tag="ai"]) span {
+    color: var(--text-normal);
+}
+
+/* APP => Bot */
+.botTag_a31c43[data-tag="app"], .botTag_f9f2ca[data-tag="app"] {
+    overflow: hidden;
+}
+.botTag_a31c43[data-tag="app"] span::before, .botTag_f9f2ca[data-tag="app"] span::before {
+    content: 'Bot\00a0\00a0';
+}
+
+/* make AI tag the same color as bot tags */
+.botTagAI_a9e77f {
+    background: var(--accent);
+}
+
+/* remove profile themes */
+.avatarDecoration_c51b4e,
+.avatarDecoration_f9f2ca,
+.profileEffects_f867f9 {
+    visibility: hidden;
+}
+.banner_d5fdb1 {
+    background-image: none !important;
+}
+.banner_d5fdb1 .gifTag_b11e6c {
+    display: none;
+}
+
+/* expand bios by default */
+.descriptionClamp_abaf7d {
+    -webkit-line-clamp: 15;
+}
+.maxBioHeight_abaf7d {
+    max-height: 270px;
+}
+.viewFullBio_abaf7d {
+    display: none;
+}
+
+/* reduced motion shiggy */
+.vc-settings-donate img {
+    display: none;
+}
+.vc-settings-donate::after {
+    content: '';
+    image-rendering: pixelated;
+    margin-left: auto;
+    background: url('https://media.discordapp.net/stickers/1039992459209490513.png?passthrough=false') center / contain no-repeat;
+    width: 128px;
+    height: 128px;
+}
+.vc-settings-donate:hover::after {
+    background: url('https://media.discordapp.net/stickers/1039992459209490513.png') center / contain no-repeat;
+}
+
+/* map surCord colors to Discord brand colors */
+:root {
+    --bg-brand: var(--accent);
+    --brand-500: var(--accent);
+    --brand-560: var(--accent-hover);
+    --brand-600: var(--accent-selected);
+    --button-secondary-background-hover: var(--accent-hover);
+    --button-secondary-background-active: var(--accent-selected);
+}
+/* un-color the title bar */
+:root {
+    --surCordTitleBar: initial;
+}
+
+/* fix semi-transparent code blocks */
+.theme-light .markup_f8f345 code {
+    background: initial !important;
+}
+
+/* fix "Save Note" button centering in message actions */
+div[aria-label="Save Note"] svg {
+    margin-left: 2px;
+    margin-right: -2px;
+}
+
+/* fix color behind username panel on the bottom left */
+.theme-light .sidebar_a4d4d9 {
+    background: var(--bg-overlay-2, var(--background-secondary));
+}
+.theme-dark .sidebar_a4d4d9 {
+    background: var(--bg-overlay-3, var(--background-secondary));
+}
+
+/* fix background overflowing from username panel on the bottom left */
+.theme-dark section.panels_a4d4d9, .theme-light section.panels_a4d4d9 {
+    background: var(--bg-overlay-3, var(--background-secondary-alt));
+}
+.panels_a4d4d9 .container_b2ca13 {
+    background: transparent;
+}
+
+/* fix server icon backgrounds being opaque */
+.theme-light .guilds_a4d4d9 .scroller_fea3ef, .theme-dark .guilds_a4d4d9 .scroller_fea3ef {
+    background-color: transparent;
+}
+
+/* folder color */
+.theme-light .folder_bc7085 {
+    background: rgba(231, 234, 237, .436) !important;
+}
+.theme-dark .folder_bc7085 {
+    background: rgba(39, 38, 41, .276) !important;
+}
+.folderIconWrapper_bc7085 {
+    background-color: transparent !important;
+}
+.folderIconWrapper_bc7085 svg {
+    color: var(--accent) !important;
+}
+.closedFolderIconWrapper_bc7085 {
+    display: none;
+}
+.theme-dark .circleIconButton_db6521 {
+    border: none;
+}
