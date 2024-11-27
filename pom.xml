@@ -166,7 +166,7 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <version>3.4.0</version>
                 <configuration>
-                    <packagingExcludes>WEB-INF/lib/jvmbrotli-0.2.0.jar,WEB-INF/lib/jvmbrotli-linux-x86-amd64-0.2.0.jar,WEB-INF/lib/jvmbrotli-win32-x86-amd64-0.2.0.jar,WEB-INF/lib/jsoup-1.18.1.jar</packagingExcludes>
+                    <packagingExcludes>WEB-INF/lib/jvmbrotli-0.2.0.jar,WEB-INF/lib/jvmbrotli-linux-x86-amd64-0.2.0.jar,WEB-INF/lib/jvmbrotli-win32-x86-amd64-0.2.0.jar,WEB-INF/lib/jsoup-1.18.2.jar</packagingExcludes>
                 </configuration>
             </plugin>
             <plugin>
@@ -328,7 +328,7 @@
                             <workingDirectory>${project.build.directory}/random-stuff-website-1.0.0/WEB-INF/classes</workingDirectory>
                             <arguments>
                                 <argument>-cp</argument>
-                                <argument>.:../../../dependency/commons-io-2.18.0.jar:../../../dependency/commons-lang3-3.14.0.jar:../../../dependency/commons-text-1.12.0.jar:../../../dependency/jsoup-1.18.1.jar:../../../dependency/jvmbrotli-0.2.0.jar:../../../dependency/jvmbrotli-linux-x86-amd64-0.2.0.jar</argument>
+                                <argument>.:../../../dependency/commons-io-2.18.0.jar:../../../dependency/commons-lang3-3.14.0.jar:../../../dependency/commons-text-1.12.0.jar:../../../dependency/jsoup-1.18.2.jar:../../../dependency/jvmbrotli-0.2.0.jar:../../../dependency/jvmbrotli-linux-x86-amd64-0.2.0.jar</argument>
                                 <argument>ovh.maddie480.randomstuff.frontend.ParrotQuickGenerator</argument>
                             </arguments>
                         </configuration>
@@ -362,7 +362,7 @@
                             <workingDirectory>${project.build.directory}/random-stuff-website-1.0.0/WEB-INF/classes</workingDirectory>
                             <arguments>
                                 <argument>-cp</argument>
-                                <argument>.:../../../dependency/commons-io-2.18.0.jar:../../../dependency/jsoup-1.18.1.jar:../../../dependency/json-20240303.jar</argument>
+                                <argument>.:../../../dependency/commons-io-2.18.0.jar:../../../dependency/jsoup-1.18.2.jar:../../../dependency/json-20240303.jar</argument>
                                 <argument>ovh.maddie480.randomstuff.frontend.ExtractDiscordThemeCSS</argument>
                             </arguments>
                         </configuration>
@@ -514,7 +514,7 @@
                                     <workingDirectory>${project.build.directory}/random-stuff-website-1.0.0/WEB-INF/classes</workingDirectory>
                                     <arguments>
                                         <argument>-cp</argument>
-                                        <argument>.;../../../dependency/commons-io-2.18.0.jar;../../../dependency/jsoup-1.18.1.jar;../../../dependency/json-20240303.jar</argument>
+                                        <argument>.;../../../dependency/commons-io-2.18.0.jar;../../../dependency/jsoup-1.18.2.jar;../../../dependency/json-20240303.jar</argument>
                                         <argument>ovh.maddie480.randomstuff.frontend.ExtractDiscordThemeCSS</argument>
                                     </arguments>
                                 </configuration>
@@ -531,7 +531,7 @@
                                     <workingDirectory>${project.build.directory}/random-stuff-website-1.0.0/WEB-INF/classes</workingDirectory>
                                     <arguments>
                                         <argument>-cp</argument>
-                                        <argument>.;../../../dependency/commons-io-2.18.0.jar;../../../dependency/commons-lang3-3.14.0.jar;../../../dependency/commons-text-1.12.0.jar;../../../dependency/jsoup-1.18.1.jar;../../../dependency/jvmbrotli-0.2.0.jar;../../../dependency/jvmbrotli-win32-x86-amd64-0.2.0.jar</argument>
+                                        <argument>.;../../../dependency/commons-io-2.18.0.jar;../../../dependency/commons-lang3-3.14.0.jar;../../../dependency/commons-text-1.12.0.jar;../../../dependency/jsoup-1.18.2.jar;../../../dependency/jvmbrotli-0.2.0.jar;../../../dependency/jvmbrotli-win32-x86-amd64-0.2.0.jar</argument>
                                         <argument>ovh.maddie480.randomstuff.frontend.ParrotQuickGenerator</argument>
                                     </arguments>
                                 </configuration>
