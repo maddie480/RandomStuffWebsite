@@ -32,7 +32,7 @@ public class StaticAssetsAndRouteNotFoundServlet extends HttpServlet {
     // and users probably want to download them anyway, so force download with a Content-Disposition header
     public static final Map<String, String> PATHS_TO_FORCE_DOWNLOAD = ImmutableMap.of(
         "/resources/foregroundtiles.xml", "ForegroundTiles.xml",
-        "/resources/celeste_dialogs.xml", "notepadplusplus_celeste_dialogs.xml"
+        "/resources/celeste_dialogs.xml", "Celeste_Dialogs.xml"
     );
 
     static {
