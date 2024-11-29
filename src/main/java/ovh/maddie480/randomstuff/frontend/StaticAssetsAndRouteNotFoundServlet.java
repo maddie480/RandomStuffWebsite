@@ -1,5 +1,6 @@
 package ovh.maddie480.randomstuff.frontend;
 
+import com.google.common.collect.ImmutableMap;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -26,6 +27,13 @@ import java.util.stream.Stream;
 public class StaticAssetsAndRouteNotFoundServlet extends HttpServlet {
     public static final Map<String, String> CONTENT_TYPES;
     public static final Set<String> FORMATS_NOT_WORTH_COMPRESSING;
+
+    // XMLs sometimes don't show up properly in browsers (reportedly due to some extensions),
+    // and users probably want to download them anyway, so force download with a Content-Disposition header
+    public static final Map<String, String> PATHS_TO_FORCE_DOWNLOAD = ImmutableMap.of(
+        "/resources/foregroundtiles.xml", "ForegroundTiles.xml",
+        "/resources/celeste_dialogs.xml", "notepadplusplus_celeste_dialogs.xml"
+    );
 
     static {
         // (extension, MIME type, should we compress this?)
@@ -128,6 +136,11 @@ public class StaticAssetsAndRouteNotFoundServlet extends HttpServlet {
 
                 response.setHeader("Accept-Ranges", "bytes");
                 response.setContentType(CONTENT_TYPES.get(extension));
+
+                if (PATHS_TO_FORCE_DOWNLOAD.containsKey(request.getRequestURI())) {
+                    response.setHeader("Content-Disposition", "attachment; filename=\""
+                        + PATHS_TO_FORCE_DOWNLOAD.get(request.getRequestURI()) + '"');
+                }
 
                 try (InputStream is = StaticAssetsAndRouteNotFoundServlet.class.getClassLoader().getResourceAsStream("resources" + request.getRequestURI().replace("%20", " "))) {
                     IOUtils.copyLarge(is, response.getOutputStream(), start, end - start + 1);
