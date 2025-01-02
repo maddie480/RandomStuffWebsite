@@ -2,11 +2,13 @@ package ovh.maddie480.randomstuff.frontend;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.function.IOSupplier;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.*;
+import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -231,25 +233,66 @@ public class PrepareForRadioLNJ {
      * then returns an input stream to read the downloaded bytes from.
      */
     public static InputStream getFullInputStreamWithRetry(String url) throws IOException {
-        for (int i = 1; i < 10; i++) {
+        int contentLength = runWithRetry(() -> getContentLength(url));
+
+        return runWithRetry(() -> {
             try (InputStream is = ConnectionUtils.openStreamWithTimeout(url)) {
-                return new ByteArrayInputStream(IOUtils.toByteArray(is));
+                byte[] contents = IOUtils.toByteArray(is);
+                if (contents.length != contentLength) {
+                    throw new IOException("The expected size (" + contentLength + ") does not match what we got (" + contents.length + ")");
+                }
+                return new ByteArrayInputStream(contents);
+            }
+        });
+    }
+
+    private static int getContentLength(String url) throws IOException {
+        HttpURLConnection con = ConnectionUtils.openConnectionWithTimeout(url);
+        con.setRequestMethod("HEAD");
+        con.setInstanceFollowRedirects(true);
+
+        int responseCode = con.getResponseCode();
+        if (responseCode != 200) throw new IOException("Request failed with code " + responseCode);
+
+        String contentLength = con.getHeaderField("Content-Length");
+        if (contentLength == null) throw new IOException("No Content-Length header");
+        logger.info("Content-Length of " + url + " is " + contentLength);
+
+        try {
+            return Integer.parseInt(contentLength);
+        } catch (NumberFormatException e) {
+            throw new IOException("Could not parse Content-Length header as number", e);
+        }
+    }
+
+    /**
+     * Runs a task (typically a network operation), retrying up to 10 times if it throws an IOException.
+     *
+     * @param task The task to run and retry
+     * @param <T>  The return type for the task
+     * @return What the task returned
+     * @throws IOException If the task failed 10 times
+     */
+    private static <T> T runWithRetry(IOSupplier<T> task) throws IOException {
+        for (int i = 1; i < 10; i++) {
+            try {
+                return task.get();
             } catch (IOException e) {
-                logger.warning("I/O exception while getting file contents (try " + i + "/10). " + e);
+                logger.warning("I/O exception while doing networking operation (try " + i + "/10).");
+                e.printStackTrace();
 
                 // wait a bit before retrying
                 try {
-                    logger.info("Waiting " + (i * 5) + " seconds before next try.");
+                    logger.warning("Waiting " + (i * 5) + " seconds before next try.");
                     Thread.sleep(i * 5000);
                 } catch (InterruptedException e2) {
-                    logger.warning("Sleep interrupted: " + e2);
+                    logger.warning("Sleep interrupted");
+                    e2.printStackTrace();
                 }
             }
         }
 
         // 3rd try: this time, if it crashes, let it crash
-        try (InputStream is = ConnectionUtils.openStreamWithTimeout(url)) {
-            return new ByteArrayInputStream(IOUtils.toByteArray(is));
-        }
+        return task.get();
     }
 }
