@@ -345,7 +345,7 @@
                             <workingDirectory>${project.build.directory}/random-stuff-website-1.0.0/WEB-INF/classes</workingDirectory>
                             <arguments>
                                 <argument>-cp</argument>
-                                <argument>.:../../../dependency/commons-io-2.18.0.jar:../../../dependency/commons-lang3-3.17.0.jar:../../../dependency/json-20241224.jar</argument>
+                                <argument>.:../../../dependency/commons-io-2.18.0.jar:../../../dependency/commons-lang3-3.17.0.jar:../../../dependency/json-20250107.jar</argument>
                                 <argument>ovh.maddie480.randomstuff.frontend.PrepareForRadioLNJ</argument>
                             </arguments>
                         </configuration>
@@ -362,7 +362,7 @@
                             <workingDirectory>${project.build.directory}/random-stuff-website-1.0.0/WEB-INF/classes</workingDirectory>
                             <arguments>
                                 <argument>-cp</argument>
-                                <argument>.:../../../dependency/commons-io-2.18.0.jar:../../../dependency/jsoup-1.18.3.jar:../../../dependency/json-20241224.jar</argument>
+                                <argument>.:../../../dependency/commons-io-2.18.0.jar:../../../dependency/jsoup-1.18.3.jar:../../../dependency/json-20250107.jar</argument>
                                 <argument>ovh.maddie480.randomstuff.frontend.ExtractDiscordThemeCSS</argument>
                             </arguments>
                         </configuration>
@@ -497,7 +497,7 @@
                                     <workingDirectory>${project.build.directory}/random-stuff-website-1.0.0/WEB-INF/classes</workingDirectory>
                                     <arguments>
                                         <argument>-cp</argument>
-                                        <argument>.;../../../dependency/commons-io-2.18.0.jar;../../../dependency/commons-lang3-3.17.0.jar;../../../dependency/json-20241224.jar</argument>
+                                        <argument>.;../../../dependency/commons-io-2.18.0.jar;../../../dependency/commons-lang3-3.17.0.jar;../../../dependency/json-20250107.jar</argument>
                                         <argument>ovh.maddie480.randomstuff.frontend.PrepareForRadioLNJ</argument>
                                     </arguments>
                                 </configuration>
@@ -514,7 +514,7 @@
                                     <workingDirectory>${project.build.directory}/random-stuff-website-1.0.0/WEB-INF/classes</workingDirectory>
                                     <arguments>
                                         <argument>-cp</argument>
-                                        <argument>.;../../../dependency/commons-io-2.18.0.jar;../../../dependency/jsoup-1.18.3.jar;../../../dependency/json-20241224.jar</argument>
+                                        <argument>.;../../../dependency/commons-io-2.18.0.jar;../../../dependency/jsoup-1.18.3.jar;../../../dependency/json-20250107.jar</argument>
                                         <argument>ovh.maddie480.randomstuff.frontend.ExtractDiscordThemeCSS</argument>
                                     </arguments>
                                 </configuration>
