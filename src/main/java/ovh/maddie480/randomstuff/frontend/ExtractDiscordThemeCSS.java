@@ -24,7 +24,7 @@ public class ExtractDiscordThemeCSS {
         Set<String> cssUrls;
 
         { // extract the CSS locations from Discord once it's done loading on browser
-            Process p = new ProcessBuilder("chromium", "--headless", "--dump-dom", "https://discord.com/app")
+            Process p = new ProcessBuilder("chromium", "--headless", "--dump-dom", "--no-sandbox", "https://discord.com/app")
                     .redirectError(ProcessBuilder.Redirect.INHERIT)
                     .redirectOutput(ProcessBuilder.Redirect.PIPE)
                     .start();
