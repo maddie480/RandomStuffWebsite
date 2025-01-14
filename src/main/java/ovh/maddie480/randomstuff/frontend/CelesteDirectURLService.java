@@ -52,16 +52,10 @@ public class CelesteDirectURLService extends HttpServlet {
         } else if (request.getRequestURI().equals("/celeste/gb")) {
             String modId = request.getParameter("id");
 
-            if (!dlUrls.containsKey(modId)) {
+            if (!gbUrls.containsKey(modId)) {
                 notFound(request, response);
             } else {
-                String downloadLink = ("1".equals(mirror) ? mirrorUrls : dlUrls).get(modId);
-
-                if ("1".equals(twoclick)) {
-                    response.sendRedirect("https://0x0a.de/twoclick?" + downloadLink.substring(8));
-                } else {
-                    response.sendRedirect(downloadLink);
-                }
+                response.sendRedirect(gbUrls.get(modId));
             }
 
         } else if (request.getRequestURI().equals("/celeste/direct-link-service")) {
