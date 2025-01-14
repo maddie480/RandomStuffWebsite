@@ -179,6 +179,7 @@ public class CelesteDirectURLService extends HttpServlet {
 
         log.debug("There are now {} GB links, {} URLs and {} mirror URLs.", newGbUrls.size(), newDlUrls.size(), newMirrorUrls.size());
 
+        gbUrls = newGbUrls;
         dlUrls = newDlUrls;
         mirrorUrls = newMirrorUrls;
     }
