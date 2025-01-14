@@ -70,4 +70,12 @@
     <% } %>
 </form>
 
+<% if (request.getAttribute("notfound") == null && request.getAttribute("link") == null) { %>
+    <div class="alert alert-secondary">
+        If you have an <code>everest.yaml</code> name for a mod and want to link to its <i>GameBanana page</i> (<b>not</b> a direct file download), use this address:
+        <code>https://maddie480.ovh/celeste/gb?id=[everest_yaml_name]</code> (don't forget to URL-encode it).<br>
+        For example: <a href="/celeste/gb?id=Monika%27s+D-Sides">https://maddie480.ovh/celeste/gb?id=Monika%27s+D-Sides</a>
+    </div>
+<% } %>
+
 <script src="/js/direct-url-service.js"></script>

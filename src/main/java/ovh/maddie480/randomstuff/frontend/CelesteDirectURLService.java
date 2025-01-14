@@ -21,11 +21,12 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
-@WebServlet(name = "CelesteDirectURLService", urlPatterns = {"/celeste/direct-link-service", "/celeste/dl", "/picrew",
-        "/celeste/download-olympus", "/celeste/download-everest", "/aon-helper-github"})
+@WebServlet(name = "CelesteDirectURLService", urlPatterns = {"/celeste/direct-link-service", "/celeste/dl", "/celeste/gb",
+        "/celeste/download-olympus", "/celeste/download-everest", "/picrew", "/aon-helper-github"})
 public class CelesteDirectURLService extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(CelesteDirectURLService.class);
 
+    private static Map<String, String> gbUrls = new HashMap<>();
     private static Map<String, String> dlUrls = new HashMap<>();
     private static Map<String, String> mirrorUrls = new HashMap<>();
 
@@ -35,6 +36,21 @@ public class CelesteDirectURLService extends HttpServlet {
             String modId = request.getParameter("id");
             String twoclick = request.getParameter("twoclick");
             String mirror = request.getParameter("mirror");
+
+            if (!dlUrls.containsKey(modId)) {
+                notFound(request, response);
+            } else {
+                String downloadLink = ("1".equals(mirror) ? mirrorUrls : dlUrls).get(modId);
+
+                if ("1".equals(twoclick)) {
+                    response.sendRedirect("https://0x0a.de/twoclick?" + downloadLink.substring(8));
+                } else {
+                    response.sendRedirect(downloadLink);
+                }
+            }
+
+        } else if (request.getRequestURI().equals("/celeste/gb")) {
+            String modId = request.getParameter("id");
 
             if (!dlUrls.containsKey(modId)) {
                 notFound(request, response);
@@ -152,20 +168,22 @@ public class CelesteDirectURLService extends HttpServlet {
     }
 
     public static void updateUrls() throws IOException {
+        Map<String, String> newGbUrls = new HashMap<>();
         Map<String, String> newDlUrls = new HashMap<>();
         Map<String, String> newMirrorUrls = new HashMap<>();
 
-        Map<String, Map<String, String>> everestUpdate;
+        Map<String, Map<String, Object>> everestUpdate;
         try (InputStream is = Files.newInputStream(Paths.get("/shared/celeste/updater/everest-update.yaml"))) {
             everestUpdate = YamlUtil.load(is);
         }
 
-        for (Map.Entry<String, Map<String, String>> element : everestUpdate.entrySet()) {
-            newDlUrls.put(element.getKey(), element.getValue().get("URL"));
-            newMirrorUrls.put(element.getKey(), element.getValue().get("URL").replace("https://gamebanana.com/mmdl/", "https://celestemodupdater.0x0a.de/banana-mirror/") + ".zip");
+        for (Map.Entry<String, Map<String, Object>> element : everestUpdate.entrySet()) {
+            newGbUrls.put(element.getKey(), "https://gamebanana.com/" + ((String) element.getValue().get("GameBananaType")).toLowerCase() + "s/" + element.getValue().get("GameBananaId"))
+            newDlUrls.put(element.getKey(), (String) element.getValue().get("URL"));
+            newMirrorUrls.put(element.getKey(), ((String) element.getValue().get("URL")).replace("https://gamebanana.com/mmdl/", "https://celestemodupdater.0x0a.de/banana-mirror/") + ".zip");
         }
 
-        log.debug("There are now {} URLs and {} mirror URLs.", newDlUrls.size(), newMirrorUrls.size());
+        log.debug("There are now {} GB links, {} URLs and {} mirror URLs.", newGbUrls.size(), newDlUrls.size(), newMirrorUrls.size());
 
         dlUrls = newDlUrls;
         mirrorUrls = newMirrorUrls;
