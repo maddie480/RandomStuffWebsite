@@ -1,7 +1,6 @@
 /* remove many buttons in the message bar */
 button[aria-label="Ouvrir le sélecteur d'autocollant"],
 button[aria-label="Ouvrir l'onglet des GIF"],
-.button_bdf0de:has(div.giftIconContainer_fdeb78),
 /* I don't care about quests, Discord */
 div[aria-label="A terminé une quête"],
 /* hide a few buttons from the top bar of channels */
