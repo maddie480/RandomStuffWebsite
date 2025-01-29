@@ -77,6 +77,16 @@ public class ExtractDiscordThemeCSS {
     }
 
     private static void copyCustomThemeBackgroundCss(String css, BufferedWriter out) throws IOException {
+        while (true) {
+            int startOfComment = css.indexOf("/*");
+            if (startOfComment == -1) break;
+
+            int endOfComment = startOfComment + css.substring(startOfComment).indexOf("*/") + 2;
+            if (endOfComment == startOfComment + 1) break;
+
+            css = css.substring(0, startOfComment) + css.substring(endOfComment);
+        }
+
         while (css.contains("{")) {
             String classes = css.substring(0, css.indexOf("{"));
             css = css.substring(classes.length());
