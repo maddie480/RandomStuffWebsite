@@ -1,18 +1,18 @@
 /* remove many buttons in the message bar */
 button[aria-label="Ouvrir le sélecteur d'autocollant"],
 button[aria-label="Ouvrir l'onglet des GIF"],
-    /* I don't care about quests, Discord */
+/* I don't care about quests, Discord */
 div[aria-label="A terminé une quête"],
-    /* hide a few buttons from the top bar of channels */
+/* hide a few buttons from the top bar of channels */
 div[aria-label="Paramètres de notification"],
 html:not(.is-mobile) div[aria-label="Masquer la liste des membres"],
 div[aria-label="Aide"],
-    /* hide the activity list thingy on top of the member list, they're not members */
+/* hide the activity list thingy on top of the member list, they're not members */
 .membersGroup_c8ffbb:has(.headerContainer__095fe),
-    /* do not display reaction suggestions */
+/* do not display reaction suggestions */
 .hoverBarButton_f84418:has(.buttonContent_f84418),
 .buttonContainer_c19a55 .separator_f84418,
-    /* that app launcher thing just makes the message field smaller */
+/* that app launcher thing just makes the message field smaller */
 .channelAppLauncher_e6e74f {
     display: none;
 }
@@ -20,19 +20,11 @@ div[aria-label="Aide"],
     right: 16px;
 }
 
-/* gray out extra tags that are injected by MoreUserTags */
-.botTag_c19a55:not([data-tag="app"]):not([data-tag="webhook"]):not([data-tag="ai"]), .botTag__5d473:not([data-tag="app"]):not([data-tag="webhook"]):not([data-tag="ai"]) {
-    background: var(--bg-mod-strong);
-}
-.botTag_c19a55:not([data-tag="app"]):not([data-tag="webhook"]):not([data-tag="ai"]) span, .botTag__5d473:not([data-tag="app"]):not([data-tag="webhook"]):not([data-tag="ai"]) span {
-    color: var(--text-normal);
-}
-
 /* APP => Bot */
-.botTag_c19a55[data-tag="app"], .botTag__5d473[data-tag="app"] {
+.botTag_c19a55, .botTag__5d473 {
     overflow: hidden;
 }
-.botTag_c19a55[data-tag="app"] span::before, .botTag__5d473[data-tag="app"] span::before {
+.botTag_c19a55 span::before, .botTag__5d473 span::before {
     content: 'Bot\00a0\00a0';
 }
 
@@ -88,16 +80,6 @@ div[aria-label="Aide"],
 :root {
     --surCordTitleBar: initial;
 }
-/* un-color the guilds bar */
-.guilds_c48ade {
-    background-color: transparent;
-}
-
-/* fix "Save Note" button centering in message actions */
-div[aria-label="Save Note"] svg {
-    margin-left: 2px;
-    margin-right: -2px;
-}
 
 /* fix server icon backgrounds being opaque */
 .theme-light .guilds_c48ade .scroller_ef3116, .theme-dark .guilds_c48ade .scroller_ef3116 {
@@ -105,9 +87,11 @@ div[aria-label="Save Note"] svg {
 }
 
 /* folder color */
-.folder__48112 {
-    background: var(--background-primary) !important;
+.theme-light .folder__48112 {
+    background: rgba(231, 234, 237, .436) !important;
 }
+.theme-dark .folder__48112 {
+    background: rgba(39, 38, 41, .276) !important;
 .folderIconWrapper__48112 {
     background-color: transparent !important;
 }
