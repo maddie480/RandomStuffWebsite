@@ -89,10 +89,10 @@ div[aria-label="Aide"],
 
 /* folder color */
 .theme-light .folder__48112 {
-    background: rgba(231, 234, 237, .436) !important;
+    background: rgb(var(--bg-overlay-color) / var(--bg-overlay-opacity-3)) !important;
 }
 .theme-dark .folder__48112 {
-    background: rgba(39, 38, 41, .276) !important;
+    background: rgb(var(--bg-overlay-color-inverse) / var(--bg-overlay-opacity-6)) !important;
 }
 .folderIconWrapper__48112 {
     background-color: transparent !important;
