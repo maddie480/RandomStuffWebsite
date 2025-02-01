@@ -92,6 +92,21 @@ div[aria-label="Aide"],
     --surCordTitleBar: initial;
 }
 
+/* fix color behind username panel on the bottom left */
+.theme-light .sidebar_c48ade {
+    background: var(--bg-overlay-2, var(--background-secondary));
+}
+.theme-dark .sidebar_c48ade {
+    background: var(--bg-overlay-3, var(--background-secondary));
+}
+/* fix background overflowing from username panel on the bottom left */
+.theme-dark section.panels_c48ade, .theme-light section.panels_c48ade {
+    background: var(--bg-overlay-3, var(--background-secondary-alt));
+}
+.panels_c48ade .container__37e49 {
+    background: transparent;
+}
+
 /* fix server icon backgrounds being opaque */
 .theme-light .guilds_c48ade .scroller_ef3116, .theme-dark .guilds_c48ade .scroller_ef3116 {
     background-color: transparent;
@@ -108,10 +123,10 @@ div[aria-label="Aide"],
 
 /* folder color */
 .theme-light .folder__48112 {
-    background: rgb(var(--bg-overlay-color) / var(--bg-overlay-opacity-3)) !important;
+    background: rgba(231, 234, 237, .436) !important;
 }
 .theme-dark .folder__48112 {
-    background: rgb(var(--bg-overlay-color-inverse) / var(--bg-overlay-opacity-6)) !important;
+    background: rgba(39, 38, 41, .276) !important;
 }
 .folderIconWrapper__48112 {
     background-color: transparent !important;
