@@ -22,11 +22,19 @@ div[aria-label="Aide"],
     right: 16px;
 }
 
+/* grey out the OP tag */
+.botTagOP__82f07 {
+    background: var(--bg-mod-strong);
+}
+.botTagOP__82f07 span {
+    color: var(--text-normal);
+}
+
 /* APP => Bot */
-.botTag_c19a55, .botTag__5d473 {
+.botTag_c19a55:not(.botTagOP__82f07), .botTag__5d473 {
     overflow: hidden;
 }
-.botTag_c19a55 span::before, .botTag__5d473 span::before {
+.botTag_c19a55:not(.botTagOP__82f07) span::before, .botTag__5d473 span::before {
     content: 'Bot\00a0\00a0';
 }
 
