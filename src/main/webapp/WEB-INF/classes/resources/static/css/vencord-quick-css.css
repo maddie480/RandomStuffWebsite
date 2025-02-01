@@ -92,6 +92,11 @@ div[aria-label="Aide"],
     --surCordTitleBar: initial;
 }
 
+/* fix semi-transparent code blocks */
+.theme-light .markup__75297 code {
+    background: initial !important;
+}
+
 /* fix color behind username panel on the bottom left */
 .theme-light .sidebar_c48ade {
     background: var(--bg-overlay-2, var(--background-secondary));
