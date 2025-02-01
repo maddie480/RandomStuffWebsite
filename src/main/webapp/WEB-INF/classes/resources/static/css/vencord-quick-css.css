@@ -112,15 +112,6 @@ div[aria-label="Aide"],
     background-color: transparent;
 }
 
-/* fix (+) icon placement in chat bar */
-.attachButtonPlus__0923f {
-    transform-origin: 0 0;
-}
-/* fix (+) icon placement in guilds list */
-.circleIcon__5bc7e path {
-    transform-origin: -1px -1px;
-}
-
 /* folder color */
 .theme-light .folder__48112 {
     background: rgba(231, 234, 237, .436) !important;
