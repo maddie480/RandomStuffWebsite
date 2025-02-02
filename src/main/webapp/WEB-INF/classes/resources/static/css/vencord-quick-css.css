@@ -97,6 +97,12 @@ div[aria-label="Aide"],
     background: initial !important;
 }
 
+/* fix "Save Note" button centering in message actions */
+div[aria-label="Save Note"] svg {
+    margin-left: 2px;
+    margin-right: -2px;
+}
+
 /* fix color behind username panel on the bottom left */
 .theme-light .sidebar_c48ade {
     background: var(--bg-overlay-2, var(--background-secondary));
