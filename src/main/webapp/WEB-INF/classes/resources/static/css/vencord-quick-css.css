@@ -123,6 +123,11 @@ div[aria-label="Save Note"] svg {
     background-color: transparent;
 }
 
+/* fix (+) icon placement in guilds list */
+.circleIcon__5bc7e path {
+    transform-origin: -1px -1px;
+}
+
 /* folder color */
 .theme-light .folder__48112 {
     background: rgba(231, 234, 237, .436) !important;
@@ -132,6 +137,9 @@ div[aria-label="Save Note"] svg {
 }
 .folderIconWrapper__48112 {
     background-color: transparent !important;
+}
+.theme-dark .folderIconWrapper__48112 {
+    background-color: rgb(66, 65, 95) !important;
 }
 .folderIconWrapper__48112 svg {
     color: var(--accent) !important;
