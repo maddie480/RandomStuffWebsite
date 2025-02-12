@@ -23,8 +23,11 @@ public class ExtractDiscordThemeCSS {
     public static void main(String[] args) throws IOException, InterruptedException {
         Set<String> cssUrls;
 
+        // only run locally
+        if (!Files.isDirectory(Paths.get("/home/maddie"))) return;
+
         { // extract the CSS locations from Discord once it's done loading on browser
-            Process p = new ProcessBuilder("google-chrome", "--headless", "--dump-dom", "https://discord.com/app")
+            Process p = new ProcessBuilder("chromium", "--headless", "--dump-dom", "https://discord.com/app")
                     .redirectError(ProcessBuilder.Redirect.INHERIT)
                     .redirectOutput(ProcessBuilder.Redirect.PIPE)
                     .start();
@@ -54,8 +57,8 @@ public class ExtractDiscordThemeCSS {
 
         Set<String> existingCssClasses = new HashSet<>(findCssClasses(IOUtils.toString(ConnectionUtils.openStreamWithTimeout("https://raw.githubusercontent.com/maddie480/Vendroid/refs/heads/main/dist/browser.css"), StandardCharsets.UTF_8)));
 
-        Files.createDirectories(Paths.get("resources/static/css/discord-nitro-themes"));
-        try (BufferedWriter bw = Files.newBufferedWriter(Paths.get("resources/static/css/discord-nitro-themes/common.css"), StandardCharsets.UTF_8)) {
+        Files.createDirectories(Paths.get("../../../../src/main/webapp/WEB-INF/classes/resources/static/css/discord-nitro-themes"));
+        try (BufferedWriter bw = Files.newBufferedWriter(Paths.get("../../../../src/main/webapp/WEB-INF/classes/resources/static/css/discord-nitro-themes/common.css"), StandardCharsets.UTF_8)) {
             int i = 0;
             for (String cssUrl : cssUrls) {
                 logger.info("Fetching " + cssUrl + " (" + (++i) + "/" + cssUrls.size() + ")");
