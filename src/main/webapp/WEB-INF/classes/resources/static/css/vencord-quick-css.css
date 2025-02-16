@@ -62,22 +62,6 @@ div[aria-label="Aide"],
     display: none;
 }
 
-/* reduced motion shiggy */
-.vc-settings-donate img {
-    display: none;
-}
-.vc-settings-donate::after {
-    content: '';
-    image-rendering: pixelated;
-    margin-left: auto;
-    background: url('https://media.discordapp.net/stickers/1039992459209490513.png?passthrough=false') center / contain no-repeat;
-    width: 128px;
-    height: 128px;
-}
-.vc-settings-donate:hover::after {
-    background: url('https://media.discordapp.net/stickers/1039992459209490513.png') center / contain no-repeat;
-}
-
 /* map surCord colors to Discord brand colors */
 :root {
     --bg-brand: var(--accent);
