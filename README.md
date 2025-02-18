@@ -351,7 +351,11 @@ This API is available at `https://maddie480.ovh/celeste/olympus-versions`, and r
 ```
 
 - `version` is the Olympus version number.
-- `branch` is either `windows-init`, `main` or `stable`. `windows-init` is the version initially installed by the Windows installer, and `main` is the development branch.
+- `branch` is either `windows-init`, `main`, `stable` or `windows-split`.
+  - `windows-init` is the version initially installed by the Windows installer.
+  - `main` is the development branch.
+  - `stable` is... well, the stable version. This is the one linked to on [the Everest homepage](https://everestapi.github.io/).
+  - `windows-split` is based on the development branch, but with `love.exe` and `olympus.love` kept separate, since this helps some people to run Olympus... for some reason.
 - `windowsDownload`, `macDownload` and `linuxDownload` are download links for each platform.
 - `date` is the date at which the version was published, in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format.
 - `changelog` is the changelog of the version, pulled straight from the `changelog.txt` file on the repository. (That's where in-app update changelogs come from.)
