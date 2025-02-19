@@ -52,6 +52,7 @@ public class ExtractDiscordThemeCSS {
 
             quickCssClasses = findCssClasses(linesFiltered)
                     .stream().filter(c -> !c.matches("\\.[0-9]+"))
+                    .filter(c -> !c.equals(".55em")) // *sigh* this is not a CSS class
                     .collect(Collectors.toSet());
         }
 

@@ -1,12 +1,10 @@
-/* remove many buttons in the message bar */
-button[aria-label="Ouvrir le sélecteur d'autocollant"],
-button[aria-label="Ouvrir l'onglet des GIF"],
-/* I don't care about quests, Discord */
-div[aria-label="A terminé une quête"],
+/* remove sticker and GIF selector from the chat bar */
+.buttonContainer__74017:has(.lottieIcon__5eb9b),
+/* no badges for you */
+.container__8061a,
 /* hide a few buttons from the top bar of channels */
-div[aria-label="Paramètres de notification"],
-html:not(.is-mobile) div[aria-label="Masquer la liste des membres"],
-div[aria-label="Aide"],
+.toolbar__9293f > .iconWrapper__9293f:nth-child(even),
+.upperContainer__9293f .anchor_edefb8,
 /* hide the activity list thingy on top of the member list, they're not members */
 .membersGroup_c8ffbb:has(.headerContainer__095fe),
 /* do not display reaction suggestions */
@@ -15,7 +13,9 @@ div[aria-label="Aide"],
 /* that app launcher thing just makes the message field smaller */
 .channelAppLauncher_e6e74f,
 /* kick out server discovery while we're at it */
-.listItem__650eb:has(div[aria-label="Découvrir"]) {
+.footer__214dc,
+/* kick out "download apps" button */
+.scroller_ef3116 > .listItem__650eb:not(:has(.guildSeparator__252b6)) {
     display: none;
 }
 .jumpToPresentBar__0f481 {
