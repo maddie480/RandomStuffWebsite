@@ -37,6 +37,10 @@ div[aria-label="Aide"],
 .botTag_c19a55:not(.botTagOP__82f07) span::before, .botTag__5d473 span::before {
     content: 'Bot\00a0\00a0';
 }
+.botTag_c19a55:not(.botTagOP__82f07) span, .botTag__5d473 span {
+    width: 1.55em;
+    text-wrap: nowrap;
+}
 
 /* remove profile themes */
 .avatarDecoration__44b0c,
