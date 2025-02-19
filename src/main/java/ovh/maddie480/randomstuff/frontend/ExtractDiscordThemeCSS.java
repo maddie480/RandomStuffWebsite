@@ -55,7 +55,7 @@ public class ExtractDiscordThemeCSS {
                     .collect(Collectors.toSet());
         }
 
-        Set<String> existingCssClasses = new HashSet<>(findCssClasses(IOUtils.toString(ConnectionUtils.openStreamWithTimeout("https://raw.githubusercontent.com/maddie480/Vendroid/refs/heads/main/dist/browser.css"), StandardCharsets.UTF_8)));
+        Set<String> existingCssClasses = new HashSet<>();
 
         Files.createDirectories(Paths.get("../../../../src/main/webapp/WEB-INF/classes/resources/static/css/discord-nitro-themes"));
         try (BufferedWriter bw = Files.newBufferedWriter(Paths.get("../../../../src/main/webapp/WEB-INF/classes/resources/static/css/discord-nitro-themes/common.css"), StandardCharsets.UTF_8)) {
