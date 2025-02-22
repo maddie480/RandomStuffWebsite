@@ -102,7 +102,7 @@ div[aria-label="Save Note"] svg {
 .theme-dark section.panels_c48ade, .theme-light section.panels_c48ade {
     background: var(--bg-overlay-3, var(--background-secondary-alt));
 }
-.panels_c48ade .container__37e49 {
+.panels_c48ade .content__37e49 {
     background: transparent;
 }
 
