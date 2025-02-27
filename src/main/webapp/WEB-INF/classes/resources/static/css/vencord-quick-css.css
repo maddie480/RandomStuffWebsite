@@ -16,7 +16,7 @@
 .footer__214dc,
 /* kick out "download apps" button */
 .scroller_ef3116 > .listItem__650eb:not(:has(.guildSeparator__252b6)),
-/* no, Discord, I don't want to make fun of people's images or create deepfa-- uh, faceswaps */ 
+/* no, Discord, I don't want to make fun of people's images or create deepfa-- uh, faceswaps */
 .hoverButtonGroup__06ab4 {
     display: none;
 }
