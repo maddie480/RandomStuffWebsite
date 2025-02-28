@@ -285,7 +285,7 @@ const vue = {
 
     // also load the category list.
     const gamebananaCategories = await axios
-      .get(`${config.backendUrl}/celeste/gamebanana-categories?version=3`)
+      .get(`${config.backendUrl}/celeste/gamebanana-categories`)
       .then((result) => yaml.load(result.data));
 
     for (const category of gamebananaCategories) {
