@@ -17,9 +17,7 @@
 /* kick out "download apps" button */
 .scroller_ef3116 > .listItem__650eb:not(:has(.guildSeparator__252b6)),
 /* no, Discord, I don't want to make fun of people's images or create deepfa-- uh, faceswaps */
-.hoverButtonGroup__06ab4,
-/* that one is self-inflicted: hide the BetterActivities icon for myself */
-.container_c9d15c div:has(img[src="https://cdn.discordapp.com/app-assets/544574629251907600/1346247946055979208.png"]) {
+.hoverButtonGroup__06ab4 {
     display: none;
 }
 .jumpToPresentBar__0f481 {
