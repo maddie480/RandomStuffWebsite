@@ -195,7 +195,7 @@
         and amazingly enough, a handful of people <i>still</i> collect their daily rewards on the QUEST Discord server, despite <i>absolutely nothing else</i> happening there. &#x1F61B;
     </div>
 
-    <h3>Some Stats (updated hourly)</h3>
+    <h3>Some Stats (updated daily)</h3>
 
     <div>
         <%= new DecimalFormat("#,##0").format((int) request.getAttribute("totalRequests")) %> requests were served last week, with HTTP statuses:
