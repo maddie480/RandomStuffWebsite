@@ -31,7 +31,8 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 /**
  * This is the servlet generating the Custom Entity Catalog page.
  */
-@WebServlet(name = "CelesteModCatalogService", urlPatterns = {"/celeste/custom-entity-catalog", "/celeste/custom-entity-catalog.json"})
+@WebServlet(name = "CelesteModCatalogService", urlPatterns = {"/celeste/custom-entity-catalog",
+        "/celeste/custom-entity-catalog.json", "/celeste/custom-entity-dictionary.csv"})
 public class CelesteModCatalogService extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(CelesteModCatalogService.class);
 
@@ -40,6 +41,11 @@ public class CelesteModCatalogService extends HttpServlet {
         if (request.getRequestURI().equals("/celeste/custom-entity-catalog.json")) {
             response.setHeader("Content-Type", "application/json");
             try (InputStream is = Files.newInputStream(Paths.get("/shared/celeste/custom-entity-catalog.json"))) {
+                IOUtils.copy(is, response.getOutputStream());
+            }
+        } else if (request.getRequestURI().equals("/celeste/custom-entity-dictionary.csv")) {
+            response.setHeader("Content-Type", "text/csv");
+            try (InputStream is = Files.newInputStream(Paths.get("/shared/celeste/custom-entity-dictionary.csv"))) {
                 IOUtils.copy(is, response.getOutputStream());
             }
         } else if (request.getRequestURI().equals("/celeste/custom-entity-catalog")) {

@@ -30,6 +30,12 @@
         This list is also available <a href="/celeste/custom-entity-catalog.json" target="_blank">in JSON format</a>.
     </p>
 
+    <p>
+        <a href="/celeste/custom-entity-dictionary.csv" target="_blank">A CSV entity dictionary</a> is provided as well,
+        which can be used to turn technical names into the display names used in this list (for example,
+        <code>FrostHelper/IceSpinner</code> &#x27A1; <code>Custom Spinner / Custom Spinner (Rainbow Spinner Texture)</code>).
+    </p>
+
     <div class="alert alert-info">
         <p>
             This page is mostly generated automatically from entity IDs found in map editor plugins. It was last updated on
