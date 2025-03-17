@@ -68,6 +68,12 @@
     display: none;
 }
 
+/* fix microphone button being offset to the left in profile box */
+.micButtonParent__37e49 {
+    margin-left: 4px;
+    margin-right: 0;
+}
+
 /* map surCord colors to Discord brand colors */
 :root {
     --bg-brand: var(--accent);
