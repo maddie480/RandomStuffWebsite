@@ -67,7 +67,7 @@
       <input
         v-model="highlightLive"
         class="search form-control"
-        placeholder="Search for an entity, trigger, decal or stylegrounds..."
+        placeholder="Search for an entity, trigger, decal or styleground..."
       />
     </form>
 
