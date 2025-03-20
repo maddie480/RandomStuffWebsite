@@ -39,6 +39,7 @@ import static com.max480.randomstuff.backend.celeste.crontabs.UpdateCheckerTrack
         "/celeste/mod_ids_to_names.json"})
 public class CelesteModSearchService extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(CelesteModSearchService.class);
+    private static final double CRAB_LEVEL = 0; // April Fools crab incident simulator level, between 0 and 1
 
     private static List<ModInfo> modDatabaseForSorting = Collections.emptyList();
     private Map<Integer, String> modCategories;
@@ -218,6 +219,7 @@ public class CelesteModSearchService extends HttpServlet {
                     .skip((page - 1) * 20L)
                     .limit(20)
                     .map(modInfo -> modInfo.fullInfo)
+                    .map(CelesteModSearchService::crabify)
                     .collect(Collectors.toList());
 
             // count the amount of results and put it as a header.
@@ -451,6 +453,7 @@ public class CelesteModSearchService extends HttpServlet {
                         .thenComparingInt(mod -> -mod.downloads))
                 .map(mod -> mod.fullInfo)
                 .limit(20)
+                .map(CelesteModSearchService::crabify)
                 .collect(Collectors.toList());
     }
 
@@ -498,6 +501,16 @@ public class CelesteModSearchService extends HttpServlet {
         }
 
         return score;
+    }
+
+    private static Map<String, Object> crabify(Map<String, Object> input) {
+        // context for the April Fools crab jokes:
+        // https://www.reddit.com/r/celestegame/comments/128kg44/psa_for_modded_players_do_not_press_the_crab/
+        if (Math.random() >= CRAB_LEVEL) return input;
+
+        Map<String, Object> output = new HashMap<>(input);
+        output.put("MirroredScreenshots", Arrays.asList("https://maddie480.ovh/img/crabulous_april_fools.png", "https://maddie480.ovh/img/crabulous_april_fools.png"));
+        return output;
     }
 
     public static String formatGameBananaItemtype(String input, boolean pluralize) {
