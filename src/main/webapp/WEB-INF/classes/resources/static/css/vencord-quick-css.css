@@ -87,10 +87,6 @@
 :root {
     --surCordTitleBar: initial;
 }
-/* reduce the padding above the server icons */
-.guilds_c48ade {
-    margin-top: 5px;
-}
 
 /* fix semi-transparent code blocks */
 .theme-light .markup__75297 code {
