@@ -17,7 +17,10 @@
 /* kick out "download apps" button */
 .scroller_ef3116 > .listItem__650eb:not(:has(.guildSeparator__252b6)),
 /* no, Discord, I don't want to make fun of people's images or create deepfa-- uh, faceswaps */
-.hoverButtonGroup__06ab4 {
+.hoverButtonGroup__06ab4,
+/* remove controller icon and dot from activity message */
+.textXs_c9d15c .icon_c9d15c,
+.textXs_c9d15c .dot_c9d15c {
     display: none;
 }
 .jumpToPresentBar__0f481 {
