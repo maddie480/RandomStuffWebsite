@@ -93,6 +93,8 @@ body {
     --brand-600: var(--accent-selected);
     --button-secondary-background-hover: var(--accent-hover);
     --button-secondary-background-active: var(--accent-selected);
+    --mention-foreground: var(--accent);
+    --mention-background: color-mix(in oklab, var(--accent) 10%, transparent 90%);
 }
 /* un-color the title bar */
 :root {
