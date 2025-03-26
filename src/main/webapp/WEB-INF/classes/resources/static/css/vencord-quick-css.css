@@ -27,6 +27,12 @@
     right: 16px;
 }
 
+/* kick out the second title bar the March 2025 visual refresh brought us */
+body {
+    --custom-app-top-bar-height: 0;
+    --custom-app-panels-height: 80px !important;
+}
+
 /* grey out the OP tag */
 .botTagOP__82f07 {
     background: var(--bg-mod-strong);
@@ -78,9 +84,11 @@
 }
 
 /* map surCord colors to Discord brand colors */
-:root {
+.visual-refresh.theme-dark, .visual-refresh.theme-light {
     --bg-brand: var(--accent);
     --brand-500: var(--accent);
+    --text-link: var(--accent);
+    --text-brand: var(--accent);
     --brand-560: var(--accent-hover);
     --brand-600: var(--accent-selected);
     --button-secondary-background-hover: var(--accent-hover);
@@ -89,6 +97,17 @@
 /* un-color the title bar */
 :root {
     --surCordTitleBar: initial;
+}
+/* surCord vs. March 2025 visual refresh fixes */
+.visual-refresh .wrapper_ef3116 {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+.visual-refresh .wrapper_ef3116 .itemsContainer_ef3116 {
+    padding-top: 29px;
+}
+.visual-refresh .channelTextArea__74017 {
+    border-radius: 24px
 }
 
 /* fix semi-transparent code blocks */
@@ -148,4 +167,11 @@ div[aria-label="Save Note"] svg {
 }
 .theme-dark .circleIconButton__5bc7e {
     border: none;
+}
+/* shrink the folder icon to match the server icons */
+.folderIcon__48112 {
+    height: 40px;
+}
+.folderIcon__48112 .wrapper_cc5dd2 svg {
+    height: 48px;
 }
