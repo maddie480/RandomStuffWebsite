@@ -3,7 +3,8 @@
 /* no badges for you */
 .container__8061a,
 /* hide a few buttons from the top bar of channels */
-.toolbar__9293f > .iconWrapper__9293f:nth-child(even),
+.toolbar__9293f > .iconWrapper__9293f[aria-label="Paramètres de notification"],
+.toolbar__9293f > .iconWrapper__9293f[aria-label="Masquer la liste des membres"],
 .upperContainer__9293f .anchor_edefb8,
 /* hide the activity list thingy on top of the member list, they're not members */
 .membersGroup_c8ffbb:has(.headerContainer__095fe),
@@ -110,6 +111,11 @@ body {
 }
 .visual-refresh .channelTextArea__74017 {
     border-radius: 24px
+}
+
+/* remove padding before BetterActivities icons */
+.textXs_c9d15c div:last-child:not(.activityText__5d473) {
+    margin-left: 0;
 }
 
 /* fix semi-transparent code blocks */
