@@ -1,0 +1,1 @@
+document.querySelector('.navbar-brand a').innerHTML = '<img src="/img/crabulous_april_fools.png" class="crabulous"> Crabbie\'s Random Stuff';

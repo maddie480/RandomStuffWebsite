@@ -110,5 +110,9 @@
     <div class="container">
         <c:import url="/WEB-INF/${pageId}.jsp" />
     </div>
+
+    <% if ((boolean) request.getAttribute("crabified")) { %>
+        <script src="/js/crabifier.js"></script>
+    <% } %>
 </body>
 </html>

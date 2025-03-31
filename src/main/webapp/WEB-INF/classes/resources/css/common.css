@@ -57,6 +57,10 @@
     margin-top: -14px;
     margin-bottom: -5px;
 }
+.navbar-brand img.crabulous {
+    background-color: #FFF4;
+    padding: 2px;
+}
 
 .month-6 .navbar-brand a::before {
     border-radius: 50%;

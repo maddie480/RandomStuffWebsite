@@ -42,6 +42,7 @@ public class PageRenderer {
         request.setAttribute("includeDownloadJS", includeDownloadJS);
         request.setAttribute("refreshAfter", refreshAfter);
         request.setAttribute("isCeleste", request.getRequestURI().startsWith("/celeste/"));
+        request.setAttribute("crabified", Math.random() < CelesteModSearchService.CRAB_LEVEL);
 
         request.getRequestDispatcher("/WEB-INF/base.jsp").forward(request, response);
     }
