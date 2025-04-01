@@ -39,7 +39,7 @@ import static com.max480.randomstuff.backend.celeste.crontabs.UpdateCheckerTrack
         "/celeste/mod_ids_to_names.json"})
 public class CelesteModSearchService extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(CelesteModSearchService.class);
-    public static final double CRAB_LEVEL = 0.25; // April Fools crab incident simulator level, between 0 and 1
+    public static final double CRAB_LEVEL = 0.5; // April Fools crab incident simulator level, between 0 and 1
 
     private static List<ModInfo> modDatabaseForSorting = Collections.emptyList();
     private Map<Integer, String> modCategories;
