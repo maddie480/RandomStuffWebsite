@@ -4,6 +4,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import static ovh.maddie480.randomstuff.frontend.CelesteModSearchService.getCrabLevel;
+
 import java.io.IOException;
 
 public class PageRenderer {
@@ -42,7 +44,7 @@ public class PageRenderer {
         request.setAttribute("includeDownloadJS", includeDownloadJS);
         request.setAttribute("refreshAfter", refreshAfter);
         request.setAttribute("isCeleste", request.getRequestURI().startsWith("/celeste/"));
-        request.setAttribute("crabified", Math.random() < CelesteModSearchService.CRAB_LEVEL);
+        request.setAttribute("crabified", Math.random() < getCrabLevel());
 
         request.getRequestDispatcher("/WEB-INF/base.jsp").forward(request, response);
     }

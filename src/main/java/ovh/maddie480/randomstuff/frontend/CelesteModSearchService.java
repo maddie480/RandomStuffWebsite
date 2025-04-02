@@ -21,6 +21,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.SecureRandom;
+import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
@@ -39,7 +40,6 @@ import static com.max480.randomstuff.backend.celeste.crontabs.UpdateCheckerTrack
         "/celeste/mod_ids_to_names.json"})
 public class CelesteModSearchService extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(CelesteModSearchService.class);
-    public static final double CRAB_LEVEL = 0; // April Fools crab incident simulator level, between 0 and 1
 
     private static List<ModInfo> modDatabaseForSorting = Collections.emptyList();
     private Map<Integer, String> modCategories;
@@ -286,6 +286,7 @@ public class CelesteModSearchService extends HttpServlet {
                     return catOrder.indexOf(aInfo.get("Category")) - catOrder.indexOf(bInfo.get("Category"));
                 })
                 .map(mod -> mod.fullInfo)
+                .map(CelesteModSearchService::crabify)
                 .collect(Collectors.toList());
 
         response.setHeader("Content-Type", "application/json");
@@ -503,11 +504,22 @@ public class CelesteModSearchService extends HttpServlet {
         return score;
     }
 
+    // context for the April Fools crab jokes:
+    // https://www.reddit.com/r/celestegame/comments/128kg44/psa_for_modded_players_do_not_press_the_crab/
+    public static double getCrabLevel() {
+        ZonedDateTime now = ZonedDateTime.now();
+        double crabLevel = 0;
+        if (now.getMonthValue() == 3 && now.getDayOfMonth() == 31 && now.getHour() >= 18) crabLevel = 0.1;
+        if (now.getMonthValue() == 4 && now.getDayOfMonth() == 1 && now.getHour() < 6) crabLevel = 0.5;
+        if (now.getMonthValue() == 4 && now.getDayOfMonth() == 1 && now.getHour() >= 6) crabLevel = 1;
+        if (now.getMonthValue() == 4 && now.getDayOfMonth() == 2 && now.getHour() < 6) crabLevel = 1;
+        if (now.getMonthValue() == 4 && now.getDayOfMonth() == 2 && now.getHour() >= 6 && now.getHour() < 12) crabLevel = 0.5;
+        if (now.getMonthValue() == 4 && now.getDayOfMonth() == 2 && now.getHour() >= 12 && now.getHour() < 18) crabLevel = 0.1;
+        if (crabLevel > 0) log.trace("April Fools crab level is {}", crabLevel);
+        return crabLevel;
+    }
     private static Map<String, Object> crabify(Map<String, Object> input) {
-        // context for the April Fools crab jokes:
-        // https://www.reddit.com/r/celestegame/comments/128kg44/psa_for_modded_players_do_not_press_the_crab/
-        if (Math.random() >= CRAB_LEVEL) return input;
-
+        if (Math.random() >= getCrabLevel()) return input;
         Map<String, Object> output = new HashMap<>(input);
         output.put("MirroredScreenshots", Arrays.asList("https://maddie480.ovh/img/crabulous_april_fools.png", "https://maddie480.ovh/img/crabulous_april_fools.png"));
         return output;
