@@ -55,7 +55,6 @@
             <version>1.5.18</version>
         </dependency>
 
-
         <!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
         <dependency>
             <groupId>commons-io</groupId>
@@ -84,17 +83,14 @@
             <version>2.4</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/com.goterl/lazysodium-java -->
         <dependency>
             <groupId>com.goterl</groupId>
             <artifactId>lazysodium-java</artifactId>
             <version>5.1.4</version>
         </dependency>
-        <dependency>
-            <groupId>net.java.dev.jna</groupId>
-            <artifactId>jna</artifactId>
-            <version>5.17.0</version>
-        </dependency>
 
+        <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents.client5/httpclient5 -->
         <dependency>
             <groupId>org.apache.httpcomponents.client5</groupId>
             <artifactId>httpclient5</artifactId>
@@ -108,12 +104,12 @@
             <version>33.4.6-jre</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/org.eclipse.jgit/org.eclipse.jgit -->
         <dependency>
             <groupId>org.eclipse.jgit</groupId>
             <artifactId>org.eclipse.jgit</artifactId>
             <version>7.2.0.202503040940-r</version>
         </dependency>
-
         <dependency>
             <groupId>org.eclipse.jgit</groupId>
             <artifactId>org.eclipse.jgit.ssh.jsch</artifactId>
@@ -126,7 +122,6 @@
             <version>3.27.3</version>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -135,27 +130,12 @@
         </dependency>
 
         <!-- Only required at compile time, won't be packaged with the website -->
+        <!-- https://mvnrepository.com/artifact/org.jsoup/jsoup -->
         <dependency>
             <groupId>org.jsoup</groupId>
             <artifactId>jsoup</artifactId>
             <version>1.19.1</version>
         </dependency>
-        <dependency>
-            <groupId>com.nixxcode.jvmbrotli</groupId>
-            <artifactId>jvmbrotli</artifactId>
-            <version>0.2.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.nixxcode.jvmbrotli</groupId>
-            <artifactId>jvmbrotli-linux-x86-amd64</artifactId>
-            <version>0.2.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.nixxcode.jvmbrotli</groupId>
-            <artifactId>jvmbrotli-win32-x86-amd64</artifactId>
-            <version>0.2.0</version>
-        </dependency>
-
     </dependencies>
 
     <build>
@@ -166,7 +146,7 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <version>3.4.0</version>
                 <configuration>
-                    <packagingExcludes>WEB-INF/lib/jvmbrotli-0.2.0.jar,WEB-INF/lib/jvmbrotli-linux-x86-amd64-0.2.0.jar,WEB-INF/lib/jvmbrotli-win32-x86-amd64-0.2.0.jar,WEB-INF/lib/jsoup-1.19.1.jar</packagingExcludes>
+                    <packagingExcludes>WEB-INF/lib/jsoup-1.19.1.jar</packagingExcludes>
                 </configuration>
             </plugin>
             <plugin>
@@ -328,7 +308,7 @@
                             <workingDirectory>${project.build.directory}/random-stuff-website-1.0.0/WEB-INF/classes</workingDirectory>
                             <arguments>
                                 <argument>-cp</argument>
-                                <argument>.:../../../dependency/commons-io-2.18.0.jar:../../../dependency/commons-lang3-3.17.0.jar:../../../dependency/commons-text-1.13.0.jar:../../../dependency/jsoup-1.19.1.jar:../../../dependency/jvmbrotli-0.2.0.jar:../../../dependency/jvmbrotli-linux-x86-amd64-0.2.0.jar</argument>
+                                <argument>.:../../../dependency/commons-io-2.18.0.jar:../../../dependency/commons-lang3-3.17.0.jar:../../../dependency/commons-text-1.13.0.jar:../../../dependency/jsoup-1.19.1.jar</argument>
                                 <argument>ovh.maddie480.randomstuff.frontend.ParrotQuickGenerator</argument>
                             </arguments>
                         </configuration>
@@ -456,87 +436,6 @@
                         <groupId>org.eclipse.jetty</groupId>
                         <artifactId>jetty-maven-plugin</artifactId>
                         <version>11.0.25</version>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>windows</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>exec-maven-plugin</artifactId>
-                        <version>3.5.0</version>
-                        <executions>
-                            <execution>
-                                <id>integrate Lua Cutscenes documentation</id>
-                                <phase>prepare-package</phase>
-                                <goals>
-                                    <goal>exec</goal>
-                                </goals>
-                                <configuration>
-                                    <executable>java</executable>
-                                    <workingDirectory>${project.build.directory}/random-stuff-website-1.0.0/WEB-INF/classes</workingDirectory>
-                                    <arguments>
-                                        <argument>-cp</argument>
-                                        <argument>.;../../../dependency/snakeyaml-2.4.jar;../../../dependency/commons-io-2.18.0.jar</argument>
-                                        <argument>ovh.maddie480.randomstuff.frontend.LuaCutscenesDocumentationIntegrator</argument>
-                                    </arguments>
-                                </configuration>
-                            </execution>
-
-                            <execution>
-                                <id>prepare Radio LNJ</id>
-                                <phase>prepare-package</phase>
-                                <goals>
-                                    <goal>exec</goal>
-                                </goals>
-                                <configuration>
-                                    <executable>java</executable>
-                                    <workingDirectory>${project.build.directory}/random-stuff-website-1.0.0/WEB-INF/classes</workingDirectory>
-                                    <arguments>
-                                        <argument>-cp</argument>
-                                        <argument>.;../../../dependency/commons-io-2.18.0.jar;../../../dependency/commons-lang3-3.17.0.jar;../../../dependency/json-20250107.jar</argument>
-                                        <argument>ovh.maddie480.randomstuff.frontend.PrepareForRadioLNJ</argument>
-                                    </arguments>
-                                </configuration>
-                            </execution>
-
-                            <execution>
-                                <id>extract Discord theme CSS</id>
-                                <phase>prepare-package</phase>
-                                <goals>
-                                    <goal>exec</goal>
-                                </goals>
-                                <configuration>
-                                    <executable>java</executable>
-                                    <workingDirectory>${project.build.directory}/random-stuff-website-1.0.0/WEB-INF/classes</workingDirectory>
-                                    <arguments>
-                                        <argument>-cp</argument>
-                                        <argument>.;../../../dependency/commons-io-2.18.0.jar;../../../dependency/jsoup-1.19.1.jar;../../../dependency/json-20250107.jar</argument>
-                                        <argument>ovh.maddie480.randomstuff.frontend.ExtractDiscordThemeCSS</argument>
-                                    </arguments>
-                                </configuration>
-                            </execution>
-
-                            <execution>
-                                <id>generate Parrot Quick Importer</id>
-                                <phase>prepare-package</phase>
-                                <goals>
-                                    <goal>exec</goal>
-                                </goals>
-                                <configuration>
-                                    <executable>java</executable>
-                                    <workingDirectory>${project.build.directory}/random-stuff-website-1.0.0/WEB-INF/classes</workingDirectory>
-                                    <arguments>
-                                        <argument>-cp</argument>
-                                        <argument>.;../../../dependency/commons-io-2.18.0.jar;../../../dependency/commons-lang3-3.17.0.jar;../../../dependency/commons-text-1.13.0.jar;../../../dependency/jsoup-1.19.1.jar;../../../dependency/jvmbrotli-0.2.0.jar;../../../dependency/jvmbrotli-win32-x86-amd64-0.2.0.jar</argument>
-                                        <argument>ovh.maddie480.randomstuff.frontend.ParrotQuickGenerator</argument>
-                                    </arguments>
-                                </configuration>
-                            </execution>
-                        </executions>
                     </plugin>
                 </plugins>
             </build>

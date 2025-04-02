@@ -1,7 +1,5 @@
 package ovh.maddie480.randomstuff.frontend;
 
-import com.nixxcode.jvmbrotli.common.BrotliLoader;
-import com.nixxcode.jvmbrotli.dec.BrotliInputStream;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.jsoup.Jsoup;
@@ -87,10 +85,6 @@ public class ParrotQuickGenerator {
     }
 
     private static Map<String, String> getParrots() throws IOException {
-        if (!BrotliLoader.isBrotliAvailable()) {
-            throw new IOException("Brotli is not available!");
-        }
-
         final Map<String, String> extraParrots = new LinkedHashMap<>();
         extraParrots.put("OSEF Parrot", "https://maddie480.ovh/static/img/osef_parrot.gif");
         extraParrots.put("AH Parrot", "https://maddie480.ovh/static/img/ah_parrot.gif");
@@ -103,15 +97,8 @@ public class ParrotQuickGenerator {
 
         String html;
         try (InputStream is = connection.getInputStream()) {
-            if ("br".equals(connection.getHeaderField("Content-Encoding"))) {
-                try (BrotliInputStream realIS = new BrotliInputStream(is)) {
-                    logger.info("Reading Brotli-encoded Party Parrot response");
-                    html = IOUtils.toString(realIS, StandardCharsets.UTF_8);
-                }
-            } else {
-                logger.info("Reading uncompressed Party Parrot response");
-                html = IOUtils.toString(is, StandardCharsets.UTF_8);
-            }
+            logger.info("Reading uncompressed Party Parrot response");
+            html = IOUtils.toString(is, StandardCharsets.UTF_8);
         }
 
         Map<String, String> parrots = new LinkedHashMap<>();
