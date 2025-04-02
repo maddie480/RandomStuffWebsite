@@ -509,12 +509,11 @@ public class CelesteModSearchService extends HttpServlet {
     public static double getCrabLevel() {
         ZonedDateTime now = ZonedDateTime.now();
         double crabLevel = 0;
-        if (now.getMonthValue() == 3 && now.getDayOfMonth() == 31 && now.getHour() >= 18) crabLevel = 0.1;
-        if (now.getMonthValue() == 4 && now.getDayOfMonth() == 1 && now.getHour() < 6) crabLevel = 0.5;
-        if (now.getMonthValue() == 4 && now.getDayOfMonth() == 1 && now.getHour() >= 6) crabLevel = 1;
-        if (now.getMonthValue() == 4 && now.getDayOfMonth() == 2 && now.getHour() < 6) crabLevel = 1;
-        if (now.getMonthValue() == 4 && now.getDayOfMonth() == 2 && now.getHour() >= 6 && now.getHour() < 12) crabLevel = 0.5;
-        if (now.getMonthValue() == 4 && now.getDayOfMonth() == 2 && now.getHour() >= 12 && now.getHour() < 18) crabLevel = 0.1;
+        if (now.getMonthValue() == 3 && now.getDayOfMonth() == 31 && now.getHour() >= 12 && now.getHour() < 18) crabLevel = 0.1;
+        if (now.getMonthValue() == 3 && now.getDayOfMonth() == 31 && now.getHour() >= 18) crabLevel = 0.5;
+        if (now.getMonthValue() == 4 && now.getDayOfMonth() == 1) crabLevel = 1;
+        if (now.getMonthValue() == 4 && now.getDayOfMonth() == 2 && now.getHour() < 6) crabLevel = 0.5;
+        if (now.getMonthValue() == 4 && now.getDayOfMonth() == 2 && now.getHour() >= 6 && now.getHour() < 12) crabLevel = 0.1;
         if (crabLevel > 0) log.trace("April Fools crab level is {}", crabLevel);
         return crabLevel;
     }
