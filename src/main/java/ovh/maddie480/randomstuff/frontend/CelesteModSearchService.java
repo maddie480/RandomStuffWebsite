@@ -514,7 +514,7 @@ public class CelesteModSearchService extends HttpServlet {
         if (now.getMonthValue() == 4 && now.getDayOfMonth() == 1) crabLevel = 1;
         if (now.getMonthValue() == 4 && now.getDayOfMonth() == 2 && now.getHour() < 6) crabLevel = 0.5;
         if (now.getMonthValue() == 4 && now.getDayOfMonth() == 2 && now.getHour() >= 6 && now.getHour() < 12) crabLevel = 0.1;
-        if (crabLevel > 0) log.trace("April Fools crab level is {}", crabLevel);
+        if (crabLevel > 0) log.debug("April Fools crab level is {}", crabLevel);
         return crabLevel;
     }
     private static Map<String, Object> crabify(Map<String, Object> input) {
