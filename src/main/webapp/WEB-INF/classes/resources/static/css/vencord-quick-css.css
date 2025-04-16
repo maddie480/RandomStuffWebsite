@@ -17,7 +17,7 @@
 .footer__214dc,
 /* kick out "download apps" button */
 .scroller_ef3116 > .listItem__650eb:not(:has(.guildSeparator__252b6)),
-/* no, Discord, I don't want to make fun of people's images or create deepfa-- uh, faceswaps */
+/* no, Discord, I don't want to remix images with AI, thanks */
 .hoverButtonGroup__06ab4,
 /* remove controller icon and dot from activity message */
 .textXs_c9d15c .icon_c9d15c,
@@ -111,11 +111,6 @@ body {
 }
 .visual-refresh .channelTextArea__74017 {
     border-radius: 24px
-}
-
-/* remove padding before BetterActivities icons */
-.textXs_c9d15c div:last-child:not(.activityText__5d473) {
-    margin-left: 0;
 }
 
 /* fix semi-transparent code blocks */
