@@ -28,6 +28,18 @@
     right: 16px;
 }
 
+/* nope out "nameplates", those purchasable user list backgrounds */
+.childContainer__91a9d.nameplated__91a9d {
+    padding-right: 8px;
+    position: static;
+}
+.childContainer__91a9d.nameplated__91a9d .container__4bbc6 {
+    background: none !important;
+}
+.childContainer__91a9d.nameplated__91a9d .img__4bbc6 {
+    display: none;
+}
+
 /* kick out the second title bar the March 2025 visual refresh brought us */
 body {
     --custom-app-top-bar-height: 0;
