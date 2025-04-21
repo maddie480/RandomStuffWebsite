@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.json.JSONArray;
@@ -447,10 +448,13 @@ public class CelesteModSearchService extends HttpServlet {
     public static List<Map<String, Object>> searchModsByName(String queryParam) {
         final String[] tokenizedRequest = tokenize(queryParam);
 
+        Map<ModInfo, Double> scoredMods = modDatabaseForSorting.stream()
+                .collect(Collectors.toMap(m -> m, m -> scoreMod(tokenizedRequest, (String[]) m.fullInfo.get("TokenizedName"))));
+
         return modDatabaseForSorting.stream()
-                .filter(mod -> scoreMod(tokenizedRequest, (String[]) mod.fullInfo.get("TokenizedName")) > 0.2f * tokenizedRequest.length)
+                .filter(mod -> scoredMods.get(mod) > 0.2f * tokenizedRequest.length)
                 .sorted(Comparator
-                        .<ModInfo>comparingDouble(mod -> -scoreMod(tokenizedRequest, (String[]) mod.fullInfo.get("TokenizedName")))
+                        .<ModInfo>comparingDouble(mod -> -scoredMods.get(mod))
                         .thenComparingInt(mod -> -mod.downloads))
                 .map(mod -> mod.fullInfo)
                 .limit(20)
@@ -473,7 +477,9 @@ public class CelesteModSearchService extends HttpServlet {
     }
 
     private static String[] tokenize(String string) {
-        string = string.toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9* ]", "");
+        string = StringUtils.stripAccents(string.toLowerCase(Locale.ROOT)) // "Pokémon" => "pokemon"
+                .replace("'", "") // "Maddie's Helping Hand" => "maddies helping hand"
+                .replaceAll("[^a-z0-9* ]", " "); // "The D-Sides Pack" => "the d sides pack"
         while (string.contains("  ")) string = string.replace("  ", " ");
         return string.split(" ");
     }
