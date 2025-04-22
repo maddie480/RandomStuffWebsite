@@ -123,6 +123,11 @@ body {
     border-radius: 24px
 }
 
+/* remove padding before BetterActivities icons */
+.subText__91a9d .textXs_c9d15c div:last-child {
+    margin-left: 0;
+}
+
 /* fix semi-transparent code blocks */
 .theme-light .markup__75297 code {
     background: initial !important;
