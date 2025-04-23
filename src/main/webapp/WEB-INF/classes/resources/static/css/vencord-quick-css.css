@@ -19,11 +19,18 @@
 .hoverButtonGroup__06ab4,
 /* remove controller icon and dot from activity message */
 .textXs_c9d15c .icon_c9d15c,
-.textXs_c9d15c .dot_c9d15c {
+.textXs_c9d15c .dot_c9d15c,
+/* wtf is a guild tag anyway */
+.clanTagChiplet_c19a55 {
     display: none;
 }
 .jumpToPresentBar__0f481 {
     right: 16px;
+}
+
+/* fix names and decorators being separated in the user list */
+.name__91a9d {
+    width: initial;
 }
 
 /* nope out "nameplates", those purchasable user list backgrounds */
