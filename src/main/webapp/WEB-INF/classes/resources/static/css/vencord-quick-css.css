@@ -21,7 +21,9 @@
 .textXs_c9d15c .icon_c9d15c,
 .textXs_c9d15c .dot_c9d15c,
 /* wtf is a guild tag anyway */
-.clanTagChiplet_c19a55 {
+.clanTagChiplet_c19a55,
+.clanTag__5d473,
+.clanTag__972a0 {
     display: none;
 }
 .jumpToPresentBar__0f481 {
