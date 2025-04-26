@@ -23,7 +23,9 @@
 /* wtf is a guild tag anyway */
 .clanTagChiplet_c19a55,
 .clanTag__5d473,
-.clanTag__972a0 {
+.clanTag__972a0,
+/* yeet the owner crown, redundant with MoreUserTags */
+.ownerIcon__5d473 {
     display: none;
 }
 .jumpToPresentBar__0f481 {
@@ -33,6 +35,14 @@
 /* fix names and decorators being separated in the user list */
 .name__91a9d {
     width: initial;
+}
+
+/* gray out extra tags that are injected by MoreUserTags */
+.botTag_c19a55:not([data-tag="app"]):not([data-tag="webhook"]):not([data-tag="ai"]), .botTag__5d473:not([data-tag="app"]):not([data-tag="webhook"]):not([data-tag="ai"]) {
+    background: var(--bg-mod-strong);
+}
+.botTag_c19a55:not([data-tag="app"]):not([data-tag="webhook"]):not([data-tag="ai"]) span, .botTag__5d473:not([data-tag="app"]):not([data-tag="webhook"]):not([data-tag="ai"]) span {
+    color: var(--text-normal);
 }
 
 /* nope out "nameplates", those purchasable user list backgrounds */
@@ -53,22 +63,14 @@ body {
     --custom-app-panels-height: 80px !important;
 }
 
-/* grey out the OP tag */
-.botTagOP__82f07 {
-    background: var(--bg-mod-strong);
-}
-.botTagOP__82f07 span {
-    color: var(--text-normal);
-}
-
 /* APP => Bot */
-.botTag_c19a55:not(.botTagOP__82f07), .botTag__5d473 {
+.botTag_c19a55[data-tag="app"], .botTag__5d473[data-tag="app"] {
     overflow: hidden;
 }
-.botTag_c19a55:not(.botTagOP__82f07) span::before, .botTag__5d473 span::before {
+.botTag_c19a55[data-tag="app"] span::before, .botTag__5d473[data-tag="app"] span::before {
     content: 'Bot\00a0\00a0';
 }
-.botTag_c19a55:not(.botTagOP__82f07) span, .botTag__5d473 span {
+.botTag_c19a55[data-tag="app"] span, .botTag__5d473[data-tag="app"] span {
     width: 1.55em;
     text-wrap: nowrap;
 }
