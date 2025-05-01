@@ -142,24 +142,24 @@
     </div>
     <pre class="codeblock">
 - Name: MyMod
-Version: 1.0.0
-Dependencies:
-- Name: Everest
-Version: 1.2803.0
-- Name: MaxHelpingHand
-Version: 1.21.1</pre>
+  Version: 1.0.0
+  Dependencies:
+    - Name: Everest
+      Version: 1.2803.0
+    - Name: MaxHelpingHand
+      Version: 1.21.1</pre>
     <div>
         &#x2b06; This <pre>everest.yaml</pre> declares that there are 2 mods in this zip: <pre>MyMod</pre> (depending on <pre>Everest</pre>) and <pre>MaxHelpingHand</pre>.
         In order to have a mod that depends on <pre>MaxHelpingHand</pre> instead, align it properly to have it inside <pre>Dependencies</pre>:
     </div>
     <pre class="codeblock">
 - Name: MyMod
-Version: 1.0.0
-Dependencies:
-- Name: Everest
-Version: 1.2803.0
-- Name: MaxHelpingHand
-Version: 1.21.1</pre>
+  Version: 1.0.0
+  Dependencies:
+    - Name: Everest
+      Version: 1.2803.0
+    - Name: MaxHelpingHand
+      Version: 1.21.1</pre>
     <div>
         You can send your <pre>everest.yaml</pre> to <a target="_blank" href="https://maddie480.ovh/celeste/everest-yaml-validator">the validator</a>
         to have more details about how it is interpreted!
@@ -232,4 +232,36 @@ Version: 1.21.1</pre>
     </div>
 <% } %>
 
-<div style="height: 30px"/>
+<% if (request.getParameter("badpngs") != null) { %>
+<h2>Your mod contains invalid PNG files</h2>
+
+<div>
+    Some <code>.png</code> files in your mod are not actually PNG files.
+</div>
+
+<div>
+    This often happens when people grab an image with another format (like <code>.jpg</code>) and rename the file
+    to "convert" it to <code>.png</code>.
+    <i>This does not actually convert the file</i>, but Everest will still read it most of the time, since the image
+    library it uses supports multiple formats. But it isn't guaranteed to work on all configurations, and there's no
+    guarantee it won't break in the future.
+</div>
+
+<div>
+    To quickly check if a file is a real PNG, open it with a text editor, check what it starts with:
+    <ul>
+        <li><code>&#xfffd;PNG</code>: it's a PNG file &#x2705;</li>
+        <li><code>&#xfffd;&#xfffd;&#xfffd;&#xfffd;JFIF</code>: it's a JPEG file &#x274C;</li>
+        <li><code>GIF</code>: it's a GIF file &#x274C;</li>
+        <li><code>RIFF@WEBP</code>: it's a WEBP file &#x274C;</li>
+        <li><code>BM</code>: it's a BMP file &#x274C;</li>
+    </ul>
+</div>
+
+<div>
+    You should be able to convert your file to an actual PNG with an image editor (open it, and save it again as a PNG),
+    or with an online image converter.
+</div>
+<% } %>
+
+<div style="height: 30px"></div>
