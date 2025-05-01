@@ -174,33 +174,3 @@ div[aria-label="Save Note"] svg {
 .circleIcon__5bc7e path {
     transform-origin: -1px -1px;
 }
-
-/* folder color */
-.theme-light .folder__48112 {
-    background: rgba(231, 234, 237, .436) !important;
-}
-.theme-dark .folder__48112 {
-    background: rgba(39, 38, 41, .276) !important;
-}
-.folderIconWrapper__48112 {
-    background-color: transparent !important;
-}
-.theme-dark .folderIconWrapper__48112 {
-    background-color: rgb(66, 65, 95) !important;
-}
-.folderIconWrapper__48112 svg {
-    color: var(--accent) !important;
-}
-.closedFolderIconWrapper__48112 {
-    display: none;
-}
-.theme-dark .circleIconButton__5bc7e {
-    border: none;
-}
-/* shrink the folder icon to match the server icons */
-.folderIcon__48112 {
-    height: 40px;
-}
-.folderIcon__48112 .wrapper_cc5dd2 svg {
-    height: 48px;
-}
