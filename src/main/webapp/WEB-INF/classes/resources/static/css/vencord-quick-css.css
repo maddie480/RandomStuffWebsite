@@ -174,3 +174,16 @@ div[aria-label="Save Note"] svg {
 .circleIcon__5bc7e path {
     transform-origin: -1px -1px;
 }
+
+/* folder color */
+.folderGroup__48112 {
+    --custom-folder-color: var(--accent) !important;
+}
+/* shrink the folder icon to match the server icons */
+.folderGroup__48112:not(.isExpanded__48112) {
+    width: 40px;
+    height: 40px;
+}
+.folderGroup__48112 .wrapper_cc5dd2 > svg {
+    height: 40px;
+}
