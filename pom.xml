@@ -349,6 +349,21 @@
                     </execution>
 
                     <execution>
+                        <id>prepare Unicode Mirror</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>java</executable>
+                            <workingDirectory>${project.build.directory}/random-stuff-website-1.0.0/WEB-INF/classes</workingDirectory>
+                            <arguments>
+                                <argument>ovh.maddie480.randomstuff.frontend.PrepareUnicodeMirror</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+
+                    <execution>
                         <id>delete integrators code</id>
                         <phase>prepare-package</phase>
                         <goals>
@@ -363,6 +378,7 @@
                                 <argument>ovh/maddie480/randomstuff/frontend/LuaCutscenesDocumentationIntegrator.class</argument>
                                 <argument>ovh/maddie480/randomstuff/frontend/PrepareForRadioLNJ.class</argument>
                                 <argument>ovh/maddie480/randomstuff/frontend/ParrotQuickGenerator.class</argument>
+                                <argument>ovh/maddie480/randomstuff/frontend/PrepareUnicodeMirror.class</argument>
                             </arguments>
                         </configuration>
                     </execution>

@@ -101,6 +101,14 @@ public class SecurityHeadersFilter extends HttpFilter {
                     "connect-src 'self' https://gamebanana.com; " +
                     "frame-ancestors 'none'; " +
                     "object-src 'none';");
+        } else if (req.getRequestURI().startsWith("/static/unicode-mirror/")) {
+            // these pages come from another website: don't run scripts and don't load anything from outside websites.
+            res.setHeader("Content-Security-Policy", "default-src 'self'; " +
+                    "img-src 'self' data:; " +
+                    "style-src 'self' 'unsafe-inline'; " +
+                    "frame-ancestors 'none'; " +
+                    "script-src 'none'; " +
+                    "object-src 'none';");
         } else {
             // default rules
             res.setHeader("Content-Security-Policy", "default-src 'self'; " +

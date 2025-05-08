@@ -56,6 +56,13 @@ jobs:
           target/random-stuff-website-1.0.0/WEB-INF/classes/radio_lnj_meta.json
         key: radio-lnj-${{ hashFiles('.github/radio-lnj-sources.json') }}
 
+    - name: Cache Unicode mirror
+      uses: actions/cache@v4
+      if: github.ref == 'refs/heads/main'
+      with:
+        path: target/random-stuff-website-1.0.0/WEB-INF/classes/resources/static/unicode-mirror/*
+        key: unicode-mirror-${{ hashFiles('src/main/java/ovh/maddie480/randomstuff/frontend/PrepareUnicodeMirror.java') }}
+
     - name: Cache node_modules
       uses: actions/cache@v4
       with:

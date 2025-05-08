@@ -179,7 +179,7 @@ public class PrepareForRadioLNJ {
         musicIndex++;
     }
 
-    private static void copyRecursive(Path source, Path target) throws InterruptedException, IOException {
+    static void copyRecursive(Path source, Path target) throws InterruptedException, IOException {
         int exitCode = new ProcessBuilder(
                 "cp", "-rv",
                 source.toAbsolutePath().toString(),
