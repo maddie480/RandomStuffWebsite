@@ -101,6 +101,8 @@
                             href="/quest/mods">&#x2694;&#xFE0F;&nbsp;&nbsp;Quest &#x2013; Game Mods</a></li>
                         <li><a class="dropdown-item <%= "quest-tools".equals(request.getAttribute("navId")) ? "active" : "" %>"
                             href="/quest/tools">&#x1F527;&#xFE0F;&nbsp;&nbsp;Quest &#x2013; Modding Tools</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="/static/unicode-mirror/emoji/charts/index.html" target="_blank">&#x1F604;&nbsp;&nbsp;Unicode Emoji Charts Mirror</a></li>
                     </ul>
                 </li>
             </ul>

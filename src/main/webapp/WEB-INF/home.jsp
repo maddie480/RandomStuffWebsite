@@ -195,6 +195,19 @@
         and amazingly enough, a handful of people <i>still</i> collect their daily rewards on the QUEST Discord server, despite <i>absolutely nothing else</i> happening there. &#x1F61B;
     </div>
 
+    <h3>Unicode Emoji Charts Mirror</h3>
+
+    <div>
+        Also, there's a mirror of <a href="https://unicode.org/emoji/charts/index.html" target="_blank">Unicode's Emoji Charts</a> on this site.
+        It's <a href="/static/unicode-mirror/emoji/charts/index.html" target="_blank">here</a>.
+    </div>
+
+    <div>
+        It seems like the official lists get rate limited to 10 KB/s past the first megabyte, so they can take
+        <i>literal minutes</i> to load, which... doesn't work out to use them for quick reference.
+        The GitHub pipeline got patient, downloaded them, and included them on this site!
+    </div>
+
     <h3>Some Stats (updated daily)</h3>
 
     <div>

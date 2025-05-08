@@ -123,7 +123,7 @@ public class CacheAndCompressionFilter extends HttpFilter {
 
     @Override
     protected void doFilter(HttpServletRequest req, HttpServletResponse res, FilterChain chain) throws IOException, ServletException {
-        if (req.getRequestURI().endsWith(".zip") || req.getRequestURI().equals("/celeste/bundle-download")) {
+        if (req.getRequestURI().equals("/celeste/bundle-download")) {
             // big media; we shouldn't try compressing or caching it
             chain.doFilter(req, res);
             return;
@@ -136,12 +136,6 @@ public class CacheAndCompressionFilter extends HttpFilter {
 
         CachingServletResponse placeholderResponse = new CachingServletResponse(res, compress);
         chain.doFilter(req, placeholderResponse);
-
-        if (req.getRequestURI().startsWith("/static/css/discord-nitro-themes/") || req.getRequestURI().equals("/static/css/vencord-quick-css.css")) {
-            // 304 responses make Vendroid angry
-            placeholderResponse.sendResponse();
-            return;
-        }
 
         if (placeholderResponse.getStatus() != 200) {
             // no caching on failure responses
