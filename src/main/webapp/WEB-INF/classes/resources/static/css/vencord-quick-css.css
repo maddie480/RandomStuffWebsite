@@ -25,7 +25,9 @@
 .clanTag__5d473,
 .clanTag__972a0,
 /* yeet the owner crown, redundant with MoreUserTags */
-.ownerIcon__5d473 {
+.ownerIcon__5d473,
+/* MoreUserTags adds a duplicate tag to bots, throw the default one out */
+.usernameRow__63ed3 .botTag__82f07 {
     display: none;
 }
 .jumpToPresentBar__0f481 {
@@ -38,10 +40,10 @@
 }
 
 /* gray out extra tags that are injected by MoreUserTags */
-.botTag_c19a55:not([data-tag="app"]):not([data-tag="webhook"]):not([data-tag="ai"]), .botTag__5d473:not([data-tag="app"]):not([data-tag="webhook"]):not([data-tag="ai"]) {
+.botTag_c19a55:not([data-tag="app"]):not([data-tag="webhook"]):not([data-tag="ai"]), .botTag__5d473:not([data-tag="app"]):not([data-tag="webhook"]):not([data-tag="ai"]), .botTag__82f07:not([data-tag="app"]):not([data-tag="webhook"]):not([data-tag="ai"]) {
     background: var(--bg-mod-strong);
 }
-.botTag_c19a55:not([data-tag="app"]):not([data-tag="webhook"]):not([data-tag="ai"]) span, .botTag__5d473:not([data-tag="app"]):not([data-tag="webhook"]):not([data-tag="ai"]) span {
+.botTag_c19a55:not([data-tag="app"]):not([data-tag="webhook"]):not([data-tag="ai"]) span, .botTag__5d473:not([data-tag="app"]):not([data-tag="webhook"]):not([data-tag="ai"]) span, .botTag__82f07:not([data-tag="app"]):not([data-tag="webhook"]):not([data-tag="ai"]) span {
     color: var(--text-normal);
 }
 
@@ -64,15 +66,18 @@ body {
 }
 
 /* APP => Bot */
-.botTag_c19a55[data-tag="app"], .botTag__5d473[data-tag="app"] {
+.botTag_c19a55[data-tag="app"], .botTag__5d473[data-tag="app"], .botTag__82f07[data-tag="app"] {
     overflow: hidden;
 }
-.botTag_c19a55[data-tag="app"] span::before, .botTag__5d473[data-tag="app"] span::before {
+.botTag_c19a55[data-tag="app"] span::before, .botTag__5d473[data-tag="app"] span::before, .botTag__82f07[data-tag="app"] span::before {
     content: 'Bot\00a0\00a0';
 }
-.botTag_c19a55[data-tag="app"] span, .botTag__5d473[data-tag="app"] span {
+.botTag_c19a55[data-tag="app"] span, .botTag__5d473[data-tag="app"] span, .botTag__82f07[data-tag="app"] span {
     width: 1.55em;
     text-wrap: nowrap;
+}
+.botTag__82f07[data-tag="app"] span {
+    display: inline-block;
 }
 
 /* remove profile themes */
@@ -106,7 +111,7 @@ body {
 }
 
 /* map surCord colors to Discord brand colors */
-.visual-refresh.theme-dark, .visual-refresh.theme-light {
+.platform-web.visual-refresh.theme-dark, .platform-web.visual-refresh.theme-light {
     --bg-brand: var(--accent);
     --brand-500: var(--accent);
     --text-link: var(--accent);
@@ -189,4 +194,15 @@ div[aria-label="Save Note"] svg {
 }
 .folderGroup__48112 .wrapper_cc5dd2 > svg {
     height: 40px;
+}
+.folderGroup__48112 .folderGroupBackground__48112 {
+    width: 40px;
+    margin-left: 4px;
+    margin-bottom: 4px;
+}
+.folderGroup__48112 .folderGuildsList__48112 .pill_e5445c {
+    height: 33px;
+}
+.folderGroup__48112 .folderGuildsList__48112 .pill_e5445c .item__58105 {
+    max-height: 33px;
 }
