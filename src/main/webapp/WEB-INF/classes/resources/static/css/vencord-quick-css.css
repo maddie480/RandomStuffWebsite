@@ -20,10 +20,11 @@
 /* remove controller icon and dot from activity message */
 .textXs_c9d15c .icon_c9d15c,
 .textXs_c9d15c .dot_c9d15c,
-/* wtf is a guild tag anyway */
+/* ged rid of server tags, they're cluttering everything up */
 .clanTagChiplet_c19a55,
 .clanTag__5d473,
 .clanTag__972a0,
+.user-profile-popout .tags__63ed3 .chipletContainerInner__10651,
 /* yeet the owner crown, redundant with MoreUserTags */
 .ownerIcon__5d473,
 /* MoreUserTags adds a duplicate tag to bots, throw the default one out */
