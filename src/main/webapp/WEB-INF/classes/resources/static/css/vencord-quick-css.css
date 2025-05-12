@@ -111,7 +111,7 @@ body {
 }
 
 /* map surCord colors to Discord brand colors */
-.platform-web.visual-refresh.theme-dark, .platform-web.visual-refresh.theme-light {
+.visual-refresh.theme-dark, .visual-refresh.theme-light, .visual-refresh .theme-dark, .visual-refresh .theme-light {
     --bg-brand: var(--accent);
     --brand-500: var(--accent);
     --text-link: var(--accent);
