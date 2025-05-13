@@ -30,3 +30,7 @@ pre {
   text-decoration: none;
   color: #fff;
 }
+
+.slash:last-child {
+    display: none;
+}

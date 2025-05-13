@@ -108,9 +108,18 @@
         <% if(!mod.effectList.isEmpty()) { %>
             <h4>Effects</h4>
             <ul>
-                <% for(Map.Entry<String, List<String>> effect : mod.effectList.entrySet()) { %>
+                <% for(Map.Entry<Map<String, String>, List<String>> effect : mod.effectList.entrySet()) { %>
                     <li>
-                        <%= escapeHtml4(effect.getKey()) %>
+                        <span>
+                            <% for(Map.Entry<String, String> name : effect.getKey().entrySet()) { %>
+                                <% if (name.getValue() == null) { %>
+                                    <%= escapeHtml4(name.getKey()) %>
+                                <% } else { %>
+                                    <abbr title="<%= escapeHtml4(name.getValue()) %>"><%= escapeHtml4(name.getKey()) %></abbr>
+                                <% } %>
+                                <span class="slash"> / </span>
+                            <% } %>
+                        </span>
                         <% if (effect.getValue().contains("ahorn")) { %>
                             <span class="badge bg-secondary">Ahorn</span>
                         <% } %>
@@ -131,8 +140,18 @@
         <% if(!mod.entityList.isEmpty()) { %>
             <h4>Entities</h4>
             <ul>
-                <% for(Map.Entry<String, List<String>> entity : mod.entityList.entrySet()) { %>
-                    <li><%= escapeHtml4(entity.getKey()) %>
+                <% for(Map.Entry<Map<String, String>, List<String>> entity : mod.entityList.entrySet()) { %>
+                    <li>
+                        <span>
+                            <% for(Map.Entry<String, String> name : entity.getKey().entrySet()) { %>
+                                <% if (name.getValue() == null) { %>
+                                    <%= escapeHtml4(name.getKey()) %>
+                                <% } else { %>
+                                    <abbr title="<%= escapeHtml4(name.getValue()) %>"><%= escapeHtml4(name.getKey()) %></abbr>
+                                <% } %>
+                                <span class="slash"> / </span>
+                            <% } %>
+                        </span>
                         <% if (entity.getValue().contains("ahorn")) { %>
                             <span class="badge bg-secondary">Ahorn</span>
                         <% } %>
@@ -153,8 +172,18 @@
         <% if(!mod.triggerList.isEmpty()) { %>
             <h4>Triggers</h4>
             <ul>
-                <% for(Map.Entry<String, List<String>> trigger : mod.triggerList.entrySet()) { %>
-                    <li><%= escapeHtml4(trigger.getKey()) %>
+                <% for(Map.Entry<Map<String, String>, List<String>> trigger : mod.triggerList.entrySet()) { %>
+                    <li>
+                        <span>
+                            <% for(Map.Entry<String, String> name : trigger.getKey().entrySet()) { %>
+                                <% if (name.getValue() == null) { %>
+                                    <%= escapeHtml4(name.getKey()) %>
+                                <% } else { %>
+                                    <abbr title="<%= escapeHtml4(name.getValue()) %>"><%= escapeHtml4(name.getKey()) %></abbr>
+                                <% } %>
+                                <span class="slash"> / </span>
+                            <% } %>
+                        </span>
                         <% if (trigger.getValue().contains("ahorn")) { %>
                             <span class="badge bg-secondary">Ahorn</span>
                         <% } %>

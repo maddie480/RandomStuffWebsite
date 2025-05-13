@@ -19,7 +19,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.FileTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -108,18 +110,33 @@ public class CelesteModCatalogService extends HttpServlet {
         }
     }
 
+    private Pair<List<QueriedModInfo>, ZonedDateTime> cachedList = null;
+    private FileTime cachedListLastModified = FileTime.fromMillis(0);
+
     private Pair<List<QueriedModInfo>, ZonedDateTime> loadList() throws IOException {
         // just load and parse the custom entity catalog JSON.
-        try (BufferedReader br = Files.newBufferedReader(Paths.get("/shared/celeste/custom-entity-catalog.json"))) {
+        Path json = Paths.get("/shared/celeste/custom-entity-catalog.json");
+        FileTime lastModified = Files.getLastModifiedTime(json);
+        if (lastModified.equals(cachedListLastModified)) {
+            return cachedList;
+        }
+
+        log.info("Reloading custom entity catalog because last modified date changed: {} -> {}", cachedListLastModified, lastModified);
+        try (BufferedReader br = Files.newBufferedReader(json)) {
             JSONObject obj = new JSONObject(new JSONTokener(br));
             ZonedDateTime lastUpdated = ZonedDateTime.parse(obj.getString("lastUpdated")).withZoneSameInstant(ZoneId.of("UTC"));
+            Map<String, Map<String, Map<String, String>>> entityDescriptions = (Map) obj.getJSONObject("entityDescriptions").toMap();
             List<QueriedModInfo> modInfo = obj.getJSONArray("modInfo").toList().stream()
                     .map(item -> (HashMap<String, Object>) item)
-                    .map(QueriedModInfo::new)
+                    .map(item -> new QueriedModInfo(item, entityDescriptions))
                     .collect(Collectors.toList());
 
             log.debug("Loaded {} mods.", modInfo.size());
-            return Pair.of(modInfo, lastUpdated);
+
+            Pair<List<QueriedModInfo>, ZonedDateTime> computedValue = Pair.of(modInfo, lastUpdated);
+            cachedList = computedValue;
+            cachedListLastModified = lastModified;
+            return computedValue;
         }
     }
 
@@ -135,12 +152,12 @@ public class CelesteModCatalogService extends HttpServlet {
         public final String modEverestYamlId;
         public final String latestVersion;
         public final int dependentCount;
-        public final Map<String, List<String>> entityList;
-        public final Map<String, List<String>> triggerList;
-        public final Map<String, List<String>> effectList;
+        public final Map<Map<String, String>, List<String>> entityList;
+        public final Map<Map<String, String>, List<String>> triggerList;
+        public final Map<Map<String, String>, List<String>> effectList;
         public final Map<String, String> documentationLinks;
 
-        public QueriedModInfo(HashMap<String, Object> object) {
+        public QueriedModInfo(HashMap<String, Object> object, Map<String, Map<String, Map<String, String>>> entityDescriptions) {
             itemtype = (String) object.get("itemtype");
             itemid = (int) object.get("itemid");
             categoryId = (int) object.get("categoryId");
@@ -149,14 +166,38 @@ public class CelesteModCatalogService extends HttpServlet {
             modEverestYamlId = (String) object.get("modEverestYamlId");
             latestVersion = (String) object.get("latestVersion");
             dependentCount = (int) object.get("dependentCount");
-            entityList = new TreeMap<>((Map<String, List<String>>) object.get("entityList"));
-            triggerList = new TreeMap<>((Map<String, List<String>>) object.get("triggerList"));
-            effectList = new TreeMap<>((Map<String, List<String>>) object.get("effectList"));
+            entityList = mapEntityList((Map<String, List<String>>) object.get("entityList"), entityDescriptions);
+            triggerList = mapEntityList((Map<String, List<String>>) object.get("triggerList"), entityDescriptions);
+            effectList = mapEntityList((Map<String, List<String>>) object.get("effectList"), entityDescriptions);
             documentationLinks = new LinkedHashMap<>();
 
             ((ArrayList<Object>) object.get("documentationLinks")).stream()
                     .map(item -> (Map<String, Object>) item)
                     .forEach(item -> documentationLinks.put((String) item.get("key"), (String) item.get("value")));
+        }
+
+        private Map<Map<String, String>, List<String>> mapEntityList(Map<String, List<String>> entityList, Map<String, Map<String, Map<String, String>>> entityDescriptions) {
+            return entityList.entrySet().stream()
+                    .sorted(Comparator.comparing(e -> e.getKey().toLowerCase()))
+                    .map(entity -> {
+                        String entityName = entity.getKey();
+                        Map<String, String> descriptionDictionary = entityDescriptions
+                                .getOrDefault(itemtype + "/" + itemid, Collections.emptyMap())
+                                .getOrDefault(entityName, Collections.emptyMap());
+                        Map<String, String> result = new LinkedHashMap<>();
+                        for (String s : entityName.split(" / ")) {
+                            String entry = descriptionDictionary.get(s);
+                            if (entry != null) entry = entry.replace("\\n", "\n");
+                            result.put(s, entry);
+                        }
+                        if (!result.values().stream().allMatch(Objects::isNull)) {
+                            return Pair.of(result, entity.getValue());
+                        }
+                        result = new HashMap<>();
+                        result.put(entityName, null);
+                        return Pair.of(result, entity.getValue());
+                    })
+                    .collect(Collectors.toMap(Pair::getKey, Pair::getValue, (a, b) -> a, LinkedHashMap::new));
         }
     }
 
