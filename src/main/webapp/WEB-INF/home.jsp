@@ -246,18 +246,17 @@
     </ul>
 
     <div>
-        Here is the amount of events (issues, pull requests, commits, comments) from me over the last week
-        on the different GitHub repositories I contribute to:
+        Here are the GitHub repositories I've contributed to during the last week, from highest to lowest activity from me:
+        <!-- counting commits, pull requests, issues, comments, pretty much anything GitHub calls a contribution --> 
     </div>
 
     <ul>
         <% for (Pair<String, Integer> entry : (List<Pair<String, Integer>>) request.getAttribute("repositoryCallCount")) { %>
             <li>
-                <b>
-                    <a href="https://github.com/<%= escapeHtml4(entry.getKey()) %>" target="_blank">
-                        <code><%= escapeHtml4(entry.getKey()) %></code></a>:
-                </b>
-                <%= new DecimalFormat("#,##0").format(entry.getValue()) %> event<% if (entry.getValue() != 1) { %>s<% } %>
+                <a href="https://github.com/<%= escapeHtml4(entry.getKey()) %>" target="_blank">
+                    <code><%= escapeHtml4(entry.getKey()) %></code>
+                </a>
+                <!-- <%= new DecimalFormat("#,##0").format(entry.getValue()) %> event<% if (entry.getValue() != 1) { %>s<% } %> -->
             </li>
         <% } %>
     </ul>
