@@ -247,7 +247,7 @@
 
     <div>
         Here are the GitHub repositories I've contributed to during the last week, from highest to lowest activity from me:
-        <!-- counting commits, pull requests, issues, comments, pretty much anything GitHub calls a contribution --> 
+        <!-- counting commits, pull requests, issues, comments, pretty much anything GitHub calls a contribution -->
     </div>
 
     <ul>
