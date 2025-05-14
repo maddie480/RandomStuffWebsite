@@ -205,3 +205,4 @@
 <% } %>
 
 <script src="/js/timestamp-converter.js"></script>
+<script src="/js/mod-catalog-mobile-tooltips.js"></script>
