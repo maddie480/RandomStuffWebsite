@@ -1,4 +1,4 @@
-// <abbr> tooltips are just fine... unless you don't have a mouse you can use to hover on items.
+// <abbr> tooltips are just fine... unless you don't have a mouse you can use to hover over items.
 // Bootstrap tooltips to the rescue!
 if (window.matchMedia('(hover: none)').matches) {
     (() => {
