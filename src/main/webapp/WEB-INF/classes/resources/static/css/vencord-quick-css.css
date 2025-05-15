@@ -28,7 +28,9 @@
 /* yeet the owner crown, redundant with MoreUserTags */
 .ownerIcon__5d473,
 /* MoreUserTags adds a duplicate tag to bots, throw the default one out */
-.usernameRow__63ed3 .botTag__82f07 {
+.usernameRow__63ed3 .botTag__82f07,
+/* kick out the "Server Boosts" option from the channel list */
+li:has(> div > div[aria-label="Boosts de serveur"]) {
     display: none;
 }
 .jumpToPresentBar__0f481 {
