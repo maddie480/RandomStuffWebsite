@@ -29,7 +29,7 @@ public class ExtractDiscordThemeCSS {
             String browser = System.getenv("CI") == null ? "chromium" : "google-chrome";
             System.out.println("Launching browser: " + browser);
 
-            Process p = new ProcessBuilder(browser, "--headless", "--dump-dom", "https://discord.com/app")
+            Process p = new ProcessBuilder(browser, "--headless", "--dump-dom", "--virtual-time-budget=30000", "https://discord.com/app")
                     .redirectError(ProcessBuilder.Redirect.INHERIT)
                     .redirectOutput(ProcessBuilder.Redirect.PIPE)
                     .start();
