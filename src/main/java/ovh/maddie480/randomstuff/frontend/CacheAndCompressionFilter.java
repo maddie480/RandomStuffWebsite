@@ -123,7 +123,7 @@ public class CacheAndCompressionFilter extends HttpFilter {
 
     @Override
     protected void doFilter(HttpServletRequest req, HttpServletResponse res, FilterChain chain) throws IOException, ServletException {
-        if (req.getRequestURI().equals("/celeste/bundle-download")) {
+        if (req.getRequestURI().equals("/celeste/bundle-download") || req.getRequestURI().equals("/static/graphics-dump.zip")) {
             // big media; we shouldn't try compressing or caching it
             chain.doFilter(req, res);
             return;
