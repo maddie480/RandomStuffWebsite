@@ -195,14 +195,21 @@
         and amazingly enough, a handful of people <i>still</i> collect their daily rewards on the QUEST Discord server, despite <i>absolutely nothing else</i> happening there. &#x1F61B;
     </div>
 
-    <h3>Unicode Emoji Charts Mirror</h3>
+    <h3>Mirrored Stuff</h3>
 
     <div>
-        Also, there's a mirror of <a href="https://unicode.org/emoji/charts/index.html" target="_blank">Unicode's Emoji Charts</a> on this site.
-        It's <a href="/static/unicode-mirror/emoji/charts/index.html" target="_blank">here</a>.
+        A mirror of <b><a href="/static/celeste-fmod-project.zip" target="_blank">the Celeste FMOD project</a></b> is hosted on this website.
+        It used to be freely downloadable from FMOD's official website, but it got taken down for unknown reasons...
+        and the devs are probably going to publish it somewhere. In the meantime, here it is!
+        <br>
+        <i>Be sure to read the included license!</i> Using it for modding Celeste is fine, and it <i>is</i> used
+        to integrate custom music or sounds in Celeste maps.
     </div>
 
     <div>
+        Also, there's a mirror of <b><a href="https://unicode.org/emoji/charts/index.html" target="_blank">Unicode's Emoji Charts</a></b> on this site.
+        It's <a href="/static/unicode-mirror/emoji/charts/index.html" target="_blank">here</a>.
+        <br>
         It seems like the official lists get rate limited to 10 KB/s past the first megabyte, so they can take
         <i>literal minutes</i> to load, which... doesn't work out to use them for quick reference.
         The GitHub pipeline got patient, downloaded them, and included them on this site!
