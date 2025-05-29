@@ -217,12 +217,13 @@
                 >
               </li>
               <li><hr class="dropdown-divider" /></li>
+              <li><h6 class="dropdown-header">Mirrored Stuff</h6></li>
               <li>
                 <a
                   class="dropdown-item"
                   href="/static/celeste-fmod-project.zip"
                   target="_blank"
-                  >&#x1F3A7;&nbsp;&nbsp;Celeste FMOD Project Mirror</a
+                  >&#x1F3A7;&nbsp;&nbsp;Celeste FMOD Project</a
                 >
               </li>
               <li>
@@ -230,7 +231,7 @@
                   class="dropdown-item"
                   href="/static/unicode-mirror/emoji/charts/index.html"
                   target="_blank"
-                  >&#x1F604;&nbsp;&nbsp;Unicode Emoji Charts Mirror</a
+                  >&#x1F604;&nbsp;&nbsp;Unicode Emoji Charts</a
                 >
               </li>
             </ul>
