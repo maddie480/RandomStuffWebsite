@@ -20,7 +20,7 @@
     "vuex": "^4.1.0"
   },
   "devDependencies": {
-    "@eslint/js": "^9.27.0",
+    "@eslint/js": "^9.28.0",
     "@vitejs/plugin-vue": "^5.2.4",
     "@vue/compiler-sfc": "^3.5.16",
     "@vue/eslint-config-prettier": "^10.2.0",
