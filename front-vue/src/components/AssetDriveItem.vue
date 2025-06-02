@@ -400,7 +400,7 @@ export default {
     },
     fileNameWithoutExtension() {
       if (!this.data.name.endsWith(".png")) return "filename";
-      return this.data.name.substr(
+      return this.data.name.substring(
         this.data.name.lastIndexOf("/") + 1,
         this.data.name.lastIndexOf("."),
       );
