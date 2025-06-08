@@ -684,7 +684,7 @@ public class CelesteModSearchService extends HttpServlet {
                 int categoryid = (int) entry.get("categoryid");
                 subcategories.get(itemtype).put(categoryid, computeSubcategoryListFor(itemtype, categoryid));
             } else {
-                subcategories.get(itemtype).put(-1, computeSubcategoryListFor(itemtype, null));
+                subcategories.get(itemtype).put(0, computeSubcategoryListFor(itemtype, null));
             }
         }
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
