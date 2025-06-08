@@ -329,8 +329,6 @@ Two extra fields are specified for automatic builds made after a single change o
 - `author` is the author of the change (GitHub username), either the author of the commit or the creator of the pull request.
 - `description` is the description of the change, either the message of the commit or the title of the pull request.
 
-If the version of Everest/Olympus you are calling this API from supports installing native builds (.NET Core builds), you should pass the `supportsNativeBuilds=true` query parameter to include them.
-
 
 ## Olympus versions list API
 

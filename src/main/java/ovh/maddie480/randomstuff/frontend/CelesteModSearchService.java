@@ -25,7 +25,6 @@ import java.security.SecureRandom;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.function.Predicate;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -45,12 +44,9 @@ public class CelesteModSearchService extends HttpServlet {
     private static List<ModInfo> modDatabaseForSorting = Collections.emptyList();
     private Map<Integer, String> modCategories;
 
-    private byte[] everestVersionsNoNative;
-    private byte[] everestVersionsWithNative;
+    private byte[] everestVersions;
     private byte[] helperList;
     private byte[] modIdsToNames;
-
-    private static final Pattern SUPPORT_NATIVE_REGEX = Pattern.compile("(^|&)supportsNativeBuilds=true($|&)");
 
     private static final SecureRandom secureRandom = new SecureRandom();
 
@@ -435,14 +431,9 @@ public class CelesteModSearchService extends HttpServlet {
     }
 
     private void handleEverestVersionsList(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        // send everest_version_list.json we downloaded earlier
+        // send everest-versions.json we loaded earlier
         response.setHeader("Content-Type", "application/json");
-
-        if (request.getQueryString() != null && SUPPORT_NATIVE_REGEX.matcher(request.getQueryString()).matches()) {
-            IOUtils.write(everestVersionsWithNative, response.getOutputStream());
-        } else {
-            IOUtils.write(everestVersionsNoNative, response.getOutputStream());
-        }
+        IOUtils.write(everestVersions, response.getOutputStream());
     }
 
     public static List<Map<String, Object>> searchModsByName(String queryParam) {
@@ -651,10 +642,8 @@ public class CelesteModSearchService extends HttpServlet {
     }
 
     private void refreshEverestVersions() throws IOException {
-        everestVersionsNoNative = IOUtils.toByteArray(Files.newInputStream(Paths.get("/shared/celeste/everest-versions.json")));
-        everestVersionsWithNative = IOUtils.toByteArray(Files.newInputStream(Paths.get("/shared/celeste/everest-versions-with-native.json")));
-        log.debug("Reloaded Everest versions! Preloaded {} bytes with native versions, {} bytes without native versions.",
-                everestVersionsWithNative.length, everestVersionsNoNative.length);
+        everestVersions = IOUtils.toByteArray(Files.newInputStream(Paths.get("/shared/celeste/everest-versions.json")));
+        log.debug("Reloaded Everest versions! Preloaded {} bytes.", everestVersions.length);
     }
 
     public static ModInfo getModInfoByTypeAndId(String itemtype, int itemid) {

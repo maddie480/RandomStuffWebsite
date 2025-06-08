@@ -78,7 +78,7 @@ public class CelesteDirectURLService extends HttpServlet {
         } else if (request.getRequestURI().equals("/celeste/download-everest")) {
             JSONObject branch;
 
-            try (BufferedReader br = Files.newBufferedReader(Paths.get("/shared/celeste/everest-versions-with-native.json"))) {
+            try (BufferedReader br = Files.newBufferedReader(Paths.get("/shared/celeste/everest-versions.json"))) {
                 JSONArray versions = new JSONArray(new JSONTokener(br));
                 branch = getBranch(versions, request.getParameter("branch"));
             }
