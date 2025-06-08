@@ -15,6 +15,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -47,6 +48,8 @@ public class CelesteModSearchService extends HttpServlet {
     private byte[] everestVersions;
     private byte[] helperList;
     private byte[] modIdsToNames;
+    private byte[] precomputedCategoryList;
+    private byte[] precomputedSubcategoryList;
 
     private static final SecureRandom secureRandom = new SecureRandom();
 
@@ -291,7 +294,11 @@ public class CelesteModSearchService extends HttpServlet {
     }
 
     private void handleCategoriesList(HttpServletResponse response) throws IOException {
-        // go across all mods and aggregate stats per category.
+        response.setHeader("Content-Type", "text/yaml");
+        response.getOutputStream().write(precomputedCategoryList);
+    }
+
+    private List<Map<String, Object>> computeCategoryList() {
         HashMap<Object, Integer> categoriesAndCounts = new HashMap<>();
         for (ModInfo modInfo : modDatabaseForSorting) {
             Object category = modInfo.type;
@@ -336,18 +343,15 @@ public class CelesteModSearchService extends HttpServlet {
         List<Map<String, Object>> responseBody = new ArrayList<>();
         responseBody.add(all);
         responseBody.addAll(categoriesList);
-
-        // send out the response (the "block" flow style works better with Olympus).
-        response.setHeader("Content-Type", "text/yaml");
-        YamlUtil.dump(responseBody, response.getOutputStream());
+        return responseBody;
     }
 
     private void handleSubcategoriesList(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String itemtype = request.getParameter("itemtype");
         if (itemtype == null) {
-            log.warn("Bad request: missing itemtype");
-            response.setStatus(400);
-            response.getWriter().write("The itemtype parameter is required");
+            // new API format: contains all subcategories in a single call
+            response.setHeader("Content-Type", "text/yaml");
+            response.getOutputStream().write(precomputedSubcategoryList);
             return;
         }
 
@@ -368,6 +372,14 @@ public class CelesteModSearchService extends HttpServlet {
             }
         }
 
+        List<Map<String, Object>> responseBody = computeSubcategoryListFor(itemtype, categoryId);
+
+        // send out the response (the "block" flow style works better with Olympus).
+        response.setHeader("Content-Type", "text/yaml");
+        YamlUtil.dump(responseBody, response.getOutputStream());
+    }
+
+    private List<Map<String, Object>> computeSubcategoryListFor(String itemtype, Integer categoryId) {
         Stream<ModInfo> step1 = modDatabaseForSorting.stream()
                 .filter(mod -> itemtype.equals(mod.type));
 
@@ -409,10 +421,7 @@ public class CelesteModSearchService extends HttpServlet {
                 "count", total
         ));
         responseBody.addAll(subcategoriesList);
-
-        // send out the response (the "block" flow style works better with Olympus).
-        response.setHeader("Content-Type", "text/yaml");
-        YamlUtil.dump(responseBody, response.getOutputStream());
+        return responseBody;
     }
 
     private void handleHelperList(HttpServletResponse response) throws IOException {
@@ -575,6 +584,8 @@ public class CelesteModSearchService extends HttpServlet {
             throw new IOException(e);
         }
 
+        refreshCategoriesLists();
+
         Map<String, Map<String, Object>> updaterDatabase;
         try (InputStream is = Files.newInputStream(Paths.get("/shared/celeste/updater/everest-update.yaml"))) {
             updaterDatabase = YamlUtil.load(is);
@@ -651,5 +662,35 @@ public class CelesteModSearchService extends HttpServlet {
                 .filter(m -> m.type.equals(itemtype) && m.id == itemid)
                 .findFirst()
                 .orElse(null);
+    }
+
+    private void refreshCategoriesLists() throws IOException {
+        List<Map<String, Object>> categories = computeCategoryList();
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+            YamlUtil.dump(categories, baos);
+            precomputedCategoryList = baos.toByteArray();
+            log.debug("Precomputed categories list! Length: {} bytes", precomputedCategoryList.length);
+        }
+
+        // welcome to generic type hell
+        // itemtype => categoryid => list of subcategories
+        Map<String, Map<Integer, List<Map<String, Object>>>> subcategories = new HashMap<>();
+        for (Map<String, Object> entry : categories) {
+            if (!entry.containsKey("itemtype")) continue;
+            String itemtype = (String) entry.get("itemtype");
+            if (!subcategories.containsKey(itemtype)) subcategories.put(itemtype, new HashMap<>());
+
+            if (entry.containsKey("categoryid")) {
+                int categoryid = (int) entry.get("categoryid");
+                subcategories.get(itemtype).put(categoryid, computeSubcategoryListFor(itemtype, categoryid));
+            } else {
+                subcategories.get(itemtype).put(-1, computeSubcategoryListFor(itemtype, null));
+            }
+        }
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+            YamlUtil.dump(subcategories, baos);
+            precomputedSubcategoryList = baos.toByteArray();
+            log.debug("Precomputed subcategories list! Length: {} bytes", precomputedSubcategoryList.length);
+        }
     }
 }
