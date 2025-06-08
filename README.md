@@ -220,50 +220,52 @@ The URL is `https://maddie480.ovh/celeste/gamebanana-categories` and the result 
 
 ## GameBanana subcategories list API
 
-This API allows getting a list of GameBanana categories for a given item type (`Mod`, `Tool` or `Wip`), or a list of subcategories for a given category (`6800` is Maps for example).
+This API gives a list of GameBanana subcategories for all categories returned by the [categories list API](#gamebanana-categories-list-api).
 
-When only passing an item type, the returned `id` can be used as a `category` filter for the [list API](#gamebanana-sorted-list-api). When passing a category id, the `id` can be used as a `subcategory` filter.
+The return format of the API is a 2D dictionary, where the subcategories list for a specific category can be retrieved with `apiResponse[itemtype][categoryid]`. For categories that don't have a `categoryid` in the categories list, use `apiResponse[itemtype]["0"]` instead.
+
+For categories that only have an `itemtype`, the returned `id` can be used as a `category` filter for the [list API](#gamebanana-sorted-list-api). For categories that also have an `categoryid`, the `id` can be used as a `subcategory` filter.
 
 Note that the count for "All" might not match the sum of count for all subcategories. That's because mods can belong to the root category directly, without being in any subcategory.
 
-The URL is `https://maddie480.ovh/celeste/gamebanana-subcategories`. For example, the result for `https://maddie480.ovh/celeste/gamebanana-subcategories?itemtype=Mod&categoryId=6800` looks like:
+The URL is `https://maddie480.ovh/celeste/gamebanana-subcategories`. The result looks like:
 ```yaml
-- name: All
-  count: 2368
-- id: 6802
-  name: Campaign
-  count: 320
-- id: 6803
-  name: Collab/Contest
-  count: 166
-- id: 15667
-  name: Multiplayer
-  count: 18
-- id: 6801
-  name: Standalone
-  count: 1398
-```
-
-And the result for `https://maddie480.ovh/celeste/gamebanana-subcategories?itemtype=Tool` looks like:
-
-```yaml
-- name: All
-  count: 56
-- id: 653
-  name: Ahorn Plugin
-  count: 6
-- id: 1098
-  name: Lönn Plugin
-  count: 13
-- id: 1654
-  name: Mod Installer
-  count: 4
-- id: 575
-  name: Other/Misc
-  count: 32
-- id: 859
-  name: Twitch Integration
-  count: 1
+Mod:
+  6800:
+  - name: All
+    count: 3474
+  - id: 6802
+    name: Campaign
+    count: 409
+  - id: 6803
+    name: Collab/Contest
+    count: 324
+  - id: 15667
+    name: Multiplayer
+    count: 24
+  - id: 6801
+    name: Standalone
+    count: 2109
+  15655:
+  - name: All
+    count: 102
+  - id: 15656
+    name: Audio
+    count: 45
+  - id: 15657
+    name: Graphics
+    count: 47
+[...]
+Wip:
+  0:
+  - name: All
+    count: 93
+  - id: 680
+    name: Maps
+    count: 68
+  - id: 466
+    name: Other/Misc
+    count: 25
 ```
 
 ## GameBanana category RSS feed API

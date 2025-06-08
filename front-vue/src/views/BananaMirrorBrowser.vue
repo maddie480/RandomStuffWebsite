@@ -141,6 +141,7 @@ const vue = {
     subcategoryFilter: { name: "All" },
     categories: [{ name: "All" }],
     subcategories: [{ name: "All" }],
+    fullSubcategoryList: [],
     loading: true,
     error: false,
   }),
@@ -156,7 +157,7 @@ const vue = {
     },
     categoryFilterChanged: function (newComboBoxValue) {
       this.page = 1;
-      this.reloadSubcategories(newComboBoxValue);
+      this.refreshSubcategories(newComboBoxValue);
       this.reload(newComboBoxValue, this.subcategoryFilter, this.sort.id);
     },
     subcategoryFilterChanged: function (newComboBoxValue) {
@@ -246,21 +247,17 @@ const vue = {
         this.loading = false;
       }
     },
-    reloadSubcategories: async function (category) {
+    refreshSubcategories: async function (category) {
       this.subcategories = [{ name: "All" }];
       this.subcategoryFilter = { name: "All" };
 
       if (category.itemtype === undefined) return;
 
       // also load the category list.
-      const gamebananaSubcategories = await axios
-        .get(
-          `${config.backendUrl}/celeste/gamebanana-subcategories?itemtype=${category.itemtype}` +
-            (category.categoryid !== undefined
-              ? `&categoryId=${category.categoryid}`
-              : ""),
-        )
-        .then((result) => yaml.load(result.data));
+      const gamebananaSubcategories =
+        this.fullSubcategoryList[category.itemtype][
+          "" + (category.categoryid === undefined ? 0 : category.categoryid)
+        ];
 
       for (const subcategory of gamebananaSubcategories) {
         subcategory.name =
@@ -294,6 +291,10 @@ const vue = {
 
     this.categories = gamebananaCategories;
     this.categoryFilter = gamebananaCategories[0];
+
+    this.fullSubcategoryList = await axios
+      .get(`${config.backendUrl}/celeste/gamebanana-subcategories`)
+      .then((result) => yaml.load(result.data));
   },
 };
 
