@@ -64,8 +64,8 @@ public class CelesteNewsNetworkSubscriptionService extends HttpServlet {
         String webhook = request.getParameter("url");
         String action = request.getParameter("action");
 
-        List<String> channels = new ArrayList<>(3);
-        for (String channel : Arrays.asList("twitter", "mastodon", "olympus")) {
+        List<String> channels = new ArrayList<>(2);
+        for (String channel : Arrays.asList("mastodon", "olympus")) {
             if (request.getParameter(channel) != null) {
                 channels.add(channel);
             }
