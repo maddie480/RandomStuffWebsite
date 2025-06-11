@@ -30,7 +30,10 @@
 /* MoreUserTags adds a duplicate tag to bots, throw the default one out */
 .usernameRow__63ed3 .botTag__82f07,
 /* kick out the "Server Boosts" option from the channel list */
-li:has(> div > div[aria-label="Boosts de serveur"]) {
+li:has(> div > div[aria-label="Boosts de serveur"]),
+/* kick out the Quest icons and pop-outs in the member list */
+svg.questsIcon_c9d15c,
+.layerContainer_da8173 .wrapper__4413f {
     display: none;
 }
 .jumpToPresentBar__0f481 {
