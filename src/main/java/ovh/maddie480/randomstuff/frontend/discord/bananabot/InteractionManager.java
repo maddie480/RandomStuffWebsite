@@ -23,6 +23,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
+import static com.max480.randomstuff.backend.celeste.crontabs.UpdateCheckerTracker.ModInfo;
+
 /**
  * This is the API that makes the BananaBot run.
  */
@@ -83,8 +85,16 @@ public class InteractionManager extends HttpServlet {
                     }).start();
                 } else {
                     // used a combo box
-                    String pickedMod = data.getJSONObject("data").getJSONArray("values").getString(0);
-                    responseData.put("content", pickedMod);
+                    String[] pickedMod = data.getJSONObject("data").getJSONArray("values").getString(0).split("/");
+                    ModInfo pickedInfo = CelesteModSearchService.getModInfoByTypeAndId(pickedMod[0], Integer.parseInt(pickedMod[1]));
+                    if (pickedInfo == null) {
+                        responseData.put("content", localizeMessage(locale,
+                                ":x: Looks like the result you chose has vanished! :sparkles: :shrug:",
+                                ":x: Il semblerait que le résultat que tu as choisi a disparu ! :sparkles: :shrug:"));
+                    } else {
+                        responseData.put("content", "<" + pickedInfo.fullInfo.get("PageURL") + ">");
+                        responseData.put("embeds", EmbedBuilder.buildEmbedFor(pickedInfo.fullInfo));
+                    }
                     responseData.put("flags", 1 << 6); // ephemeral
                 }
 
@@ -151,7 +161,7 @@ public class InteractionManager extends HttpServlet {
         for (Map<String, Object> result : results) {
             JSONObject object = new JSONObject();
             object.put("label", result.get("Name"));
-            object.put("value", result.get("PageURL"));
+            object.put("value", result.get("GameBananaType") + "/" + result.get("GameBananaId"));
             options.put(object);
         }
 
