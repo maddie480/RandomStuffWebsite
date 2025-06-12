@@ -39,6 +39,7 @@ public class EmbedBuilder {
         // This info isn't present in mod_search_database.yaml, but may be present in a purpose-built file updated daily:
         // submitter_and_author_info.json. Except them to be null for brand-new mods though!
         String categoryIconUrl = null;
+        String subcategoryIconUrl = null;
         String authorProfileUrl = null;
         String authorAvatarUrl = null;
 
@@ -52,6 +53,9 @@ public class EmbedBuilder {
             if (catDict.has(mod.get("CategoryId").toString())) {
                 categoryIconUrl = catDict.getString(mod.get("CategoryId").toString());
             }
+            if (mod.containsKey("SubcategoryId") && catDict.has(mod.get("SubcategoryId").toString())) {
+                subcategoryIconUrl = catDict.getString(mod.get("SubcategoryId").toString());
+            }
 
             if (categoryAndSubmitterInfo.getJSONObject("submitters").has((String) mod.get("Author"))) {
                 JSONObject authorInfo = categoryAndSubmitterInfo.getJSONObject("submitters").getJSONObject((String) mod.get("Author"));
@@ -59,8 +63,6 @@ public class EmbedBuilder {
                 authorProfileUrl = authorInfo.getString("profile");
             }
         }
-
-        String lowercaseItemtype = ((String) mod.get("GameBananaType")).toLowerCase();
 
         JSONObject embed = new JSONObject();
         embed.put("title", mod.get("Name"));
@@ -86,10 +88,24 @@ public class EmbedBuilder {
             JSONArray fields = new JSONArray();
             embed.put("fields", fields);
             if (mod.containsKey("CategoryName")) {
+                String lowercaseItemtype = ((String) mod.get("GameBananaType")).toLowerCase();
+                String categoryLink = "[" + MarkdownSanitizer.escape((String) mod.get("CategoryName")) + "](https://gamebanana.com/" + lowercaseItemtype + "s/cats/" + mod.get("CategoryId") + ")";
+                String subcategoryLink = null;
+
+                if (mod.containsKey("SubcategoryName")) {
+                    subcategoryLink = "[" + MarkdownSanitizer.escape((String) mod.get("SubcategoryName")) + "](https://gamebanana.com/" + lowercaseItemtype + "s/cats/" + mod.get("SubcategoryId") + ")";
+                } else if (!lowercaseItemtype.equals("mod")) {
+                    // the APIs treat itemtypes other than Mod as a parent category, so we're doing the same
+                    subcategoryLink = categoryLink;
+                    String itemtype = (String) mod.get("GameBananaType");
+                    if (itemtype.equals("Wip")) itemtype = "WiP";
+                    categoryLink = "[" + itemtype + "s](https://gamebanana.com/" + lowercaseItemtype + "s/games/6460)";
+                }
+
                 JSONObject category = new JSONObject();
                 fields.put(category);
                 category.put("name", "Category");
-                category.put("value", "[" + MarkdownSanitizer.escape((String) mod.get("CategoryName")) + "](https://gamebanana.com/" + lowercaseItemtype + "s/cats/" + mod.get("CategoryId") + ")");
+                category.put("value", categoryLink + (subcategoryLink == null ? "" : (" > " + subcategoryLink)));
                 category.put("inline", false);
             }
             {
@@ -113,15 +129,14 @@ public class EmbedBuilder {
             if (authorProfileUrl != null) author.put("url", authorProfileUrl);
         }
 
-        if (categoryIconUrl != null) {
+        if (categoryIconUrl != null || subcategoryIconUrl != null) {
             JSONObject thumbnail = new JSONObject();
             embed.put("thumbnail", thumbnail);
-            thumbnail.put("url", categoryIconUrl);
+            thumbnail.put("url", subcategoryIconUrl != null ? subcategoryIconUrl : categoryIconUrl);
         }
 
         JSONArray embeds = new JSONArray();
         embeds.put(embed);
-
         return embeds;
     }
 }
