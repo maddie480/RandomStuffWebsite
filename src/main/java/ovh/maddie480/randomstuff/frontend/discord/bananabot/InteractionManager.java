@@ -55,7 +55,7 @@ public class InteractionManager extends HttpServlet {
                     JSONObject followupMessageData = new JSONObject();
                     followupMessageData.put("content", linkToPost + "\n(shared by <@" + data.getJSONObject("member").getJSONObject("user").getString("id") + ">)");
                     followupMessageData.put("allowed_mentions", new JSONObject("{\"parse\": []}"));
-                    followupMessageData.put("embeds", data.getJSONObject("message").getString("embeds"));
+                    followupMessageData.put("embeds", data.getJSONObject("message").getJSONArray("embeds"));
 
                     new Thread(() -> {
                         try {

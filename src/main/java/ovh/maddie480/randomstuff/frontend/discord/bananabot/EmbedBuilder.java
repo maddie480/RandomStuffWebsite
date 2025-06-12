@@ -11,10 +11,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class EmbedBuilder {
@@ -90,11 +93,14 @@ public class EmbedBuilder {
                 category.put("inline", false);
             }
             {
+                DecimalFormat thousandSeparated = new DecimalFormat("#,##0", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
                 JSONObject stats = new JSONObject();
                 fields.put(stats);
                 stats.put("name", "Stats");
                 stats.put("inline", false);
-                stats.put("value", ":inbox_tray: " + mod.get("Downloads") + " / :eye: " + mod.get("Views") + " / :heart: " + mod.get("Likes"));
+                stats.put("value", ":inbox_tray: " + thousandSeparated.format((int) mod.get("Downloads")) + " / " +
+                        ":eye: " + thousandSeparated.format((int) mod.get("Views")) + " " +
+                        "/ :heart: " + thousandSeparated.format((int) mod.get("Likes")));
             }
         }
 
