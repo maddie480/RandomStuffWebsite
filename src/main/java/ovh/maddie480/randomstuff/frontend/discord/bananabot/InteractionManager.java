@@ -51,6 +51,7 @@ public class InteractionManager extends HttpServlet {
                 if (data.getJSONObject("data").getInt("component_type") == 2) {
                     // used a button
                     responseData.put("content", localizeMessage(locale, "Your link was published!", "Ton lien a été publié !"));
+                    responseData.put("embeds", new JSONArray());
                     responseData.put("components", new JSONArray());
 
                     String linkToPost = data.getJSONObject("message").getString("content");
