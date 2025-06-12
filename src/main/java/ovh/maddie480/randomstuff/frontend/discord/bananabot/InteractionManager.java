@@ -55,6 +55,7 @@ public class InteractionManager extends HttpServlet {
                     JSONObject followupMessageData = new JSONObject();
                     followupMessageData.put("content", linkToPost + "\n(shared by <@" + data.getJSONObject("member").getJSONObject("user").getString("id") + ">)");
                     followupMessageData.put("allowed_mentions", new JSONObject("{\"parse\": []}"));
+                    followupMessageData.put("embeds", data.getJSONObject("message").getString("embeds"));
 
                     new Thread(() -> {
                         try {
@@ -119,7 +120,8 @@ public class InteractionManager extends HttpServlet {
         response.put("type", 4); // response in channel
 
         JSONObject responseData = new JSONObject();
-        responseData.put("content", results.get(0).get("PageURL"));
+        responseData.put("content", "<" + results.getFirst().get("PageURL") + ">");
+        responseData.put("embeds", EmbedBuilder.buildEmbedFor(results.getFirst()));
         responseData.put("allowed_mentions", new JSONObject("{\"parse\": []}"));
         responseData.put("flags", 1 << 6); // ephemeral
         response.put("data", responseData);
