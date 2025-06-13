@@ -134,7 +134,7 @@ public class BananaEmbedService extends HttpServlet {
             + "<body>\n"
             + "Hi! What are you doing here?\n"
             + "</body>\n"
-            + "</html>"
+            + "</html>";
 
         // Likewise for the epic "owoembed"
         JSONObject oEmbed = new JSONObject();
