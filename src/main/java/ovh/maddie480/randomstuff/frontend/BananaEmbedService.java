@@ -135,7 +135,7 @@ public class BananaEmbedService extends HttpServlet {
         }
         // ... and write cache of the html too
         try (OutputStream os = Files.newOutputStream(oEmbeds.resolve(itemtype + "-" + itemid + ".html"))) {
-            os.write(html.toByteArray(StandardCharsets.UTF_8));
+            os.write(html.getBytes(StandardCharsets.UTF_8));
         }
         return html;
     }
