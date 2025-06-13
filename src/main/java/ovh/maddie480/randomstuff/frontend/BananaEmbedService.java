@@ -104,7 +104,9 @@ public class BananaEmbedService extends HttpServlet {
         }
 
         String imageUrl;
-        if ("show".equals(profilePage.getString("_sInitialVisibility"))) {
+        if (!profilePage.has("_aPreviewMedia") || !profilePage.getJSONObject("_aPreviewMedia").has("_aImages")) {
+            imageUrl = null;
+        } else if ("show".equals(profilePage.getString("_sInitialVisibility"))) {
             JSONObject firstImage = profilePage.getJSONObject("_aPreviewMedia").getJSONArray("_aImages").getJSONObject(0);
             imageUrl = firstImage.getString("_sBaseUrl") + "/" + firstImage.getString("_sFile");
         } else {
@@ -118,8 +120,8 @@ public class BananaEmbedService extends HttpServlet {
             + "<link rel=\"canonical\" href=\"" + profilePage.getString("_sProfileUrl") + "\"/>\n"
             + "<meta property=\"og:url\" content=\"" + profilePage.getString("_sProfileUrl") + "\"/>\n"
             + "<meta property=\"og:title\" content=\"" + StringEscapeUtils.escapeHtml4(profilePage.getString("_sName")) + "\"/>\n"
-            + "<meta property=\"og:description\" content=\"" + StringEscapeUtils.escapeHtml4(profilePage.getString("_sDescription")) + "\"/>\n"
-            + "<meta property=\"og:image\" content=\"" + imageUrl + "\"/>\n"
+            + (!profilePage.has("_sDescription") ? "" : "<meta property=\"og:description\" content=\"" + StringEscapeUtils.escapeHtml4(profilePage.getString("_sDescription")) + "\"/>\n")
+            + (imageUrl == null ? "" : "<meta property=\"og:image\" content=\"" + imageUrl + "\"/>\n")
             + "<meta property=\"theme-color\" content=\"#FFE033\"/>\n"
             + "<meta property=\"twitter:card\" content=\"summary_large_image\"/>\n"
             + "<link rel=\"alternate\" type=\"application/json+oembed\" href=\"https://maddie480.ovh/celeste/banana-oembed/" + itemtype + "-" + itemid + ".json\" title=\"" + StringEscapeUtils.escapeHtml4(profilePage.getJSONObject("_aSubmitter").getString("_sName")) + "\"/>\n"
@@ -134,8 +136,8 @@ public class BananaEmbedService extends HttpServlet {
         oEmbed.put("author_name", StringEscapeUtils.escapeHtml4(profilePage.getJSONObject("_aSubmitter").getString("_sName")));
         oEmbed.put("author_url", StringEscapeUtils.escapeHtml4(profilePage.getJSONObject("_aSubmitter").getString("_sProfileUrl")));
         oEmbed.put("provider_name", "GameBanana – " +
-            "📥 " + thousandSeparated.format(profilePage.getInt("_nDownloadCount"))
-            + " / ❤️ " + thousandSeparated.format(profilePage.getInt("_nLikeCount"))
+            (!profilePage.has("_nDownloadCount") ? "" : "📥 " + thousandSeparated.format(profilePage.getInt("_nDownloadCount")) + " / ")
+            + "❤️ " + thousandSeparated.format(profilePage.getInt("_nLikeCount"))
             + " / 👁️ " + thousandSeparated.format(profilePage.getInt("_nViewCount")));
         oEmbed.put("version", "1.0");
         oEmbed.put("title", "Embed");
