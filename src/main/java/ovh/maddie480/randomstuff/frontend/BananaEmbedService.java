@@ -128,7 +128,7 @@ public class BananaEmbedService extends HttpServlet {
             + "<meta property=\"og:image\" content=\"" + imageUrl + "\"/>\n"
             + "<meta property=\"twitter:card\" content=\"summary_large_image\"/>\n"
             + "<meta property=\"og:title\" content=\"" + StringEscapeUtils.escapeHtml4(profilePage.getJSONObject("_aSubmitter").getString("_sName")) + "\"/>\n"
-            + "<meta property=\"og:description\" content=\"" + StringEscapeUtils.escapeHtml4(profilePage.getJSONObject("_sDescription")) + "\"/>\n"
+            + "<meta property=\"og:description\" content=\"" + StringEscapeUtils.escapeHtml4(profilePage.getString("_sDescription")) + "\"/>\n"
             + "<meta property=\"og:site_name\" content=\"GameBanana\"/>\n"
             + "<link rel=\"alternate\" type=\"application/json+oembed\" href=\"https://maddie480.ovh/celeste/banana-oembed/" + itemtype + "-" + itemid + ".json\" title=\"" + StringEscapeUtils.escapeHtml4(profilePage.getJSONObject("_aSubmitter").getString("_sName")) + "\"/>\n"
             + "</head>\n"
