@@ -25,6 +25,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -100,17 +102,6 @@ public class BananaEmbedService extends HttpServlet {
             profilePage = new JSONObject(new JSONTokener(is));
         }
 
-        JSONObject oEmbed = new JSONObject();
-        oEmbed.put("type", "link");
-        oEmbed.put("version", "1.0");
-        oEmbed.put("title", profilePage.getString("_sName"));
-        oEmbed.put("author_name", profilePage.getJSONObject("_aSubmitter").getString("_sName"));
-        oEmbed.put("author_url", profilePage.getJSONObject("_aSubmitter").getString("_sProfileUrl"));
-        oEmbed.put("provider_name", "GameBanana");
-        oEmbed.put("provider_url", "https://gamebanana.com/");
-        oEmbed.put("thumbnail_url", profilePage.getJSONObject("_aCategory").getString("_sIconUrl"));
-        oEmbed.put("cache_age", 60);
-
         String imageUrl;
         if ("show".equals(profilePage.getString("_sInitialVisibility"))) {
             JSONObject firstImage = profilePage.getJSONObject("_aPreviewMedia").getJSONArray("_aImages").getJSONObject(0);
@@ -119,13 +110,43 @@ public class BananaEmbedService extends HttpServlet {
             imageUrl = "https://images.gamebanana.com/static/img/DefaultEmbeddables/nsfw.jpg";
         }
 
-        // the HTML is there to add a description, image and fancy color, and to link to the oEmbed above
-        String html = "<!DOCTYPE html>\n<html>\n<head>\n"
-            + "<meta property=\"og:description\" content=\"" + StringEscapeUtils.escapeHtml4(profilePage.getString("_sDescription")) + "\">\n"
-            + "<meta name=\"theme-color\" content=\"#FFE033\">\n"
-            + "<meta property=\"og:image\" content=\"" + imageUrl + "\">\n"
-            + "<link rel=\"alternate\" type=\"application/json+oembed\" href=\"https://maddie480.ovh/celeste/banana-oembed/" + itemtype + "-" + itemid + ".json\"/>"
-            + "</head>\n<body>\nHi! What are you doing here?\n</body>\n</html>";
+        // HTML lifted wholesale from fxtwitter.com
+        String html = "<!DOCTYPE html>\n"
+            + "<html lang=\"en\">\n"
+            + "<!-- Thanks to fxtwitter.com for the pro strats here! -->\n"
+            + "<head>\n"
+            + "<title>" + StringEscapeUtils.escapeHtml4(profilePage.getString("_sName")) + "</title>\n"
+            + "<link rel=\"canonical\" href=\"" + profilePage.getString("_sProfileUrl") + "\"/>\n"
+            + "<meta property=\"og:url\" content=\"" + profilePage.getString("_sProfileUrl") + "\"/>\n"
+            + "<meta property=\"twitter:site\" content=\"" + StringEscapeUtils.escapeHtml4(profilePage.getJSONObject("_aSubmitter").getString("_sName")) + "\"/>\n"
+            + "<meta property=\"twitter:creator\" content=\"" + StringEscapeUtils.escapeHtml4(profilePage.getJSONObject("_aSubmitter").getString("_sName")) + "\"/>\n"
+            + "<meta property=\"theme-color\" content="\#FFE033\"/>\n"
+            + "<meta property=\"twitter:title\" content=\"" + StringEscapeUtils.escapeHtml4(profilePage.getJSONObject("_aSubmitter").getString("_sName")) + "\"/>\n"
+            + "<meta http-equiv=\"refresh\" content=\"0;url=" + profilePage.getString("_sProfileUrl") + "\"/>\n"
+            + "<meta property=\"twitter:image\" content=\"" + imageUrl + "\"/>\n"
+            + "<meta property=\"og:image\" content=\"" + imageUrl + "\"/>\n"
+            + "<meta property=\"twitter:card\" content=\"summary_large_image\"/>\n"
+            + "<meta property=\"og:title\" content=\"" + StringEscapeUtils.escapeHtml4(profilePage.getJSONObject("_aSubmitter").getString("_sName")) + "\"/>\n"
+            + "<meta property=\"og:description\" content=\"" + StringEscapeUtils.escapeHtml4(profilePage.getJSONObject("_sDescription")) + "\"/>\n"
+            + "<meta property=\"og:site_name\" content="GameBanana"/>\n"
+            + "<link rel=\"alternate\" type=\"application/json+oembed\" href=\"https://maddie480.ovh/celeste/banana-oembed/" + itemtype + "-" + itemid + ".json\" title=\"" + StringEscapeUtils.escapeHtml4(profilePage.getJSONObject("_aSubmitter").getString("_sName")) + "\"/>\n"
+            + "</head>\n"
+            + "<body>\n"
+            + "Hi! What are you doing here?\n"
+            + "</body>\n"
+            + "</html>"
+
+        // Likewise for the epic "owoembed"
+        JSONObject oEmbed = new JSONObject();
+        DecimalFormat thousandSeparated = new DecimalFormat("#,##0", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
+        oEmbed.put("author_name", "📥 " + thousandSeparated.format(profilePage.getInt("_nDownloadCount"))
+            + " / ❤️ " + thousandSeparated.format(profilePage.getInt("_nLikeCount"))
+            + " / 👁️ " + thousandSeparated.format(profilePage.getInt("_nViewCount")));
+        oEmbed.put("provider_name", "GameBanana");
+        oEmbed.put("provider_url", "https://gamebanana.com/");
+        oEmbed.put("version", "1.0");
+        oEmbed.put("title", "Embed");
+        oEmbed.put("type", "rich");
 
         // prepare for the call to the oembed url above...
         try (OutputStream os = Files.newOutputStream(oEmbeds.resolve(itemtype + "-" + itemid + ".json"));
