@@ -77,14 +77,14 @@ public class BananaEmbedService extends HttpServlet {
             // cached embed!
             try (InputStream is = Files.newInputStream(oEmbeds.resolve(itemtype + "-" + itemid + ".html"));
                  ByteArrayOutputStream os = new ByteArrayOutputStream()) {
-                
+
                 IOUtils.copy(is, os);
                 return new String(os.toByteArray(), StandardCharsets.UTF_8);
             }
         }
 
         String capitalizedItemtype = itemtype.substring(0, 1).toUpperCase() + itemtype.substring(1);
-        
+
         HttpURLConnection connection = ConnectionUtils.openConnectionWithTimeout("https://gamebanana.com/apiv11/" + capitalizedItemtype + "/" + itemid + "/ProfilePage");
         // we're on a tight schedule here
         connection.setConnectTimeout(1000);
@@ -124,5 +124,5 @@ public class BananaEmbedService extends HttpServlet {
             os.write(html.toByteArray(StandardCharsets.UTF_8));
         }
         return html;
-    } 
+    }
 }
