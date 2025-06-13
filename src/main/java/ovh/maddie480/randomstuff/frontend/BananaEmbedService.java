@@ -116,11 +116,11 @@ public class BananaEmbedService extends HttpServlet {
             + "</head>\n<body>\nHi! What are you doing here?\n</body>\n</html>";
 
         // prepare for the call to the oembed url above...
-        try (OutputStream os = Files.newOutputStream(oEmbeds.resolve(itemtype + "-" + itemid + ".json")) {
+        try (OutputStream os = Files.newOutputStream(oEmbeds.resolve(itemtype + "-" + itemid + ".json"))) {
             oEmbed.write(os);
         }
         // ... and write cache of the html too
-        try (OutputStream os = Files.newOutputStream(oEmbeds.resolve(itemtype + "-" + itemid + ".html")) {
+        try (OutputStream os = Files.newOutputStream(oEmbeds.resolve(itemtype + "-" + itemid + ".html"))) {
             os.write(html.toByteArray(StandardCharsets.UTF_8));
         }
         return html;
