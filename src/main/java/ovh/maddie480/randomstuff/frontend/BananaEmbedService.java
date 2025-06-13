@@ -14,11 +14,14 @@ import org.apache.commons.text.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -40,10 +43,12 @@ public class BananaEmbedService extends HttpServlet {
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         Matcher match = typeAndIdExtractor.matcher(request.getRequestURI());
         if (match.matches()) {
-            String ua = request.getRequestProperty("User-Agent");
+            String ua = request.getHeader("User-Agent");
             if (ua != null && ua.contains("Discordbot")) {
+                String itemtype = match.group(1);
+                String itemid = match.group(2);
                 try {
-                    String html = tryGenerateEmbed(match.group(1), match.group(2));
+                    String html = tryGenerateEmbed(itemtype, itemid);
                     response.setContentType("text/html");
                     response.getWriter().write(html);
                     return;
@@ -91,7 +96,7 @@ public class BananaEmbedService extends HttpServlet {
         connection.setReadTimeout(3000);
 
         JSONObject profilePage;
-        try (InputStream is = ConnectionUtils.connectionToInputStream(connection.getInputStream())) {
+        try (InputStream is = ConnectionUtils.connectionToInputStream(connection)) {
             profilePage = new JSONObject(new JSONTokener(is));
         }
 
@@ -106,18 +111,27 @@ public class BananaEmbedService extends HttpServlet {
         oEmbed.put("thumbnail_url", profilePage.getJSONObject("_aCategory").getString("_sIconUrl"));
         oEmbed.put("cache_age", 60);
 
+        String imageUrl;
+        if ("show".equals(profilePage.getString("_sInitialVisibility"))) {
+            JSONObject firstImage = profilePage.getJSONObject("_aPreviewMedia").getJSONArray("_aImages").getJSONObject(0);
+            imageUrl = firstImage.getString("_sBaseUrl") + "/" + firstImage.getString("_sFile");
+        } else {
+            imageUrl = "https://images.gamebanana.com/static/img/DefaultEmbeddables/nsfw.jpg";
+        }
+
         // the HTML is there to add a description, image and fancy color, and to link to the oEmbed above
-        JSONObject firstImage = profilePage.getJSONObject("_aPreviewMedia").getJSONArray("_aImages").getJSONObject(0);
         String html = "<!DOCTYPE html>\n<html>\n<head>\n"
-            + "<meta property=\"og:description\" content=\"" + escapeHtml4(profilePage.getString("_sDescription")) + "\">\n"
+            + "<meta property=\"og:description\" content=\"" + StringEscapeUtils.escapeHtml4(profilePage.getString("_sDescription")) + "\">\n"
             + "<meta name=\"theme-color\" content=\"#FFE033\">\n"
-            + "<meta property=\"og:image\" content=\"" + firstImage.getString("_sBaseUrl") + "/" + firstImage.getString("_sFile") + "\">\n"
+            + "<meta property=\"og:image\" content=\"" + imageUrl + "\">\n"
             + "<link rel=\"alternate\" type=\"application/json+oembed\" href=\"https://maddie480.ovh/celeste/banana-oembed/" + itemtype + "-" + itemid + ".json\"/>"
             + "</head>\n<body>\nHi! What are you doing here?\n</body>\n</html>";
 
         // prepare for the call to the oembed url above...
-        try (OutputStream os = Files.newOutputStream(oEmbeds.resolve(itemtype + "-" + itemid + ".json"))) {
-            oEmbed.write(os);
+        try (OutputStream os = Files.newOutputStream(oEmbeds.resolve(itemtype + "-" + itemid + ".json"));
+             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, StandardCharsets.UTF_8))) {
+
+            oEmbed.write(bw);
         }
         // ... and write cache of the html too
         try (OutputStream os = Files.newOutputStream(oEmbeds.resolve(itemtype + "-" + itemid + ".html"))) {
