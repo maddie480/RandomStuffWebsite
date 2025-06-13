@@ -103,7 +103,7 @@ public class BananaEmbedService extends HttpServlet {
         oEmbed.put("author_url", profilePage.getJSONObject("_aSubmitter").getString("_sProfileUrl"));
         oEmbed.put("provider_name", "GameBanana");
         oEmbed.put("provider_url", "https://gamebanana.com/");
-        oEmbed.put("thumbnail_url", profilePage..getJSONObject("_aCategory	").getString("_sIconUrl"));
+        oEmbed.put("thumbnail_url", profilePage.getJSONObject("_aCategory").getString("_sIconUrl"));
         oEmbed.put("cache_age", 60);
 
         // the HTML is there to add a description, image and fancy color, and to link to the oEmbed above
@@ -113,7 +113,7 @@ public class BananaEmbedService extends HttpServlet {
             + "<meta name=\"theme-color\" content=\"#FFE033\">\n"
             + "<meta property=\"og:image\" content=\"" + firstImage.getString("_sBaseUrl") + "/" + firstImage.getString("_sFile") + "\">\n"
             + "<link rel=\"alternate\" type=\"application/json+oembed\" href=\"https://maddie480.ovh/celeste/banana-oembed/" + itemtype + "-" + itemid + ".json\"/>"
-            + "</head>\n<body>\nHi! What are you doing here?\n</body>\n</html>"
+            + "</head>\n<body>\nHi! What are you doing here?\n</body>\n</html>";
 
         // prepare for the call to the oembed url above...
         try (OutputStream os = Files.newOutputStream(oEmbeds.resolve(itemtype + "-" + itemid + ".json")) {
