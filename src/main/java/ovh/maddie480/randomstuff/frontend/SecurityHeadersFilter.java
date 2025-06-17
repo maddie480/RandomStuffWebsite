@@ -125,9 +125,6 @@ public class SecurityHeadersFilter extends HttpFilter {
         if ("/fonts/VT323-Regular.ttf".equals(req.getRequestURI())) {
             res.setHeader("Access-Control-Allow-Origin", "http://live-chat.maddie480.ovh:11587");
         }
-        if (req.getRequestURI().startsWith("/static/css/discord-nitro-themes/") || req.getRequestURI().equals("/static/css/vencord-quick-css.css")) {
-            res.setHeader("Access-Control-Allow-Origin", "https://discord.com");
-        }
         if (Arrays.asList("/celeste/gamebanana-search", "/celeste/gamebanana-list", "/celeste/gamebanana-featured", "/celeste/gamebanana-categories",
                         "/celeste/gamebanana-info", "/celeste/bin-to-json", "/celeste/json-to-bin", "/celeste/custom-entity-catalog.json", "/celeste/everest-versions",
                         "/celeste/update-checker-status.json", "/celeste/everest_update.yaml", "/celeste/mod_search_database.yaml",

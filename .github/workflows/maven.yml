@@ -103,25 +103,17 @@ jobs:
         chmod +x /tmp/yt-dlp
 
     - name: Build with Maven (w/ Radio LNJ)
-      uses: nick-fields/retry@v3
       if: github.ref == 'refs/heads/main'
       env:
         YT_DLP_COOKIES: ${{ secrets.YT_DLP_COOKIES }}
-      with:
-        timeout_minutes: 360
-        max_attempts: 5
-        command: |
-          export RADIO_LNJ_SOURCES=`cat .github/radio-lnj-sources.json`
-          mv -v target /tmp/old-target || echo "No existing target folder"
-          mvn -B clean verify --file pom.xml
+      run: |
+        export RADIO_LNJ_SOURCES=`cat .github/radio-lnj-sources.json`
+        mv -v target /tmp/old-target || echo "No existing target folder"
+        mvn -B clean verify --file pom.xml
 
     - name: Build with Maven
-      uses: nick-fields/retry@v3
       if: github.ref != 'refs/heads/main'
-      with:
-        timeout_minutes: 360
-        max_attempts: 5
-        command: mvn -B clean verify --file pom.xml
+      run: mvn -B clean verify --file pom.xml
 
     - name: Set up QEMU
       if: github.ref == 'refs/heads/main'

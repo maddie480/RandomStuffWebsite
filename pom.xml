@@ -370,23 +370,6 @@
                     </execution>
 
                     <execution>
-                        <id>extract Discord theme CSS</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <configuration>
-                            <executable>java</executable>
-                            <workingDirectory>${project.build.directory}/random-stuff-website-1.0.0/WEB-INF/classes</workingDirectory>
-                            <arguments>
-                                <argument>-cp</argument>
-                                <argument>.:../../../dependency/commons-io-2.19.0.jar:../../../dependency/jsoup-1.20.1.jar:../../../dependency/json-20250517.jar</argument>
-                                <argument>ovh.maddie480.randomstuff.frontend.ExtractDiscordThemeCSS</argument>
-                            </arguments>
-                        </configuration>
-                    </execution>
-
-                    <execution>
                         <id>prepare Unicode Mirror</id>
                         <phase>prepare-package</phase>
                         <goals>
@@ -412,7 +395,6 @@
                             <workingDirectory>${project.build.directory}/random-stuff-website-1.0.0/WEB-INF/classes</workingDirectory>
                             <arguments>
                                 <argument>-v</argument>
-                                <argument>ovh/maddie480/randomstuff/frontend/ExtractDiscordThemeCSS.class</argument>
                                 <argument>ovh/maddie480/randomstuff/frontend/LuaCutscenesDocumentationIntegrator.class</argument>
                                 <argument>ovh/maddie480/randomstuff/frontend/PrepareForRadioLNJ.class</argument>
                                 <argument>ovh/maddie480/randomstuff/frontend/ParrotQuickGenerator.class</argument>
