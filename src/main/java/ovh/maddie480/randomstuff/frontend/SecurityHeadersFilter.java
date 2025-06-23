@@ -109,6 +109,13 @@ public class SecurityHeadersFilter extends HttpFilter {
                     "frame-ancestors 'none'; " +
                     "script-src 'none'; " +
                     "object-src 'none';");
+        } else if ("/static/mirror/file_permissions.html".equals(req.getRequestURI())) {
+            // this mirrored page happens to have a lot of inline CSS, but was stripped out of all JS.
+            res.setHeader("Content-Security-Policy", "default-src 'self'; " +
+                    "style-src 'self' 'unsafe-inline'; " +
+                    "script-src 'none'; " +
+                    "frame-ancestors 'none'; " +
+                    "object-src 'none';");
         } else {
             // default rules
             res.setHeader("Content-Security-Policy", "default-src 'self'; " +

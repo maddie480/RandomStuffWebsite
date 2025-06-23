@@ -59,6 +59,7 @@ public class StaticAssetsAndRouteNotFoundServlet extends HttpServlet {
         contentTypesList.add(Triple.of("bmfc", "application/octet-stream", true));
         contentTypesList.add(Triple.of("obj", "application/octet-stream", true));
         contentTypesList.add(Triple.of("txt", "text/plain", true));
+        contentTypesList.add(Triple.of("webp", "image/webp", false));
 
         CONTENT_TYPES = new HashMap<>();
         for (Triple<String, String, Boolean> contentType : contentTypesList) {
