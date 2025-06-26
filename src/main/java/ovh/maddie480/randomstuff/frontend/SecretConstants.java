@@ -33,6 +33,8 @@ public class SecretConstants {
     public static String MATTERMOST_TOKEN_LOCK = "";
     public static String MATTERMOST_TOKEN_UNLOCK = "";
 
+    public static String UNHANDLED_EXCEPTIONS_WEBHOOK_URL = "";
+
     static {
         // The SECRET_CONSTANTS environment variable has all secrets, in JSON format.
         String environment = System.getenv("SECRET_CONSTANTS");
@@ -64,5 +66,7 @@ public class SecretConstants {
 
         MATTERMOST_TOKEN_LOCK = secrets.getString("MATTERMOST_TOKEN_LOCK");
         MATTERMOST_TOKEN_UNLOCK = secrets.getString("MATTERMOST_TOKEN_UNLOCK");
+
+        UNHANDLED_EXCEPTIONS_WEBHOOK_URL = secrets.getString("UNHANDLED_EXCEPTIONS_WEBHOOK_URL");
     }
 }

@@ -2,7 +2,6 @@ package ovh.maddie480.randomstuff.frontend;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -13,7 +12,6 @@ import java.util.Arrays;
 /**
  * A filter adding a Content-Security-Policy header on all non-static files.
  */
-@WebFilter(filterName = "SecurityHeadersFilter", urlPatterns = "/*")
 public class SecurityHeadersFilter extends HttpFilter {
     @Override
     protected void doFilter(HttpServletRequest req, HttpServletResponse res, FilterChain chain) throws IOException, ServletException {

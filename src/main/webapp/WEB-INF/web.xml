@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="https://jakarta.ee/xml/ns/jakartaee" metadata-complete="false" xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_5_0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="5.0">
+    <!-- Apparently, the one and only true way to define filter priority is through web.xml... so here it goes. -->
+    <filter>
+        <filter-name>UnhandledExceptionFilter</filter-name>
+        <filter-class>ovh.maddie480.randomstuff.frontend.UnhandledExceptionFilter</filter-class>
+        <async-supported>false</async-supported>
+    </filter>
+    <filter-mapping>
+        <filter-name>UnhandledExceptionFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter>
+        <filter-name>TheMeanBeanMachine</filter-name>
+        <filter-class>ovh.maddie480.randomstuff.frontend.TheMeanBeanMachine</filter-class>
+        <async-supported>false</async-supported>
+    </filter>
+    <filter-mapping>
+        <filter-name>TheMeanBeanMachine</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter>
+        <filter-name>SecurityHeadersFilter</filter-name>
+        <filter-class>ovh.maddie480.randomstuff.frontend.SecurityHeadersFilter</filter-class>
+        <async-supported>false</async-supported>
+    </filter>
+    <filter-mapping>
+        <filter-name>SecurityHeadersFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter>
+        <filter-name>CacheEtagFilter</filter-name>
+        <filter-class>ovh.maddie480.randomstuff.frontend.CacheAndCompressionFilter</filter-class>
+        <async-supported>false</async-supported>
+    </filter>
+    <filter-mapping>
+        <filter-name>CacheEtagFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+</web-app>

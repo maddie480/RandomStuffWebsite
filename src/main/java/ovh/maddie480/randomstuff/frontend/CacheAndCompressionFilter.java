@@ -4,7 +4,6 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.WriteListener;
-import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -17,7 +16,6 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.zip.GZIPOutputStream;
 
-@WebFilter(filterName = "CacheEtagFilter", urlPatterns = "/*")
 public class CacheAndCompressionFilter extends HttpFilter {
     private static class ServletOutputStreamWrapper extends ServletOutputStream {
         private final OutputStream wrappedOutputStream;
