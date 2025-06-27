@@ -14,6 +14,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.stream.Stream;
 
+import static ovh.maddie480.randomstuff.frontend.UnhandledExceptionFilter.sendDiscordMessage;
+
 /**
  * Tries catching users that cause a number of 4xx errors (brute-forcing some key? fuzzing to find vulnerabilities?)
  * and temp-banning them.
@@ -44,7 +46,16 @@ public class TheMeanBeanMachine extends HttpFilter {
             if (strikes >= 100) {
                 log.warn("User {} has been beaned!", req.getRemoteAddr());
                 Files.createFile(meanBeanFolder.resolve(req.getRemoteAddr()));
+                shoutAtMaddie();
             }
+        }
+    }
+
+    private static void shoutAtMaddie() {
+        try {
+            sendDiscordMessage("The Mean Bean Machine", "Hey :wave: I just banned someone! k bye :person_walking:");
+        } catch (Exception ex) {
+            log.warn("Failed alerting about ban", ex);
         }
     }
 }
