@@ -94,7 +94,7 @@ public class CelesteModSearchService extends HttpServlet {
             return;
         }
         if (request.getRequestURI().equals("/celeste/gamebanana-subcategories")) {
-            handleSubcategoriesList(request, response);
+            handleSubcategoriesList(response);
             return;
         }
         if (request.getRequestURI().equals("/celeste/helper-list")) {
@@ -346,37 +346,9 @@ public class CelesteModSearchService extends HttpServlet {
         return responseBody;
     }
 
-    private void handleSubcategoriesList(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String itemtype = request.getParameter("itemtype");
-        if (itemtype == null) {
-            // new API format: contains all subcategories in a single call
-            response.setHeader("Content-Type", "text/yaml");
-            response.getOutputStream().write(precomputedSubcategoryList);
-            return;
-        }
-
-        final Integer categoryId;
-        {
-            String categoryIdString = request.getParameter("categoryId");
-            if (categoryIdString == null) {
-                categoryId = null;
-            } else {
-                try {
-                    categoryId = Integer.parseInt(categoryIdString);
-                } catch (NumberFormatException e) {
-                    log.warn("Cannot parse categoryId \"{}\" as number", categoryIdString);
-                    response.setStatus(400);
-                    response.getWriter().write("The given categoryId is not a valid number");
-                    return;
-                }
-            }
-        }
-
-        List<Map<String, Object>> responseBody = computeSubcategoryListFor(itemtype, categoryId);
-
-        // send out the response (the "block" flow style works better with Olympus).
+    private void handleSubcategoriesList(HttpServletResponse response) throws IOException {
         response.setHeader("Content-Type", "text/yaml");
-        YamlUtil.dump(responseBody, response.getOutputStream());
+        response.getOutputStream().write(precomputedSubcategoryList);
     }
 
     private List<Map<String, Object>> computeSubcategoryListFor(String itemtype, Integer categoryId) {
