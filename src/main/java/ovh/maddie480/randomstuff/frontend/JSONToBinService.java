@@ -67,7 +67,7 @@ public class JSONToBinService extends HttpServlet {
         }
     }
 
-    private static byte[] toBin(JSONObject json) {
+    private static byte[] toBin(JSONObject json) throws Exception {
         long startTime = System.currentTimeMillis();
 
         try (ByteArrayOutputStream os = new ByteArrayOutputStream();
