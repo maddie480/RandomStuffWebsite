@@ -93,9 +93,6 @@ public class JSONToBinService extends HttpServlet {
             log.info("Converted input to BIN in {} ms", System.currentTimeMillis() - startTime);
             bin.flush();
             return os.toByteArray();
-        } catch (Exception e) {
-            log.warn("Could not convert JSON to BIN!", e);
-            return null;
         }
     }
 
