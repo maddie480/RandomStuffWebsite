@@ -100,6 +100,11 @@
       "prefix": "Western Desperado - "
    },
    {
+      "url": "https://files.gamebanana.com/bitpit/kang_fu.zip",
+      "useYoutubeDl": false,
+      "prefix": "Kang Fu - "
+   },
+   {
       "url": "https://files.gamebanana.com/bitpit/yes.zip",
       "useYoutubeDl": false,
       "prefix": ""
