@@ -63,13 +63,11 @@ public class PrepareForRadioLNJ {
                     process = new ProcessBuilder("/tmp/yt-dlp", "-f", "bestaudio*", source.getString("url"));
                 }
 
-                int exitCode = process
+                process
                         .inheritIO()
                         .directory(ytDlTarget.toFile())
                         .start()
                         .waitFor();
-
-                if (exitCode != 0) throw new IOException("yt-dlp exited with code " + exitCode);
 
                 try (Stream<Path> downloadedFiles = Files.list(ytDlTarget)) {
                     for (Path file : downloadedFiles.toList()) {
