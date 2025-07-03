@@ -46,7 +46,7 @@ public class TheMeanBeanMachine extends HttpFilter {
             if (strikes >= 100) {
                 log.warn("User {} has been beaned!", req.getRemoteAddr());
                 Files.createFile(meanBeanFolder.resolve(req.getRemoteAddr()));
-                shoutAtMaddie();
+                shoutAtMaddie(req);
             }
         }
     }
