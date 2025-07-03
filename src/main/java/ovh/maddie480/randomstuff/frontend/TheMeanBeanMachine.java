@@ -53,7 +53,7 @@ public class TheMeanBeanMachine extends HttpFilter {
 
     private static void shoutAtMaddie(HttpServletRequest req) {
         try {
-            sendDiscordMessage("The Mean Bean Machine", "Hey :wave: I just banned ` + res.getRemoteAddr() + `! k bye :person_walking:");
+            sendDiscordMessage("The Mean Bean Machine", "Hey :wave: I just banned `" + req.getRemoteAddr() + "`! k bye :person_walking:");
         } catch (Exception ex) {
             log.warn("Failed alerting about ban", ex);
         }
