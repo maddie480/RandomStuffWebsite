@@ -110,6 +110,11 @@
       "prefix": ""
    },
    {
+      "url": "https://files.gamebanana.com/bitpit/lnj_lost_youtube.zip",
+      "useYoutubeDl": false,
+      "prefix": ""
+   },
+   {
       "url": "https://youtube.com/playlist?list=PLA423290E18CD6DFF",
       "useYoutubeDl": true,
       "prefix": ""
