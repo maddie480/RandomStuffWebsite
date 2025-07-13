@@ -7,7 +7,6 @@
             :src="imagePath"
             :class="zoom ? 'zoomed' : ''"
             :style="zoom ? 'margin: ' + height / 2 + 'px 0;' : ''"
-            @load="imageLoaded"
           />
         </div>
         <div class="title">
@@ -40,7 +39,9 @@
             ><span class="frame-count">{{ data.frames.length }} frames</span>
             &#x2013;
           </span>
-          {{ width }} x {{ height }} pixels
+          <span v-if="data.width !== undefined && data.height !== undefined">
+            {{ data.width }} x {{ data.height }} pixels
+          </span>
         </div>
         <div class="tags">
           <span
@@ -372,8 +373,6 @@ export default {
   data: () => ({
     moreInfoShown: false,
     readme: null,
-    width: null,
-    height: null,
   }),
   computed: {
     imagePath() {
@@ -456,10 +455,6 @@ export default {
     },
     closeMoreInfo: function () {
       this.moreInfoShown = false;
-    },
-    imageLoaded(event) {
-      this.width = event.target.width;
-      this.height = event.target.height;
     },
   },
 };
