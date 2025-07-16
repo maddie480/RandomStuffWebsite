@@ -33,7 +33,7 @@ public final class GitOperator {
     private static final Path gitDirectory = Paths.get("/tmp/olympus_news_repo");
     private static Git gitRepository;
 
-    public static void sshInit() {
+    private static void sshInit() {
         log.info("Configuring SSH...");
 
         SshSessionFactory.setInstance(new JschConfigSessionFactory() {
@@ -64,6 +64,7 @@ public final class GitOperator {
 
         try {
             log.info("Cloning git repository...");
+            sshInit();
             gitRepository = Git.cloneRepository()
                     .setDirectory(gitDirectory.toFile())
                     .setBranch("main")
@@ -204,6 +205,7 @@ public final class GitOperator {
                     .call();
 
             log.info("Pushing");
+            sshInit();
             gitRepository.push().call();
         } catch (GitAPIException e) {
             throw new IOException(e);

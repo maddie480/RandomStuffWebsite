@@ -44,7 +44,6 @@ public class InteractionManager extends HttpServlet {
     @Override
     public void init() {
         try {
-            GitOperator.sshInit();
             GitOperator.init();
             log.info("Done initializing the git repository for the news");
         } catch (Exception e) {
