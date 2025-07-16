@@ -36,7 +36,7 @@ public class InteractionManager extends HttpServlet {
 
     private static final NewsAuthor NEWS_COMMITTER = new NewsAuthor(212421949, "maddie480-bot");
     private static final Map<Long, NewsAuthor> NEWS_AUTHORS = ImmutableMap.of(
-            354341658352943115L, NEWS_COMMITTER,
+            354341658352943115L, new NewsAuthor(52103563, "maddie480"),
             633114231935336489L, new NewsAuthor(67283043, "campbell-godfrey"),
             444598188452741180L, new NewsAuthor(127329763, "cellularAutomaton")
     );
