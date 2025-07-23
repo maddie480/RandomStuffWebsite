@@ -14,16 +14,17 @@
           />
         </span>
 
-        <a
+        <button
           v-if="folder.files.length !== 0"
+          role="link"
           :class="
-            'item-name' +
+            'btn btn-link btn-item-name item-name' +
             (selectedFolder.path === folder.path ? ' selected' : '')
           "
-          href="#"
           @click="$emit('select-folder', folder)"
-          >{{ folder.name }}</a
         >
+          {{ folder.name }}
+        </button>
         <span v-else class="item-name">{{ folder.name }}</span>
 
         <span class="smaller">({{ fileCount }})</span>
@@ -64,6 +65,11 @@ export default {
     fileCount: function () {
       return countFilesRecursive(this.folder);
     },
+  },
+  mounted: function () {
+    if (this.selectedFolder.path.startsWith(this.folder.path + "/")) {
+      this.expanded = true;
+    }
   },
   methods: {
     expandOrCollapse: function () {
@@ -139,5 +145,12 @@ export default {
   @media (prefers-color-scheme: dark) {
     color: #888;
   }
+}
+
+.btn-item-name {
+  padding: 0;
+  border: none;
+  display: inline;
+  vertical-align: baseline;
 }
 </style>

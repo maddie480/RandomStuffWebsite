@@ -20,7 +20,7 @@
               <GraphicsDumpFolder
                 :folder="folderStructure"
                 :selected-folder="selectedFolder"
-                @select-folder="(folder) => (selectedFolder = folder)"
+                @select-folder="selectFolder"
               />
             </div>
           </div>
@@ -48,7 +48,7 @@ import GraphicsDumpItem from "../components/GraphicsDumpItem.vue";
 
 const vue = {
   components: { GraphicsDumpFolder, GraphicsDumpItem },
-  name: "banana-mirror-browser",
+  name: "graphics-dump-browser",
   data: () => ({
     folderStructure: [],
     selectedFolder: { path: "", files: [] },
@@ -104,11 +104,34 @@ const vue = {
 
         this.folderStructure = folderStructure.children[0];
 
+        // preselect folder
+        const preselectedPathParts = document.location.hash
+          .substring(1)
+          .split("/");
+        let pathIndex = 0;
+        let currentNode = { children: [this.folderStructure] };
+        while (pathIndex < preselectedPathParts.length) {
+          const matches = currentNode.children.filter(
+            (child) => child.name === preselectedPathParts[pathIndex],
+          );
+          if (matches.length === 0) break;
+          currentNode = matches[0];
+          pathIndex++;
+        }
+        if (pathIndex === preselectedPathParts.length) {
+          // we found the folder!
+          this.selectedFolder = currentNode;
+        }
+
         this.loading = false;
       } catch {
         this.error = true;
         this.loading = false;
       }
+    },
+    selectFolder(folder) {
+      this.selectedFolder = folder;
+      document.location.hash = folder.path;
     },
   },
   mounted: async function () {
