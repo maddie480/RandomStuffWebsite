@@ -6,7 +6,7 @@
           <img
             :src="imagePath"
             :class="zoom ? 'zoomed' : ''"
-            :style="zoom ? 'margin: ' + height / 2 + 'px 0;' : ''"
+            :style="zoom ? 'margin: ' + data.height / 2 + 'px 0;' : ''"
           />
         </div>
         <div class="title">
