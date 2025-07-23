@@ -22,7 +22,7 @@
   "devDependencies": {
     "@eslint/js": "^9.31.0",
     "@vitejs/plugin-vue": "^6.0.0",
-    "@vue/compiler-sfc": "^3.5.17",
+    "@vue/compiler-sfc": "^3.5.18",
     "@vue/eslint-config-prettier": "^10.2.0",
     "eslint": "^9.31.0",
     "eslint-config-prettier": "^10.1.8",
