@@ -63,16 +63,10 @@
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-text -->
-        <!-- Transitive dependency update to fix vulnerability -->
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>3.18.0</version>
-        </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-text</artifactId>
-            <version>1.13.1</version>
+            <version>1.14.0</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.json/json -->
@@ -352,7 +346,7 @@
                             <workingDirectory>${project.build.directory}/random-stuff-website-1.0.0/WEB-INF/classes</workingDirectory>
                             <arguments>
                                 <argument>-cp</argument>
-                                <argument>.:../../../dependency/commons-io-2.20.0.jar:../../../dependency/commons-lang3-3.18.0.jar:../../../dependency/commons-text-1.13.1.jar:../../../dependency/jsoup-1.21.1.jar</argument>
+                                <argument>.:../../../dependency/commons-io-2.20.0.jar:../../../dependency/commons-lang3-3.18.0.jar:../../../dependency/commons-text-1.14.0.jar:../../../dependency/jsoup-1.21.1.jar</argument>
                                 <argument>ovh.maddie480.randomstuff.frontend.ParrotQuickGenerator</argument>
                             </arguments>
                         </configuration>
