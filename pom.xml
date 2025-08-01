@@ -257,7 +257,7 @@
                 </executions>
 
                 <configuration>
-                    <nodeVersion>v22.17.1</nodeVersion>
+                    <nodeVersion>v22.18.0</nodeVersion>
                     <workingDirectory>front-vue</workingDirectory>
                 </configuration>
             </plugin>
