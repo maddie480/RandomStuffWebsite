@@ -49,19 +49,19 @@ jobs:
     - name: Download graphics dump
       if: steps.graphicsdumpcache.outputs.cache-hit != 'true'
       run: |
-        curl --fail --connect-timeout 10 --retry 10 --retry-delay 10 --retry-all-errors https://files.gamebanana.com/bitpit/graphics-dump-001.zip > src/main/webapp/WEB-INF/classes/resources/static/graphics-dump.zip
-        curl --fail --connect-timeout 10 --retry 10 --retry-delay 10 --retry-all-errors https://files.gamebanana.com/bitpit/graphics-dump-002.zip >> src/main/webapp/WEB-INF/classes/resources/static/graphics-dump.zip
+        curl -L --fail --connect-timeout 10 --retry 10 --retry-delay 10 --retry-all-errors https://files.gamebanana.com/bitpit/graphics-dump-001.zip > src/main/webapp/WEB-INF/classes/resources/static/graphics-dump.zip
+        curl -L --fail --connect-timeout 10 --retry 10 --retry-delay 10 --retry-all-errors https://files.gamebanana.com/bitpit/graphics-dump-002.zip >> src/main/webapp/WEB-INF/classes/resources/static/graphics-dump.zip
         sha256sum -c .github/graphics-dump-hash.txt
 
     - name: Download FMOD project
       if: steps.fmodprojectcache.outputs.cache-hit != 'true'
       run: |
-        curl --fail --connect-timeout 10 --retry 10 --retry-delay 10 --retry-all-errors https://files.gamebanana.com/bitpit/fmod001.zip > src/main/webapp/WEB-INF/classes/resources/static/celeste-fmod-project.zip
-        curl --fail --connect-timeout 10 --retry 10 --retry-delay 10 --retry-all-errors https://files.gamebanana.com/bitpit/fmod002.zip >> src/main/webapp/WEB-INF/classes/resources/static/celeste-fmod-project.zip
-        curl --fail --connect-timeout 10 --retry 10 --retry-delay 10 --retry-all-errors https://files.gamebanana.com/bitpit/fmod003.zip >> src/main/webapp/WEB-INF/classes/resources/static/celeste-fmod-project.zip
-        curl --fail --connect-timeout 10 --retry 10 --retry-delay 10 --retry-all-errors https://files.gamebanana.com/bitpit/fmod004.zip >> src/main/webapp/WEB-INF/classes/resources/static/celeste-fmod-project.zip
-        curl --fail --connect-timeout 10 --retry 10 --retry-delay 10 --retry-all-errors https://files.gamebanana.com/bitpit/fmod005.zip >> src/main/webapp/WEB-INF/classes/resources/static/celeste-fmod-project.zip
-        curl --fail --connect-timeout 10 --retry 10 --retry-delay 10 --retry-all-errors https://files.gamebanana.com/bitpit/fmod006.zip >> src/main/webapp/WEB-INF/classes/resources/static/celeste-fmod-project.zip
+        curl -L --fail --connect-timeout 10 --retry 10 --retry-delay 10 --retry-all-errors https://files.gamebanana.com/bitpit/fmod001.zip > src/main/webapp/WEB-INF/classes/resources/static/celeste-fmod-project.zip
+        curl -L --fail --connect-timeout 10 --retry 10 --retry-delay 10 --retry-all-errors https://files.gamebanana.com/bitpit/fmod002.zip >> src/main/webapp/WEB-INF/classes/resources/static/celeste-fmod-project.zip
+        curl -L --fail --connect-timeout 10 --retry 10 --retry-delay 10 --retry-all-errors https://files.gamebanana.com/bitpit/fmod003.zip >> src/main/webapp/WEB-INF/classes/resources/static/celeste-fmod-project.zip
+        curl -L --fail --connect-timeout 10 --retry 10 --retry-delay 10 --retry-all-errors https://files.gamebanana.com/bitpit/fmod004.zip >> src/main/webapp/WEB-INF/classes/resources/static/celeste-fmod-project.zip
+        curl -L --fail --connect-timeout 10 --retry 10 --retry-delay 10 --retry-all-errors https://files.gamebanana.com/bitpit/fmod005.zip >> src/main/webapp/WEB-INF/classes/resources/static/celeste-fmod-project.zip
+        curl -L --fail --connect-timeout 10 --retry 10 --retry-delay 10 --retry-all-errors https://files.gamebanana.com/bitpit/fmod006.zip >> src/main/webapp/WEB-INF/classes/resources/static/celeste-fmod-project.zip
         sha256sum -c .github/fmod-project-hash.txt
 
     - name: Cache Radio LNJ
