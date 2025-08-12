@@ -76,7 +76,7 @@ public class RadioLNJService extends HttpServlet {
                 body.put("playlist", playlist);
 
                 response.setContentType("application/json");
-                response.getWriter().write(body.toString());
+                body.write(response.getWriter());
             }
         } else if (request.getRequestURI().equals("/radio-lnj/playlist.m3u")) {
             synchronized (playlist) {

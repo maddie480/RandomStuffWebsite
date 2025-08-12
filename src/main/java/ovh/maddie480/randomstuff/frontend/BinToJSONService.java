@@ -42,7 +42,7 @@ public class BinToJSONService extends HttpServlet {
 
         if (json != null) {
             resp.setContentType("application/json");
-            IOUtils.write(json.toString(), resp.getWriter());
+            json.write(resp.getWriter());
         } else {
             resp.setStatus(400);
             resp.setContentType("text/plain");

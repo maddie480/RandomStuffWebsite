@@ -94,7 +94,7 @@ public class UpdateCheckerStatusService extends HttpServlet {
         if ("/celeste/update-checker-status.json".equals(request.getRequestURI())) {
             updaterStatusJson.put("up", request.getAttribute("up"));
             response.setHeader("Content-Type", "application/json");
-            response.getWriter().write(updaterStatusJson.toString());
+            updaterStatusJson.write(response.getWriter());
         } else {
             if (isWidget) {
                 request.getRequestDispatcher("/WEB-INF/update-checker-status-widget.jsp").forward(request, response);

@@ -156,7 +156,7 @@ public class CelesteModSearchService extends HttpServlet {
         } else {
             List<Map<String, Object>> responseBody = searchModsByName(queryParam);
             response.setHeader("Content-Type", "application/json");
-            response.getWriter().write(new JSONArray(responseBody).toString());
+            new JSONArray(responseBody).write(response.getWriter());
         }
     }
 
@@ -228,7 +228,7 @@ public class CelesteModSearchService extends HttpServlet {
                     .count()));
 
             response.setHeader("Content-Type", "application/json");
-            response.getWriter().write(new JSONArray(responseBody).toString());
+            new JSONArray(responseBody).write(response.getWriter());
         }
     }
 
@@ -252,16 +252,16 @@ public class CelesteModSearchService extends HttpServlet {
             response.getWriter().write("'itemtype' and 'itemid' query params should both be specified, and itemid should be a valid number");
         } else {
             final int itemId = itemid;
-            String responseBody = modDatabaseForSorting.stream()
+            JSONObject responseBody = modDatabaseForSorting.stream()
                     .filter(mod -> itemtype.equals(mod.type) && itemId == mod.id)
                     .findFirst()
-                    .map(mod -> new JSONObject(mod.fullInfo).toString())
+                    .map(mod -> new JSONObject(mod.fullInfo))
                     .orElse(null);
 
             // send out the response.
             if (responseBody != null) {
                 response.setHeader("Content-Type", "application/json");
-                response.getWriter().write(responseBody);
+                responseBody.write(response.getWriter());
             } else {
                 log.warn("Not found");
                 response.setHeader("Content-Type", "text/plain");
@@ -290,7 +290,7 @@ public class CelesteModSearchService extends HttpServlet {
                 .collect(Collectors.toList());
 
         response.setHeader("Content-Type", "application/json");
-        response.getWriter().write(new JSONArray(responseBody).toString());
+        new JSONArray(responseBody).write(response.getWriter());
     }
 
     private void handleCategoriesList(HttpServletResponse response) throws IOException {

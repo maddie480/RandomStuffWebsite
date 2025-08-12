@@ -103,7 +103,7 @@ public class InteractionManager extends HttpServlet {
                 response.put("data", responseData);
 
                 log.debug("Responding with: " + response.toString(2));
-                resp.getWriter().write(response.toString());
+                response.write(resp.getWriter());
             } else {
                 // slash command invocation
                 String searchTerms = data.getJSONObject("data").getJSONArray("options").getJSONObject(0).getString("value");
@@ -189,7 +189,7 @@ public class InteractionManager extends HttpServlet {
         emojiObject.put("name", "\uD83D\uDCE4"); // outbox tray
 
         log.debug("Responding with: " + response.toString(2));
-        resp.getWriter().write(response.toString());
+        response.write(resp.getWriter());
     }
 
     /**
@@ -206,7 +206,7 @@ public class InteractionManager extends HttpServlet {
         response.put("data", responseData);
 
         log.debug("Responding with: " + response.toString(2));
-        responseStream.getWriter().write(response.toString());
+        response.write(responseStream.getWriter());
     }
 
     private static String localizeMessage(String locale, String english, String french) {

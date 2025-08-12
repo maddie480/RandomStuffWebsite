@@ -252,7 +252,7 @@ public class InteractionManager extends HttpServlet {
         responseData.put("components", actionRows);
 
         log.debug("Responding with: {}", response.toString(2));
-        resp.getWriter().write(response.toString());
+        response.write(resp.getWriter());
     }
 
     /**
@@ -364,7 +364,7 @@ public class InteractionManager extends HttpServlet {
         response.put("data", responseData);
 
         log.debug("Responding with: {}", response.toString(2));
-        responseStream.getWriter().write(response.toString());
+        response.write(responseStream.getWriter());
     }
 
     /**
@@ -478,7 +478,7 @@ public class InteractionManager extends HttpServlet {
             if (responseStream != null) {
                 // we should respond to Discord's request
                 log.debug("Responding with: {} to caller", response.toString(2));
-                responseStream.getWriter().write(response.toString());
+                response.write(responseStream.getWriter());
             } else {
                 // we should call Discord to edit the message, since we already responded.
                 String url = "https://discord.com/api/v10/webhooks/" + SecretConstants.GAMES_BOT_CLIENT_ID + "/" + interactionToken + "/messages/@original";

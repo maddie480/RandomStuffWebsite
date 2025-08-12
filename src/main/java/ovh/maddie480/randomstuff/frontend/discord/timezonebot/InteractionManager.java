@@ -164,7 +164,7 @@ public class InteractionManager extends HttpServlet {
                     response.put("data", responseData);
 
                     log.debug("Responding with: " + response.toString(2));
-                    resp.getWriter().write(response.toString());
+                    response.write(resp.getWriter());
                 }
             } else {
                 // slash command invocation OR user command
@@ -237,7 +237,7 @@ public class InteractionManager extends HttpServlet {
         response.put("data", responseData);
 
         log.debug("Responding with: " + response.toString(2));
-        resp.getWriter().write(response.toString());
+        response.write(resp.getWriter());
     }
 
 
@@ -529,7 +529,7 @@ public class InteractionManager extends HttpServlet {
             }
 
             log.debug("Responding with: " + response.toString(2));
-            event.getWriter().write(response.toString());
+            response.write(event.getWriter());
         }
     }
 
@@ -880,7 +880,7 @@ public class InteractionManager extends HttpServlet {
             response.put("data", responseData);
 
             log.debug("Responding with: " + response.toString(2));
-            resp.getWriter().write(response.toString());
+            response.write(resp.getWriter());
 
             // delete the invalid users asynchronously, and call Discord when this is done
             new Thread(() -> {
@@ -968,7 +968,7 @@ public class InteractionManager extends HttpServlet {
         response.put("data", responseData);
 
         log.debug("Responding with: " + response.toString(2));
-        responseStream.getWriter().write(response.toString());
+        response.write(responseStream.getWriter());
     }
 
     private static void respondDeferred(String interactionToken, String message) throws IOException {

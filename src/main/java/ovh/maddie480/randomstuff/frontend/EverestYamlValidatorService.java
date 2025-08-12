@@ -383,7 +383,7 @@ public class EverestYamlValidatorService extends HttpServlet {
 
             if ("json".equals(outputFormat)) {
                 response.setContentType("application/json");
-                response.getWriter().write(new JSONObject(attributes).toString());
+                new JSONObject(attributes).write(response.getWriter());
                 return;
             } else {
                 for (Map.Entry<String, Object> attribute : attributes.entrySet()) {

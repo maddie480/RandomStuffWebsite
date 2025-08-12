@@ -40,7 +40,7 @@ public class WipeConverterService extends HttpServlet {
             log.info("Converted wipe to triangles in {} ms", System.currentTimeMillis() - startTime);
 
             resp.setContentType("application/json");
-            IOUtils.write(output.toString(), resp.getWriter());
+            output.write(resp.getWriter());
         } catch (IOException e) {
             log.error("Error parsing the image", e);
             resp.setStatus(400);

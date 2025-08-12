@@ -87,7 +87,7 @@ public class OlympusNewsService extends HttpServlet {
             }
 
             response.setContentType("application/json");
-            response.getWriter().write(result.toString());
+            result.write(response.getWriter());
 
         } else if ("/celeste/olympus-news.xml".equals(request.getRequestURI())) {
             request.getRequestDispatcher("/WEB-INF/olympus-news-rss.jsp").forward(request, response);

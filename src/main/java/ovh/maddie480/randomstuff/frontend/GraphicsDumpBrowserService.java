@@ -55,7 +55,7 @@ public class GraphicsDumpBrowserService extends HttpServlet {
 
                 log.debug("Responding with file listing, containing {} elements", fileListing.size());
                 resp.setContentType("application/json");
-                resp.getWriter().write(new JSONArray(fileListing).toString());
+                new JSONArray(fileListing).write(resp.getWriter());
                 return;
             }
 

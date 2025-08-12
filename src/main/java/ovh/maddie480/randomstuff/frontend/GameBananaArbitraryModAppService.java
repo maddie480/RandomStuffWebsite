@@ -95,7 +95,7 @@ public class GameBananaArbitraryModAppService extends HttpServlet {
             if (("key=" + SecretConstants.RELOAD_SHARED_SECRET).equals(request.getQueryString())) {
                 Set<String> modIds = getModList();
                 response.setContentType("application/json");
-                response.getWriter().write(new JSONArray(modIds).toString());
+                new JSONArray(modIds).write(response.getWriter());
             } else {
                 // invalid secret
                 log.warn("Invalid key");
