@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferByte;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -50,45 +49,15 @@ public class WipeConverterService extends HttpServlet {
     }
 
     private static Color[][] readImagePixelColors(BufferedImage image) {
-        final byte[] pixels = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
         final int width = image.getWidth();
         final int height = image.getHeight();
-        final boolean hasAlphaChannel = image.getAlphaRaster() != null;
-        log.debug("Image is {}x{} w/ alpha channel = {}, should total {} px, data buffer has {} px",
-                width, height, hasAlphaChannel, width * height, pixels.length / (hasAlphaChannel ? 4 : 3));
 
+        int[] pixels = image.getRGB(0, 0, width, height, null, 0, width);
         Color[][] result = new Color[width][height];
 
-        if (hasAlphaChannel) {
-            final int pixelLength = 4;
-            for (int pixel = 0, row = 0, col = 0; pixel + 3 < pixels.length; pixel += pixelLength) {
-                result[col][row] = new Color(
-                        (int) pixels[pixel + 3] & 0xff, // red
-                        (int) pixels[pixel + 2] & 0xff, // green
-                        (int) pixels[pixel + 1] & 0xff, // blue
-                        (int) pixels[pixel] & 0xff // alpha
-                );
-
-                col++;
-                if (col == width) {
-                    col = 0;
-                    row++;
-                }
-            }
-        } else {
-            final int pixelLength = 3;
-            for (int pixel = 0, row = 0, col = 0; pixel + 2 < pixels.length; pixel += pixelLength) {
-                result[col][row] = new Color(
-                        (int) pixels[pixel + 2] & 0xff, // red
-                        (int) pixels[pixel + 1] & 0xff, // green
-                        (int) pixels[pixel] & 0xff // blue
-                );
-
-                col++;
-                if (col == width) {
-                    col = 0;
-                    row++;
-                }
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                result[x][y] = new Color(pixels[x + y * width], true);
             }
         }
 
