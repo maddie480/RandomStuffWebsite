@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
@@ -346,6 +347,7 @@ public class InteractionManager extends HttpServlet {
 
     private static Set<String> listCommandsOnServer(long serverId) throws IOException {
         Path directory = Paths.get("/shared/discord-bots/custom-slash-commands/" + serverId);
+        if (!Files.isDirectory(directory)) return Collections.emptySet();
 
         try (Stream<Path> directoryListing = Files.list(directory)) {
             return directoryListing
