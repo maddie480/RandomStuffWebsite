@@ -172,7 +172,7 @@
         <dependency>
             <groupId>org.jsoup</groupId>
             <artifactId>jsoup</artifactId>
-            <version>1.21.1</version>
+            <version>1.21.2</version>
         </dependency>
     </dependencies>
 
@@ -184,7 +184,7 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <version>3.4.0</version>
                 <configuration>
-                    <packagingExcludes>WEB-INF/lib/jsoup-1.21.1.jar</packagingExcludes>
+                    <packagingExcludes>WEB-INF/lib/jsoup-1.21.2.jar</packagingExcludes>
                 </configuration>
             </plugin>
             <plugin>
@@ -346,7 +346,7 @@
                             <workingDirectory>${project.build.directory}/random-stuff-website-1.0.0/WEB-INF/classes</workingDirectory>
                             <arguments>
                                 <argument>-cp</argument>
-                                <argument>.:../../../dependency/commons-io-2.20.0.jar:../../../dependency/commons-lang3-3.18.0.jar:../../../dependency/commons-text-1.14.0.jar:../../../dependency/jsoup-1.21.1.jar</argument>
+                                <argument>.:../../../dependency/commons-io-2.20.0.jar:../../../dependency/commons-lang3-3.18.0.jar:../../../dependency/commons-text-1.14.0.jar:../../../dependency/jsoup-1.21.2.jar</argument>
                                 <argument>ovh.maddie480.randomstuff.frontend.ParrotQuickGenerator</argument>
                             </arguments>
                         </configuration>
