@@ -329,7 +329,7 @@
                             <workingDirectory>${project.build.directory}/random-stuff-website-1.0.0/WEB-INF/classes</workingDirectory>
                             <arguments>
                                 <argument>-cp</argument>
-                                <argument>.:../../../dependency/snakeyaml-2.4.jar:../../../dependency/commons-io-2.20.0.jar</argument>
+                                <argument>.:../../../dependency/snakeyaml-2.5.jar:../../../dependency/commons-io-2.20.0.jar</argument>
                                 <argument>ovh.maddie480.randomstuff.frontend.LuaCutscenesDocumentationIntegrator</argument>
                             </arguments>
                         </configuration>
