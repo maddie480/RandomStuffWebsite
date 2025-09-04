@@ -43,7 +43,7 @@ public class TheMeanBeanMachine extends HttpFilter {
                 strikes = files.filter(f -> f.getFileName().toString().startsWith(req.getRemoteAddr() + "_")).count();
             }
             log.debug("User {} had a request with status code {} (strike #{})", req.getRemoteAddr(), res.getStatus(), strikes);
-            if (strikes >= 100) {
+            if (strikes >= 20) {
                 log.warn("User {} has been beaned!", req.getRemoteAddr());
                 Files.createFile(meanBeanFolder.resolve(req.getRemoteAddr()));
                 shoutAtMaddie(req);
