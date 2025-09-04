@@ -351,6 +351,22 @@
                             </arguments>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>generate robots.txt</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>java</executable>
+                            <workingDirectory>${project.build.directory}/random-stuff-website-1.0.0/WEB-INF/classes</workingDirectory>
+                            <arguments>
+                                <argument>-cp</argument>
+                                <argument>.:../../../dependency/jsoup-1.21.2.jar</argument>
+                                <argument>ovh.maddie480.randomstuff.frontend.RobotsTxtPuller</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
 
                     <execution>
                         <id>prepare Radio LNJ</id>
@@ -399,6 +415,7 @@
                                 <argument>ovh/maddie480/randomstuff/frontend/PrepareForRadioLNJ.class</argument>
                                 <argument>ovh/maddie480/randomstuff/frontend/ParrotQuickGenerator.class</argument>
                                 <argument>ovh/maddie480/randomstuff/frontend/PrepareUnicodeMirror.class</argument>
+                                <argument>ovh/maddie480/randomstuff/frontend/RobotsTxtPuller.class</argument>
                             </arguments>
                         </configuration>
                     </execution>
