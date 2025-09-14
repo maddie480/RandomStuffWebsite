@@ -123,7 +123,8 @@ public class CacheAndCompressionFilter extends HttpFilter {
     protected void doFilter(HttpServletRequest req, HttpServletResponse res, FilterChain chain) throws IOException, ServletException {
         if (req.getRequestURI().equals("/celeste/bundle-download")
                 || req.getRequestURI().equals("/static/graphics-dump.zip")
-                || req.getRequestURI().equals("/static/celeste-fmod-project.zip")) {
+                || req.getRequestURI().equals("/static/celeste-fmod-project.zip")
+                || req.getRequestURI().startsWith("/static/unicode-mirror/emoji/charts/")) {
 
             // big media; we shouldn't try compressing or caching it
             chain.doFilter(req, res);
