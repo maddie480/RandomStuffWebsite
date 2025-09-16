@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @WebServlet(name = "CelesteDirectURLService", urlPatterns = {"/celeste/direct-link-service", "/celeste/dl", "/celeste/gb",
-        "/celeste/download-olympus", "/celeste/download-everest", "/picrew", "/aon-helper-github"})
+        "/celeste/download-olympus", "/celeste/download-everest", "/picrew", "/aon-helper-github", "/favicon.ico"})
 public class CelesteDirectURLService extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(CelesteDirectURLService.class);
 
@@ -74,6 +74,10 @@ public class CelesteDirectURLService extends HttpServlet {
             // GameBanana has a janky anti-XSS protection that ... completely prevents pages from containing "onHelp"
             // (it's presumably an HTML event listener attribute?) which is unfortunate when your helper is called a"onHelp"er
             response.sendRedirect("https://github.com/aonkeeper4/aonHelper");
+
+        } else if (request.getRequestURI().equals("/favicon.ico")) {
+            // this is the usual favicon place, but this isn't where it is on this website
+            response.sendRedirect("/img/favicon.png");
 
         } else if (request.getRequestURI().equals("/celeste/download-everest")) {
             JSONObject branch;
