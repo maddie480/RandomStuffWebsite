@@ -36,6 +36,12 @@ public class CacheAndCompressionFilter extends HttpFilter {
     }
 
     private static Object compressCacheLock = new Object();
+    private static final Path cacheRoot;
+    static {
+        Path prodOne = Paths.get("/shared/temp/frontend-cache-compression-filter");
+        Path devOne = Paths.get("/tmp");
+        cacheRoot = Files.isDirectory(prodOne) ? prodOne : devOne;
+    }
 
     private static void sendResponse(HttpServletRequest request, HttpServletResponse response, CacheStream content, boolean compress) throws IOException {
         try (InputStream source = content.getInputStream()) {
@@ -45,7 +51,7 @@ public class CacheAndCompressionFilter extends HttpFilter {
             if (compress) {
                 response.setHeader("Content-Encoding", "gzip");
 
-                Path compressCache = Paths.get("/shared/temp/frontend-cache-compression-filter/gzip_" + URLEncoder.encode(request.getRequestURI(), StandardCharsets.UTF_8) + "_" + content.getETag() + ".bin.gz");
+                Path compressCache = cacheRoot.resolve("gzip_" + URLEncoder.encode(request.getRequestURI(), StandardCharsets.UTF_8) + "_" + content.getETag() + ".bin.gz");
                 synchronized (compressCacheLock) {
                     if (!Files.exists(compressCache)) {
                         // compress the response right now
@@ -121,8 +127,8 @@ public class CacheAndCompressionFilter extends HttpFilter {
                 do {
                     // just be extra mega sure we don't have conflicts by rerolling if we do
                     double roll = Math.random();
-                    w = Paths.get("/shared/temp/frontend-cache-compression-filter/buffer_" + System.currentTimeMillis() + "_" + roll + ".writer.bin");
-                    o = Paths.get("/shared/temp/frontend-cache-compression-filter/buffer_" + System.currentTimeMillis() + "_" + roll + ".stream.bin");
+                    w = cacheRoot.resolve("buffer_" + System.currentTimeMillis() + "_" + roll + ".writer.bin");
+                    o = cacheRoot.resolve("buffer_" + System.currentTimeMillis() + "_" + roll + ".stream.bin");
                 } while (Files.exists(w));
 
                 writerTarget = w;
