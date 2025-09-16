@@ -1,5 +1,5 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ page import="static org.apache.commons.text.StringEscapeUtils.escapeHtml4, java.time.ZonedDateTime, java.util.Arrays"%>
+<%@ page import="static org.apache.commons.text.StringEscapeUtils.escapeHtml4, java.util.Arrays"%>
 
 <%@page session="false"%>
 
@@ -41,7 +41,7 @@
     <script src="/js/dark-mode.js"></script>
 </head>
 
-<body class="month-<%= ZonedDateTime.now().getMonthValue() %>">
+<body>
     <nav class="navbar navbar-expand navbar-light bg-light border-bottom shadow-sm">
         <div class="container-fluid">
             <h5 class="navbar-brand m-0"><a href="/"><img src="/img/maddie-avatar.png"> Maddie's Random Stuff</a></h5>

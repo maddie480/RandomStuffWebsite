@@ -1,5 +1,5 @@
 <template>
-  <div :class="'month-' + (new Date().getMonth() + 1)">
+  <div>
     <nav
       id="nav"
       class="navbar navbar-expand navbar-light bg-light border-bottom shadow-sm"
