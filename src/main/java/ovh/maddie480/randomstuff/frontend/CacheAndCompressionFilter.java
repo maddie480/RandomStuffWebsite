@@ -253,6 +253,11 @@ public class CacheAndCompressionFilter extends HttpFilter {
             chain.doFilter(req, placeholderResponse);
             placeholderResponse.finalizeRequest();
 
+            if (compress && req.getRequestURI().startsWith("/celeste/asset-drive/files/") && "image/png".equals(placeholderResponse.getContentType())) {
+                // they're not ending with .png, but they're still PNGs and there's no point in trying to compress them
+                compress = false;
+            }
+
             CacheStream content = placeholderResponse;
             if (placeholderResponse.directFileToSend != null) {
                 content = new DirectFileSendResponse(placeholderResponse.directFileToSend);
