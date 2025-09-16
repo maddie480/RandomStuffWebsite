@@ -142,10 +142,16 @@ public class StaticAssetsAndRouteNotFoundServlet extends HttpServlet {
                         + PATHS_TO_FORCE_DOWNLOAD.get(request.getRequestURI()) + '"');
                 }
 
-                try (InputStream is = StaticAssetsAndRouteNotFoundServlet.class.getClassLoader().getResourceAsStream("resources" + request.getRequestURI().replace("%20", " "))) {
-                    IOUtils.copyLarge(is, response.getOutputStream(), start, end - start + 1);
-                    return;
+                String resourcePath = "resources" + request.getRequestURI().replace("%20", " ");
+                if (start == 0 && end == size - 1 && response instanceof CacheAndCompressionFilter.CachingServletResponse cachingServletResponse) {
+                    // the CacheAndCompressionFilter can do this more efficiently.
+                    cachingServletResponse.directFileToSend = resourcePath;
+                } else {
+                    try (InputStream is = StaticAssetsAndRouteNotFoundServlet.class.getClassLoader().getResourceAsStream(resourcePath)) {
+                        IOUtils.copyLarge(is, response.getOutputStream(), start, end - start + 1);
+                    }
                 }
+                return;
             }
 
             display404(request, response);
