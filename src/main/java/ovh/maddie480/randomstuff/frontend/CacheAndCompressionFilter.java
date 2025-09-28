@@ -51,7 +51,13 @@ public class CacheAndCompressionFilter extends HttpFilter {
             if (compress) {
                 response.setHeader("Content-Encoding", "gzip");
 
-                Path compressCache = cacheRoot.resolve("gzip_" + URLEncoder.encode(request.getRequestURI(), StandardCharsets.UTF_8) + "_" + content.getETag() + ".bin.gz");
+                String filename = "gzip_" + URLEncoder.encode(request.getRequestURI(), StandardCharsets.UTF_8) + "_" + content.getETag() + ".bin.gz";
+                if (filename.getBytes(StandardCharsets.UTF_8).length > 255) {
+                    // file name too long, hash it
+                    filename = "gzipsha_" + DigestUtils.sha256Hex(request.getRequestURI()) + "_" + content.getETag() + ".bin.gz";
+                }
+
+                Path compressCache = cacheRoot.resolve(filename);
                 synchronized (compressCacheLock) {
                     if (!Files.exists(compressCache)) {
                         // compress the response right now
