@@ -35,7 +35,7 @@
         <span class="att-value">
           <pre
             v-if="
-              ['solids', 'bg'].includes(item.name) &&
+              ['solids', 'bg', 'objtiles'].includes(item.name) &&
               attribute.key === 'innerText'
             "
             >{{ attribute.value }}</pre
