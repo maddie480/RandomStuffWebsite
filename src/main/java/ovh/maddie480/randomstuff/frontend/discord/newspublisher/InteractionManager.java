@@ -207,7 +207,7 @@ public class InteractionManager extends HttpServlet {
         OlympusNews news = new OlympusNews(null, null, null, null, null, null);
 
         for (Object item : options) {
-            JSONObject itemObject = ((JSONObject) item).getJSONArray("components").getJSONObject(0);
+            JSONObject itemObject = ((JSONObject) item).getJSONObject("component");
 
             // consider that empty fields do not exist at all.
             if (itemObject.get("value") instanceof String && itemObject.getString("value").isEmpty()) {
@@ -269,24 +269,21 @@ public class InteractionManager extends HttpServlet {
      * Gives the JSON object describing a single text input.
      */
     private static JSONObject getComponentDataForTextInput(String id, String name, String value, long maxLength, boolean isLong) {
-        JSONObject row = new JSONObject();
-        row.put("type", 1); // ... action row
+        JSONObject label = new JSONObject();
+        label.put("type", 18); // label
+        label.put("label", name);
 
         JSONObject component = new JSONObject();
         component.put("type", 4); // text input
         component.put("custom_id", id);
-        component.put("label", name);
         component.put("style", isLong ? 2 : 1);
         component.put("min_length", 0);
         component.put("max_length", maxLength);
         component.put("required", false);
         component.put("value", value == null ? "" : value);
 
-        JSONArray rowContent = new JSONArray();
-        rowContent.put(component);
-        row.put("components", rowContent);
-
-        return row;
+        label.put("component", component);
+        return label;
     }
 
     private static void respondPrivately(HttpServletResponse responseStream, String message) throws IOException {

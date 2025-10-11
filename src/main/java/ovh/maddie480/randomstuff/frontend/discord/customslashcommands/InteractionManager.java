@@ -278,7 +278,7 @@ public class InteractionManager extends HttpServlet {
     private void addCommandWithForm(long serverId, JSONArray options, String locale, HttpServletResponse resp) throws IOException {
         // this is a modal: each of the options is in a text input on an action row
         CustomSlashCommandInfo info = CustomSlashCommandInfo.buildFromInteraction(serverId, options,
-                o -> o.getJSONArray("components").getJSONObject(0), "custom_id");
+                o -> o.getJSONObject("component"), "custom_id");
 
         createCommandFromInfo(serverId, locale, resp, info);
     }
@@ -504,24 +504,21 @@ public class InteractionManager extends HttpServlet {
      * Gives the JSON object describing a single text input.
      */
     private static JSONObject getComponentDataForTextInput(String id, String name, String value, long maxLength, boolean isRequired, boolean isLong) {
-        JSONObject row = new JSONObject();
-        row.put("type", 1); // ... action row
+        JSONObject label = new JSONObject();
+        label.put("type", 18); // label
+        label.put("label", name);
 
         JSONObject component = new JSONObject();
         component.put("type", 4); // text input
         component.put("custom_id", id);
-        component.put("label", name);
         component.put("style", isLong ? 2 : 1);
         component.put("min_length", isRequired ? 1 : 0);
         component.put("max_length", maxLength);
         component.put("required", isRequired);
         component.put("value", value == null ? "" : value);
 
-        JSONArray rowContent = new JSONArray();
-        rowContent.put(component);
-        row.put("components", rowContent);
-
-        return row;
+        label.put("component", component);
+        return label;
     }
 
     /**
@@ -530,7 +527,7 @@ public class InteractionManager extends HttpServlet {
     private void editCommand(long serverId, String oldName, JSONArray options, String locale, HttpServletResponse resp) throws IOException {
         // this is a modal: each of the options is in a text input on an action row
         CustomSlashCommandInfo info = CustomSlashCommandInfo.buildFromInteraction(serverId, options,
-                o -> o.getJSONArray("components").getJSONObject(0), "custom_id");
+                o -> o.getJSONObject("component"), "custom_id");
 
         try {
             // if the command name is absent from the submitted form, this means we are editing the embed.
