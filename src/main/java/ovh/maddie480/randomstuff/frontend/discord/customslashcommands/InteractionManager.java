@@ -137,6 +137,11 @@ public class InteractionManager extends HttpServlet {
             for (Object item : options) {
                 JSONObject itemObject = optionExtractor.apply((JSONObject) item);
 
+                // string select with single item selected = text input with that value
+                if (itemObject.has("values")) {
+                    itemObject.put("value", itemObject.getJSONArray("values").getString(0));
+                }
+
                 // consider that empty fields do not exist at all.
                 if (itemObject.get("value") instanceof String && itemObject.getString("value").isEmpty()) {
                     continue;
@@ -466,7 +471,7 @@ public class InteractionManager extends HttpServlet {
         JSONObject responseData = new JSONObject();
 
         if (name == null) {
-            responseData.put("custom_id", serverId);
+            responseData.put("custom_id", String.valueOf(serverId));
             responseData.put("title", localizeMessage(locale, "New command", "Nouvelle commande"));
         } else {
             responseData.put("custom_id", serverId + "|" + name);
@@ -487,9 +492,9 @@ public class InteractionManager extends HttpServlet {
             componentData.put(getComponentDataForTextInput("name", localizeMessage(locale, "Name", "Nom"), info.name, 32, true, false));
             componentData.put(getComponentDataForTextInput("description", localizeMessage(locale, "Description", "Description"), info.description, 100, true, false));
             componentData.put(getComponentDataForTextInput("answer", localizeMessage(locale, "Answer", "Réponse"), info.answer, 2000, answerMandatory, true));
-            componentData.put(getComponentDataForTextInput("is_public_string",
-                    localizeMessage(locale, "Response is public (true or false)", "Réponse publique (true = oui, false = non)"),
-                    fillIsPublic ? (info.isPublic ? "true" : "false") : "", 5, true, false));
+            componentData.put(getComponentDataForBooleanSelect(locale, "is_public_string",
+                    localizeMessage(locale, "Response is public", "Réponse publique"),
+                    fillIsPublic, info.isPublic));
         }
 
         responseData.put("components", componentData);
@@ -516,6 +521,41 @@ public class InteractionManager extends HttpServlet {
         component.put("max_length", maxLength);
         component.put("required", isRequired);
         component.put("value", value == null ? "" : value);
+
+        label.put("component", component);
+        return label;
+    }
+
+    /**
+     * Gives the JSON object describing a boolean select combo box.
+     */
+    private static JSONObject getComponentDataForBooleanSelect(String locale, String id, String name, boolean fillValue, boolean value) {
+        JSONObject label = new JSONObject();
+        label.put("type", 18); // label
+        label.put("label", name);
+
+        JSONObject component = new JSONObject();
+        component.put("type", 3); // string select
+        component.put("custom_id", id);
+        component.put("required", true);
+        component.put("min_values", 1);
+        component.put("max_values", 1);
+
+        JSONArray options = new JSONArray();
+
+        JSONObject option = new JSONObject();
+        option.put("label", localizeMessage(locale, "Yes", "Oui"));
+        option.put("value", "true");
+        option.put("default", fillValue && value);
+        options.put(option);
+
+        option = new JSONObject();
+        option.put("label", localizeMessage(locale, "No", "Non"));
+        option.put("value", "false");
+        option.put("default", fillValue && !value);
+        options.put(option);
+
+        component.put("options", options);
 
         label.put("component", component);
         return label;
