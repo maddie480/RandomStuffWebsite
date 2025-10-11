@@ -1,6 +1,7 @@
 package ovh.maddie480.randomstuff.frontend.discord.customslashcommands;
 
 import org.apache.commons.io.IOUtils;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,10 +36,30 @@ public class CustomSlashCommandsManager {
     /**
      * Adds a slash command with the given name and description to the given server.
      */
-    public static long addSlashCommand(long serverId, String name, String description) throws IOException, MaximumCommandsReachedException {
+    public static long addSlashCommand(long serverId, String name, String description, boolean allowMention) throws IOException, MaximumCommandsReachedException {
         JSONObject commandObject = new JSONObject();
         commandObject.put("name", name);
         commandObject.put("description", description);
+
+        if (allowMention) {
+            JSONArray options = new JSONArray();
+
+            JSONObject option = new JSONObject();
+            option.put("type", 6); // user
+            option.put("name", "ping");
+            option.put("description", "Add a ping at the start of the message");
+            option.put("required", false);
+
+            JSONObject descriptionLocalizations = new JSONObject();
+            descriptionLocalizations.put("en-US", "Add a ping at the start of the message");
+            descriptionLocalizations.put("fr", "Ajoute une mention au début du message");
+            option.put("description_localizations", descriptionLocalizations);
+
+            options.put(option);
+            commandObject.put("options", options);
+        } else {
+            commandObject.put("options", new JSONArray());
+        }
 
         HttpURLConnection connection = ConnectionUtils.openConnectionWithTimeout(
                 "https://discord.com/api/v10/applications/" + SecretConstants.CUSTOM_SLASH_COMMANDS_CLIENT_ID + "/guilds/" + serverId + "/commands");

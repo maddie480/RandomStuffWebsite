@@ -89,10 +89,13 @@ public class InteractionManager extends HttpServlet {
                             listCommands(serverId, locale, resp);
                     case "Turn into Custom Slash Command" ->
                         // message command: create a custom slash command from a message
-                            createCustomSlashCommandFromMessage(serverId, data.getJSONObject("data"), locale, resp);
+                        // createCustomSlashCommandFromMessage(serverId, data.getJSONObject("data"), locale, resp);
+                            respond(resp, localizeMessage(locale,
+                                    ":construction: Sorry, this action is currently out of order.",
+                                    ":construction: Désolé, cette action est actuellement en panne."));
                     default ->
                         // another command: most definitely a custom configured one
-                            handleCommand(serverId, commandName, resp);
+                            handleCommand(serverId, commandName, data.getJSONObject("data"), resp);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -471,7 +474,7 @@ public class InteractionManager extends HttpServlet {
         JSONObject responseData = new JSONObject();
 
         if (name == null) {
-            responseData.put("custom_id", serverId + "_");
+            responseData.put("custom_id", String.valueOf(serverId));
             responseData.put("title", localizeMessage(locale, "New command", "Nouvelle commande"));
         } else {
             responseData.put("custom_id", serverId + "|" + name);
@@ -630,7 +633,9 @@ public class InteractionManager extends HttpServlet {
     private void addSlashCommand(long serverId, CustomSlashCommandInfo info) throws IOException, MaximumCommandsReachedException {
         log.info("Adding {}", info.getStoragePath());
 
-        long commandId = CustomSlashCommandsManager.addSlashCommand(serverId, info.name, info.description);
+        long commandId = CustomSlashCommandsManager.addSlashCommand(serverId, info.name, info.description,
+                // add the "ping" parameter if the answer is public, and if there is actually room in the answer to insert a mention
+                (info.answer == null || info.answer.length() < 1975) && info.isPublic);
 
         JSONObject storedData = new JSONObject();
         storedData.put("id", commandId);
@@ -668,17 +673,38 @@ public class InteractionManager extends HttpServlet {
     /**
      * Handles responding to one of the custom slash commands.
      */
-    private void handleCommand(long serverId, String name, HttpServletResponse resp) throws IOException {
+    private void handleCommand(long serverId, String name, JSONObject data, HttpServletResponse resp) throws IOException {
         CustomSlashCommandInfo info = CustomSlashCommandInfo.buildFromStorage(serverId, name, false);
+
+        JSONArray options = new JSONArray();
+        if (data.has("options")) options = data.getJSONArray("options");
+        long mentionUser = -1;
+        for (Object o : options) {
+            JSONObject option = (JSONObject) o;
+            if (option.getString("name").equals("ping")) {
+                mentionUser = option.getLong("value");
+            }
+        }
 
         JSONObject response = new JSONObject();
         response.put("type", 4); // response in channel
 
         JSONObject responseData = new JSONObject();
 
-        responseData.put("allowed_mentions", new JSONObject("{\"parse\": []}"));
+        // allow pinging the user we were asked to ping, but no-one else
+        JSONObject allowedMentions = new JSONObject();
+        allowedMentions.put("parse", new JSONArray());
+        if (mentionUser != -1) {
+            JSONArray users = new JSONArray();
+            users.put(mentionUser);
+            allowedMentions.put("users", users);
+        }
+        responseData.put("allowed_mentions", allowedMentions);
 
-        if (info.answer != null) responseData.put("content", info.answer);
+        String content = "";
+        if (info.answer != null) content = info.answer;
+        if (mentionUser != -1) content = "<@" + mentionUser + ">" + (content.isEmpty() ? "" : "\n" + content);
+        if (!content.isEmpty()) responseData.put("content", content);
 
         if (!info.isPublic) {
             responseData.put("flags", 1 << 6); // ephemeral
