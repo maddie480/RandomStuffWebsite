@@ -471,7 +471,7 @@ public class InteractionManager extends HttpServlet {
         JSONObject responseData = new JSONObject();
 
         if (name == null) {
-            responseData.put("custom_id", String.valueOf(serverId));
+            responseData.put("custom_id", serverId + "_");
             responseData.put("title", localizeMessage(locale, "New command", "Nouvelle commande"));
         } else {
             responseData.put("custom_id", serverId + "|" + name);
