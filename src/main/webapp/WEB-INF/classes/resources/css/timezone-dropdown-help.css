@@ -7,7 +7,7 @@
     margin-top: 40px;
 }
 
-img {
+.container img {
     max-width: 100%;
     display: block;
 }
@@ -17,16 +17,16 @@ b {
     display: block;
 }
 
-.darktheme {
+.container .darktheme {
     display: none;
 }
 
 @media(prefers-color-scheme: dark) {
-    .lighttheme {
+    .container .lighttheme {
         display: none;
     }
 
-    .darktheme {
+    .container .darktheme {
         display: block;
     }
 }
