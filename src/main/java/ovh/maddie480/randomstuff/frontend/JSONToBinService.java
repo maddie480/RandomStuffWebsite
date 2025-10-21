@@ -102,7 +102,7 @@ public class JSONToBinService extends HttpServlet {
         JSONObject attributes = current.getJSONObject("attributes");
         for (String attribute : attributes.keySet()) {
             bag.add(attribute);
-            if (attributes.get(attribute) instanceof String string && !bag.contains(string)) {
+            if (attributes.get(attribute) instanceof String string && !bag.contains(string) && isRunLengthEncodedSupportedFor(string)) {
                 byte[] runLengthEncoded = toRunLengthEncodedString(string);
                 if (runLengthEncoded.length >= string.getBytes(UTF_8).length && string.length() >= 5) {
                     bag.add(string);
@@ -179,22 +179,36 @@ public class JSONToBinService extends HttpServlet {
                     EndianUtils.writeSwappedInteger(bin, integer);
                 }
             } else if (value instanceof String string) {
-                byte[] runLengthEncoded = toRunLengthEncodedString(string);
-                if (runLengthEncoded.length < string.getBytes(UTF_8).length) {
-                    bin.writeByte(AttributeValueType.LengthEncodedString.value);
-                    EndianUtils.writeSwappedShort(bin, (short) runLengthEncoded.length);
-                    bin.write(runLengthEncoded);
-                } else if (stringLookupTable.contains(string)) {
-                    bin.writeByte(AttributeValueType.FromLookup.value);
-                    EndianUtils.writeSwappedShort(bin, (short) stringLookupTable.indexOf(string));
-                } else {
-                    bin.writeByte(AttributeValueType.String.value);
-                    writeString(string, bin);
+                boolean written = false;
+                if (isRunLengthEncodedSupportedFor(string)) {
+                    byte[] runLengthEncoded = toRunLengthEncodedString(string);
+                    if (runLengthEncoded.length < string.getBytes(UTF_8).length) {
+                        bin.writeByte(AttributeValueType.LengthEncodedString.value);
+                        EndianUtils.writeSwappedShort(bin, (short) runLengthEncoded.length);
+                        bin.write(runLengthEncoded);
+                        written = true;
+                    }
+                }
+                if (!written) {
+                    if (stringLookupTable.contains(string)) {
+                        bin.writeByte(AttributeValueType.FromLookup.value);
+                        EndianUtils.writeSwappedShort(bin, (short) stringLookupTable.indexOf(string));
+                    } else {
+                        bin.writeByte(AttributeValueType.String.value);
+                        writeString(string, bin);
+                    }
                 }
             } else {
                 throw new IOException("Unrecognized value type: " + attributes.get(name).getClass());
             }
         }
+    }
+
+    private static boolean isRunLengthEncodedSupportedFor(String s) {
+        // run-length encoding writes UTF-8 code points on 1 byte.
+        // so, any character with a code point higher than 255 is going to be borked
+        // if we try to run-length-encode it.
+        return s.codePoints().allMatch(i -> i <= 0xFF);
     }
 
     private static byte[] toRunLengthEncodedString(String s) throws IOException {
