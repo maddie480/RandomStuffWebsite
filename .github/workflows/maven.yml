@@ -101,6 +101,7 @@ jobs:
         pip install ffmpeg-normalize
         curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /tmp/yt-dlp
         chmod +x /tmp/yt-dlp
+        curl -fsSL https://deno.land/install.sh | sh
 
     - name: Build with Maven (w/ Radio LNJ)
       if: github.ref == 'refs/heads/main'
