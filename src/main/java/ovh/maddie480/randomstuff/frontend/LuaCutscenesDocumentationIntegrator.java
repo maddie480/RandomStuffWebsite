@@ -21,15 +21,9 @@ public class LuaCutscenesDocumentationIntegrator {
     private static final Logger logger = Logger.getLogger("LuaCutscenesDocumentationIntegrator");
 
     public static void main(String[] args) throws IOException {
-        String luaCutscenesDownloadUrl;
-        try (InputStream is = ConnectionUtils.openStreamWithTimeout("https://maddie480.ovh/celeste/everest_update.yaml")) {
-            Map<String, Map<String, Object>> db = YamlUtil.load(is);
-            luaCutscenesDownloadUrl = db.get("LuaCutscenes").get("URL").toString();
-        }
-
         // download Lua Cutscenes and go through its files
-        logger.info("Downloading Lua Cutscenes from " + luaCutscenesDownloadUrl + "...");
-        try (ZipInputStream zip = new ZipInputStream(PrepareForRadioLNJ.getFullInputStreamWithRetry(luaCutscenesDownloadUrl))) {
+        logger.info("Downloading Lua Cutscenes...");
+        try (ZipInputStream zip = new ZipInputStream(PrepareForRadioLNJ.getFullInputStreamWithRetry("https://maddie480.ovh/celeste/dl?id=LuaCutscenes&mirror=1"))) {
             ZipEntry entry;
             while ((entry = zip.getNextEntry()) != null) {
                 if (!entry.isDirectory() && entry.getName().toLowerCase(Locale.ROOT).startsWith("documentation/")) {
