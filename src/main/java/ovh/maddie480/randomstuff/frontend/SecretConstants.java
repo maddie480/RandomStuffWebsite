@@ -30,9 +30,6 @@ public class SecretConstants {
     public static String GITHUB_SSH_PUBLIC_KEY = "";
     public static String GITHUB_SSH_PRIVATE_KEY = "";
 
-    public static String MATTERMOST_TOKEN_LOCK = "";
-    public static String MATTERMOST_TOKEN_UNLOCK = "";
-
     public static String UNHANDLED_EXCEPTIONS_WEBHOOK_URL = "";
 
     static {
@@ -63,9 +60,6 @@ public class SecretConstants {
         GITHUB_SSH_KNOWN_HOSTS = secrets.getString("GITHUB_SSH_KNOWN_HOSTS");
         GITHUB_SSH_PUBLIC_KEY = secrets.getString("GITHUB_SSH_PUBLIC_KEY");
         GITHUB_SSH_PRIVATE_KEY = secrets.getString("GITHUB_SSH_PRIVATE_KEY");
-
-        MATTERMOST_TOKEN_LOCK = secrets.getString("MATTERMOST_TOKEN_LOCK");
-        MATTERMOST_TOKEN_UNLOCK = secrets.getString("MATTERMOST_TOKEN_UNLOCK");
 
         UNHANDLED_EXCEPTIONS_WEBHOOK_URL = secrets.getString("UNHANDLED_EXCEPTIONS_WEBHOOK_URL");
     }

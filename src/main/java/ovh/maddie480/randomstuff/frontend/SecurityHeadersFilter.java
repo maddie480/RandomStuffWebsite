@@ -61,13 +61,6 @@ public class SecurityHeadersFilter extends HttpFilter {
                     "style-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; " +
                     "frame-ancestors 'none'; " +
                     "object-src 'none';");
-        } else if ("/static/parrot-quick-importer-online.html".equals(req.getRequestURI())) {
-            // :parrot_parrot:
-            res.setHeader("Content-Security-Policy", "default-src 'self'; " +
-                    "img-src 'self' https://cultofthepartyparrot.com; " +
-                    "script-src 'self' https://code.jquery.com; " +
-                    "frame-ancestors 'none'; " +
-                    "object-src 'none';");
         } else if (Arrays.asList("/quest/mods", "/quest/tools").contains(req.getRequestURI())) {
             // legacy stuff *has* to use jQuery
             res.setHeader("Content-Security-Policy", "default-src 'self'; " +

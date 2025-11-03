@@ -336,22 +336,6 @@
                     </execution>
 
                     <execution>
-                        <id>generate Parrot Quick Importer</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <configuration>
-                            <executable>java</executable>
-                            <workingDirectory>${project.build.directory}/random-stuff-website-1.0.0/WEB-INF/classes</workingDirectory>
-                            <arguments>
-                                <argument>-cp</argument>
-                                <argument>.:../../../dependency/commons-io-2.20.0.jar:../../../dependency/commons-lang3-3.18.0.jar:../../../dependency/commons-text-1.14.0.jar:../../../dependency/jsoup-1.21.2.jar</argument>
-                                <argument>ovh.maddie480.randomstuff.frontend.ParrotQuickGenerator</argument>
-                            </arguments>
-                        </configuration>
-                    </execution>
-                    <execution>
                         <id>generate robots.txt</id>
                         <phase>prepare-package</phase>
                         <goals>
@@ -413,7 +397,6 @@
                                 <argument>-v</argument>
                                 <argument>ovh/maddie480/randomstuff/frontend/LuaCutscenesDocumentationIntegrator.class</argument>
                                 <argument>ovh/maddie480/randomstuff/frontend/PrepareForRadioLNJ.class</argument>
-                                <argument>ovh/maddie480/randomstuff/frontend/ParrotQuickGenerator.class</argument>
                                 <argument>ovh/maddie480/randomstuff/frontend/PrepareUnicodeMirror.class</argument>
                                 <argument>ovh/maddie480/randomstuff/frontend/RobotsTxtPuller.class</argument>
                             </arguments>
