@@ -336,6 +336,21 @@
                     </execution>
 
                     <execution>
+                        <id>create resources/static directory</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>mkdir</executable>
+                            <workingDirectory>${project.build.directory}/random-stuff-website-1.0.0/WEB-INF/classes</workingDirectory>
+                            <arguments>
+                                <argument>-p</argument>
+                                <argument>resources/static</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
                         <id>generate robots.txt</id>
                         <phase>prepare-package</phase>
                         <goals>
