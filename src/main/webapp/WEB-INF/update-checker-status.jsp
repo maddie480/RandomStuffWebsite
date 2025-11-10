@@ -20,7 +20,7 @@
 
 <% if (request.getAttribute("lastFullCheckAt") != null) { %>
     <p>
-        The database <i>fully updates</i> <b>every 6 hours</b>. It goes through all Celeste mods,
+        The database <i>fully updates</i> <b>once a day</b>. It goes through all Celeste mods,
         allowing to update view/download/like counts, and to detect mod deletions.
         <br>
         The last <i>full update</i> happened on
