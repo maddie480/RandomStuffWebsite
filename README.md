@@ -371,7 +371,7 @@ Check [the GitHub docs](https://docs.github.com/en/rest/releases/releases#get-th
 This API is available at `https://maddie480.ovh/celeste/helper-list`. It gives a list of everest.yaml `Name`s for helper mods, in JSON format.
 It is automatically generated based on the "Helpers" category on GameBanana, with some exceptions manually added.
 
-## Celeste Mod ID to Name API
+## Celeste Mod ID to Name / Category API
 
 This API is available at `https://maddie480.ovh/celeste/mod_ids_to_names.json`. It gives a dictionary that allows to find the titles of the GameBanana
 pages from everest.yaml `Name`s, in JSON format:
@@ -384,6 +384,20 @@ pages from everest.yaml `Name`s, in JSON format:
     "IAccidentallyFourCassetteBlocks": "I Accidentally Four Cassette Blocks",
     "resverie story contest": "Madeline's Floriography",
     "Aftermath Ch3":"Aftermath Ch3: Internal Void",
+    [...]
+}
+```
+
+
+The same exists to associate everest.yaml `Name`s to GameBanana category names, at `https://maddie480.ovh/celeste/mod_ids_to_categories.json`:
+
+```json
+{
+    "CSRC Frog": "Tools",
+    "puppyposting": "Maps",
+    "viewpoint-dreampoint-point": "Maps",
+    "WitheredPassage": "Maps",
+    "IAccidentallyFourCassetteBlocks": "Maps",
     [...]
 }
 ```
