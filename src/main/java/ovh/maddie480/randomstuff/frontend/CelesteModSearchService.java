@@ -38,7 +38,7 @@ import static com.max480.randomstuff.backend.celeste.crontabs.UpdateCheckerTrack
         "/celeste/gamebanana-search-reload", "/celeste/gamebanana-list", "/celeste/gamebanana-categories", "/celeste/gamebanana-info",
         "/celeste/random-map", "/celeste/gamebanana-featured", "/celeste/everest-versions", "/celeste/everest-versions-reload",
         "/celeste/olympus-versions", "/celeste/loenn-versions", "/celeste/helper-list", "/celeste/gamebanana-subcategories",
-        "/celeste/mod_ids_to_names.json"})
+        "/celeste/mod_ids_to_names.json", "/celeste/mod_ids_to_categories.json"})
 public class CelesteModSearchService extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(CelesteModSearchService.class);
 
@@ -48,6 +48,7 @@ public class CelesteModSearchService extends HttpServlet {
     private byte[] everestVersions;
     private byte[] helperList;
     private byte[] modIdsToNames;
+    private byte[] modIdsToCategories;
     private byte[] precomputedCategoryList;
     private byte[] precomputedSubcategoryList;
 
@@ -119,6 +120,10 @@ public class CelesteModSearchService extends HttpServlet {
         }
         if ("/celeste/mod_ids_to_names.json".equals(request.getRequestURI())) {
             handleModIdsToNamesList(response);
+            return;
+        }
+        if ("/celeste/mod_ids_to_categories.json".equals(request.getRequestURI())) {
+            handleModIdsToCategoriesList(response);
             return;
         }
     }
@@ -448,6 +453,11 @@ public class CelesteModSearchService extends HttpServlet {
         response.getOutputStream().write(modIdsToNames);
     }
 
+    private void handleModIdsToCategoriesList(HttpServletResponse response) throws IOException {
+        response.setHeader("Content-Type", "application/json");
+        response.getOutputStream().write(modIdsToCategories);
+    }
+
     private static String[] tokenize(String string) {
         string = StringUtils.stripAccents(string.toLowerCase(Locale.ROOT)) // "Pokémon" => "pokemon"
                 .replace("'", "") // "Maddie's Helping Hand" => "maddies helping hand"
@@ -611,17 +621,38 @@ public class CelesteModSearchService extends HttpServlet {
     }
 
     private void refreshModIDsToNamesMap(Map<String, Map<String, Object>> updaterDatabase) throws IOException {
-        Map<String, String> modIdsToNamesMap = updaterDatabase.entrySet().stream()
+        Map<String, Pair<String, String>> modIdsToNamesAndCategoriesMap = updaterDatabase.entrySet().stream()
                 .map(entry -> Pair.of(entry.getKey(), modDatabaseForSorting.stream()
                         .filter(mod -> mod.type.equals(entry.getValue().get("GameBananaType")) && mod.id == (int) entry.getValue().get("GameBananaId"))
                         .findFirst()
-                        .map(mod -> (String) mod.fullInfo.get("Name"))
+                        .map(mod -> Pair.of((String) mod.fullInfo.get("Name"), getCategory(mod.fullInfo)))
                         .orElse(null)))
                 .filter(entry -> entry.getValue() != null)
                 .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
 
-        modIdsToNames = new JSONObject(modIdsToNamesMap).toString().getBytes(StandardCharsets.UTF_8);
-        log.debug("Associated {} mod IDs with their names.", modIdsToNamesMap.size());
+        {
+            Map<String, String> modIdsToNamesMap = modIdsToNamesAndCategoriesMap.entrySet().stream()
+                    .collect(Collectors.toMap(Map.Entry::getKey, k -> k.getValue().getLeft()));
+            modIdsToNames = new JSONObject(modIdsToNamesMap).toString().getBytes(StandardCharsets.UTF_8);
+        }
+        {
+            Map<String, String> modIdsToCategoriesMap = modIdsToNamesAndCategoriesMap.entrySet().stream()
+                    .collect(Collectors.toMap(Map.Entry::getKey, k -> k.getValue().getRight()));
+            modIdsToCategories = new JSONObject(modIdsToCategoriesMap).toString().getBytes(StandardCharsets.UTF_8);
+        }
+
+        log.debug("Associated {} mod IDs with their names.", modIdsToNamesAndCategoriesMap.size());
+    }
+
+    private String getCategory(Map<String, Object> fullInfo) {
+        switch ((String) fullInfo.get("GameBananaType")) {
+            case "Tool":
+                return "Tools";
+            case "Wip":
+                return "WiPs";
+        }
+        Object categoryName = fullInfo.get("CategoryName");
+        return categoryName != null ? (String) categoryName : "Other/Misc";
     }
 
     private void refreshEverestVersions() throws IOException {
