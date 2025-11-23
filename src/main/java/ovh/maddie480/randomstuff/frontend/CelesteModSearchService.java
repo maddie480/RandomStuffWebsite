@@ -662,7 +662,7 @@ public class CelesteModSearchService extends HttpServlet {
                                 matchFileWithoutVersions = StringUtils.strip(matchFileWithoutVersions, " -/");
                                 log.debug("Matched file description for {} / file {}: {} -> {}", entry.getKey(), fileId, matchFile, matchFileWithoutVersions);
 
-                                if (!matchFile.isEmpty()) {
+                                if (!matchFileWithoutVersions.isEmpty()) {
                                     concat = " ∙ " + matchFileWithoutVersions;
                                 }
                             }
