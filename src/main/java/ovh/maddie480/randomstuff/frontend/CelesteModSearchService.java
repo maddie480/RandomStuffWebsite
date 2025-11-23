@@ -620,12 +620,54 @@ public class CelesteModSearchService extends HttpServlet {
         log.debug("Found {} helpers in the database.", helpersList.size());
     }
 
-    private void refreshModIDsToNamesMap(Map<String, Map<String, Object>> updaterDatabase) throws IOException {
+    private void refreshModIDsToNamesMap(Map<String, Map<String, Object>> updaterDatabase) {
+        Set<String> idsSharingPageWithOtherIds = new HashSet<>();
+        {
+            Map<String, String> encounteredPages = new HashMap<>();
+            for (Map.Entry<String, Map<String, Object>> entry : updaterDatabase.entrySet()) {
+                String page = entry.getValue().get("GameBananaType") + "/" + entry.getValue().get("GameBananaId");
+                if (encounteredPages.containsKey(page)) {
+                    idsSharingPageWithOtherIds.add(encounteredPages.get(page));
+                    idsSharingPageWithOtherIds.add(entry.getKey());
+                } else {
+                    encounteredPages.put(page, entry.getKey());
+                }
+            }
+            log.debug("Mod IDs found to be sharing pages with other mod IDs: {}", idsSharingPageWithOtherIds);
+        }
+
         Map<String, Pair<String, String>> modIdsToNamesAndCategoriesMap = updaterDatabase.entrySet().stream()
                 .map(entry -> Pair.of(entry.getKey(), modDatabaseForSorting.stream()
                         .filter(mod -> mod.type.equals(entry.getValue().get("GameBananaType")) && mod.id == (int) entry.getValue().get("GameBananaId"))
                         .findFirst()
-                        .map(mod -> Pair.of((String) mod.fullInfo.get("Name"), getCategory(mod.fullInfo)))
+                        .map(mod -> {
+                            String concat = "";
+                            if (idsSharingPageWithOtherIds.contains(entry.getKey())) {
+                                int fileId = (int) entry.getValue().get("GameBananaFileId");
+                                String matchFile = ((List<Map<String, Object>>) mod.fullInfo.get("Files")).stream()
+                                        .filter(f -> f.get("URL").equals("https://gamebanana.com/dl/" + fileId))
+                                        .map(f -> (String) f.get("Description"))
+                                        .findFirst().orElse("");
+
+                                // we want to remove version numbers because this might not be the one the user has installed.
+                                StringBuilder megaregex = new StringBuilder();
+                                for (int i = 1; i <= 7; i++) {
+                                    for (int j = 0; j < i; j++) {
+                                        megaregex.append('[').append("version".charAt(j)).append(Character.toUpperCase("version".charAt(j))).append(']');
+                                    }
+                                    if (i != 7) megaregex.append('|');
+                                }
+                                String matchFileWithoutVersions = matchFile.replaceAll("(" + megaregex + ")?\\.? ?([0-9]+.)*[0-9]+", "");
+                                matchFileWithoutVersions = matchFileWithoutVersions.replace("[]", "").replace("()", "");
+                                matchFileWithoutVersions = StringUtils.strip(matchFileWithoutVersions, " -/");
+                                log.debug("Matched file description for {} / file {}: {} -> {}", entry.getKey(), fileId, matchFile, matchFileWithoutVersions);
+
+                                if (!matchFile.isEmpty()) {
+                                    concat = " ∙ " + matchFileWithoutVersions;
+                                }
+                            }
+                            return Pair.of((String) mod.fullInfo.get("Name") + concat, getCategory(mod.fullInfo));
+                        })
                         .orElse(null)))
                 .filter(entry -> entry.getValue() != null)
                 .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
