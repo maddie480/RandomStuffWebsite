@@ -58,9 +58,9 @@ public class PrepareForRadioLNJ {
 
                 ProcessBuilder process;
                 if (useCookies) {
-                    process = new ProcessBuilder("/tmp/yt-dlp", "-f", "bestaudio*", "--cookies", "/tmp/youtube_cookies.txt", source.getString("url"));
+                    process = new ProcessBuilder("/tmp/yt-dlp", "-f", "bestaudio*", "--remote-components", "ejs:github", "--cookies", "/tmp/youtube_cookies.txt", source.getString("url"));
                 } else {
-                    process = new ProcessBuilder("/tmp/yt-dlp", "-f", "bestaudio*", source.getString("url"));
+                    process = new ProcessBuilder("/tmp/yt-dlp", "-f", "bestaudio*", "--remote-components", "ejs:github", source.getString("url"));
                 }
 
                 process
