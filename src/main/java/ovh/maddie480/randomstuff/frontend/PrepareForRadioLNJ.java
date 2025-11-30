@@ -58,9 +58,9 @@ public class PrepareForRadioLNJ {
 
                 ProcessBuilder process;
                 if (useCookies) {
-                    process = new ProcessBuilder("/tmp/yt-dlp", "-f", "bestaudio*", "--js-runtimes", "deno:/home/runner/.deno/bin/deno", "--cookies", "/tmp/youtube_cookies.txt", source.getString("url"));
+                    process = new ProcessBuilder("/tmp/yt-dlp", "-f", "bestaudio", "--js-runtimes", "deno:/home/runner/.deno/bin/deno", "--cookies", "/tmp/youtube_cookies.txt", source.getString("url"));
                 } else {
-                    process = new ProcessBuilder("/tmp/yt-dlp", "-f", "bestaudio*", "--js-runtimes", "deno:/home/runner/.deno/bin/deno", source.getString("url"));
+                    process = new ProcessBuilder("/tmp/yt-dlp", "-f", "bestaudio", "--js-runtimes", "deno:/home/runner/.deno/bin/deno", source.getString("url"));
                 }
 
                 process
