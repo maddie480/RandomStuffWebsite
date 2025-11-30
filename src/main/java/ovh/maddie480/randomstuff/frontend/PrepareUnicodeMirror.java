@@ -32,6 +32,7 @@ public class PrepareUnicodeMirror {
                 "wget",
                 "-pk" + (fastMode ? "" : "r"), // page requisites + convert links + recursive
                 "-np", // do not go up to the rest of the Unicode website
+                "--tries=3", "--retry-on-host-error", "--retry-connrefused", // be tolerant of errors
                 "https://www.unicode.org/emoji/charts/" + (fastMode ? "emoji-released.html" : "")
         )
                 .directory(targetDirectory.getParent().toFile())
