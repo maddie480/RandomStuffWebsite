@@ -5,7 +5,8 @@ RUN apt-get update && apt-get upgrade -y && apt-get clean \
   && usermod -u 1001 ubuntu && groupmod -g 1001 ubuntu \
   && usermod -u 1000 jetty && groupmod -g 1000 jetty \
   && (find / -user 999 -exec chown -c jetty {} \; || echo ok) \
-  && (find / -group 999 -exec chgrp -c jetty {} \; || echo ok)
+  && (find / -group 999 -exec chgrp -c jetty {} \; || echo ok) \
+  && setcap CAP_NET_BIND_SERVICE=+eip /opt/java/openjdk/bin/java
 USER jetty
 
 COPY target/random-stuff-website-1.0.0.war /var/lib/jetty/webapps/ROOT.war
