@@ -10,7 +10,7 @@ USER jetty
 
 COPY target/random-stuff-website-1.0.0.war /var/lib/jetty/webapps/ROOT.war
 
-RUN java -jar "$JETTY_HOME/start.jar" --add-modules=requestlog,console-capture,http-forwarded,ee10-deploy,ee10-jsp,ssl-reload \
+RUN java -jar "$JETTY_HOME/start.jar" --add-modules=requestlog,console-capture,ee10-deploy,ee10-jsp,https,ssl-reload \
   && echo "jetty.console-capture.retainDays=30" >> /var/lib/jetty/start.d/console-capture.ini \
   && echo "jetty.console-capture.append=true" >> /var/lib/jetty/start.d/console-capture.ini \
   && echo "jetty.requestlog.retainDays=30" >> /var/lib/jetty/start.d/requestlog.ini \
