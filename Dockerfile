@@ -17,8 +17,8 @@ RUN java -jar "$JETTY_HOME/start.jar" --add-modules=requestlog,console-capture,h
   && echo 'jetty.requestlog.formatString=%{client}a - %u %{dd/MMM/yyyy:HH:mm:ss ZZZ|GMT}t "%r" %s %IB/%OB %{ms}Tms "%{Referer}i" "%{User-Agent}i"' >> /var/lib/jetty/start.d/requestlog.ini \
   && echo "jetty.requestlog.append=true" >> /var/lib/jetty/start.d/requestlog.ini \
   && echo "jetty.deploy.scanInterval=0" >> /var/lib/jetty/start.d/ee10-deploy.ini \
-  && echo "jetty.sslContext.reload.scanInterval=1" >> /var/lib/jetty/start.d/ssl-reload.ini
-  && mkdir /var/lib/jetty/etc
+  && echo "jetty.sslContext.reload.scanInterval=1" >> /var/lib/jetty/start.d/ssl-reload.ini \
+  && mkdir /var/lib/jetty/etc \
   && echo -e '<Configure id="sslContextFactory" class="org.eclipse.jetty.util.ssl.SslContextFactory$Server">' \
     '\n\t<Set name="KeyStorePath">etc/keystore</Set>\n\t<Set name="KeyStorePassword">storep</Set>' \
     '\n</Configure>' \
