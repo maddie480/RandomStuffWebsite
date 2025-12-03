@@ -6,6 +6,7 @@ RUN apt-get update && apt-get upgrade -y && apt-get clean \
   && usermod -u 1000 jetty && groupmod -g 1000 jetty \
   && (find / -user 999 -exec chown -c jetty {} \; || echo ok) \
   && (find / -group 999 -exec chgrp -c jetty {} \; || echo ok) \
+  && apt install libcap2-bin \
   && setcap CAP_NET_BIND_SERVICE=+eip /opt/java/openjdk/bin/java
 USER jetty
 
