@@ -168,7 +168,7 @@ public class CelesteFontGeneratorService extends HttpServlet {
 
         // publish the message to the backend!
         try (Socket socket = new Socket()) {
-            socket.connect(new InetSocketAddress("backend", 44480));
+            socket.connect(new InetSocketAddress("localhost", 44480));
             try (OutputStream os = socket.getOutputStream();
                  OutputStreamWriter bw = new OutputStreamWriter(os, StandardCharsets.UTF_8)) {
 
