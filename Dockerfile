@@ -19,6 +19,8 @@ RUN java -jar "$JETTY_HOME/start.jar" --add-modules=requestlog,console-capture,e
   && echo "jetty.deploy.scanInterval=0" >> /var/lib/jetty/start.d/ee10-deploy.ini \
   && echo "jetty.sslContext.reload.scanInterval=1" >> /var/lib/jetty/start.d/ssl-reload.ini \
   && echo "jetty.sslContext.keyStorePassword=storep" >> /var/lib/jetty/start.d/ssl-context.ini \
+  && echo "jetty.ssl.port=443" >> /var/lib/jetty/start.d/ssl.ini \
+  && echo "jetty.http.port=80" >> /var/lib/jetty/start.d/http.ini \
   && mkdir /var/lib/jetty/etc
 
 VOLUME /shared
