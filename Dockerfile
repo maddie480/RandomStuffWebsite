@@ -18,11 +18,8 @@ RUN java -jar "$JETTY_HOME/start.jar" --add-modules=requestlog,console-capture,h
   && echo "jetty.requestlog.append=true" >> /var/lib/jetty/start.d/requestlog.ini \
   && echo "jetty.deploy.scanInterval=0" >> /var/lib/jetty/start.d/ee10-deploy.ini \
   && echo "jetty.sslContext.reload.scanInterval=1" >> /var/lib/jetty/start.d/ssl-reload.ini \
-  && mkdir /var/lib/jetty/etc \
-  && echo '<Configure id="sslContextFactory" class="org.eclipse.jetty.util.ssl.SslContextFactory$Server">' \
-    '\n\t<Set name="KeyStorePath">etc/keystore</Set>\n\t<Set name="KeyStorePassword">storep</Set>' \
-    '\n</Configure>' \
-    > /var/lib/jetty/etc/jetty-ssl-context.xml
+  && echo "jetty.sslContext.keyStorePassword=storep" >> /var/lib/jetty/start.d/ssl-context.ini \
+  && mkdir /var/lib/jetty/etc
 
 VOLUME /shared
 VOLUME /var/lib/jetty/logs
