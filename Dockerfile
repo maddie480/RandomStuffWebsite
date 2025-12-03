@@ -10,13 +10,18 @@ USER jetty
 
 COPY target/random-stuff-website-1.0.0.war /var/lib/jetty/webapps/ROOT.war
 
-RUN java -jar "$JETTY_HOME/start.jar" --add-modules=requestlog,console-capture,http-forwarded,ee10-deploy,ee10-jsp,https,ssl-reload \
+RUN java -jar "$JETTY_HOME/start.jar" --add-modules=requestlog,console-capture,http-forwarded,ee10-deploy,ee10-jsp,ssl-reload \
   && echo "jetty.console-capture.retainDays=30" >> /var/lib/jetty/start.d/console-capture.ini \
   && echo "jetty.console-capture.append=true" >> /var/lib/jetty/start.d/console-capture.ini \
   && echo "jetty.requestlog.retainDays=30" >> /var/lib/jetty/start.d/requestlog.ini \
   && echo 'jetty.requestlog.formatString=%{client}a - %u %{dd/MMM/yyyy:HH:mm:ss ZZZ|GMT}t "%r" %s %IB/%OB %{ms}Tms "%{Referer}i" "%{User-Agent}i"' >> /var/lib/jetty/start.d/requestlog.ini \
   && echo "jetty.requestlog.append=true" >> /var/lib/jetty/start.d/requestlog.ini \
-  && echo "jetty.deploy.scanInterval=0" >> /var/lib/jetty/start.d/ee10-deploy.ini 
+  && echo "jetty.deploy.scanInterval=0" >> /var/lib/jetty/start.d/ee10-deploy.ini \
+  && echo "jetty.sslContext.reload.scanInterval=1" >> /var/lib/jetty/start.d/ssl-reload.ini \
+  && echo -e '<Configure id="sslContextFactory" class="org.eclipse.jetty.util.ssl.SslContextFactory$Server">' \
+    '\n\t<Set name="KeyStorePath">etc/keystore</Set>\n\t<Set name="KeyStorePassword">storep</Set>' \
+    '\n</Configure>' \
+    > /usr/local/jetty/etc/jetty-ssl-context.xml
 
 VOLUME /shared
 VOLUME /var/lib/jetty/logs
