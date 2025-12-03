@@ -5,7 +5,7 @@ RUN apt-get update && apt-get upgrade -y && apt-get clean \
   && usermod -u 1001 ubuntu && groupmod -g 1001 ubuntu \
   && usermod -u 1000 jetty && groupmod -g 1000 jetty \
   && (find / -user 999 -exec chown -c jetty {} \; || echo ok) \
-  && (find / -group 999 -exec chgrp -c jetty {} \; || echo ok)
+  && (find / -group 999 -exec chgrp -c jetty {} \; || echo ok) \
   && echo -e '<Configure id="sslContextFactory" class="org.eclipse.jetty.util.ssl.SslContextFactory$Server">' \
     '\n\t<Set name="KeyStorePath">etc/keystore</Set>\n\t<Set name="KeyStorePassword">storep</Set>' \
     '\n</Configure>' \
