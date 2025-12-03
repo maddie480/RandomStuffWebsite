@@ -319,23 +319,6 @@
                 <version>3.6.2</version>
                 <executions>
                     <execution>
-                        <id>integrate Lua Cutscenes documentation</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <configuration>
-                            <executable>java</executable>
-                            <workingDirectory>${project.build.directory}/random-stuff-website-1.0.0/WEB-INF/classes</workingDirectory>
-                            <arguments>
-                                <argument>-cp</argument>
-                                <argument>.:../../../dependency/snakeyaml-2.5.jar:../../../dependency/commons-io-2.21.0.jar</argument>
-                                <argument>ovh.maddie480.randomstuff.frontend.LuaCutscenesDocumentationIntegrator</argument>
-                            </arguments>
-                        </configuration>
-                    </execution>
-
-                    <execution>
                         <id>create resources/static directory</id>
                         <phase>prepare-package</phase>
                         <goals>
