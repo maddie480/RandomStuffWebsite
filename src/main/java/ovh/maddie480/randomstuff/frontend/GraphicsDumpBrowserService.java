@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import static ovh.maddie480.randomstuff.frontend.UnhandledExceptionFilter.sendDiscordMessage;
+
 @WebServlet(name = "GraphicsDumpBrowserService", urlPatterns = {"/celeste/graphics-dump-browser/*"}, loadOnStartup = 12)
 public class GraphicsDumpBrowserService extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(GraphicsDumpBrowserService.class);
@@ -31,6 +33,8 @@ public class GraphicsDumpBrowserService extends HttpServlet {
             OutputStream os = Files.newOutputStream(Paths.get("/tmp/graphics-dump.zip"))) {
 
             IOUtils.copy(is, os);
+
+            sendDiscordMessage("Frontend Service", ":arrow_up: :globe_with_meridians: The frontend just started.");
 
         } catch (IOException e) {
             log.warn("Preparing graphics dump browser failed!", e);
