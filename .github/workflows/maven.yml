@@ -34,14 +34,14 @@ jobs:
 
     - name: Cache graphics dump
       id: graphicsdumpcache
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: src/main/webapp/WEB-INF/classes/resources/static/graphics-dump.zip
         key: graphics-dump-${{ hashFiles('.github/workflows/maven.yml') }}
 
     - name: Cache FMOD project
       id: fmodprojectcache
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: src/main/webapp/WEB-INF/classes/resources/static/celeste-fmod-project.zip
         key: fmod-project-${{ hashFiles('.github/workflows/maven.yml') }}
@@ -66,7 +66,7 @@ jobs:
 
     - name: Cache Radio LNJ
       id: radiocache
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       if: github.ref == 'refs/heads/main'
       with:
         path: |
@@ -75,14 +75,14 @@ jobs:
         key: radio-lnj-${{ hashFiles('.github/radio-lnj-sources.json') }}
 
     - name: Cache Unicode mirror
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       if: github.ref == 'refs/heads/main'
       with:
         path: target/random-stuff-website-1.0.0/WEB-INF/classes/resources/static/unicode-mirror/*
         key: unicode-mirror-${{ hashFiles('src/main/java/ovh/maddie480/randomstuff/frontend/PrepareUnicodeMirror.java') }}
 
     - name: Cache node_modules
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: front-vue/node_modules/*
         key: node-modules-${{ hashFiles('front-vue/package-lock.json') }}
