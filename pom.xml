@@ -73,7 +73,7 @@
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
-            <version>20250517</version>
+            <version>20251224</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.yaml/snakeyaml -->
@@ -378,7 +378,7 @@
                             <workingDirectory>${project.build.directory}/random-stuff-website-1.0.0/WEB-INF/classes</workingDirectory>
                             <arguments>
                                 <argument>-cp</argument>
-                                <argument>.:../../../dependency/commons-io-2.21.0.jar:../../../dependency/commons-lang3-3.18.0.jar:../../../dependency/json-20250517.jar</argument>
+                                <argument>.:../../../dependency/commons-io-2.21.0.jar:../../../dependency/commons-lang3-3.18.0.jar:../../../dependency/json-20251224.jar</argument>
                                 <argument>ovh.maddie480.randomstuff.frontend.PrepareForRadioLNJ</argument>
                             </arguments>
                         </configuration>
