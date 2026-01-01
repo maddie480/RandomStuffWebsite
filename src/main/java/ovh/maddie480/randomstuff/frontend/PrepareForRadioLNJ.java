@@ -36,13 +36,6 @@ public class PrepareForRadioLNJ {
             return;
         }
 
-        boolean useCookies = false;
-        if (!System.getenv("YT_DLP_COOKIES").isEmpty()) {
-            logger.info("Writing YouTube cookies");
-            FileUtils.writeStringToFile(new File("/tmp/youtube_cookies.txt"), System.getenv("YT_DLP_COOKIES"), StandardCharsets.UTF_8);
-            useCookies = true;
-        }
-
         Files.createDirectory(targetDirectory);
 
         JSONArray metadata = new JSONArray();
@@ -50,25 +43,10 @@ public class PrepareForRadioLNJ {
         for (Object item : new JSONArray(System.getenv("RADIO_LNJ_SOURCES"))) {
             JSONObject source = (JSONObject) item;
 
-            if (source.getBoolean("useYoutubeDl")) {
-                logger.info("Downloading from YouTube playlist at " + source.getString("url"));
+            if (source.getBoolean("fromYouTube")) {
+                logger.info("Retrieving from YouTube playlist at " + source.getString("url"));
 
-                Path ytDlTarget = Paths.get("/tmp/yt-dlp-tmp");
-                Files.createDirectory(ytDlTarget);
-
-                ProcessBuilder process;
-                if (useCookies) {
-                    process = new ProcessBuilder("/tmp/yt-dlp", "-f", "bestaudio", "--js-runtimes", "deno:/home/runner/.deno/bin/deno", "--cookies", "/tmp/youtube_cookies.txt", source.getString("url"));
-                } else {
-                    process = new ProcessBuilder("/tmp/yt-dlp", "-f", "bestaudio", "--js-runtimes", "deno:/home/runner/.deno/bin/deno", source.getString("url"));
-                }
-
-                process
-                        .inheritIO()
-                        .directory(ytDlTarget.toFile())
-                        .start()
-                        .waitFor();
-
+                Path ytDlTarget = Paths.get("/tmp/youtube-pouet", source.getString("url").replaceAll("[^0-9a-zA-Z]", "_"));
                 try (Stream<Path> downloadedFiles = Files.list(ytDlTarget)) {
                     for (Path file : downloadedFiles.toList()) {
                         cutAndProcess(source, metadata, file, source.getString("prefix") +

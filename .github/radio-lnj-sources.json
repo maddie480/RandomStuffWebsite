@@ -1,67 +1,67 @@
 [
    {
       "url": "https://files.gamebanana.com/bitpit/202508_scooter_war3z.zip",
-      "useYoutubeDl": false,
+      "fromYouTube": false,
       "prefix": "Scooter War3z - Piste "
    },
    {
       "url": "https://files.gamebanana.com/bitpit/202508_alpha_zylon.zip",
-      "useYoutubeDl": false,
+      "fromYouTube": false,
       "prefix":"Alpha Zylon - "
    },
    {
       "url": "https://files.gamebanana.com/bitpit/202508_glacier.zip",
-      "useYoutubeDl": false,
+      "fromYouTube": false,
       "prefix": "Glacier - "
    },
    {
       "url": "https://files.gamebanana.com/bitpit/202508_manhattan_chase.zip",
-      "useYoutubeDl": false,
+      "fromYouTube": false,
       "prefix": "Manhattan Chase - "
    },
    {
       "url": "https://files.gamebanana.com/bitpit/202508_forklift1.zip",
-      "useYoutubeDl": false,
+      "fromYouTube": false,
       "prefix": "Forklift Racer - "
    },
    {
       "url": "https://files.gamebanana.com/bitpit/202508_forklift2.zip",
-      "useYoutubeDl": false,
+      "fromYouTube": false,
       "prefix": "Forklift Racer - "
    },
    {
       "url": "https://files.gamebanana.com/bitpit/202508_war_soldier.zip",
-      "useYoutubeDl": false,
+      "fromYouTube": false,
       "prefix": ""
    },
    {
       "url": "https://files.gamebanana.com/bitpit/202508_psycho_killer_2.zip",
-      "useYoutubeDl": false,
+      "fromYouTube": false,
       "prefix": "Psycho Killer - "
    },
    {
       "url": "https://files.gamebanana.com/bitpit/202508_flugratten.zip",
-      "useYoutubeDl": false,
+      "fromYouTube": false,
       "prefix": "Flugratten - "
    },
    {
       "url": "https://files.gamebanana.com/bitpit/lnj_dlc_0701_c3ab0.zip",
-      "useYoutubeDl": false,
+      "fromYouTube": false,
       "prefix": ""
    },
    {
       "url": "https://files.gamebanana.com/bitpit/202508_the_pizza_courier.zip",
-      "useYoutubeDl": false,
+      "fromYouTube": false,
       "prefix": ""
    },
    {
       "url": "https://files.gamebanana.com/bitpit/202508_lnj_20231129.zip",
-      "useYoutubeDl": false,
+      "fromYouTube": false,
       "prefix": ""
    },
    {
       "url": "https://files.gamebanana.com/bitpit/202508_shs.zip",
-      "useYoutubeDl": false,
+      "fromYouTube": false,
       "prefix": "Streatham Hill Stories - ",
       "cuts": {
          "Streatham Hill Stories - Lipstick Radio": ["0:00", "4:30", "9:54", "14:24", "18:21", "23:15", "26:27"],
@@ -71,67 +71,67 @@
    },
    {
       "url": "https://files.gamebanana.com/bitpit/202508_dit.zip",
-      "useYoutubeDl": false,
+      "fromYouTube": false,
       "prefix": "Driving In Tehran - Level "
    },
    {
       "url": "https://files.gamebanana.com/bitpit/202508_darkyears.zip",
-      "useYoutubeDl": false,
+      "fromYouTube": false,
       "prefix": "Dark Years - "
    },
    {
       "url": "https://files.gamebanana.com/bitpit/202508_nightmare_simulator.zip",
-      "useYoutubeDl": false,
+      "fromYouTube": false,
       "prefix": "Nightmare Simulator - "
    },
    {
       "url": "https://files.gamebanana.com/bitpit/202508_menuogg.zip",
-      "useYoutubeDl": false,
+      "fromYouTube": false,
       "prefix": "FlatOut 3 - "
    },
    {
       "url": "https://files.gamebanana.com/bitpit/202508_turbo_trucks_soundtrack.zip",
-      "useYoutubeDl": false,
+      "fromYouTube": false,
       "prefix": ""
    },
    {
       "url": "https://files.gamebanana.com/bitpit/202508_that_tjkrfnd.zip",
-      "useYoutubeDl": false,
+      "fromYouTube": false,
       "prefix": "Western Desperado - "
    },
    {
       "url": "https://files.gamebanana.com/bitpit/202508_kang_fu.zip",
-      "useYoutubeDl": false,
+      "fromYouTube": false,
       "prefix": "Kang Fu - "
    },
    {
       "url": "https://files.gamebanana.com/bitpit/202508_no.zip",
-      "useYoutubeDl": false,
+      "fromYouTube": false,
       "prefix": ""
    },
    {
       "url": "https://files.gamebanana.com/bitpit/202508_lnj_lost_youtube.zip",
-      "useYoutubeDl": false,
+      "fromYouTube": false,
       "prefix": ""
    },
    {
       "url": "https://files.gamebanana.com/bitpit/geopolsim.zip",
-      "useYoutubeDl": false,
+      "fromYouTube": false,
       "prefix": "Geo-Political Simulator - "
    },
    {
       "url": "https://youtube.com/playlist?list=PLA423290E18CD6DFF",
-      "useYoutubeDl": true,
+      "fromYouTube": true,
       "prefix": ""
    },
    {
       "url": "https://youtu.be/_0Jx8YjnP_0",
-      "useYoutubeDl": true,
+      "fromYouTube": true,
       "prefix": ""
    },
    {
       "url": "https://youtube.com/playlist?list=PLQpJkz64P9c5OCTfMSLvo1i-IugPoB4pt",
-      "useYoutubeDl": true,
+      "fromYouTube": true,
       "prefix": "",
       "cuts": {
          "Trespasser 1998 Full OST": ["0:00", "0:24", "1:23", "2:29","3:11", "3:51", "4:53", "5:26", "6:01", "6:40",

@@ -96,17 +96,19 @@ jobs:
 
     - name: Install dependencies
       if: steps.radiocache.outputs.cache-hit != 'true' && github.ref == 'refs/heads/main'
+      env:
+        NEXTCLOUD_PASSWORD: ${{ secrets.NEXTCLOUD_PASSWORD }}
       run: |
         sudo apt-get update && sudo apt-get install ffmpeg
         pip install ffmpeg-normalize
-        curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /tmp/yt-dlp
-        chmod +x /tmp/yt-dlp
-        curl -fsSL https://deno.land/install.sh | sh
+        mkdir /tmp/youtube-pouet
+        cd /tmp/youtube-pouet
+        curl --fail -o youtube-pouet.zip -u "maddie:$NEXTCLOUD_PASSWORD" https://nextcloud.maddie480.ovh/remote.php/dav/files/maddie/S3-Storage/youtube-pouet.zip
+        tar xvf youtube-pouet.zip
+        rm youtube-pouet.zip
 
     - name: Build with Maven (w/ Radio LNJ)
       if: github.ref == 'refs/heads/main'
-      env:
-        YT_DLP_COOKIES: ${{ secrets.YT_DLP_COOKIES }}
       run: |
         export RADIO_LNJ_SOURCES=`cat .github/radio-lnj-sources.json`
         mv -v target /tmp/old-target || echo "No existing target folder"
