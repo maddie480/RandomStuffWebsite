@@ -500,13 +500,13 @@ export default {
   .GreenColor {
     color: #3caa3a;
     @media (prefers-color-scheme: dark) {
-      color: rgb(110, 225, 108);
+      color: #6ee16c;
     }
   }
   .RedColor {
     color: #e62222;
     @media (prefers-color-scheme: dark) {
-      color: rgb(255, 133, 133);
+      color: #ff8585;
     }
   }
   .BlueColor {
@@ -522,7 +522,7 @@ export default {
     }
   }
   .GreyColor {
-    color: #747474; 
+    color: #747474;
     @media (prefers-color-scheme: dark) {
       color: #b3b3b3;
     }
