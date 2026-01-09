@@ -506,7 +506,31 @@ export default {
   .RedColor {
     color: #e62222;
     @media (prefers-color-scheme: dark) {
-      color: rgb(255, 78, 78);
+      color: rgb(255, 133, 133);
+    }
+  }
+  .BlueColor {
+    color: #167bc4;
+    @media (prefers-color-scheme: dark) {
+      color: #77b6e2;
+    }
+  }
+  .OrangeColor {
+    color: #fa5412;
+    @media (prefers-color-scheme: dark) {
+      color: #ff8758;
+    }
+  }
+  .GreyColor {
+    color: #747474; 
+    @media (prefers-color-scheme: dark) {
+      color: #b3b3b3;
+    }
+  }
+  .PurpleColor {
+    color: #f3357e;
+    @media (prefers-color-scheme: dark) {
+      color: #fd79ac;
     }
   }
   .Spoiler {
