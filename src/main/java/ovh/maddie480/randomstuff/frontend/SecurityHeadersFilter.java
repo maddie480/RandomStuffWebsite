@@ -26,7 +26,7 @@ public class SecurityHeadersFilter extends HttpFilter {
                     "object-src 'none';");
         } else if (Arrays.asList("/celeste/font-generator", "/celeste/direct-link-service",
                 "/celeste/collab-contest-editor", "/celeste/collab-contest-list",
-                "/celeste/news-network-subscription").contains(req.getRequestURI())) {
+                "/celeste/news-network-subscription", "/celeste/mod-structure-verifier").contains(req.getRequestURI())) {
             // in addition, allow data URLs: Bootstrap dropdowns / checkboxes use inline SVG for their arrow pointing down.
             res.setHeader("Content-Security-Policy", "default-src 'self'; " +
                     "script-src 'self' https://cdn.jsdelivr.net; " +
