@@ -12,16 +12,6 @@
     </filter-mapping>
 
     <filter>
-        <filter-name>TheMeanBeanMachine</filter-name>
-        <filter-class>ovh.maddie480.randomstuff.frontend.TheMeanBeanMachine</filter-class>
-        <async-supported>false</async-supported>
-    </filter>
-    <filter-mapping>
-        <filter-name>TheMeanBeanMachine</filter-name>
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>
-
-    <filter>
         <filter-name>SecurityHeadersFilter</filter-name>
         <filter-class>ovh.maddie480.randomstuff.frontend.SecurityHeadersFilter</filter-class>
         <async-supported>false</async-supported>
