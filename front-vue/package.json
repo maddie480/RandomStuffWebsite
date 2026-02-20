@@ -16,7 +16,7 @@
     "js-yaml": "^4.1.1",
     "vue": "^3.5.28",
     "vue-multiselect": "^3.4.0",
-    "vue-router": "^5.0.2",
+    "vue-router": "^5.0.3",
     "vuex": "^4.1.0"
   },
   "devDependencies": {
