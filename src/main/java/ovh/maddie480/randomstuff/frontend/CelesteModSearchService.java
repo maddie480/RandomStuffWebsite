@@ -65,7 +65,7 @@ public class CelesteModSearchService extends HttpServlet {
     }
 
     @Override
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         if (request.getRequestURI().equals("/celeste/gamebanana-search-reload")) {
             handleSearchReload(request, response);
             return;

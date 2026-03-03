@@ -296,13 +296,12 @@ public class InteractionManager extends HttpServlet {
      * @return The state of the game
      */
     private GameState startGameFromName(String game) {
-        GameState startedGame = switch (game) {
+        return switch (game) {
             case "tictactoe" -> new TicTacToe(Math.random() < 0.5, 3);
             case "connect4" -> new Connect4(Math.random() < 0.5);
             case "reversi" -> new Reversi(Math.random() < 0.5);
             default -> throw new RuntimeException("This is not a known game!");
         };
-        return startedGame;
     }
 
     /**
@@ -435,12 +434,12 @@ public class InteractionManager extends HttpServlet {
 
                 JSONObject button = new JSONObject();
                 button.put("type", 2); // ... well, button
-                button.put("custom_id", (isMultiButton ? ('p' + buttonData.getKey()) : ('t' + buttonData.getValue().get(0))) // is this a "partial" choice?
+                button.put("custom_id", (isMultiButton ? ('p' + buttonData.getKey()) : ('t' + buttonData.getValue().getFirst())) // is this a "partial" choice?
                         // the choice itself
                         + '|' + gameState // ... then the entire game state. This way Discord stores it, so we don't have to.
                 );
                 button.put("style", 2); // secondary (gray)
-                setupButtonLabel(button, isMultiButton ? buttonData.getKey() + "..." : buttonData.getValue().get(0));
+                setupButtonLabel(button, isMultiButton ? buttonData.getKey() + "..." : buttonData.getValue().getFirst());
                 buttons.add(button);
             }
             if (hasBackButton) {
@@ -463,7 +462,7 @@ public class InteractionManager extends HttpServlet {
 
                 JSONArray actionRowContents = new JSONArray();
                 for (int i = 0; i < 5 && !buttons.isEmpty(); i++) {
-                    actionRowContents.put(buttons.remove(0));
+                    actionRowContents.put(buttons.removeFirst());
                 }
 
                 actionRow.put("components", actionRowContents);

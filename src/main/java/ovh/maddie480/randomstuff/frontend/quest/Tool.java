@@ -1,12 +1,12 @@
 package ovh.maddie480.randomstuff.frontend.quest;
 
 public class Tool {
-    public String name;
-    public String version;
-    public String author;
-    public String longDescription;
-    public String downloadUrl;
-    public String moreInfoUrl;
+    public final String name;
+    public final String version;
+    public final String author;
+    public final String longDescription;
+    public final String downloadUrl;
+    public final String moreInfoUrl;
     public String imageUrl;
 
     private String csvToString(String csv) {

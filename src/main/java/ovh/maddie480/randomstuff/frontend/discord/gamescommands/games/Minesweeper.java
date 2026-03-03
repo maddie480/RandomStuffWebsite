@@ -26,7 +26,7 @@ public class Minesweeper extends OnePlayerGameState {
     public Minesweeper(int bombCount) {
         super();
 
-        log.debug("Generating minesweeper grid with " + bombCount + " bombs");
+        log.debug("Generating minesweeper grid with {} bombs", bombCount);
 
         for (int i = 0; i < bombCount; i++) {
             while (true) {
@@ -152,7 +152,7 @@ public class Minesweeper extends OnePlayerGameState {
     }
 
     private void digAndExtend(int x, int y) {
-        log.debug("Digging at " + x + ", " + y);
+        log.debug("Digging at {}, {}", x, y);
 
         reveal[x][y] = 1;
 
@@ -212,13 +212,13 @@ public class Minesweeper extends OnePlayerGameState {
             int y = Integer.parseInt(markRegex.group(2)) - 1;
 
             if (reveal[x][y] == 2) {
-                log.debug("Command for removing a mark on " + x + ", " + y);
+                log.debug("Command for removing a mark on {}, {}", x, y);
                 reveal[x][y] = 0;
             } else if (reveal[x][y] == 0) {
-                log.debug("Command for putting a mark on " + x + ", " + y);
+                log.debug("Command for putting a mark on {}, {}", x, y);
                 reveal[x][y] = 2;
             } else {
-                log.warn("Command for putting a mark on " + x + ", " + y + " is invalid because we dug there!");
+                log.warn("Command for putting a mark on {}, {} is invalid because we dug there!", x, y);
             }
         }
 
@@ -227,7 +227,7 @@ public class Minesweeper extends OnePlayerGameState {
             int y = Integer.parseInt(digRegex.group(2)) - 1;
 
             if (reveal[x][y] == 1) {
-                log.warn("Invalid command: we already dug on " + x + ", " + y);
+                log.warn("Invalid command: we already dug on {}, {}", x, y);
             } else if (map[x][y] == -1) {
                 log.debug("Player fell on a bomb!");
                 reveal[x][y] = 1;

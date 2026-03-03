@@ -66,7 +66,7 @@ public class InteractionManager extends HttpServlet {
             populateTimezones();
 
             database = (Map<Pair<Long, Long>, UserTimezone>) is.readObject();
-            log.debug("Loaded " + database.size() + " timezones.");
+            log.debug("Loaded {} timezones.", database.size());
         } catch (Exception e) {
             log.warn("Warming up failed!", e);
         }
@@ -98,7 +98,7 @@ public class InteractionManager extends HttpServlet {
             TIMEZONE_FULL_NAMES = (Map<String, String>) is.readObject();
             TIMEZONE_CONFLICTS = (Map<String, List<String>>) is.readObject();
 
-            log.info("Time zone offsets: " + TIMEZONE_MAP.size() + ", time zone full names: " + TIMEZONE_FULL_NAMES.size() + ", zone conflicts: " + TIMEZONE_CONFLICTS.size());
+            log.info("Time zone offsets: {}, time zone full names: {}, zone conflicts: {}", TIMEZONE_MAP.size(), TIMEZONE_FULL_NAMES.size(), TIMEZONE_CONFLICTS.size());
         } catch (ClassNotFoundException e) {
             throw new IOException(e);
         }
@@ -163,7 +163,7 @@ public class InteractionManager extends HttpServlet {
                     responseData.put("flags", 1 << 6); // ephemeral
                     response.put("data", responseData);
 
-                    log.debug("Responding with: " + response.toString(2));
+                    log.debug("Responding with: {}", response.toString(2));
                     response.write(resp.getWriter());
                 }
             } else {
@@ -188,7 +188,6 @@ public class InteractionManager extends HttpServlet {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
             log.error("An unexpected error occurred!", e);
             respondPrivately(resp, localizeMessage(locale,
                     ":x: An unexpected error occurred. Reach out at <https://discord.gg/PdyfMaq9Vq> if this keeps happening!",
@@ -236,7 +235,7 @@ public class InteractionManager extends HttpServlet {
         responseData.put("choices", choices);
         response.put("data", responseData);
 
-        log.debug("Responding with: " + response.toString(2));
+        log.debug("Responding with: {}", response.toString(2));
         response.write(resp.getWriter());
     }
 
@@ -347,7 +346,7 @@ public class InteractionManager extends HttpServlet {
 
             // save the link
             setTimezoneFor(serverId, memberId, timezoneParam);
-            log.info("User " + serverId + " / " + memberId + " now has timezone " + timezoneParam);
+            log.info("User {} / {} now has timezone {}", serverId, memberId, timezoneParam);
 
             DateTimeFormatter format = DateTimeFormatter.ofPattern("MMM dd, HH:mm", Locale.ENGLISH);
             DateTimeFormatter formatFr = DateTimeFormatter.ofPattern("d MMM, HH:mm", Locale.FRENCH);
@@ -360,7 +359,7 @@ public class InteractionManager extends HttpServlet {
                             "Si cela ne correspond pas à l'heure qu'il est chez toi, tape `/detect-timezone` pour trouver le bon fuseau horaire."));
         } catch (DateTimeException ex) {
             // ZoneId.of blew up so the timezone is probably invalid.
-            log.warn("Could not parse timezone " + timezoneParam);
+            log.warn("Could not parse timezone {}", timezoneParam);
 
             List<String> conflictingTimezones = getIgnoreCase(TIMEZONE_CONFLICTS, timezoneParam);
             if (conflictingTimezones != null) {
@@ -528,7 +527,7 @@ public class InteractionManager extends HttpServlet {
                 addOption(options, "Relative to now", "<t:" + timestamp + ":R>");
             }
 
-            log.debug("Responding with: " + response.toString(2));
+            log.debug("Responding with: {}", response.toString(2));
             response.write(event.getWriter());
         }
     }
@@ -593,7 +592,7 @@ public class InteractionManager extends HttpServlet {
             }
 
             if (osmResults.isEmpty()) {
-                log.info("Place '" + place + "' was not found by OpenStreetMap!");
+                log.info("Place '{}' was not found by OpenStreetMap!", place);
                 respondPrivately(event, localizeMessage(locale,
                         ":x: This place was not found!",
                         ":x: Ce lieu n'a pas été trouvé !"));
@@ -602,7 +601,7 @@ public class InteractionManager extends HttpServlet {
                 double longitude = osmResults.getJSONObject(0).getFloat("lon");
                 String name = osmResults.getJSONObject(0).getString("display_name");
 
-                log.debug("Result for place '" + place + "': '" + name + "', latitude " + latitude + ", longitude " + longitude);
+                log.debug("Result for place '{}': '{}', latitude {}, longitude {}", place, name, latitude, longitude);
 
                 JSONObject timezoneDBResult;
                 try (InputStream is = ConnectionUtils.openStreamWithTimeout("https://api.timezonedb.com/v2.1/get-time-zone?key="
@@ -616,10 +615,10 @@ public class InteractionManager extends HttpServlet {
                     try {
                         zoneId = ZoneId.of(timezoneDBResult.getString("zoneName"));
                     } catch (DateTimeException e) {
-                        log.info("Zone ID '" + timezoneDBResult.getString("zoneName") + "' was not recognized! Falling back to UTC offset.");
+                        log.info("Zone ID '{}' was not recognized! Falling back to UTC offset.", timezoneDBResult.getString("zoneName"));
                         zoneId = ZoneId.ofOffset("UTC", ZoneOffset.ofTotalSeconds(timezoneDBResult.getInt("gmtOffset")));
                     }
-                    log.debug("Timezone of '" + name + "' is: " + zoneId);
+                    log.debug("Timezone of '{}' is: {}", name, zoneId);
 
                     ZonedDateTime nowAtPlace = ZonedDateTime.now(zoneId);
                     DateTimeFormatter format = DateTimeFormatter.ofPattern("MMM dd, HH:mm", Locale.ENGLISH);
@@ -631,14 +630,14 @@ public class InteractionManager extends HttpServlet {
                             "A **" + name + "**, l'horloge affiche **" + nowAtPlace.format(formatFr) + "** " +
                                     "(" + getOffsetAndDifference(zoneId.toString(), userTimezone, locale) + ")."));
                 } else {
-                    log.info("Coordinates (" + latitude + ", " + longitude + ") were not found by TimeZoneDB!");
+                    log.info("Coordinates ({}, {}) were not found by TimeZoneDB!", latitude, longitude);
                     respondPrivately(event, localizeMessage(locale,
                             ":x: This place was not found!",
                             ":x: Ce lieu n'a pas été trouvé !"));
                 }
             }
         } catch (IOException | JSONException | InterruptedException e) {
-            log.error("Error while querying timezone for " + place + ": " + e);
+            log.error("Error while querying timezone for {}: {}", place, e);
             respondPrivately(event, localizeMessage(locale,
                     ":x: A technical error occurred.",
                     ":x: Une erreur technique est survenue."));
@@ -771,7 +770,7 @@ public class InteractionManager extends HttpServlet {
                 emojiObject.put("name", "\uD83E\uDDF9"); // broom
             }
 
-            log.debug("Responding with: " + response.toString(2));
+            log.debug("Responding with: {}", response.toString(2));
             respond.accept(response.toString());
         }
     }
@@ -828,7 +827,7 @@ public class InteractionManager extends HttpServlet {
             currentPage.append("\n");
         }
 
-        if (currentPage.toString().trim().length() > 0) {
+        if (!currentPage.toString().trim().isEmpty()) {
             pages.add(currentPage.toString().trim());
         }
 
@@ -879,7 +878,7 @@ public class InteractionManager extends HttpServlet {
             responseData.put("components", new JSONArray());
             response.put("data", responseData);
 
-            log.debug("Responding with: " + response.toString(2));
+            log.debug("Responding with: {}", response.toString(2));
             response.write(resp.getWriter());
 
             // delete the invalid users asynchronously, and call Discord when this is done
@@ -967,7 +966,7 @@ public class InteractionManager extends HttpServlet {
         responseData.put("flags", 1 << 6); // ephemeral
         response.put("data", responseData);
 
-        log.debug("Responding with: " + response.toString(2));
+        log.debug("Responding with: {}", response.toString(2));
         response.write(responseStream.getWriter());
     }
 

@@ -128,7 +128,7 @@ public class Game {
      */
     protected void playerTurn(String partialCommand) {
         waitingInputFrom = (currentGameState.isPlayer1Turn() ? player1Id : player2Id);
-        log.debug("We are now waiting for a command from " + waitingInputFrom);
+        log.debug("We are now waiting for a command from {}", waitingInputFrom);
         refreshStatus(currentGameState.getInstructions() + "\n<@" + waitingInputFrom + ">, it's your turn!", partialCommand);
     }
 
@@ -183,12 +183,12 @@ public class Game {
             try {
                 Thread.sleep(2000);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                log.warn("Sleep interrupted", e);
             }
 
             List<String> commands = currentGameState.listPossibleCommands();
             Collections.shuffle(commands);
-            return commands.get(0);
+            return commands.getFirst();
         } else {
             GameState bestStatus = null;
             int bestScore;
@@ -201,7 +201,7 @@ public class Game {
                     GameState candidateStatus = minimax(leaf, cpuLevel - 1, Integer.MIN_VALUE, Integer.MAX_VALUE);
                     Integer candidateStatusScore = candidateStatus.scoreSituation();
                     if (candidateStatusScore == null) candidateStatusScore = 0;
-                    log.debug("Command " + leaf.getLatestCommand() + " gives a score of " + candidateStatusScore + " with an immediate score of " + leaf.scoreSituation());
+                    log.debug("Command {} gives a score of {} with an immediate score of {}", leaf.getLatestCommand(), candidateStatusScore, leaf.scoreSituation());
 
                     if (bestScore < candidateStatusScore ||
                             (bestScore == candidateStatusScore && (bestStatus == null || bestStatus.scoreSituationNonNullable() < leaf.scoreSituationNonNullable()))) {
@@ -217,7 +217,7 @@ public class Game {
                     GameState candidateStatus = minimax(leaf, cpuLevel - 1, Integer.MIN_VALUE, Integer.MAX_VALUE);
                     Integer candidateStatusScore = candidateStatus.scoreSituation();
                     if (candidateStatusScore == null) candidateStatusScore = 0;
-                    log.debug("Command " + leaf.getLatestCommand() + " gives a score of " + candidateStatusScore + " with an immediate score of " + leaf.scoreSituation());
+                    log.debug("Command {} gives a score of {} with an immediate score of {}", leaf.getLatestCommand(), candidateStatusScore, leaf.scoreSituation());
 
                     if (bestScore > candidateStatusScore ||
                             (bestScore == candidateStatusScore && (bestStatus == null || bestStatus.scoreSituationNonNullable() > leaf.scoreSituationNonNullable()))) {
@@ -229,7 +229,7 @@ public class Game {
                 }
             }
 
-            log.debug("I'm picking " + bestStatus.getLatestCommand());
+            log.debug("I'm picking {}", bestStatus.getLatestCommand());
             return bestStatus.getLatestCommand();
         }
     }

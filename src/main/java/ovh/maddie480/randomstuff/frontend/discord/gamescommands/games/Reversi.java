@@ -37,13 +37,13 @@ public class Reversi extends GameState {
     @Override
     protected void serializeGame(ObjectOutputStream os) throws IOException {
         os.writeBoolean(invertedColors);
-        for (int i = 0; i < board.length; i++) {
+        for (int[] ints : board) {
             for (int j = 0; j < board.length; j += 4) {
                 GameState.writeBooleans(os, new boolean[]{
-                        board[i][j] == 0, board[i][j] == 1,
-                        board[i][j + 1] == 0, board[i][j + 1] == 1,
-                        board[i][j + 2] == 0, board[i][j + 2] == 1,
-                        board[i][j + 3] == 0, board[i][j + 3] == 1
+                        ints[j] == 0, ints[j] == 1,
+                        ints[j + 1] == 0, ints[j + 1] == 1,
+                        ints[j + 2] == 0, ints[j + 2] == 1,
+                        ints[j + 3] == 0, ints[j + 3] == 1
                 });
             }
         }
@@ -182,7 +182,6 @@ public class Reversi extends GameState {
             for (int x = 0; x < 8; x++) {
                 string.append(' ');
                 switch (board[x][y] * (invertedColors ? -1 : 1)) {
-                    default -> string.append('?');
                     case 1 -> {
                         string.append('●');
                         countWhite++;
@@ -198,6 +197,7 @@ public class Reversi extends GameState {
                             string.append(' ');
                         }
                     }
+                    default -> string.append('?');
                 }
             }
             string.append(" |\n");

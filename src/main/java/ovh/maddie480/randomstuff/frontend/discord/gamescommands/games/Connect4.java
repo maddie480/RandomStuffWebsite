@@ -20,16 +20,16 @@ public class Connect4 extends GameState {
 
     @Override
     protected void serializeGame(ObjectOutputStream os) throws IOException {
-        for (int i = 0; i < columns.length; i++) {
+        for (Boolean[] column : columns) {
             GameState.writeBooleans(os, new boolean[]{
-                    columns[i][0] == null, columns[i][0] == Boolean.TRUE,
-                    columns[i][1] == null, columns[i][1] == Boolean.TRUE,
-                    columns[i][2] == null, columns[i][2] == Boolean.TRUE,
-                    columns[i][3] == null, columns[i][3] == Boolean.TRUE
+                    column[0] == null, column[0] == Boolean.TRUE,
+                    column[1] == null, column[1] == Boolean.TRUE,
+                    column[2] == null, column[2] == Boolean.TRUE,
+                    column[3] == null, column[3] == Boolean.TRUE
             });
             GameState.writeBooleans(os, new boolean[]{
-                    columns[i][4] == null, columns[i][4] == Boolean.TRUE,
-                    columns[i][5] == null, columns[i][5] == Boolean.TRUE
+                    column[4] == null, column[4] == Boolean.TRUE,
+                    column[5] == null, column[5] == Boolean.TRUE
             });
         }
     }

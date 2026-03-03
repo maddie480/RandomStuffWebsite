@@ -14,7 +14,7 @@ public class Background {
     public final String price;
     public final boolean bought;
 
-    public Background(String line, boolean bought) throws UnsupportedEncodingException {
+    public Background(String line, boolean bought) {
         String priceCut = line.split(";")[2];
         long priceLong = Long.parseLong(priceCut.substring(0, priceCut.length() - 4));
 

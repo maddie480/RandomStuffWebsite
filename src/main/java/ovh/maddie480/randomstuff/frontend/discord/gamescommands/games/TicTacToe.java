@@ -23,11 +23,11 @@ public class TicTacToe extends GameState {
     @Override
     protected void serializeGame(ObjectOutputStream os) throws IOException {
         os.writeByte(board.length);
-        for (int i = 0; i < board.length; i++) {
+        for (Boolean[] booleans : board) {
             boolean[] line = new boolean[board.length * 2];
             for (int j = 0; j < board.length; j++) {
-                line[j * 2] = board[i][j] == null;
-                line[j * 2 + 1] = board[i][j] == Boolean.TRUE;
+                line[j * 2] = booleans[j] == null;
+                line[j * 2 + 1] = booleans[j] == Boolean.TRUE;
             }
             GameState.writeBooleans(os, line);
         }
@@ -90,14 +90,14 @@ public class TicTacToe extends GameState {
     @Override
     public String displayStatus() {
         StringBuilder stringBuilder = new StringBuilder("```\n");
-        for (int i = 0; i < board.length; i++) {
+        for (Boolean[] booleans : board) {
             stringBuilder.append(".---".repeat(board.length));
             stringBuilder.append(".\n");
             for (int j = 0; j < board.length; j++) {
                 stringBuilder.append("|");
-                if (board[i][j] == Boolean.TRUE) {
+                if (booleans[j] == Boolean.TRUE) {
                     stringBuilder.append(" X ");
-                } else if (board[i][j] == Boolean.FALSE) {
+                } else if (booleans[j] == Boolean.FALSE) {
                     stringBuilder.append(" O ");
                 } else {
                     stringBuilder.append("   ");

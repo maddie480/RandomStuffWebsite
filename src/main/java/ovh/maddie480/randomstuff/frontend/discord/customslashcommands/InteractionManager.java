@@ -98,7 +98,6 @@ public class InteractionManager extends HttpServlet {
                             handleCommand(serverId, commandName, data.getJSONObject("data"), resp);
                 }
             } catch (Exception e) {
-                e.printStackTrace();
                 log.error("An unexpected error occurred!", e);
                 respond(resp, localizeMessage(locale,
                         ":x: An unexpected error occurred. Reach out at <https://discord.gg/PdyfMaq9Vq> if this keeps happening!",

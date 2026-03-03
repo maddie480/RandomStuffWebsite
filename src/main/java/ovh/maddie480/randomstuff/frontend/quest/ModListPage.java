@@ -37,7 +37,7 @@ public class ModListPage extends HttpServlet {
             }
 
             cache = mods;
-            logger.debug("Fetched " + mods.size() + " mods");
+            logger.debug("Fetched {} mods", mods.size());
         } catch (Exception e) {
             logger.warn("Warming up failed!", e);
         }

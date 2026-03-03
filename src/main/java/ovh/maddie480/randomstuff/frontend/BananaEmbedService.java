@@ -7,7 +7,6 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.apache.commons.text.StringEscapeUtils;
@@ -56,7 +55,7 @@ public class BananaEmbedService extends HttpServlet {
                     response.getWriter().write(html);
                     return;
                 } catch (Exception e) {
-                    log.warn("Could not generate embed for " + itemtype + " " + itemid + "! Falling back to redirect.", e);
+                    log.warn("Could not generate embed for {} {}! Falling back to redirect.", itemtype, itemid, e);
                 }
             }
 

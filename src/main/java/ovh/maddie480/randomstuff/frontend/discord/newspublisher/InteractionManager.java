@@ -91,7 +91,6 @@ public class InteractionManager extends HttpServlet {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
             log.error("An unexpected error occurred!", e);
             respondPrivately(resp, ":x: An unexpected error occurred. Reach out to Maddie if this keeps happening!");
         }
@@ -110,7 +109,7 @@ public class InteractionManager extends HttpServlet {
 
         List<OlympusNews> list = GitOperator.listOlympusNews();
         while (list.size() > 10) {
-            GitOperator.archiveOlympusNews(list.get(0));
+            GitOperator.archiveOlympusNews(list.getFirst());
             list = GitOperator.listOlympusNews();
         }
 
@@ -296,7 +295,7 @@ public class InteractionManager extends HttpServlet {
         responseData.put("flags", 1 << 6); // ephemeral
         response.put("data", responseData);
 
-        log.debug("Responding with: " + response.toString(2));
+        log.debug("Responding with: {}", response.toString(2));
         response.write(responseStream.getWriter());
     }
 
@@ -308,7 +307,7 @@ public class InteractionManager extends HttpServlet {
         responseData.put("flags", 1 << 6); // ephemeral
         response.put("data", responseData);
 
-        log.debug("Responding with: " + response.toString(2));
+        log.debug("Responding with: {}", response.toString(2));
         response.write(responseStream.getWriter());
     }
 

@@ -42,7 +42,7 @@ public class RadioLNJService extends HttpServlet {
             }
 
             Collections.shuffle(playlist);
-            nextItemStartsAt = System.currentTimeMillis() + playlist.get(0).getInt("duration");
+            nextItemStartsAt = System.currentTimeMillis() + playlist.getFirst().getInt("duration");
 
             elementCount = playlist.size();
 
@@ -56,8 +56,8 @@ public class RadioLNJService extends HttpServlet {
             sortedPlaylist = new ArrayList<>(playlist);
             sortedPlaylist.sort(Comparator.comparing(item -> item.getString("trackName").toLowerCase(Locale.ROOT)));
 
-            log.info("Loaded Radio LNJ playlist, " + elementCount + " elements, total duration " + totalDuration
-                    + ", head of playlist is " + playlist.get(0) + " until " + Instant.ofEpochMilli(nextItemStartsAt));
+            log.info("Loaded Radio LNJ playlist, {} elements, total duration {}, head of playlist is {} until {}",
+                elementCount, totalDuration, playlist.getFirst(), Instant.ofEpochMilli(nextItemStartsAt));
         } catch (Exception e) {
             log.warn("Warming up failed!", e);
         }
@@ -72,7 +72,7 @@ public class RadioLNJService extends HttpServlet {
                 int timeLeft = (int) (nextItemStartsAt - System.currentTimeMillis());
 
                 JSONObject body = new JSONObject();
-                body.put("seek", playlist.get(0).getInt("duration") - timeLeft);
+                body.put("seek", playlist.getFirst().getInt("duration") - timeLeft);
                 body.put("playlist", playlist);
 
                 response.setContentType("application/json");
@@ -105,10 +105,10 @@ public class RadioLNJService extends HttpServlet {
 
     private void updatePlaylistPosition() {
         while (nextItemStartsAt < System.currentTimeMillis()) {
-            JSONObject pastItem = playlist.remove(0);
-            nextItemStartsAt += playlist.get(0).getInt("duration");
+            JSONObject pastItem = playlist.removeFirst();
+            nextItemStartsAt += playlist.getFirst().getInt("duration");
             playlist.add(pastItem);
-            log.info("Updated playlist: head of playlist is now " + playlist.get(0) + " until " + Instant.ofEpochMilli(nextItemStartsAt));
+            log.info("Updated playlist: head of playlist is now {} until {}", playlist.getFirst(), Instant.ofEpochMilli(nextItemStartsAt));
         }
     }
 }

@@ -139,16 +139,12 @@ public abstract class GameState {
      */
     public void serialize(ObjectOutputStream os) throws IOException {
         // write a byte to identify which game we are playing.
-        if (this instanceof TicTacToe) {
-            os.writeByte((byte) 0);
-        } else if (this instanceof Connect4) {
-            os.writeByte((byte) 1);
-        } else if (this instanceof Reversi) {
-            os.writeByte((byte) 2);
-        } else if (this instanceof Minesweeper) {
-            os.writeByte((byte) 3);
-        } else {
-            throw new IOException("What is this game?");
+        switch (this) {
+            case TicTacToe _ -> os.writeByte((byte) 0);
+            case Connect4 _ -> os.writeByte((byte) 1);
+            case Reversi _ -> os.writeByte((byte) 2);
+            case Minesweeper _ -> os.writeByte((byte) 3);
+            default -> throw new IOException("What is this game?");
         }
 
         // write the GameState status

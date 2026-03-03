@@ -102,7 +102,7 @@ public class InteractionManager extends HttpServlet {
                 responseData.put("allowed_mentions", new JSONObject("{\"parse\": []}"));
                 response.put("data", responseData);
 
-                log.debug("Responding with: " + response.toString(2));
+                log.debug("Responding with: {}", response.toString(2));
                 response.write(resp.getWriter());
             } else {
                 // slash command invocation
@@ -118,7 +118,6 @@ public class InteractionManager extends HttpServlet {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
             log.error("An unexpected error occurred!", e);
             respondPrivately(resp, localizeMessage(locale,
                     ":x: An unexpected error occurred. Ping Maddie (`maddie480`) if this keeps happening!",
@@ -188,7 +187,7 @@ public class InteractionManager extends HttpServlet {
         button.put("emoji", emojiObject);
         emojiObject.put("name", "\uD83D\uDCE4"); // outbox tray
 
-        log.debug("Responding with: " + response.toString(2));
+        log.debug("Responding with: {}", response.toString(2));
         response.write(resp.getWriter());
     }
 
@@ -205,7 +204,7 @@ public class InteractionManager extends HttpServlet {
         responseData.put("flags", 1 << 6); // ephemeral
         response.put("data", responseData);
 
-        log.debug("Responding with: " + response.toString(2));
+        log.debug("Responding with: {}", response.toString(2));
         response.write(responseStream.getWriter());
     }
 

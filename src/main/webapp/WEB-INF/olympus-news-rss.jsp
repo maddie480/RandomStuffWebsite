@@ -5,7 +5,7 @@
 
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
     <title>Olympus News</title>
-    <updated><%= ((List<OlympusNews>) request.getAttribute("news")).get(0).slug().substring(0, 10) %>T00:00:00Z</updated>
+    <updated><%= ((List<OlympusNews>) request.getAttribute("news")).getFirst().slug().substring(0, 10) %>T00:00:00Z</updated>
     <id>https://maddie480.ovh/celeste/olympus-news.xml</id>
     <link type="text/html" href="https://maddie480.ovh/celeste/olympus-news" rel="alternate"/>
 

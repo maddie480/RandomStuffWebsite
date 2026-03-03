@@ -203,7 +203,6 @@ public class GameBananaArbitraryModAppService extends HttpServlet {
             }
         } catch (IOException e) {
             log.error("Could not retrieve mod by ID! ", e);
-            e.printStackTrace();
             return null;
         }
     }
@@ -390,9 +389,9 @@ public class GameBananaArbitraryModAppService extends HttpServlet {
 
             JSONArray members = userList.getJSONArray("_aRecords");
 
-            if (members.length() == 0) {
+            if (members.isEmpty()) {
                 // we reached the end of the pages!
-                log.info("User list: [" + String.join(", ", result) + "]");
+                log.info("User list: [{}]", String.join(", ", result));
 
                 if (!result.contains("1698143")) {
                     // failsafe: Maddie should be in the list, otherwise this means the listing does not work

@@ -161,45 +161,50 @@ public class JSONToBinService extends HttpServlet {
 
             Object value = attributes.get(name);
 
-            if (value instanceof Boolean bool) {
-                bin.writeByte(AttributeValueType.Boolean.value);
-                bin.writeBoolean(bool);
-            } else if (value instanceof BigDecimal bigDecimal) {
-                bin.writeByte(AttributeValueType.Float.value);
-                EndianUtils.writeSwappedFloat(bin, bigDecimal.floatValue());
-            } else if (value instanceof Integer integer) {
-                if (integer >= 0 && integer <= 255) {
-                    bin.writeByte(AttributeValueType.Byte.value);
-                    bin.writeByte(integer);
-                } else if (integer >= Short.MIN_VALUE && integer <= Short.MAX_VALUE) {
-                    bin.writeByte(AttributeValueType.Short.value);
-                    EndianUtils.writeSwappedShort(bin, integer.shortValue());
-                } else {
-                    bin.writeByte(AttributeValueType.Integer.value);
-                    EndianUtils.writeSwappedInteger(bin, integer);
+            switch (value) {
+                case Boolean bool -> {
+                    bin.writeByte(AttributeValueType.Boolean.value);
+                    bin.writeBoolean(bool);
                 }
-            } else if (value instanceof String string) {
-                boolean written = false;
-                if (isRunLengthEncodedSupportedFor(string)) {
-                    byte[] runLengthEncoded = toRunLengthEncodedString(string);
-                    if (runLengthEncoded.length < string.getBytes(UTF_8).length) {
-                        bin.writeByte(AttributeValueType.LengthEncodedString.value);
-                        EndianUtils.writeSwappedShort(bin, (short) runLengthEncoded.length);
-                        bin.write(runLengthEncoded);
-                        written = true;
-                    }
+                case BigDecimal bigDecimal -> {
+                    bin.writeByte(AttributeValueType.Float.value);
+                    EndianUtils.writeSwappedFloat(bin, bigDecimal.floatValue());
                 }
-                if (!written) {
-                    if (stringLookupTable.contains(string)) {
-                        bin.writeByte(AttributeValueType.FromLookup.value);
-                        EndianUtils.writeSwappedShort(bin, (short) stringLookupTable.indexOf(string));
+                case Integer integer -> {
+                    if (integer >= 0 && integer <= 255) {
+                        bin.writeByte(AttributeValueType.Byte.value);
+                        bin.writeByte(integer);
+                    } else if (integer >= Short.MIN_VALUE && integer <= Short.MAX_VALUE) {
+                        bin.writeByte(AttributeValueType.Short.value);
+                        EndianUtils.writeSwappedShort(bin, integer.shortValue());
                     } else {
-                        bin.writeByte(AttributeValueType.String.value);
-                        writeString(string, bin);
+                        bin.writeByte(AttributeValueType.Integer.value);
+                        EndianUtils.writeSwappedInteger(bin, integer);
                     }
                 }
-            } else {
-                throw new IOException("Unrecognized value type: " + attributes.get(name).getClass());
+                case String string -> {
+                    boolean written = false;
+                    if (isRunLengthEncodedSupportedFor(string)) {
+                        byte[] runLengthEncoded = toRunLengthEncodedString(string);
+                        if (runLengthEncoded.length < string.getBytes(UTF_8).length) {
+                            bin.writeByte(AttributeValueType.LengthEncodedString.value);
+                            EndianUtils.writeSwappedShort(bin, (short) runLengthEncoded.length);
+                            bin.write(runLengthEncoded);
+                            written = true;
+                        }
+                    }
+                    if (!written) {
+                        if (stringLookupTable.contains(string)) {
+                            bin.writeByte(AttributeValueType.FromLookup.value);
+                            EndianUtils.writeSwappedShort(bin, (short) stringLookupTable.indexOf(string));
+                        } else {
+                            bin.writeByte(AttributeValueType.String.value);
+                            writeString(string, bin);
+                        }
+                    }
+                }
+                case null, default ->
+                        throw new IOException("Unrecognized value type: " + attributes.get(name).getClass());
             }
         }
     }

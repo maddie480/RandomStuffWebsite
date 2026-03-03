@@ -36,7 +36,7 @@ public class ToolListPage extends HttpServlet {
             }
 
             cache = tools;
-            logger.debug("Fetched " + tools.size() + " tools");
+            logger.debug("Fetched {} tools", tools.size());
         } catch (Exception e) {
             logger.warn("Warming up failed!", e);
         }
