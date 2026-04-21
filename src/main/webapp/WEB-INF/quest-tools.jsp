@@ -5,14 +5,12 @@
 <script src="https://code.jquery.com/jquery-4.0.0.min.js"
     integrity="sha256-OaVG6prZf4v69dPg6PhVattBXkcOWQB62pdZ3ORyrao=" crossorigin="anonymous"></script>
 
-<h1>Liste des outils et logiciels de la communauté</h1>
-
-Pour ajouter des outils ici, <a href="https://maddie480.ovh/quest/discord" target="_blank">rejoins le serveur QUEST Community</a> et demande à Maddie.
+<h1>Liste des outils et logiciels de la communautï¿½</h1>
 
 <% if((boolean) request.getAttribute("error")) { %>
     <div class="alert alert-danger">Une erreur est survenue lors du
         chargement de la page.
-        Veuillez réessayer dans quelques minutes, ou contacter Maddie si l'erreur persiste.
+        Veuillez rï¿½essayer dans quelques minutes, ou contacter Maddie si l'erreur persiste.
     </div>
 <% } else { %>
     <% for(Tool tool : (List<Tool>) request.getAttribute("tools")) { %>
@@ -36,7 +34,7 @@ Pour ajouter des outils ici, <a href="https://maddie480.ovh/quest/discord" targe
                         <% } %>
 
                         <div class="mt-3">
-                            <a href="<%= escapeHtml4(tool.downloadUrl) %>" target="_blank" class="btn btn-success">Télécharger</a>
+                            <a href="<%= escapeHtml4(tool.downloadUrl) %>" target="_blank" class="btn btn-success">Tï¿½lï¿½charger</a>
                             <% if(tool.moreInfoUrl != null && !tool.moreInfoUrl.isEmpty() && tool.moreInfoUrl.startsWith("http")) { %>
                                 <a href="<%= escapeHtml4(tool.moreInfoUrl) %>" class="btn btn-link" target="_blank">Plus d'infos</a>
                             <% } %>
