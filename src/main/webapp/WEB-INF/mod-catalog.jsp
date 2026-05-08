@@ -38,7 +38,7 @@
 
     <div class="alert alert-info">
         <p>
-            This page is mostly generated automatically from entity IDs found in map editor plugins. It was last updated on
+            This page is mostly generated automatically from map editor plugins, and is refreshed once per day. It was last updated on
             <b><span class="timestamp-long" data-timestamp="<%= request.getAttribute("lastUpdatedTimestamp") %>"><%= request.getAttribute("lastUpdated") %></span></b>.
         </p>
         <p>
@@ -106,7 +106,7 @@
         <% } %>
 
         <% if(!mod.effectList.isEmpty()) { %>
-            <h4>Effects</h4>
+            <h4>Styleground Effects</h4>
             <ul>
                 <% for(Map.Entry<Map<String, String>, List<String>> effect : mod.effectList.entrySet()) { %>
                     <li>
