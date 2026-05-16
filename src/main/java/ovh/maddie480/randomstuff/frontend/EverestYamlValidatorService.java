@@ -303,7 +303,11 @@ public class EverestYamlValidatorService extends HttpServlet {
                             if (requiredVersion != null && databaseVersion != null) {
                                 String problem = databaseVersion.satisfiesDependencyOn(requiredVersion);
                                 if (problem != null) {
-                                    problems.add("The dependency downloader won't be able to get the version you requested for \"" + dependency.Name + "\": " + problem);
+                                    if (Arrays.asList("Everest", "EverestCore").contains(dependency.Name)) {
+                                        problems.add("Your dependency on \"" + dependency.Name + "\" will prevent your mod from loading for people that have the latest stable version of Everest installed: " + problem);
+                                    } else {
+                                        problems.add("The dependency downloader won't be able to get the version you requested for \"" + dependency.Name + "\": " + problem);
+                                    }
                                 } else {
                                     dependency.LatestVersion = databaseDependency.Version;
                                 }
