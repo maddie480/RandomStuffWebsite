@@ -192,75 +192,6 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.15.0</version>
             </plugin>
-            <plugin>
-                <groupId>com.github.eirslett</groupId>
-                <artifactId>frontend-maven-plugin</artifactId>
-                <version>2.0.0</version>
-
-                <executions>
-                    <!-- Install Node -->
-                    <execution>
-                        <id>install node and npm</id>
-                        <goals>
-                            <goal>install-node-and-npm</goal>
-                        </goals>
-                    </execution>
-
-                    <!-- Install dependencies of the Vue app -->
-                    <execution>
-                        <id>npm install</id>
-                        <goals>
-                            <goal>npm</goal>
-                        </goals>
-
-                        <configuration>
-                            <arguments>install</arguments>
-                        </configuration>
-                    </execution>
-
-                    <!-- Build the Vue app into the same target directory as the rest of the app -->
-                    <execution>
-                        <id>npm run build</id>
-                        <goals>
-                            <goal>npm</goal>
-                        </goals>
-
-                        <configuration>
-                            <arguments>run build -- --outDir ../target/random-stuff-website-1.0.0/WEB-INF/classes/resources</arguments>
-                        </configuration>
-                    </execution>
-
-                    <!-- Check that the linter does not give any warnings -->
-                    <execution>
-                        <id>npm run lint</id>
-                        <phase>test</phase>
-                        <goals>
-                            <goal>npm</goal>
-                        </goals>
-
-                        <configuration>
-                            <arguments>run lint -- --no-fix --max-warnings 0</arguments>
-                        </configuration>
-                    </execution>
-
-                    <execution>
-                        <id>npm audit</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>npm</goal>
-                        </goals>
-
-                        <configuration>
-                            <arguments>audit</arguments>
-                        </configuration>
-                    </execution>
-                </executions>
-
-                <configuration>
-                    <nodeVersion>v24.15.0</nodeVersion>
-                    <workingDirectory>front-vue</workingDirectory>
-                </configuration>
-            </plugin>
 
             <plugin>
                 <groupId>com.coderplus.maven.plugins</groupId>
@@ -318,6 +249,41 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.6.3</version>
                 <executions>
+                    <execution>
+                        <id>write host user id</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>bash</executable>
+                            <workingDirectory>${project.basedir}</workingDirectory>
+                            <arguments>
+                                <argument>-c</argument>
+                                <argument>echo "`id -u`:`id -g`" > front-vue/user.txt &amp;&amp; cat front-vue/user.txt</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>build frontend</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>docker</executable>
+                            <workingDirectory>${project.basedir}</workingDirectory>
+                            <arguments>
+                                <argument>compose</argument>
+                                <argument>-f</argument>
+                                <argument>front-vue/bob-the-builder.yml</argument>
+                                <argument>run</argument>
+                                <argument>--rm</argument>
+                                <argument>node</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+
                     <execution>
                         <id>integrate Lua Cutscenes documentation</id>
                         <phase>prepare-package</phase>
@@ -423,61 +389,6 @@
     </build>
 
     <profiles>
-        <profile>
-            <id>no-front</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>com.github.eirslett</groupId>
-                        <artifactId>frontend-maven-plugin</artifactId>
-                        <version>2.0.0</version>
-
-                        <executions>
-                            <execution>
-                                <id>install node and npm</id>
-                                <phase>none</phase>
-                            </execution>
-
-                            <execution>
-                                <id>npm install</id>
-                                <phase>none</phase>
-                            </execution>
-
-                            <execution>
-                                <id>npm run build</id>
-                                <phase>none</phase>
-                            </execution>
-
-                            <execution>
-                                <id>npm run lint</id>
-                                <phase>none</phase>
-                            </execution>
-
-                            <execution>
-                                <id>npm audit</id>
-                                <phase>none</phase>
-                            </execution>
-                        </executions>
-                    </plugin>
-
-                    <plugin>
-                        <groupId>com.coderplus.maven.plugins</groupId>
-                        <artifactId>copy-rename-maven-plugin</artifactId>
-                        <version>1.0.1</version>
-                        <executions>
-                            <execution>
-                                <id>move vue index.html</id>
-                                <phase>none</phase>
-                            </execution>
-                            <execution>
-                                <id>copy maddie-avatar.png</id>
-                                <phase>none</phase>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
         <profile>
             <id>local</id>
             <build>
