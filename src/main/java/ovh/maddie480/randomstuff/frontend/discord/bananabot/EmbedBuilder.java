@@ -7,8 +7,8 @@ import org.json.JSONTokener;
 import ovh.maddie480.randomstuff.frontend.ConnectionUtils;
 import ovh.maddie480.randomstuff.frontend.YamlUtil;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
@@ -22,11 +22,28 @@ import java.util.Map;
 
 public class EmbedBuilder {
     static void integrityCheck() throws IOException {
-        List<Map<String, Object>> mods;
-        try (InputStream is = ConnectionUtils.openStreamWithTimeout("https://maddie480.ovh/celeste/mod_search_database.yaml")) {
-            mods = YamlUtil.load(is);
+        try (InputStream is = ConnectionUtils.openStreamWithTimeout("https://maddie480.ovh/celeste/mod_search_database.yaml");
+             BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
+
+            // parse each mod individually, because mod_search_database is huge and I don't want to run out of memory
+            StringBuilder buffer = new StringBuilder();
+            String line;
+            while ((line = br.readLine()) != null) {
+                if (!buffer.isEmpty() && !line.startsWith(" ")) {
+                    integrityCheckSingleMod(buffer.toString());
+                    buffer = new StringBuilder();
+                }
+                buffer.append(line).append('\n');
+            }
+            integrityCheckSingleMod(buffer.toString());
         }
-        for (Map<String, Object> mod : mods) buildEmbedFor(mod);
+    }
+
+    private static void integrityCheckSingleMod(String modYaml) throws IOException {
+        try (InputStream iis = new ByteArrayInputStream(modYaml.getBytes(StandardCharsets.UTF_8))) {
+            List<Map<String, Object>> entry = YamlUtil.load(iis);
+            for (Map<String, Object> mod : entry) buildEmbedFor(mod);
+        }
     }
 
     /**
