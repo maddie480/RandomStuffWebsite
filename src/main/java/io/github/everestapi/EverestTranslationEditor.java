@@ -25,7 +25,7 @@ public class EverestTranslationEditor {
 
         return new TranslationEditor() {
             @Override
-            protected LinkedHashMap<String, String> readLanguageEntries(Path root, String lang) throws IOException {
+            public LinkedHashMap<String, String> readLanguageEntries(Path root, String lang) throws IOException {
                 LinkedHashMap<String, String> result = new LinkedHashMap<>();
 
                 try (BufferedReader reader = Files.newBufferedReader(root.resolve("Celeste.Mod.mm/Content/Dialog/" + lang + ".txt"), StandardCharsets.UTF_8)) {

@@ -76,6 +76,28 @@ public final class GitOperator {
         }
     }
 
+    public static void cloneRepository(String repoName, String branch) throws IOException {
+        // == clone repository
+        Path dir = Paths.get("/tmp/" + repoName + "_repo");
+        if (Files.isDirectory(dir)) {
+            FileUtils.deleteDirectory(dir.toFile());
+        }
+
+        try {
+            log.info("Cloning git repository @ {} / {}...", repoName, branch);
+            sshInit();
+            Git.cloneRepository()
+                    .setDirectory(dir.toFile())
+                    .setBranch(branch)
+                    .setDepth(1)
+                    .setURI("git@github.com:EverestAPI/" + repoName + ".git")
+                    .call()
+                    .close();
+        } catch (GitAPIException e) {
+            throw new IOException(e);
+        }
+    }
+
     public static List<OlympusNews> listOlympusNews() throws IOException {
         return listOlympusNews(false);
     }

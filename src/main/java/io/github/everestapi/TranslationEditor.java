@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.Set;
 
 public abstract class TranslationEditor {
-    protected abstract LinkedHashMap<String, String> readLanguageEntries(Path root, String lang) throws IOException;
+    public abstract LinkedHashMap<String, String> readLanguageEntries(Path root, String lang) throws IOException;
 
     protected abstract void editLanguageEntry(Path root, String lang, String key, String oldValue, String newValue) throws IOException;
 

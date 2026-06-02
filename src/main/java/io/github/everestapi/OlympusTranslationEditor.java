@@ -22,7 +22,7 @@ public class OlympusTranslationEditor {
         getTranslationEditor().open(Paths.get(args[0]), "en", args[1]);
     }
 
-    private static @NonNull TranslationEditor getTranslationEditor() {
+    public static @NonNull TranslationEditor getTranslationEditor() {
         Pattern contentExtractorLua = Pattern.compile("([0-9a-z_]+) = \\[\\[([^]]+)]]", Pattern.DOTALL);
         Pattern contentExtractorSharp = Pattern.compile("\"([^\"]+)\", \"([^\"]+)\"");
 
@@ -30,7 +30,7 @@ public class OlympusTranslationEditor {
             private final Set<String> sharpKeys = new HashSet<>();
 
             @Override
-            protected LinkedHashMap<String, String> readLanguageEntries(Path root, String lang) throws IOException {
+            public LinkedHashMap<String, String> readLanguageEntries(Path root, String lang) throws IOException {
                 LinkedHashMap<String, String> result = new LinkedHashMap<>();
 
                 { // lua language file

@@ -8,7 +8,7 @@ public class DummyTranslationEditor {
     public static void main(String[] args) throws IOException {
         new TranslationEditor() {
             @Override
-            protected LinkedHashMap<String, String> readLanguageEntries(Path root, String lang) {
+            public LinkedHashMap<String, String> readLanguageEntries(Path root, String lang) {
                 LinkedHashMap<String, String> result = new LinkedHashMap<>();
                 result.put("key1", "value1 for " + lang);
                 result.put("key2", lang + " has value2 too!\n\nWow");
