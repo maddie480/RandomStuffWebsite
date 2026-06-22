@@ -121,7 +121,7 @@
 
 <script>
 import axios from "axios";
-import yaml from "js-yaml";
+import { load } from "js-yaml";
 import config from "../config";
 import ModListItem from "../components/ModListItem.vue";
 import ListPaginator from "../components/ListPaginator.vue";
@@ -182,7 +182,7 @@ const vue = {
 
         const yamlLoad = axios
           .get(`${config.backendUrl}/celeste/everest_update.yaml`)
-          .then((result) => yaml.load(result.data));
+          .then((result) => load(result.data));
 
         let result;
 
@@ -283,7 +283,7 @@ const vue = {
     // also load the category list.
     const gamebananaCategories = await axios
       .get(`${config.backendUrl}/celeste/gamebanana-categories`)
-      .then((result) => yaml.load(result.data));
+      .then((result) => load(result.data));
 
     for (const category of gamebananaCategories) {
       category.name = `${category.formatted} (${category.count})`;
@@ -294,7 +294,7 @@ const vue = {
 
     this.fullSubcategoryList = await axios
       .get(`${config.backendUrl}/celeste/gamebanana-subcategories`)
-      .then((result) => yaml.load(result.data));
+      .then((result) => load(result.data));
   },
 };
 
