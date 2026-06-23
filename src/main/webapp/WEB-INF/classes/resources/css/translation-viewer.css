@@ -1,0 +1,13 @@
+.toggle {
+    text-align: center;
+    margin-bottom: 20px;
+}
+pre {
+    text-wrap: wrap;
+}
+th {
+    vertical-align: baseline;
+}
+.hidden {
+    display: none;
+}

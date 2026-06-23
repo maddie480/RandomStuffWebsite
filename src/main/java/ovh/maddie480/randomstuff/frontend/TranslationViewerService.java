@@ -8,22 +8,23 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.tuple.Triple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ovh.maddie480.randomstuff.frontend.discord.newspublisher.GitOperator;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static ovh.maddie480.randomstuff.frontend.UnhandledExceptionFilter.sendDiscordMessage;
 
 @WebServlet(name = "TranslationViewerService", loadOnStartup = 13, urlPatterns = {"/celeste/translation-viewer"})
 public class TranslationViewerService extends HttpServlet {
@@ -35,6 +36,12 @@ public class TranslationViewerService extends HttpServlet {
     @Override
     public void init() {
         refresh();
+
+        try {
+            sendDiscordMessage("Frontend Service", ":arrow_up: :globe_with_meridians: The frontend just started.");
+        } catch (IOException e) {
+            log.warn("Sending startup notification failed!", e);
+        }
     }
 
     private void refresh() {
@@ -95,9 +102,50 @@ public class TranslationViewerService extends HttpServlet {
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        log.warn("Not found");
-        response.setStatus(404);
-        PageRenderer.render(request, response, "page-not-found", "Page Not Found",
-                "Oops, this link seems invalid. Please try again!");
+        String program = request.getParameter("program");
+        String language = request.getParameter("language");
+        boolean redirect = false;
+
+        if (program == null || !Arrays.asList("olympus", "everest").contains(program)) {
+            program = "everest";
+            redirect = true;
+        }
+
+        Map<String, Map<String, String>> dialog = program.equals("everest") ? everestDialog : olympusDialog;
+        List<String> availableLanguages = new ArrayList<>(dialog.keySet());
+        availableLanguages.remove("en");
+        availableLanguages.remove("English");
+        if (language == null || !availableLanguages.contains(language)) {
+            language = availableLanguages.getFirst();
+            redirect = true;
+        }
+
+        if (redirect) {
+            response.sendRedirect("/celeste/translation-viewer?program=" + program + "&language=" + URLEncoder.encode(language, StandardCharsets.UTF_8));
+            return;
+        }
+
+        String leftLang = dialog.containsKey("en") ? "en" : "English";
+        List<Triple<String, String, String>> dialogEntries = new ArrayList<>();
+
+        LinkedHashSet<String> dialogKeys = new LinkedHashSet<>();
+        dialogKeys.addAll(dialog.get(leftLang).keySet());
+        dialogKeys.addAll(dialog.get(language).keySet());
+        for (String dialogKey : dialogKeys) {
+            dialogEntries.add(Triple.ofNonNull(
+                    dialogKey,
+                    dialog.get(leftLang).getOrDefault(dialogKey, ""),
+                    dialog.get(language).getOrDefault(dialogKey, "")
+            ));
+        }
+
+        String pageTitle = (program.equals("everest") ? "Everest" : "Olympus") + " Translation Viewer";
+        request.setAttribute("title", pageTitle);
+        request.setAttribute("leftLang", leftLang);
+        request.setAttribute("rightLang", language);
+        request.setAttribute("langs", availableLanguages);
+        request.setAttribute("entries", dialogEntries);
+
+        PageRenderer.render(request, response, "translation-viewer", pageTitle, "wip wip wip");
     }
 }
