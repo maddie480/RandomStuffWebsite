@@ -38,8 +38,7 @@
               ['solids', 'bg', 'objtiles'].includes(item.name) &&
               attribute.key === 'innerText'
             "
-            >{{ attribute.value }}</pre
-          >
+            >{{ attribute.value }}</pre>
           <span v-else>{{ attribute.value }}</span>
         </span>
         <span v-if="index != orderedAttributes.length - 1">, </span>

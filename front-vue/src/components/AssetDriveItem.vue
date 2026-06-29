@@ -100,8 +100,7 @@
                 <pre>
 &lt;Tileset id="w" copy="z" path="yournickname/campaignname/{{
                     fileNameWithoutExtension
-                  }}" sound="8"/&gt;</pre
-                >
+                  }}" sound="8"/&gt;</pre>
               </div>
             </div>
             <div v-else-if="data.template === 'better'">
@@ -182,8 +181,7 @@
 
     &lt;set mask="padding" tiles="6,6; 7,6; 8,6; 9,6;  6,7; 6,8; 6,9;  9,7; 9,8; 9,9;  7,9; 8,9"/&gt;
     &lt;set mask="center" tiles="7,7; 8,7; 7,8; 8,8"/&gt;
-  &lt;/Tileset&gt;</pre
-                >
+  &lt;/Tileset&gt;</pre>
 
                 Then, copy the tileset image to
                 <code
@@ -193,8 +191,7 @@
                 <pre>
 &lt;Tileset id="w" copy="y" path="yournickname/campaignname/{{
                     fileNameWithoutExtension
-                  }}" sound="8"/&gt;</pre
-                >
+                  }}" sound="8"/&gt;</pre>
               </div>
             </div>
             <div v-else-if="data.template === 'alternate'">
@@ -309,8 +306,7 @@
 
     &lt;set mask="padding" tiles="6,6; 7,6; 8,6; 9,6;  6,7; 6,8; 6,9;  9,7; 9,8; 9,9;  7,9; 8,9"/&gt;
     &lt;set mask="center" tiles="7,7; 8,7; 7,8; 8,8"/&gt;
-  &lt;/Tileset&gt;</pre
-              >
+  &lt;/Tileset&gt;</pre>
 
               Then, copy the tileset image to
               <code
@@ -320,8 +316,7 @@
               <pre>
 &lt;Tileset id="w" copy="y" path="yournickname/campaignname/{{
                   fileNameWithoutExtension
-                }}" sound="8"/&gt;</pre
-              >
+                }}" sound="8"/&gt;</pre>
             </div>
             <div v-else-if="data.template !== undefined">
               <h3>Tileset Template</h3>
@@ -337,8 +332,7 @@
               <pre>
 &lt;Tileset id="w" copy="y" path="yournickname/campaignname/{{
                   fileNameWithoutExtension
-                }}" sound="8"/&gt;</pre
-              >
+                }}" sound="8"/&gt;</pre>
             </div>
 
             <div v-if="data.notes !== undefined">
