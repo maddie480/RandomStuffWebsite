@@ -135,6 +135,11 @@
                 >
               </li>
               <li>
+                <a class="dropdown-item" href="/celeste/translation-viewer"
+                  >Translation Viewer</a
+                >
+              </li>
+              <li>
                 <a class="dropdown-item" href="/celeste/update-checker-status"
                   >Update Checker status</a
                 >

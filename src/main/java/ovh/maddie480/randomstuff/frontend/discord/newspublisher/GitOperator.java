@@ -76,7 +76,7 @@ public final class GitOperator {
         }
     }
 
-    public static void cloneRepository(String repoName, String branch) throws IOException {
+    public static void cloneRepository(String orgName, String repoName, String branch) throws IOException {
         // == clone repository
         Path dir = Paths.get("/tmp/" + repoName + "_repo");
         if (Files.isDirectory(dir)) {
@@ -84,13 +84,13 @@ public final class GitOperator {
         }
 
         try {
-            log.info("Cloning git repository @ {} / {}...", repoName, branch);
+            log.info("Cloning git repository @ {}/{} -> {}...", orgName, repoName, branch);
             sshInit();
             Git.cloneRepository()
                     .setDirectory(dir.toFile())
                     .setBranch(branch)
                     .setDepth(1)
-                    .setURI("git@github.com:EverestAPI/" + repoName + ".git")
+                    .setURI("git@github.com:" + orgName + "/" + repoName + ".git")
                     .call()
                     .close();
         } catch (GitAPIException e) {

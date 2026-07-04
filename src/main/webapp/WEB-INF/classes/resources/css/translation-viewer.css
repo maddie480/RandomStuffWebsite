@@ -11,3 +11,39 @@ th {
 .hidden {
     display: none;
 }
+
+@media(max-width: 991px) {
+    th {
+        display: none;
+    }
+    th:before {
+        content: "Language to compare to English";
+    }
+    th:last-child {
+        display: block;
+    }
+    td {
+        display: block;
+        width: calc(100vw - 24px);
+    }
+    tr:not(:last-child) td:last-child, th:last-child {
+        border-bottom: solid black 2px;
+    }
+
+    @media(prefers-color-scheme: dark) {
+        tr:not(:last-child) td:last-child, th:last-child {
+            border-bottom: solid lightgray 2px;
+        }
+    }
+
+    @media (min-width: 576px) {
+        td {
+            width: 516px;
+        }
+    }
+    @media (min-width: 768px) {
+        td {
+            width: 696px;
+        }
+    }
+}

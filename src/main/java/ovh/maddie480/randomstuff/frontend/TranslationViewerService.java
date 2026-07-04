@@ -1,7 +1,10 @@
 package ovh.maddie480.randomstuff.frontend;
 
+import com.google.common.collect.ImmutableMap;
+import io.github.everestapi.DialogFileTranslationEditor;
 import io.github.everestapi.EverestTranslationEditor;
 import io.github.everestapi.OlympusTranslationEditor;
+import io.github.everestapi.TranslationEditor;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -21,17 +24,18 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static ovh.maddie480.randomstuff.frontend.UnhandledExceptionFilter.sendDiscordMessage;
 
-@WebServlet(name = "TranslationViewerService", loadOnStartup = 13, urlPatterns = {"/celeste/translation-viewer"})
+@WebServlet(name = "TranslationViewerService", loadOnStartup = 13, urlPatterns = {
+        "/celeste/translation-viewer", "/celeste/translation-viewer-reload"})
 public class TranslationViewerService extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(TranslationViewerService.class);
 
-    private static final Map<String, Map<String, String>> everestDialog = new HashMap<>();
-    private static final Map<String, Map<String, String>> olympusDialog = new HashMap<>();
+    private static final Map<String, Map<String, Map<String, String>>> dialogs = new HashMap<>();
 
     @Override
     public void init() {
@@ -44,13 +48,27 @@ public class TranslationViewerService extends HttpServlet {
         }
     }
 
+    private record Repo(String orgName, String repoName, String branch, String dir,
+                        String id, Supplier<TranslationEditor> editor) {
+    }
+
     private void refresh() {
         try {
-            {
-                GitOperator.cloneRepository("Everest", "dev");
-                Path baseDir = Paths.get("/tmp/Everest_repo");
+            Map<String, Map<String, Map<String, String>>> newDialogs = new HashMap<>();
+
+            for (Repo r : Arrays.asList(
+                    new Repo("EverestAPI", "Everest", "dev",
+                            "Celeste.Mod.mm/Content/Dialog", "everest",
+                            EverestTranslationEditor::getTranslationEditor),
+                    new Repo("EverestAPI", "CelesteCollabUtils2", "master",
+                            "Dialog", "cu2", DialogFileTranslationEditor::getTranslationEditor),
+                    new Repo("maddie480", "ExtendedVariantMode", "master",
+                            "Dialog", "evm", DialogFileTranslationEditor::getTranslationEditor)
+            )) {
+                GitOperator.cloneRepository(r.orgName, r.repoName, r.branch);
+                Path baseDir = Paths.get("/tmp/" + r.repoName + "_repo");
                 List<String> languages;
-                try (Stream<Path> paths = Files.list(baseDir.resolve("Celeste.Mod.mm/Content/Dialog"))) {
+                try (Stream<Path> paths = Files.list(baseDir.resolve(r.dir))) {
                     languages = paths
                             .filter(p -> p.getFileName().toString().endsWith(".txt"))
                             .map(p -> p.getFileName().toString())
@@ -60,17 +78,16 @@ public class TranslationViewerService extends HttpServlet {
                 Map<String, Map<String, String>> newEverestDialog = languages.stream()
                         .collect(Collectors.toMap(l -> l, l -> {
                             try {
-                                return EverestTranslationEditor.getTranslationEditor().readLanguageEntries(baseDir, l);
+                                return r.editor.get().readLanguageEntries(baseDir, l);
                             } catch (IOException e) {
                                 throw new RuntimeException(e);
                             }
                         }));
-                everestDialog.clear();
-                everestDialog.putAll(newEverestDialog);
+                newDialogs.put(r.id, newEverestDialog);
                 FileUtils.deleteDirectory(baseDir.toFile());
             }
             {
-                GitOperator.cloneRepository("Olympus", "main");
+                GitOperator.cloneRepository("EverestAPI", "Olympus", "main");
                 Path baseDir = Paths.get("/tmp/Olympus_repo");
                 List<String> languages = new ArrayList<>();
                 try (BufferedReader br = Files.newBufferedReader(baseDir.resolve("src/lang.lua"), StandardCharsets.UTF_8)) {
@@ -89,12 +106,15 @@ public class TranslationViewerService extends HttpServlet {
                                 throw new RuntimeException(e);
                             }
                         }));
-                olympusDialog.clear();
-                olympusDialog.putAll(newOlympusDialog);
+                newDialogs.put("olympus", newOlympusDialog);
                 FileUtils.deleteDirectory(baseDir.toFile());
             }
 
-            log.info("Refreshed dialog keys for Everest ({}) and Olympus ({})", everestDialog.keySet(), olympusDialog.keySet());
+            dialogs.clear();
+            dialogs.putAll(newDialogs);
+
+            log.info("Refreshed dialog keys successfully, language count per program: {}", dialogs.entrySet().stream()
+                    .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().size())));
         } catch (IOException e) {
             log.warn("Loading dialog keys and values failed!", e);
         }
@@ -102,17 +122,29 @@ public class TranslationViewerService extends HttpServlet {
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        if (request.getRequestURI().equals("/celeste/translation-viewer-reload")) {
+            if (("key=" + SecretConstants.RELOAD_SHARED_SECRET).equals(request.getQueryString())) {
+                refresh();
+            } else {
+                // invalid secret
+                log.warn("Invalid key");
+                response.setStatus(403);
+            }
+            return;
+        }
+
         String program = request.getParameter("program");
         String language = request.getParameter("language");
         boolean redirect = false;
 
-        if (program == null || !Arrays.asList("olympus", "everest").contains(program)) {
+        if (program == null || !dialogs.containsKey(program)) {
             program = "everest";
             redirect = true;
         }
 
-        Map<String, Map<String, String>> dialog = program.equals("everest") ? everestDialog : olympusDialog;
+        Map<String, Map<String, String>> dialog = dialogs.get(program);
         List<String> availableLanguages = new ArrayList<>(dialog.keySet());
+        availableLanguages.sort(Comparator.naturalOrder());
         availableLanguages.remove("en");
         availableLanguages.remove("English");
         if (language == null || !availableLanguages.contains(language)) {
@@ -139,13 +171,23 @@ public class TranslationViewerService extends HttpServlet {
             ));
         }
 
-        String pageTitle = (program.equals("everest") ? "Everest" : "Olympus") + " Translation Viewer";
+        String programName = ImmutableMap.of(
+                "everest", "Everest",
+                "olympus", "Olympus",
+                "cu2", "Collab Utils 2",
+                "evm", "Extended Variant Mode"
+        ).get(program);
+
+        String pageTitle = programName + " Translation Viewer";
+        request.setAttribute("programName", programName);
         request.setAttribute("title", pageTitle);
         request.setAttribute("leftLang", leftLang);
         request.setAttribute("rightLang", language);
         request.setAttribute("langs", availableLanguages);
         request.setAttribute("entries", dialogEntries);
 
-        PageRenderer.render(request, response, "translation-viewer", pageTitle, "wip wip wip");
+        PageRenderer.render(request, response, "translation-viewer", pageTitle,
+                "View the translations of " + programName + " in different languages, and compare" +
+                        " them to English to spot outdated and missing translations.");
     }
 }
