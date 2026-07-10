@@ -89,14 +89,13 @@ public class TranslationViewerService extends HttpServlet {
             {
                 GitOperator.cloneRepository("EverestAPI", "Olympus", "main");
                 Path baseDir = Paths.get("/tmp/Olympus_repo");
-                List<String> languages = new ArrayList<>();
-                try (BufferedReader br = Files.newBufferedReader(baseDir.resolve("src/lang.lua"), StandardCharsets.UTF_8)) {
-                    String s;
-                    while ((s = br.readLine()) != null && !s.startsWith("local langs =")) ;
-                    while ((s = br.readLine()) != null && !s.startsWith("}")) {
-                        s = s.trim();
-                        languages.add(s.substring(0, s.indexOf(" ")));
-                    }
+                List<String> languages;
+                try (Stream<Path> paths = Files.list(baseDir.resolve("src/lang"))) {
+                    languages = paths
+                            .filter(p -> p.getFileName().toString().endsWith(".lua"))
+                            .map(p -> p.getFileName().toString())
+                            .map(p -> p.substring(0, p.length() - 4))
+                            .toList();
                 }
                 Map<String, Map<String, String>> newOlympusDialog = languages.stream()
                         .collect(Collectors.toMap(l -> l, l -> {
