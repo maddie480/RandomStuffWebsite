@@ -18,18 +18,17 @@
         <a href="https://github.com/EverestAPI/Everest/tree/dev/Celeste.Mod.mm/Content/Dialog" target="_blank">the Everest dialog files</a>
         and submit a pull request.
     <% } else if (request.getParameter("program").equals("olympus")) { %>
-    In order to update these translations, edit
-    <a href="https://github.com/EverestAPI/Olympus/blob/main/src/lang.lua" target="_blank">the language file</a> and/or
-    <a href="https://github.com/EverestAPI/Olympus/blob/main/sharp/CmdUpdateAllMods.cs#L16" target="_blank">the mod updater translation map</a>
-    and submit a pull request.
+        In order to update these translations, edit
+        <a href="https://github.com/EverestAPI/Olympus/blob/main/src/lang" target="_blank">the language files</a>
+        and submit a pull request.
     <% } else if (request.getParameter("program").equals("cu2")) { %>
-    In order to update these translations, edit
-    <a href="https://github.com/EverestAPI/CelesteCollabUtils2/tree/master/Dialog" target="_blank">the dialog files</a>
-    and submit a pull request.
+        In order to update these translations, edit
+        <a href="https://github.com/EverestAPI/CelesteCollabUtils2/tree/master/Dialog" target="_blank">the dialog files</a>
+        and submit a pull request.
     <% } else if (request.getParameter("program").equals("evm")) { %>
-    In order to update these translations, edit
-    <a href="https://github.com/maddie480/ExtendedVariantMode/tree/master/Dialog" target="_blank">the dialog files</a>
-    and submit a pull request.
+        In order to update these translations, edit
+        <a href="https://github.com/maddie480/ExtendedVariantMode/tree/master/Dialog" target="_blank">the dialog files</a>
+        and submit a pull request.
     <% } %>
 </p>
 
