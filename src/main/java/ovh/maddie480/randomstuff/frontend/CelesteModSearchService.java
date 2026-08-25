@@ -13,9 +13,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ovh.maddie480.randomstuff.frontend.moddatabase.ModDatabase;
-import ovh.maddie480.randomstuff.frontend.moddatabase.model.CategoryRecord;
-import ovh.maddie480.randomstuff.frontend.moddatabase.model.ModRecord;
+import ovh.maddie480.randomstuff.backend.celeste.moddatabase.ModDatabase;
+import ovh.maddie480.randomstuff.backend.celeste.moddatabase.model.CategoryRecord;
+import ovh.maddie480.randomstuff.backend.celeste.moddatabase.model.ModRecord;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

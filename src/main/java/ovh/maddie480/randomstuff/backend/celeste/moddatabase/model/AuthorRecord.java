@@ -1,18 +1,17 @@
-package ovh.maddie480.randomstuff.frontend.moddatabase.model;
+package ovh.maddie480.randomstuff.backend.celeste.moddatabase.model;
 
 import java.util.Objects;
 
-public class CategoryRecord {
+public class AuthorRecord {
     public String id;
     public String name;
-    public String iconUrl;
-    public String pageUrl;
-    public CategoryRecord parent;
+    public String avatarUrl;
+    public String profileUrl;
 
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        CategoryRecord that = (CategoryRecord) o;
+        AuthorRecord that = (AuthorRecord) o;
         return Objects.equals(id, that.id);
     }
 

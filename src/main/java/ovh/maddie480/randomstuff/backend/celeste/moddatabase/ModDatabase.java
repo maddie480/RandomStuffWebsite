@@ -1,4 +1,4 @@
-package ovh.maddie480.randomstuff.frontend.moddatabase;
+package ovh.maddie480.randomstuff.backend.celeste.moddatabase;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -7,8 +7,8 @@ import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.representer.Representer;
-import ovh.maddie480.randomstuff.frontend.moddatabase.model.FileRecord;
-import ovh.maddie480.randomstuff.frontend.moddatabase.model.ModRecord;
+import ovh.maddie480.randomstuff.backend.celeste.moddatabase.model.FileRecord;
+import ovh.maddie480.randomstuff.backend.celeste.moddatabase.model.ModRecord;
 
 import java.io.BufferedReader;
 import java.io.IOException;

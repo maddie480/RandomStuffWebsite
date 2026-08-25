@@ -10,7 +10,7 @@ import org.json.JSONArray;
 import org.json.JSONTokener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ovh.maddie480.randomstuff.frontend.moddatabase.ModDatabase;
+import ovh.maddie480.randomstuff.backend.celeste.moddatabase.ModDatabase;
 
 import java.io.BufferedReader;
 import java.io.IOException;

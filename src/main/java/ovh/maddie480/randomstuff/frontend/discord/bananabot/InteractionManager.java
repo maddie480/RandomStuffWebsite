@@ -13,7 +13,7 @@ import ovh.maddie480.randomstuff.frontend.CelesteModSearchService;
 import ovh.maddie480.randomstuff.frontend.ConnectionUtils;
 import ovh.maddie480.randomstuff.frontend.SecretConstants;
 import ovh.maddie480.randomstuff.frontend.discord.DiscordProtocolHandler;
-import ovh.maddie480.randomstuff.frontend.moddatabase.model.ModRecord;
+import ovh.maddie480.randomstuff.backend.celeste.moddatabase.model.ModRecord;
 
 import java.io.IOException;
 import java.io.InputStream;

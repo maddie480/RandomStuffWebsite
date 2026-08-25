@@ -4,13 +4,9 @@ import net.dv8tion.jda.api.utils.MarkdownSanitizer;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import ovh.maddie480.randomstuff.frontend.CelesteModSearchService;
-import ovh.maddie480.randomstuff.frontend.ConnectionUtils;
-import ovh.maddie480.randomstuff.frontend.YamlUtil;
-import ovh.maddie480.randomstuff.frontend.moddatabase.model.CategoryRecord;
-import ovh.maddie480.randomstuff.frontend.moddatabase.model.ModRecord;
+import ovh.maddie480.randomstuff.backend.celeste.moddatabase.model.CategoryRecord;
+import ovh.maddie480.randomstuff.backend.celeste.moddatabase.model.ModRecord;
 
-import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.time.Instant;
@@ -19,7 +15,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 public class EmbedBuilder {
     public static void integrityCheck() {

@@ -1,4 +1,4 @@
-package ovh.maddie480.randomstuff.frontend.moddatabase.model;
+package ovh.maddie480.randomstuff.backend.celeste.moddatabase.model;
 
 import java.util.Arrays;
 import java.util.Objects;
