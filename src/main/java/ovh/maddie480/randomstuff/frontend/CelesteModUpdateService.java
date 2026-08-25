@@ -17,7 +17,7 @@ import java.nio.file.Paths;
  * This servlet caches and provides the everest_update.yaml Everest downloads to check for updates.
  * It also provides file_ids.yaml, that can be used to get all GameBanana file IDs that belong to Celeste mods.
  */
-@WebServlet(name = "CelesteModUpdateService", loadOnStartup = 1, urlPatterns = {"/celeste/everest_update.yaml",
+@WebServlet(name = "CelesteModUpdateService", loadOnStartup = 2, urlPatterns = {"/celeste/everest_update.yaml",
         "/celeste/everest-update-reload", "/celeste/mod_search_database.yaml", "/celeste/mod_files_database.zip",
         "/celeste/mod_dependency_graph.yaml"})
 public class CelesteModUpdateService extends HttpServlet {

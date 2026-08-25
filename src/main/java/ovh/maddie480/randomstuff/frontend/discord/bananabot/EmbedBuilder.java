@@ -50,7 +50,7 @@ public class EmbedBuilder {
             footer.put("icon_url", "https://images.gamebanana.com/static/img/favicon/128x128.png");
         }
 
-        String iconUrl = "";
+        String iconUrl = null;
         {
             JSONArray fields = new JSONArray();
             embed.put("fields", fields);
@@ -59,7 +59,7 @@ public class EmbedBuilder {
                 CategoryRecord currentCategory = mod.category;
                 while (currentCategory != null) {
                     categorySections.addFirst("[" + MarkdownSanitizer.escape(currentCategory.name) + "](" + currentCategory.pageUrl + ")");
-                    if (iconUrl.isEmpty()) iconUrl = currentCategory.iconUrl;
+                    if (iconUrl == null) iconUrl = currentCategory.iconUrl;
                     currentCategory = currentCategory.parent;
                 }
 
@@ -90,7 +90,7 @@ public class EmbedBuilder {
             author.put("url", mod.author.profileUrl);
         }
 
-        if (!iconUrl.isEmpty()) {
+        if (iconUrl != null) {
             JSONObject thumbnail = new JSONObject();
             embed.put("thumbnail", thumbnail);
             thumbnail.put("url", iconUrl);
