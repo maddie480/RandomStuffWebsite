@@ -105,7 +105,7 @@ public class CelesteModSearchService extends HttpServlet {
             return;
         }
         if ("/celeste/everest-versions".equals(request.getRequestURI())) {
-            handleEverestVersionsList(request, response);
+            handleEverestVersionsList(response);
             return;
         }
         if ("/celeste/olympus-versions".equals(request.getRequestURI())) {
@@ -173,7 +173,6 @@ public class CelesteModSearchService extends HttpServlet {
     private static void handleModList(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String sortParam = request.getParameter("sort");
         String pageParam = request.getParameter("page");
-        String typeParam = request.getParameter("type");
         String categoryParam = request.getParameter("category");
         String subcategoryParam = request.getParameter("subcategory");
 
@@ -334,7 +333,7 @@ public class CelesteModSearchService extends HttpServlet {
                     while (category.parent != null) category = category.parent;
                     return category.id.equals(categoryId);
                 })
-                .filter(c -> !categoryId.equals(c.id))
+                .filter(c -> !categoryId.equals(c.category.id))
                 .collect(Collectors.toMap(
                         id -> id.category,
                         _ -> 1,
@@ -378,7 +377,7 @@ public class CelesteModSearchService extends HttpServlet {
         }
     }
 
-    private void handleEverestVersionsList(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    private void handleEverestVersionsList(HttpServletResponse response) throws IOException {
         // send everest-versions.json we loaded earlier
         response.setHeader("Content-Type", "application/json");
         IOUtils.write(everestVersions, response.getOutputStream());
@@ -482,53 +481,10 @@ public class CelesteModSearchService extends HttpServlet {
         return output;
     }
 
-    public static String formatGameBananaItemtype(String input, boolean pluralize) {
-        // specific formatting for a few categories
-        switch (input) {
-            case "Gamefile" -> {
-                return pluralize ? "Game files" : "Game file";
-            }
-            case "Wip" -> {
-                return pluralize ? "WiPs" : "WiP";
-            }
-            case "Gui" -> {
-                return pluralize ? "GUIs" : "GUI";
-            }
-        }
-
-        // apply the spaced pascal case from Everest
-        StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < input.length(); i++) {
-            char c = input.charAt(i);
-            if (i > 0 && Character.isUpperCase(c) && Character.isLowerCase(input.charAt(i - 1)))
-                builder.append(' ');
-
-            if (i != 0 && builder.charAt(builder.length() - 1) == ' ') {
-                builder.append(Character.toUpperCase(c));
-            } else {
-                builder.append(c);
-            }
-        }
-
-        // capitalize the first letter
-        String result = builder.toString();
-        result = result.substring(0, 1).toUpperCase() + result.substring(1);
-
-        if (!pluralize) {
-            return result;
-        }
-
-        // pluralize
-        if (result.charAt(result.length() - 1) == 'y') {
-            return result.substring(0, result.length() - 1) + "ies";
-        }
-        return result + "s";
-    }
-
     private void refreshModDatabase() throws IOException {
         // get and deserialize the mod list from storage.
         database = new ModDatabase().allMods;
-        database.stream().forEach(m -> Arrays.stream(m.files)
+        database.forEach(m -> Arrays.stream(m.files)
                 .forEach(f -> f.fileListing = new String[0]));
 
         refreshCategoriesLists();
@@ -632,17 +588,6 @@ public class CelesteModSearchService extends HttpServlet {
         }
 
         log.debug("Associated {} mod IDs with their names.", modIdsToNamesAndCategoriesMap.size());
-    }
-
-    private String getCategory(Map<String, Object> fullInfo) {
-        switch ((String) fullInfo.get("GameBananaType")) {
-            case "Tool":
-                return "Tools";
-            case "Wip":
-                return "WiPs";
-        }
-        Object categoryName = fullInfo.get("CategoryName");
-        return categoryName != null ? (String) categoryName : "Other/Misc";
     }
 
     private void refreshEverestVersions() throws IOException {
