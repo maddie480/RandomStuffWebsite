@@ -10,6 +10,7 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ovh.maddie480.randomstuff.frontend.moddatabase.ModDatabase;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -19,6 +20,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @WebServlet(name = "CelesteDirectURLService", urlPatterns = {"/celeste/direct-link-service", "/celeste/dl", "/celeste/gb",
@@ -170,15 +172,10 @@ public class CelesteDirectURLService extends HttpServlet {
         Map<String, String> newDlUrls = new HashMap<>();
         Map<String, String> newMirrorUrls = new HashMap<>();
 
-        Map<String, Map<String, Object>> everestUpdate;
-        try (InputStream is = Files.newInputStream(Paths.get("/shared/celeste/updater/everest-update.yaml"))) {
-            everestUpdate = YamlUtil.load(is);
-        }
-
-        for (Map.Entry<String, Map<String, Object>> element : everestUpdate.entrySet()) {
-            newGbUrls.put(element.getKey(), "https://gamebanana.com/" + ((String) element.getValue().get("GameBananaType")).toLowerCase() + "s/" + element.getValue().get("GameBananaId"));
-            newDlUrls.put(element.getKey(), (String) element.getValue().get("URL"));
-            newMirrorUrls.put(element.getKey(), ((String) element.getValue().get("URL")).replace("https://gamebanana.com/mmdl/", "https://celestemodupdater.0x0a.de/banana-mirror/") + ".zip");
+        for (ModDatabase.ModLatestVersion element : ModDatabase.listLatestVersions(CelesteModSearchService.database)) {
+            newGbUrls.put(element.file().modId, element.mod().pageUrl);
+            newDlUrls.put(element.file().modId, element.file().mainUrl);
+            newMirrorUrls.put(element.file().modId, "https://celestemodupdater.0x0a.de/banana-mirror/" + element.file().mirrorName + ".zip");
         }
 
         log.debug("There are now {} GB links, {} URLs and {} mirror URLs.", newGbUrls.size(), newDlUrls.size(), newMirrorUrls.size());

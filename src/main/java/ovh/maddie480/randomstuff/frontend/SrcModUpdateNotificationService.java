@@ -10,6 +10,7 @@ import org.json.JSONArray;
 import org.json.JSONTokener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ovh.maddie480.randomstuff.frontend.moddatabase.ModDatabase;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -22,8 +23,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import static com.max480.randomstuff.backend.celeste.crontabs.UpdateCheckerTracker.ModInfo;
 
 /**
  * Allows the speedrun.com moderator team to manage which mods they want to be notified about.
@@ -139,24 +138,16 @@ public class SrcModUpdateNotificationService extends HttpServlet {
                     .collect(Collectors.toCollection(ArrayList::new));
         }
 
-        Map<String, Map<String, Object>> modUpdateDatabase;
-        try (InputStream is = Files.newInputStream(Paths.get("/shared/celeste/updater/everest-update.yaml"))) {
-            modUpdateDatabase = YamlUtil.load(is);
-        }
-
         request.setAttribute("modList", modList.stream()
                 .map(modId -> {
                     Map<String, String> result = new HashMap<>();
 
                     result.put("id", modId);
-                    if (modUpdateDatabase.containsKey(modId)) {
-                        Map<String, Object> itemFromDatabase = modUpdateDatabase.get(modId);
-                        ModInfo modInfo = CelesteModSearchService.getModInfoByTypeAndId(
-                                (String) itemFromDatabase.get("GameBananaType"), (int) itemFromDatabase.get("GameBananaId"));
-
-                        result.put("url", (String) modInfo.fullInfo.get("PageURL"));
-                        result.put("name", (String) modInfo.fullInfo.get("Name"));
-                        result.put("version", (String) itemFromDatabase.get("Version"));
+                    ModDatabase.ModLatestVersion version = CelesteModSearchService.getModInfoByEverestYamlId(modId);
+                    if (version != null) {
+                        result.put("url", version.mod().pageUrl);
+                        result.put("name", version.mod().name);
+                        result.put("version", version.file().modVersion);
                     }
 
                     return result;

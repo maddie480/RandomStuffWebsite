@@ -13,6 +13,7 @@ import ovh.maddie480.randomstuff.frontend.CelesteModSearchService;
 import ovh.maddie480.randomstuff.frontend.ConnectionUtils;
 import ovh.maddie480.randomstuff.frontend.SecretConstants;
 import ovh.maddie480.randomstuff.frontend.discord.DiscordProtocolHandler;
+import ovh.maddie480.randomstuff.frontend.moddatabase.model.ModRecord;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,9 +22,6 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Map;
-
-import static com.max480.randomstuff.backend.celeste.crontabs.UpdateCheckerTracker.ModInfo;
 
 /**
  * This is the API that makes the BananaBot run.
@@ -86,15 +84,15 @@ public class InteractionManager extends HttpServlet {
                     }).start();
                 } else {
                     // used a combo box
-                    String[] pickedMod = data.getJSONObject("data").getJSONArray("values").getString(0).split("/");
-                    ModInfo pickedInfo = CelesteModSearchService.getModInfoByTypeAndId(pickedMod[0], Integer.parseInt(pickedMod[1]));
+                    String pickedMod = data.getJSONObject("data").getJSONArray("values").getString(0);
+                    ModRecord pickedInfo = CelesteModSearchService.getModInfoByModId(pickedMod);
                     if (pickedInfo == null) {
                         responseData.put("content", localizeMessage(locale,
                                 ":x: Looks like the result you chose has vanished! :sparkles: :shrug:",
                                 ":x: Il semblerait que le résultat que tu as choisi a disparu ! :sparkles: :shrug:"));
                     } else {
-                        responseData.put("content", "<" + pickedInfo.fullInfo.get("PageURL") + ">");
-                        responseData.put("embeds", EmbedBuilder.buildEmbedFor(pickedInfo.fullInfo));
+                        responseData.put("content", "<" + pickedInfo.pageUrl + ">");
+                        responseData.put("embeds", EmbedBuilder.buildEmbedFor(pickedInfo));
                     }
                     responseData.put("flags", 1 << 6); // ephemeral
                 }
@@ -107,7 +105,7 @@ public class InteractionManager extends HttpServlet {
             } else {
                 // slash command invocation
                 String searchTerms = data.getJSONObject("data").getJSONArray("options").getJSONObject(0).getString("value");
-                List<Map<String, Object>> results = CelesteModSearchService.searchModsByName(searchTerms);
+                List<ModRecord> results = CelesteModSearchService.searchModsByNameForInternal(searchTerms);
 
                 if (results.isEmpty()) {
                     respondPrivately(resp, localizeMessage(locale,
@@ -125,12 +123,12 @@ public class InteractionManager extends HttpServlet {
         }
     }
 
-    private static void respondWithDropdown(HttpServletResponse resp, String locale, List<Map<String, Object>> results) throws IOException {
+    private static void respondWithDropdown(HttpServletResponse resp, String locale, List<ModRecord> results) throws IOException {
         JSONObject response = new JSONObject();
         response.put("type", 4); // response in channel
 
         JSONObject responseData = new JSONObject();
-        responseData.put("content", "<" + results.getFirst().get("PageURL") + ">");
+        responseData.put("content", "<" + results.getFirst().pageUrl + ">");
         responseData.put("embeds", EmbedBuilder.buildEmbedFor(results.getFirst()));
         responseData.put("allowed_mentions", new JSONObject("{\"parse\": []}"));
         responseData.put("flags", 1 << 6); // ephemeral
@@ -158,10 +156,10 @@ public class InteractionManager extends HttpServlet {
         JSONArray options = new JSONArray();
         selectMenu.put("options", options);
 
-        for (Map<String, Object> result : results) {
+        for (ModRecord result : results) {
             JSONObject object = new JSONObject();
-            object.put("label", result.get("Name"));
-            object.put("value", result.get("GameBananaType") + "/" + result.get("GameBananaId"));
+            object.put("label", result.name);
+            object.put("value", result.id);
             options.put(object);
         }
 

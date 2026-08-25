@@ -1,7 +1,6 @@
 package ovh.maddie480.randomstuff.frontend;
 
 import com.google.common.collect.ImmutableMap;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,11 +13,13 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ovh.maddie480.randomstuff.frontend.moddatabase.ModDatabase;
+import ovh.maddie480.randomstuff.frontend.moddatabase.model.CategoryRecord;
+import ovh.maddie480.randomstuff.frontend.moddatabase.model.ModRecord;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ObjectInputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -28,8 +29,6 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static com.max480.randomstuff.backend.celeste.crontabs.UpdateCheckerTracker.ModInfo;
 
 /**
  * This servlet provides the GameBanana search API, and other APIs that are used by Olympus or the Banana Mirror Browser.
@@ -42,8 +41,7 @@ import static com.max480.randomstuff.backend.celeste.crontabs.UpdateCheckerTrack
 public class CelesteModSearchService extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(CelesteModSearchService.class);
 
-    private static List<ModInfo> modDatabaseForSorting = Collections.emptyList();
-    private Map<Integer, String> modCategories;
+    public static List<ModRecord> database = Collections.emptyList();
 
     private byte[] everestVersions;
     private byte[] helperList;
@@ -139,14 +137,21 @@ public class CelesteModSearchService extends HttpServlet {
     }
 
     private static void handleRandomMap(HttpServletResponse response) {
-        List<ModInfo> maps = modDatabaseForSorting.stream()
-                .filter(i -> "Mod".equals(i.type) && i.categoryId == 6800) // Map
+        List<ModRecord> maps = database.stream()
+                .filter(m -> {
+                    CategoryRecord cat = m.category;
+                    while (cat != null) {
+                        if (cat.name.equals("Maps")) return true;
+                        cat = cat.parent;
+                    }
+                    return false;
+                })
                 .toList();
 
         // pick a map and redirect to it. that's it.
-        ModInfo drawnMod = maps.get(secureRandom.nextInt(maps.size()));
+        ModRecord drawnMod = maps.get(secureRandom.nextInt(maps.size()));
         response.setStatus(302);
-        response.setHeader("Location", "https://gamebanana.com/mods/" + drawnMod.id);
+        response.setHeader("Location", drawnMod.pageUrl);
     }
 
     private static void handleModSearch(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -190,30 +195,31 @@ public class CelesteModSearchService extends HttpServlet {
             }
 
             // is there a type and/or a category filter?
-            List<Predicate<ModInfo>> typeFilters = new ArrayList<>();
-            if (typeParam != null) {
-                typeFilters.add(info -> typeParam.equalsIgnoreCase(info.type));
-            }
+            List<Predicate<ModRecord>> typeFilters = new ArrayList<>();
             if (categoryParam != null) {
-                typeFilters.add(info -> Integer.toString(info.categoryId).equals(categoryParam));
+                typeFilters.add(info -> {
+                    CategoryRecord c = info.category;
+                    while (c.parent != null) c = c.parent;
+                    return c.id.equals(categoryParam);
+                });
             }
             if (subcategoryParam != null) {
-                typeFilters.add(info -> info.subcategoryId != null && Integer.toString(info.subcategoryId).equals(subcategoryParam));
+                typeFilters.add(info -> info.category.id.equals(subcategoryParam));
             }
             // typeFilter is a && of all typeFilters
-            Predicate<ModInfo> typeFilter = info -> typeFilters.stream().allMatch(filter -> filter.test(info));
+            Predicate<ModRecord> typeFilter = info -> typeFilters.stream().allMatch(filter -> filter.test(info));
 
             // determine the field on which we want to sort. Sort by descending id to tell equal values apart.
-            Comparator<ModInfo> sort = switch (sortParam) {
-                case "views" -> Comparator.<ModInfo>comparingInt(i -> -i.views).thenComparingInt(i -> -i.id);
-                case "likes" -> Comparator.<ModInfo>comparingInt(i -> -i.likes).thenComparingInt(i -> -i.id);
-                case "downloads" -> Comparator.<ModInfo>comparingInt(i -> -i.downloads).thenComparingInt(i -> -i.id);
-                case "latest" -> Comparator.<ModInfo>comparingInt(i -> -i.createdDate).thenComparingInt(i -> -i.id);
+            Comparator<ModRecord> sort = switch (sortParam) {
+                case "views" -> Comparator.<ModRecord>comparingInt(i -> -i.views).thenComparing(i -> i.id);
+                case "likes" -> Comparator.<ModRecord>comparingInt(i -> -i.likes).thenComparing(i -> i.id);
+                case "downloads" -> Comparator.<ModRecord>comparingInt(i -> -i.downloads).thenComparing(i -> i.id);
+                case "latest" -> Comparator.<ModRecord>comparingLong(i -> -i.createdDate).thenComparing(i -> i.id);
                 default -> null;
             };
 
             // then sort on it.
-            Stream<ModInfo> responseBodyStream = modDatabaseForSorting.stream()
+            Stream<ModRecord> responseBodyStream = database.stream()
                     .filter(typeFilter);
 
             if (sort != null) {
@@ -223,12 +229,12 @@ public class CelesteModSearchService extends HttpServlet {
             final List<Map<String, Object>> responseBody = responseBodyStream
                     .skip((page - 1) * 20L)
                     .limit(20)
-                    .map(modInfo -> modInfo.fullInfo)
+                    .map(CelesteModSearchService::serializeModInfo)
                     .map(CelesteModSearchService::crabify)
                     .collect(Collectors.toList());
 
             // count the amount of results and put it as a header.
-            response.setHeader("X-Total-Count", Long.toString(modDatabaseForSorting.stream()
+            response.setHeader("X-Total-Count", Long.toString(database.stream()
                     .filter(typeFilter)
                     .count()));
 
@@ -238,29 +244,19 @@ public class CelesteModSearchService extends HttpServlet {
     }
 
     private static void handleSingleModInfo(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String itemtype = request.getParameter("itemtype");
+        String id = request.getParameter("id");
 
-        Integer itemid = null;
-        try {
-            if (request.getParameter("itemid") != null) {
-                itemid = Integer.parseInt(request.getParameter("itemid"));
-            }
-        } catch (NumberFormatException e) {
-            log.warn("Cannot parse itemid as number", e);
-        }
-
-        if (itemtype == null || itemid == null) {
+        if (id == null) {
             // missing parameter
             log.warn("Bad request");
             response.setHeader("Content-Type", "text/plain");
             response.setStatus(400);
-            response.getWriter().write("'itemtype' and 'itemid' query params should both be specified, and itemid should be a valid number");
+            response.getWriter().write("'id' query param should be specified");
         } else {
-            final int itemId = itemid;
-            JSONObject responseBody = modDatabaseForSorting.stream()
-                    .filter(mod -> itemtype.equals(mod.type) && itemId == mod.id)
+            JSONObject responseBody = database.stream()
+                    .filter(mod -> mod.id.equals(id))
                     .findFirst()
-                    .map(mod -> new JSONObject(mod.fullInfo))
+                    .map(mod -> new JSONObject(serializeModInfo(mod)))
                     .orElse(null);
 
             // send out the response.
@@ -277,25 +273,9 @@ public class CelesteModSearchService extends HttpServlet {
     }
 
     private static void handleFeaturedModsList(HttpServletResponse response) throws IOException {
-        final List<String> catOrder = Arrays.asList("today", "week", "month", "3month", "6month", "year", "alltime");
-        final List<Map<String, Object>> responseBody = modDatabaseForSorting.stream()
-                .filter(mod -> mod.fullInfo.containsKey("Featured"))
-                .sorted((a, b) -> {
-                    Map<String, Object> aInfo = (Map<String, Object>) a.fullInfo.get("Featured");
-                    Map<String, Object> bInfo = (Map<String, Object>) b.fullInfo.get("Featured");
-
-                    // sort by category, then by position.
-                    if (aInfo.get("Category").equals(bInfo.get("Category"))) {
-                        return (int) aInfo.get("Position") - (int) bInfo.get("Position");
-                    }
-                    return catOrder.indexOf(aInfo.get("Category")) - catOrder.indexOf(bInfo.get("Category"));
-                })
-                .map(mod -> mod.fullInfo)
-                .map(CelesteModSearchService::crabify)
-                .collect(Collectors.toList());
-
         response.setHeader("Content-Type", "application/json");
-        new JSONArray(responseBody).write(response.getWriter());
+        // oops
+        new JSONArray().write(response.getWriter());
     }
 
     private void handleCategoriesList(HttpServletResponse response) throws IOException {
@@ -304,12 +284,10 @@ public class CelesteModSearchService extends HttpServlet {
     }
 
     private List<Map<String, Object>> computeCategoryList() {
-        HashMap<Object, Integer> categoriesAndCounts = new HashMap<>();
-        for (ModInfo modInfo : modDatabaseForSorting) {
-            Object category = modInfo.type;
-            if (category.equals("Mod")) {
-                category = modInfo.categoryId;
-            }
+        HashMap<CategoryRecord, Integer> categoriesAndCounts = new HashMap<>();
+        for (ModRecord modInfo : database) {
+            CategoryRecord category = modInfo.category;
+            while (category.parent != null) category = category.parent;
             if (!categoriesAndCounts.containsKey(category)) {
                 // first mod encountered in this category
                 categoriesAndCounts.put(category, 1);
@@ -323,16 +301,9 @@ public class CelesteModSearchService extends HttpServlet {
         List<Map<String, Object>> categoriesList = categoriesAndCounts.entrySet().stream()
                 .map(entry -> {
                     Map<String, Object> result = new LinkedHashMap<>();
-                    if (entry.getKey() instanceof String) {
-                        // itemtype
-                        result.put("itemtype", entry.getKey());
-                        result.put("formatted", formatGameBananaItemtype(entry.getKey().toString(), true));
-                    } else {
-                        // mod category
-                        result.put("itemtype", "Mod");
-                        result.put("categoryid", entry.getKey());
-                        result.put("formatted", modCategories.get(entry.getKey()));
-                    }
+                    result.put("itemtype", "Obsolete");
+                    result.put("categoryid", entry.getKey().id);
+                    result.put("formatted", entry.getKey().name);
                     result.put("count", entry.getValue());
                     return result;
                 })
@@ -342,7 +313,7 @@ public class CelesteModSearchService extends HttpServlet {
         // also add an "All" option to pass the total number of mods.
         Map<String, Object> all = new HashMap<>();
         all.put("formatted", "All");
-        all.put("count", modDatabaseForSorting.size());
+        all.put("count", database.size());
 
         // the final list is "All" followed by all the categories.
         List<Map<String, Object>> responseBody = new ArrayList<>();
@@ -356,36 +327,27 @@ public class CelesteModSearchService extends HttpServlet {
         response.getOutputStream().write(precomputedSubcategoryList);
     }
 
-    private List<Map<String, Object>> computeSubcategoryListFor(String itemtype, Integer categoryId) {
-        Stream<ModInfo> step1 = modDatabaseForSorting.stream()
-                .filter(mod -> itemtype.equals(mod.type));
-
-        Stream<Integer> step2;
-        if (categoryId == null) {
-            // group by category
-            step2 = step1.map(mod -> mod.categoryId);
-        } else {
-            // filter by category, group by subcategory
-            step2 = step1
-                    .filter(mod -> mod.categoryId == categoryId)
-                    .map(mod -> mod.subcategoryId);
-        }
-
-        // time to actually group!
-        Map<Integer, Integer> groupResult = step2.collect(Collectors.toMap(
-                id -> id == null ? -1 : id,
-                id -> 1,
-                Integer::sum
-        ));
+    private List<Map<String, Object>> computeSubcategoryListFor(String categoryId) {
+        Map<CategoryRecord, Integer> groupResult = database.stream()
+                .filter(mod -> {
+                    CategoryRecord category = mod.category;
+                    while (category.parent != null) category = category.parent;
+                    return category.id.equals(categoryId);
+                })
+                .filter(c -> !categoryId.equals(c.id))
+                .collect(Collectors.toMap(
+                        id -> id.category,
+                        _ -> 1,
+                        Integer::sum
+                ));
 
         int total = groupResult.values().stream().mapToInt(i -> i).sum();
-        groupResult.remove(-1); // uncategorized items
 
         // format the map for the response...
         List<Map<String, Object>> subcategoriesList = groupResult.entrySet().stream()
                 .<Map<String, Object>>map(entry -> ImmutableMap.of(
-                        "id", entry.getKey(),
-                        "name", modCategories.get(entry.getKey()),
+                        "id", entry.getKey().id,
+                        "name", entry.getKey().name,
                         "count", entry.getValue()
                 ))
                 .sorted(Comparator.comparing(map -> map.get("name").toString()))
@@ -422,23 +384,28 @@ public class CelesteModSearchService extends HttpServlet {
         IOUtils.write(everestVersions, response.getOutputStream());
     }
 
-    public static List<Map<String, Object>> searchModsByName(String queryParam) {
-        final String[] tokenizedRequest = tokenize(queryParam);
-
-        Map<ModInfo, Double> scoredMods = modDatabaseForSorting.stream()
-                .collect(Collectors.toMap(m -> m, m -> scoreMod(tokenizedRequest, (String[]) m.fullInfo.get("TokenizedName"))));
-
-        return modDatabaseForSorting.stream()
-                .filter(mod -> scoredMods.get(mod) > 0.2f * tokenizedRequest.length)
-                .sorted(Comparator
-                        .<ModInfo>comparingDouble(mod -> -scoredMods.get(mod))
-                        .thenComparingInt(mod -> -mod.downloads))
-                .map(mod -> mod.fullInfo)
+    private static List<Map<String, Object>> searchModsByName(String queryParam) {
+        return searchModsByNameForInternal(queryParam).stream()
+                .map(CelesteModSearchService::serializeModInfo)
                 .limit(20)
                 .map(CelesteModSearchService::crabify)
                 .collect(Collectors.toList());
     }
 
+    public static List<ModRecord> searchModsByNameForInternal(String queryParam) {
+        final String[] tokenizedRequest = tokenize(queryParam);
+
+        Map<ModRecord, Double> scoredMods = database.stream()
+                .collect(Collectors.toMap(m -> m, m -> scoreMod(tokenizedRequest, tokenize(m.name))));
+
+        return database.stream()
+                .filter(mod -> scoredMods.get(mod) > 0.2f * tokenizedRequest.length)
+                .sorted(Comparator
+                        .<ModRecord>comparingDouble(mod -> -scoredMods.get(mod))
+                        .thenComparingInt(mod -> -mod.downloads))
+                .limit(20)
+                .collect(Collectors.toList());
+    }
 
     private static void handleOlympusAndLoennVersionsList(HttpServletResponse response, String first) throws IOException {
         response.setHeader("Content-Type", "application/json");
@@ -497,14 +464,17 @@ public class CelesteModSearchService extends HttpServlet {
     public static double getCrabLevel() {
         ZonedDateTime now = ZonedDateTime.now();
         double crabLevel = 0;
-        if (now.getMonthValue() == 3 && now.getDayOfMonth() == 31 && now.getHour() >= 12 && now.getHour() < 18) crabLevel = 0.1;
+        if (now.getMonthValue() == 3 && now.getDayOfMonth() == 31 && now.getHour() >= 12 && now.getHour() < 18)
+            crabLevel = 0.1;
         if (now.getMonthValue() == 3 && now.getDayOfMonth() == 31 && now.getHour() >= 18) crabLevel = 0.5;
         if (now.getMonthValue() == 4 && now.getDayOfMonth() == 1) crabLevel = 1;
         if (now.getMonthValue() == 4 && now.getDayOfMonth() == 2 && now.getHour() < 6) crabLevel = 0.5;
-        if (now.getMonthValue() == 4 && now.getDayOfMonth() == 2 && now.getHour() >= 6 && now.getHour() < 12) crabLevel = 0.1;
+        if (now.getMonthValue() == 4 && now.getDayOfMonth() == 2 && now.getHour() >= 6 && now.getHour() < 12)
+            crabLevel = 0.1;
         if (crabLevel > 0) log.debug("April Fools crab level is {}", crabLevel);
         return crabLevel;
     }
+
     private static Map<String, Object> crabify(Map<String, Object> input) {
         if (Math.random() >= getCrabLevel()) return input;
         Map<String, Object> output = new HashMap<>(input);
@@ -555,42 +525,29 @@ public class CelesteModSearchService extends HttpServlet {
         return result + "s";
     }
 
-    // mapping takes an awful amount of time on App Engine (~2 seconds) so we can't make it when the user calls the API.
     private void refreshModDatabase() throws IOException {
         // get and deserialize the mod list from storage.
-        try (ObjectInputStream is = new ObjectInputStream(Files.newInputStream(Paths.get("/shared/celeste/mod-search-database.ser")))) {
-            modDatabaseForSorting = (List<ModInfo>) is.readObject();
-            modCategories = (Map<Integer, String>) is.readObject();
-            log.debug("There are {} mods in the search database.", modDatabaseForSorting.size());
-        } catch (ClassNotFoundException e) {
-            throw new IOException(e);
+        try (ModDatabase databaseNew = new ModDatabase()) {
+            database = databaseNew.allMods;
         }
 
         refreshCategoriesLists();
-
-        Map<String, Map<String, Object>> updaterDatabase;
-        try (InputStream is = Files.newInputStream(Paths.get("/shared/celeste/updater/everest-update.yaml"))) {
-            updaterDatabase = YamlUtil.load(is);
-        }
-
-        refreshHelperList(updaterDatabase);
-        refreshModIDsToNamesMap(updaterDatabase);
+        refreshHelperList();
+        refreshModIDsToNamesMap();
     }
 
-    private void refreshHelperList(Map<String, Map<String, Object>> updaterDatabase) {
-        Set<String> helpers = modDatabaseForSorting.stream()
-                // 1. Only keep Helper mods
-                .filter(mod -> mod.categoryId == 5081)
-
-                // 2. Find the entry in everest_update.yaml that matches the Helper mods
-                .map(mod -> updaterDatabase.entrySet().stream()
-                        .filter(entry -> mod.type.equals(entry.getValue().get("GameBananaType"))
-                                && mod.id == (int) entry.getValue().get("GameBananaId"))
-                        .findFirst().orElse(null))
-                .filter(Objects::nonNull)
-
-                // 3. Take their everest.yaml names and turn that into a list
-                .map(Map.Entry::getKey)
+    private void refreshHelperList() {
+        Set<String> helpers = database.stream()
+                .filter(mod -> {
+                    CategoryRecord c = mod.category;
+                    while (c.parent != null) c = c.parent;
+                    return "Helpers".equals(c.name);
+                })
+                .map(m -> Arrays.stream(m.files)
+                        .filter(f -> f.isLeader)
+                        .map(f -> f.modId)
+                        .toList())
+                .flatMap(List::stream)
                 .collect(Collectors.toSet());
 
         // add a few manually
@@ -620,56 +577,47 @@ public class CelesteModSearchService extends HttpServlet {
         log.debug("Found {} helpers in the database.", helpersList.size());
     }
 
-    private void refreshModIDsToNamesMap(Map<String, Map<String, Object>> updaterDatabase) {
+    private void refreshModIDsToNamesMap() {
         Set<String> idsSharingPageWithOtherIds = new HashSet<>();
         {
-            Map<String, String> encounteredPages = new HashMap<>();
-            for (Map.Entry<String, Map<String, Object>> entry : updaterDatabase.entrySet()) {
-                String page = entry.getValue().get("GameBananaType") + "/" + entry.getValue().get("GameBananaId");
-                if (encounteredPages.containsKey(page)) {
-                    idsSharingPageWithOtherIds.add(encounteredPages.get(page));
-                    idsSharingPageWithOtherIds.add(entry.getKey());
+            Set<String> encounteredPages = new HashSet<>();
+            for (ModDatabase.ModLatestVersion record : ModDatabase.listLatestVersions(database)) {
+                String page = record.mod().id;
+                if (encounteredPages.contains(page)) {
+                    idsSharingPageWithOtherIds.add(record.file().modId);
                 } else {
-                    encounteredPages.put(page, entry.getKey());
+                    encounteredPages.add(page);
                 }
             }
             log.debug("Mod IDs found to be sharing pages with other mod IDs: {}", idsSharingPageWithOtherIds);
         }
 
-        Map<String, Pair<String, String>> modIdsToNamesAndCategoriesMap = updaterDatabase.entrySet().stream()
-                .map(entry -> Pair.of(entry.getKey(), modDatabaseForSorting.stream()
-                        .filter(mod -> mod.type.equals(entry.getValue().get("GameBananaType")) && mod.id == (int) entry.getValue().get("GameBananaId"))
-                        .findFirst()
-                        .map(mod -> {
-                            String concat = "";
-                            if (idsSharingPageWithOtherIds.contains(entry.getKey())) {
-                                int fileId = (int) entry.getValue().get("GameBananaFileId");
-                                String matchFile = ((List<Map<String, Object>>) mod.fullInfo.get("Files")).stream()
-                                        .filter(f -> f.get("URL").equals("https://gamebanana.com/dl/" + fileId))
-                                        .map(f -> (String) f.get("Description"))
-                                        .findFirst().orElse("");
-
-                                // we want to remove version numbers because this might not be the one the user has installed.
-                                StringBuilder megaregex = new StringBuilder();
-                                for (int i = 1; i <= 7; i++) {
-                                    for (int j = 0; j < i; j++) {
-                                        megaregex.append('[').append("version".charAt(j)).append(Character.toUpperCase("version".charAt(j))).append(']');
-                                    }
-                                    if (i != 7) megaregex.append('|');
-                                }
-                                String matchFileWithoutVersions = matchFile.replaceAll("(" + megaregex + ")?\\.? ?([0-9]+.)*[0-9]+", "");
-                                matchFileWithoutVersions = matchFileWithoutVersions.replace("[]", "").replace("()", "");
-                                matchFileWithoutVersions = StringUtils.strip(matchFileWithoutVersions, " -/");
-                                log.debug("Matched file description for {} / file {}: {} -> {}", entry.getKey(), fileId, matchFile, matchFileWithoutVersions);
-
-                                if (!matchFileWithoutVersions.isEmpty()) {
-                                    concat = " ∙ " + matchFileWithoutVersions;
-                                }
+        Map<String, Pair<String, String>> modIdsToNamesAndCategoriesMap = ModDatabase.listLatestVersions(database).stream()
+                .map(entry -> {
+                    String concat = "";
+                    if (idsSharingPageWithOtherIds.contains(entry.mod().id)) {
+                        // we want to remove version numbers because this might not be the one the user has installed.
+                        StringBuilder megaregex = new StringBuilder();
+                        for (int i = 1; i <= 7; i++) {
+                            for (int j = 0; j < i; j++) {
+                                megaregex.append('[').append("version".charAt(j)).append(Character.toUpperCase("version".charAt(j))).append(']');
                             }
-                            return Pair.of((String) mod.fullInfo.get("Name") + concat, getCategory(mod.fullInfo));
-                        })
-                        .orElse(null)))
-                .filter(entry -> entry.getValue() != null)
+                            if (i != 7) megaregex.append('|');
+                        }
+                        String matchFileWithoutVersions = entry.file().description.replaceAll("(" + megaregex + ")?\\.? ?([0-9]+.)*[0-9]+", "");
+                        matchFileWithoutVersions = matchFileWithoutVersions.replace("[]", "").replace("()", "");
+                        matchFileWithoutVersions = StringUtils.strip(matchFileWithoutVersions, " -/");
+                        log.debug("Matched file description for {} / file {}: {} -> {}", entry.file().modId, entry.file().id, entry.file().description, matchFileWithoutVersions);
+
+                        if (!matchFileWithoutVersions.isEmpty()) {
+                            concat = " ∙ " + matchFileWithoutVersions;
+                        }
+                    }
+
+                    CategoryRecord c = entry.mod().category;
+                    while (c.parent != null) c = c.parent;
+                    return Pair.of(entry.file().modId, Pair.of(entry.mod().name + concat, c.name));
+                })
                 .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
 
         {
@@ -702,9 +650,16 @@ public class CelesteModSearchService extends HttpServlet {
         log.debug("Reloaded Everest versions! Preloaded {} bytes.", everestVersions.length);
     }
 
-    public static ModInfo getModInfoByTypeAndId(String itemtype, int itemid) {
-        return modDatabaseForSorting.stream()
-                .filter(m -> m.type.equals(itemtype) && m.id == itemid)
+    public static ModDatabase.ModLatestVersion getModInfoByEverestYamlId(String modId) {
+        return ModDatabase.listLatestVersions(database).stream()
+                .filter(m -> m.file().modId.equals(modId))
+                .findFirst()
+                .orElse(null);
+    }
+
+    public static ModRecord getModInfoByModId(String modId) {
+        return database.stream()
+                .filter(m -> m.id.equals(modId))
                 .findFirst()
                 .orElse(null);
     }
@@ -718,24 +673,96 @@ public class CelesteModSearchService extends HttpServlet {
         }
 
         // welcome to generic type hell
-        // itemtype => categoryid => list of subcategories
-        Map<String, Map<Integer, List<Map<String, Object>>>> subcategories = new HashMap<>();
+        // categoryid => list of subcategories
+        Map<String, Map<String, List<Map<String, Object>>>> subcategories = new HashMap<>();
         for (Map<String, Object> entry : categories) {
             if (!entry.containsKey("itemtype")) continue;
             String itemtype = (String) entry.get("itemtype");
             if (!subcategories.containsKey(itemtype)) subcategories.put(itemtype, new HashMap<>());
 
-            if (entry.containsKey("categoryid")) {
-                int categoryid = (int) entry.get("categoryid");
-                subcategories.get(itemtype).put(categoryid, computeSubcategoryListFor(itemtype, categoryid));
-            } else {
-                subcategories.get(itemtype).put(0, computeSubcategoryListFor(itemtype, null));
-            }
+            String categoryid = (String) entry.get("categoryid");
+            subcategories.get(itemtype).put(categoryid, computeSubcategoryListFor(categoryid));
         }
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             YamlUtil.dump(subcategories, baos);
             precomputedSubcategoryList = baos.toByteArray();
             log.debug("Precomputed subcategories list! Length: {} bytes", precomputedSubcategoryList.length);
         }
+    }
+
+    private static Map<String, Object> serializeModInfo(ModRecord m) {
+        Map<String, Object> contents = new TreeMap<>(ImmutableMap.of(
+                "PageURL", m.pageUrl,
+                "Name", m.name,
+                "Author", m.author.name,
+                "Description", m.summary,
+                "Likes", m.likes,
+                "Views", m.views,
+                "Downloads", m.downloads,
+                "Text", m.description
+        ));
+        contents.put("CreatedDate", m.createdDate);
+        contents.put("ModifiedDate", m.modifiedDate);
+        contents.put("UpdatedDate", m.updatedDate);
+        contents.put("Screenshots", Arrays.stream(m.screenshots)
+                .map(s -> s.mainUrl)
+                .toList());
+        contents.put("MirroredScreenshots", Arrays.stream(m.screenshots)
+                .map(s -> s.mirrorName)
+                .filter(Objects::nonNull)
+                .map(s -> "https://celestemodupdater.0x0a.de/banana-mirror-images/" + s + ".png")
+                .toList());
+        contents.put("Files", Arrays.stream(m.files)
+                .map(f -> ImmutableMap.of(
+                        "Description", f.description,
+                        "HasEverestYaml", f.hasEverestYaml,
+                        "Size", f.size,
+                        "CreatedDate", f.createdDate,
+                        "Downloads", f.downloads,
+                        "URL", f.mainUrl,
+                        "Name", f.name,
+                        "MirrorName", f.mirrorName
+                )));
+
+        Map<String, Object> recurseItem = new TreeMap<>();
+        contents.put("Category", recurseItem);
+        CategoryRecord recurse = new CategoryRecord();
+        while (true) {
+            recurseItem.put("ID", recurse.id);
+            recurseItem.put("Name", recurse.name);
+            if (recurse.parent == null) break;
+
+            Map<String, Object> newRecurseItem = new TreeMap<>();
+            recurseItem.put("Parent", newRecurseItem);
+
+            recurse = recurse.parent;
+            recurseItem = newRecurseItem;
+        }
+
+        // jank GameBanana-dependent mapping I need to get rid of
+        CategoryRecord category = m.category, subcategory = m.category;
+        while (category.parent != null && !category.parent.id.endsWith("/Root")) {
+            category = category.parent;
+        }
+        String itemtype = "Mod";
+        if (category.parent != null && category.parent.id.equals("GameBanana/Wip/Root")) {
+            itemtype = "Wip";
+        }
+        if (category.parent != null && category.parent.id.equals("GameBanana/Tool/Root")) {
+            itemtype = "Tool";
+        }
+
+        contents.putAll(ImmutableMap.of(
+                "GameBananaType", itemtype,
+                "CategoryId", category.id.substring(category.id.lastIndexOf("/") + 1),
+                "CategoryName", category.name
+        ));
+        if (!category.equals(subcategory)) {
+            contents.putAll(ImmutableMap.of(
+                    "SubcategoryId", subcategory.id.substring(category.id.lastIndexOf("/") + 1),
+                    "SubcategoryName", subcategory.name
+            ));
+        }
+        return contents;
     }
 }
