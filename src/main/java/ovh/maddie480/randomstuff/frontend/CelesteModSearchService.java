@@ -482,10 +482,12 @@ public class CelesteModSearchService extends HttpServlet {
     }
 
     private void refreshModDatabase() throws IOException {
-        // get and deserialize the mod list from storage.
-        database = new ModDatabase().allMods;
+        // free up some memory by temporarily breaking the file searcher...
         database.forEach(m -> Arrays.stream(m.files)
                 .forEach(f -> f.fileListing = new String[0]));
+
+        // get and deserialize the mod list from storage.
+        database = new ModDatabase().allMods;
 
         refreshCategoriesLists();
         refreshHelperList();
@@ -551,7 +553,7 @@ public class CelesteModSearchService extends HttpServlet {
         Map<String, Pair<String, String>> modIdsToNamesAndCategoriesMap = ModDatabase.listLatestVersions(database).stream()
                 .map(entry -> {
                     String concat = "";
-                    if (idsSharingPageWithOtherIds.contains(entry.mod().id)) {
+                    if (idsSharingPageWithOtherIds.contains(entry.file().modId)) {
                         // we want to remove version numbers because this might not be the one the user has installed.
                         StringBuilder megaregex = new StringBuilder();
                         for (int i = 1; i <= 7; i++) {
