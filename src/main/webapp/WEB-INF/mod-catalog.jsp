@@ -86,8 +86,7 @@
             <% } %>
         </h3>
         <p>
-            <a href="<%= escapeHtml4(mod.pageUrl) %>" rel="noopener" target="_blank"
-                class="btn btn-outline-primary">Mod page</a>
+            <a href="<%= escapeHtml4(mod.pageUrl) %>" rel="noopener" target="_blank" class="btn btn-outline-primary">Mod page</a>
             <% for(Map.Entry<String, String> docLink : mod.documentationLinks.entrySet()) { %>
                 <a href="<%= escapeHtml4(docLink.getValue()) %>" rel="noopener" target="_blank"
                     class="btn btn-outline-secondary"><%= escapeHtml4(docLink.getKey()) %></a>
