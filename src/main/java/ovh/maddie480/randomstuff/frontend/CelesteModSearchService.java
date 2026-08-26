@@ -333,9 +333,8 @@ public class CelesteModSearchService extends HttpServlet {
                     while (category.parent != null) category = category.parent;
                     return category.id.equals(categoryId);
                 })
-                .filter(c -> !categoryId.equals(c.category.id))
                 .collect(Collectors.toMap(
-                        id -> id.category,
+                        id -> categoryId.equals(c.category.id) ? new CategoryRecord() : id.category,
                         _ -> 1,
                         Integer::sum
                 ));
@@ -344,6 +343,7 @@ public class CelesteModSearchService extends HttpServlet {
 
         // format the map for the response...
         List<Map<String, Object>> subcategoriesList = groupResult.entrySet().stream()
+                .filter(cat -> cat.id != null)
                 .<Map<String, Object>>map(entry -> ImmutableMap.of(
                         "id", entry.getKey().id,
                         "name", entry.getKey().name,
