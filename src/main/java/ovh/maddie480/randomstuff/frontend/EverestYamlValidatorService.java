@@ -13,6 +13,7 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ovh.maddie480.randomstuff.backend.celeste.moddatabase.ModDatabase;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -185,16 +186,14 @@ public class EverestYamlValidatorService extends HttpServlet {
 
             if (metadatas != null) {
                 // load the mod database to check if dependencies exist there.
-                Map<String, Object> databaseUnparsed = YamlUtil.load(Files.newInputStream(Paths.get("/shared/celeste/updater/everest-update.yaml")));
-                List<EverestModuleMetadata> database = databaseUnparsed
-                        .entrySet().stream()
-                        .map(entry -> {
-                            EverestModuleMetadata metadata = new EverestModuleMetadata();
-                            metadata.Name = entry.getKey();
-                            metadata.Version = ((Map<String, String>) entry.getValue()).get("Version");
-                            return metadata;
-                        })
-                        .collect(Collectors.toCollection(ArrayList::new));
+                List<EverestModuleMetadata> database = ModDatabase.listLatestVersions(CelesteModSearchService.database).stream()
+                    .map(entry -> {
+                        EverestModuleMetadata metadata = new EverestModuleMetadata();
+                        metadata.Name = entry.file().modId;
+                        metadata.Version = entry.file().modVersion;
+                        return metadata;
+                    })
+                    .collect(Collectors.toCollection(ArrayList::new));
 
                 // add private mods that come from GitHub directly.
                 try (BufferedReader br = Files.newBufferedReader(Paths.get("/shared/celeste/everest-yamls-from-github.json"))) {

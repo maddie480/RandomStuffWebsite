@@ -8,6 +8,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ovh.maddie480.randomstuff.backend.celeste.moddatabase.model.DependencyRecord;
+import ovh.maddie480.randomstuff.backend.celeste.moddatabase.ModDatabase;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -69,38 +71,29 @@ public class CelesteBundleDownloadService extends HttpServlet {
     }
 
     private static Map<String, String> resolveDownloadLinksFor(String modId) throws IOException {
-        Map<String, Map<String, String>> everestUpdate;
-        try (InputStream is = Files.newInputStream(Paths.get("/shared/celeste/updater/everest-update.yaml"))) {
-            everestUpdate = YamlUtil.load(is);
-        }
-
-        Map<String, Map<String, List<Map<String, String>>>> modDependencyGraph; // least cursed type
-        try (InputStream is = Files.newInputStream(Paths.get("/shared/celeste/updater/mod-dependency-graph.yaml"))) {
-            modDependencyGraph = YamlUtil.load(is);
-        }
-
-        // go recursively through the dependency graph
         Map<String, String> result = new HashMap<>();
-        addResultsFrom(modId, result, everestUpdate, modDependencyGraph);
+        addResultsFrom(modId, result);
         return result;
     }
 
-    private static void addResultsFrom(String modId, Map<String, String> result, Map<String, Map<String, String>> everestUpdate,
-                                       Map<String, Map<String, List<Map<String, String>>>> modDependencyGraph) {
+    private static void addResultsFrom(String modId, Map<String, String> result) {
+        ModDatabase.ModLatestVersion mod = ModDatabase.listLatestVersions(CelesteModSearchService.database).stream()
+            .filter(mf -> mf.file().modId.equals(modId))
+            .findFirst().orElse(null);
 
-        if (!modDependencyGraph.containsKey(modId)) {
+        if (modId == null) {
             // bail out, we're checking a mod that does not exist in the database!
             return;
         }
 
-        result.put(modId, everestUpdate.get(modId).get("URL").replace("https://gamebanana.com/mmdl/", "https://celestemodupdater.0x0a.de/banana-mirror/") + ".zip");
+        result.put(modId,  "https://celestemodupdater.0x0a.de/banana-mirror/" + mod.file().mirrorName + ".zip");
 
-        for (Map<String, String> dependency : modDependencyGraph.get(modId).get("Dependencies")) {
-            String dependencyName = dependency.get("Name");
+        for (DependencyRecord dependency : mod.file().dependencies) {
+            String dependencyName = dependency.name;
 
             if (!result.containsKey(dependencyName)) {
                 // we need to add this mod and its own dependencies to the list.
-                addResultsFrom(dependencyName, result, everestUpdate, modDependencyGraph);
+                addResultsFrom(dependencyName, result);
             }
         }
     }

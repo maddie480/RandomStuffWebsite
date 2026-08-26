@@ -38,13 +38,7 @@ public class CelesteModUpdateService extends HttpServlet {
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        if ("/celeste/file_ids.yaml".equals(request.getRequestURI())) {
-            // transfer file_ids.yaml from backend
-            response.setHeader("Content-Type", "text/yaml");
-            try (InputStream is = Files.newInputStream(Paths.get("/shared/celeste/updater/file-ids.yaml"))) {
-                IOUtils.copy(is, response.getOutputStream());
-            }
-        } else if (request.getRequestURI().equals("/celeste/everest-update-reload")
+        if (request.getRequestURI().equals("/celeste/everest-update-reload")
                 && ("key=" + SecretConstants.RELOAD_SHARED_SECRET).equals(request.getQueryString())) {
             // trigger a reload of everest_update.yaml
             everestYaml = IOUtils.toByteArray(Files.newInputStream(Paths.get("/shared/celeste/updater/everest-update.yaml")));

@@ -156,9 +156,7 @@ public class SrcModUpdateNotificationService extends HttpServlet {
     }
 
     private boolean doesModExist(String modName) throws IOException {
-        try (InputStream is = Files.newInputStream(Paths.get("/shared/celeste/updater/everest-update.yaml"))) {
-            Map<String, Object> database = YamlUtil.load(is);
-            return database.containsKey(modName);
-        }
+        return ModDatabase.listLatestVersions(CelesteModSearchService.database).stream()
+            .anyMatch(mf -> mf.file().modId.equals(modName));
     }
 }
