@@ -81,16 +81,11 @@
 import axios from "axios";
 import config from "../config";
 
-const sleep = (ms) => {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-};
-
 const fetchResultInfo = async (result) => {
   const info = (
     await axios.get(`${config.backendUrl}/celeste/gamebanana-info`, {
       params: {
-        itemtype: result.itemtype,
-        itemid: result.itemid,
+        id: result.modid,
       },
     })
   ).data;
@@ -100,7 +95,7 @@ const fetchResultInfo = async (result) => {
 
   for (const file of result.files) {
     for (const retrievedFile of info.Files) {
-      if (retrievedFile.URL === "https://gamebanana.com/dl/" + file.id) {
+      if (retrievedFile.ID === file.id) {
         file.name = retrievedFile.Name;
         file.url = retrievedFile.URL;
         file.description = retrievedFile.Description;
@@ -127,15 +122,11 @@ const vue = {
       const groupedResults = [];
       let current = {};
       for (const result of results) {
-        if (
-          result.itemtype === current.itemtype &&
-          result.itemid === current.itemid
-        ) {
+        if (result.modid === current.modid) {
           current.files.push({ id: result.fileid });
         } else {
           current = {
-            itemtype: result.itemtype,
-            itemid: result.itemid,
+            modid: result.modid,
             files: [{ id: result.fileid }],
           };
           groupedResults.push(current);
@@ -169,30 +160,16 @@ const vue = {
       this.results = null;
 
       try {
-        for (let i = 0; i < 60; i++) {
-          const result = (
-            await axios.get(`${config.backendUrl}/celeste/file-search`, {
-              params: {
-                query: this.query.replace("\\", "/"),
-                exact: this.exact,
-              },
-            })
-          ).data;
+        const result = (
+          await axios.get(`${config.backendUrl}/celeste/file-search`, {
+            params: {
+              query: this.query.replace("\\", "/"),
+              exact: this.exact,
+            },
+          })
+        ).data;
 
-          if (!result.pending) {
-            // search is over! break out.
-            await this.setResults(result);
-            break;
-          }
-
-          // search is not over yet, retry in a bit!
-          await sleep(1000);
-        }
-
-        if (this.results === null) {
-          // we waited for a result for more than a minute, this is not normal.
-          this.error = true;
-        }
+        await this.setResults(result);
       } catch {
         // an unexpected error occurred!
         this.error = true;

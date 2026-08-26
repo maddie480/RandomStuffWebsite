@@ -665,7 +665,8 @@ public class CelesteModSearchService extends HttpServlet {
                         "Downloads", f.downloads,
                         "URL", f.mainUrl,
                         "Name", f.name,
-                        "MirrorName", f.mirrorName
+                        "MirrorName", f.mirrorName,
+                        "ID", f.id
                 ))
                 .toList());
 
