@@ -59,9 +59,9 @@
         <% for(CelesteModCatalogService.QueriedModInfo mod : (List<CelesteModCatalogService.QueriedModInfo>) request.getAttribute("mods")) { %>
             <li>
                 <a href="#<%= CelesteModCatalogService.dasherize(mod.modName) %>"><%= escapeHtml4(mod.modName) %></a>
-                <% if(mod.categoryId == 5081) { %>
+                <% if(mod.categoryId.equals("GameBanana_Mod_5081")) { %>
                     <span class="badge bg-success"><%= escapeHtml4(mod.categoryName) %></span>
-                <% } else if(mod.categoryId == 6800) { %>
+                <% } else if(mod.categoryId.equals("GameBanana_Mod_6800")) { %>
                     <span class="badge bg-danger"><%= escapeHtml4(mod.categoryName) %></span>
                 <% } else { %>
                     <span class="badge bg-warning"><%= escapeHtml4(mod.categoryName) %></span>
@@ -77,9 +77,9 @@
 
         <h3 id="<%= CelesteModCatalogService.dasherize(mod.modName) %>">
             <%= escapeHtml4(mod.modName) %>
-            <% if(mod.categoryId == 5081) { %>
+            <% if(mod.categoryId.equals("GameBanana_Mod_5081")) { %>
                 <span class="badge bg-success"><%= escapeHtml4(mod.categoryName) %></span>
-            <% } else if(mod.categoryId == 6800) { %>
+            <% } else if(mod.categoryId.equals("GameBanana_Mod_6800")) { %>
                 <span class="badge bg-danger"><%= escapeHtml4(mod.categoryName) %></span>
             <% } else { %>
                 <span class="badge bg-warning"><%= escapeHtml4(mod.categoryName) %></span>

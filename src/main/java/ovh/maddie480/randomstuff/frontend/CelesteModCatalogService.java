@@ -141,12 +141,11 @@ public class CelesteModCatalogService extends HttpServlet {
     }
 
     /**
-     * A small object to hold an itemtype/itemid pair (this identifies a mod uniquely on GameBanana).
+     * A small object to hold a mod.
      */
     public static class QueriedModInfo {
-        public final String itemtype;
-        public final int itemid;
-        public final int categoryId;
+        public final String modId;
+        public final String categoryId;
         public final String categoryName;
         public final String modName;
         public final String modEverestYamlId;
@@ -158,9 +157,8 @@ public class CelesteModCatalogService extends HttpServlet {
         public final Map<String, String> documentationLinks;
 
         public QueriedModInfo(HashMap<String, Object> object, Map<String, Map<String, Map<String, String>>> entityDescriptions) {
-            itemtype = (String) object.get("itemtype");
-            itemid = (int) object.get("itemid");
-            categoryId = (int) object.get("categoryId");
+            modId = (String) object.get("modId");
+            categoryId = (String) object.get("categoryId");
             categoryName = (String) object.get("categoryName");
             modName = (String) object.get("modName");
             modEverestYamlId = (String) object.get("modEverestYamlId");
@@ -182,7 +180,7 @@ public class CelesteModCatalogService extends HttpServlet {
                     .map(entity -> {
                         String entityName = entity.getKey();
                         Map<String, String> descriptionDictionary = entityDescriptions
-                                .getOrDefault(itemtype + "/" + itemid, Collections.emptyMap())
+                                .getOrDefault(modId, Collections.emptyMap())
                                 .getOrDefault(entityName, Collections.emptyMap());
                         Map<String, String> result = new LinkedHashMap<>();
                         for (String s : entityName.split(" / ")) {

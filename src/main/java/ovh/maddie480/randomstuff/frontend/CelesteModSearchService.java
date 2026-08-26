@@ -140,11 +140,8 @@ public class CelesteModSearchService extends HttpServlet {
         List<ModRecord> maps = database.stream()
                 .filter(m -> {
                     CategoryRecord cat = m.category;
-                    while (cat != null) {
-                        if (cat.name.equals("Maps")) return true;
-                        cat = cat.parent;
-                    }
-                    return false;
+                    while (cat.parent != null) cat = cat.parent;
+                    return cat.id.equals("GameBanana_Mod_6800");
                 })
                 .toList();
 
@@ -499,7 +496,7 @@ public class CelesteModSearchService extends HttpServlet {
                 .filter(mod -> {
                     CategoryRecord c = mod.category;
                     while (c.parent != null) c = c.parent;
-                    return "Helpers".equals(c.name);
+                    return "GameBanana_Mod_5081".equals(c.id);
                 })
                 .map(m -> Arrays.stream(m.files)
                         .filter(f -> f.isLeader)
