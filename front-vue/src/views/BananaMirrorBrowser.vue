@@ -28,7 +28,7 @@
             id="category"
             v-model="subcategoryFilter"
             track-by="name"
-            label="name"
+            label="fullName"
             :options="subcategories"
             :show-labels="false"
             :searchable="false"
@@ -199,9 +199,6 @@ const vue = {
         if (this.query === "") {
           result = await axios.get(
             `${config.backendUrl}/celeste/gamebanana-list?sort=${sort}&page=${this.page}&full=true` +
-              (categoryFilter.itemtype !== undefined
-                ? `&type=${categoryFilter.itemtype}`
-                : "") +
               (categoryFilterId !== undefined
                 ? `&category=${categoryFilterId}`
                 : "") +
@@ -251,16 +248,15 @@ const vue = {
       this.subcategories = [{ name: "All" }];
       this.subcategoryFilter = { name: "All" };
 
-      if (category.itemtype === undefined) return;
+      if (category.categoryid === undefined) return;
 
       // also load the category list.
-      const gamebananaSubcategories =
-        this.fullSubcategoryList[category.itemtype][
-          "" + (category.categoryid === undefined ? 0 : category.categoryid)
-        ];
+      const gamebananaSubcategories = Object.values(
+        this.fullSubcategoryList,
+      )[0][category.categoryid];
 
       for (const subcategory of gamebananaSubcategories) {
-        subcategory.name =
+        subcategory.fullName =
           subcategory.name +
           (subcategory.id !== undefined ? ` (${subcategory.count})` : "");
       }
