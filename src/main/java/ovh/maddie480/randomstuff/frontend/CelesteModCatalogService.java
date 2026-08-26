@@ -148,6 +148,7 @@ public class CelesteModCatalogService extends HttpServlet {
         public final String categoryId;
         public final String categoryName;
         public final String modName;
+        public final String pageUrl;
         public final String modEverestYamlId;
         public final String latestVersion;
         public final int dependentCount;
@@ -161,6 +162,7 @@ public class CelesteModCatalogService extends HttpServlet {
             categoryId = (String) object.get("categoryId");
             categoryName = (String) object.get("categoryName");
             modName = (String) object.get("modName");
+            pageUrl = "https://maddie480.ovh/#this-is-broken-at-the-moment-sorry";
             modEverestYamlId = (String) object.get("modEverestYamlId");
             latestVersion = (String) object.get("latestVersion");
             dependentCount = (int) object.get("dependentCount");
