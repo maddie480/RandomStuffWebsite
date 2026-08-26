@@ -269,15 +269,15 @@ export default {
     // - https://github.com/EverestAPI/Everest/blob/dev/Celeste.Mod.mm/Mod/Helpers/ModUpdaterHelper.cs :: getAllMirrorUrls
     getMirrorLink(file) {
       if (this.mirror === "wegfan") {
-        return `https://celeste.weg.fan/api/v2/download/gamebanana-files/${file.mirrorName}`;
+        return `https://celeste.weg.fan/api/v2/download/gamebanana-files/${file.MirrorName}`;
       }
 
       if (file.IsLatestVersion) {
         if (this.mirror === "jade") {
-          return `https://celestemodupdater.0x0a.de/banana-mirror/${file.mirrorName}.zip`;
+          return `https://celestemodupdater.0x0a.de/banana-mirror/${file.MirrorName}.zip`;
         }
         if (this.mirror === "otobot") {
-          return `https://banana-mirror-mods.celestemods.com/${file.mirrorName}.zip`;
+          return `https://banana-mirror-mods.celestemods.com/${file.MirrorName}.zip`;
         }
       }
 

@@ -180,10 +180,6 @@ const vue = {
         this.loading = true;
         this.error = false;
 
-        const yamlLoad = axios
-          .get(`${config.backendUrl}/celeste/everest_update.yaml`)
-          .then((result) => load(result.data));
-
         let result;
 
         let categoryFilterId = categoryFilter.categoryid;
@@ -216,29 +212,9 @@ const vue = {
           );
         }
 
-        const mods = result.data;
-        const updaterDatabase = await yamlLoad;
-
-        // use the mod updater database to get the mirrored files and their everest.yaml IDs.
-        for (const mod of mods) {
-          for (const file of mod.Files) {
-            const gameBananaFileId = parseInt(
-              file.URL.substr(file.URL.lastIndexOf("/") + 1),
-            );
-            file.GameBananaFileId = gameBananaFileId;
-
-            for (const updaterEntry of Object.entries(updaterDatabase)) {
-              if (updaterEntry[1].GameBananaFileId === gameBananaFileId) {
-                file.EverestYamlId = updaterEntry[0];
-                break;
-              }
-            }
-          }
-        }
-
         this.loading = false;
         this.totalCount = result.headers["x-total-count"];
-        this.mods = mods;
+        this.mods = result.data;
       } catch {
         this.error = true;
         this.loading = false;
