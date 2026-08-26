@@ -81,7 +81,7 @@ public class CelesteBundleDownloadService extends HttpServlet {
             .filter(mf -> mf.file().modId.equals(modId))
             .findFirst().orElse(null);
 
-        if (modId == null) {
+        if (mod == null) {
             // bail out, we're checking a mod that does not exist in the database!
             return;
         }
