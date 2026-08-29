@@ -269,9 +269,15 @@ public class CelesteModSearchService extends HttpServlet {
     }
 
     private static void handleFeaturedModsList(HttpServletResponse response) throws IOException {
+        final List<Map<String, Object>> responseBody = database.stream()
+                .filter(m -> m.featuredTier > 0)
+                .sorted(Comparator.<ModRecord>comparingInt(m -> m.featuredTier).reversed())
+                .map(CelesteModSearchService::serializeModInfo)
+                .map(CelesteModSearchService::crabify)
+                .collect(Collectors.toList());
+
         response.setHeader("Content-Type", "application/json");
-        // oops
-        new JSONArray().write(response.getWriter());
+        new JSONArray(responseBody).write(response.getWriter());
     }
 
     private void handleCategoriesList(HttpServletResponse response) throws IOException {
@@ -643,19 +649,20 @@ public class CelesteModSearchService extends HttpServlet {
                 "Likes", m.likes,
                 "Views", m.views,
                 "Downloads", m.downloads,
-                "Text", m.description
+                "Text", m.description,
+                "FeaturedTier", m.featuredTier
         ));
         contents.put("CreatedDate", m.createdDate);
         contents.put("ModifiedDate", m.modifiedDate);
         contents.put("UpdatedDate", m.updatedDate);
         contents.put("Screenshots", Arrays.stream(m.screenshots)
                 .map(s -> s.mainUrl)
-                .toList());
+                .collect(Collectors.toCollection(ArrayList::new)));
         contents.put("MirroredScreenshots", Arrays.stream(m.screenshots)
                 .map(s -> s.mirrorName)
                 .filter(Objects::nonNull)
                 .map(s -> "https://celestemodupdater.0x0a.de/banana-mirror-images/" + s + ".png")
-                .toList());
+                .collect(Collectors.toCollection(ArrayList::new)));
         contents.put("Files", Arrays.stream(m.files)
                 .map(f -> ImmutableMap.of(
                         "Description", f.description,
@@ -669,11 +676,11 @@ public class CelesteModSearchService extends HttpServlet {
                         "ID", f.id,
                         "IsLatestVersion", f.isLeader
                 ))
-                .toList());
+                .collect(Collectors.toCollection(ArrayList::new)));
 
         Map<String, Object> recurseItem = new TreeMap<>();
         contents.put("Category", recurseItem);
-        CategoryRecord recurse = new CategoryRecord();
+        CategoryRecord recurse = m.category;
         while (true) {
             recurseItem.put("ID", recurse.id);
             recurseItem.put("Name", recurse.name);
@@ -691,22 +698,15 @@ public class CelesteModSearchService extends HttpServlet {
         while (category.parent != null && !category.parent.id.endsWith("/Root")) {
             category = category.parent;
         }
-        String itemtype = "Mod";
-        if (category.parent != null && category.parent.id.equals("GameBanana/Wip/Root")) {
-            itemtype = "Wip";
-        }
-        if (category.parent != null && category.parent.id.equals("GameBanana/Tool/Root")) {
-            itemtype = "Tool";
-        }
 
         contents.putAll(ImmutableMap.of(
-                "GameBananaType", itemtype,
-                "CategoryId", category.id.substring(category.id.lastIndexOf("/") + 1),
+                "GameBananaType", "Obsolete",
+                "CategoryId", category.id,
                 "CategoryName", category.name
         ));
         if (!category.equals(subcategory)) {
             contents.putAll(ImmutableMap.of(
-                    "SubcategoryId", subcategory.id.substring(category.id.lastIndexOf("/") + 1),
+                    "SubcategoryId", subcategory.id,
                     "SubcategoryName", subcategory.name
             ));
         }
