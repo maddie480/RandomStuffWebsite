@@ -271,7 +271,8 @@ public class CelesteModSearchService extends HttpServlet {
     private static void handleFeaturedModsList(HttpServletResponse response) throws IOException {
         final List<Map<String, Object>> responseBody = database.stream()
                 .filter(m -> m.featuredTier > 0)
-                .sorted(Comparator.comparingInt(m -> m.featuredTier))
+                .sorted(Comparator.<ModRecord>comparingInt(m -> m.featuredTier)
+                        .thenComparing(m -> m.name))
                 .map(CelesteModSearchService::serializeModInfo)
                 .map(CelesteModSearchService::crabify)
                 .collect(Collectors.toList());
