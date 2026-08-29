@@ -53,10 +53,10 @@
       </div>
 
       <img
-        v-if="getPictureFor(mod.Featured)"
+        v-if="mod.FeaturedTier > 0"
         class="featured"
-        :src="getPictureFor(mod.Featured)"
-        :title="getLabelFor(mod.Featured)"
+        :src="getPictureFor(mod.FeaturedTier)"
+        :title="'Featured - Tier ' + mod.FeaturedTier"
       />
       <div class="actions">
         <button class="btn btn-secondary" @click="openDescription">
@@ -214,54 +214,16 @@ export default {
     closeDownloads() {
       this.downloadsShown = false;
     },
-    getLabelFor(featured) {
-      let featuredCategory = null;
-      if (featured !== undefined) {
-        featuredCategory = featured.Category;
-      }
-
-      switch (featuredCategory) {
-        case "today":
-          return "Best of today";
-        case "week":
-          return "Best of this week";
-        case "month":
-          return "Best of this month";
-        case "3month":
-          return "Best of 3 months";
-        case "6month":
-          return "Best of 6 months";
-        case "year":
-          return "Best of this year";
-        case "alltime":
-          return "Best of all time";
-        default:
-          return "";
-      }
-    },
-    getPictureFor(featured) {
-      let featuredCategory = null;
-      if (featured !== undefined) {
-        featuredCategory = featured.Category;
-      }
-
-      switch (featuredCategory) {
-        case "today":
-          return "";
-        case "week":
-          return "/img/smallstar.png";
-        case "month":
-          return "/img/thirdplace.png";
-        case "3month":
-          return "/img/secondplace.png";
-        case "6month":
+    getPictureFor(featuredTier) {
+      switch (featuredTier) {
+        case 1:
           return "/img/firstplace.png";
-        case "year":
-          return "/img/trophy.png";
-        case "alltime":
-          return "/img/ripe.png";
+        case 2:
+          return "/img/secondplace.png";
+        case 3:
+          return "/img/thirdplace.png";
         default:
-          return "";
+          return "/img/smallstar.png";
       }
     },
     // Make sure to keep this in sync with
