@@ -1,4 +1,4 @@
-const copyToClipboard = function(str) {
+const copyToClipboard = function (str) {
     const el = document.createElement('textarea');
     el.value = str;
     document.body.appendChild(el);
@@ -7,7 +7,7 @@ const copyToClipboard = function(str) {
     document.body.removeChild(el);
 };
 
-$('.copy').click(function(event) {
+$('.copy').click(function (event) {
     var content = event.target.getAttribute('data-name');
     event.preventDefault();
 
@@ -15,14 +15,14 @@ $('.copy').click(function(event) {
     $('#success').toast('show');
 });
 
-$('.copy-default').click(function(event) {
+$('.copy-default').click(function (event) {
     event.preventDefault();
 
     copyToClipboard('!reset_bg');
     $('#success').toast('show');
 });
 
-$('.copy-game').click(function(event) {
+$('.copy-game').click(function (event) {
     var content = event.target.getAttribute('data-name');
     event.preventDefault();
 

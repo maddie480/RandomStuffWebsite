@@ -18,7 +18,7 @@ import java.util.zip.ZipInputStream;
 public class LuaCutscenesDocumentationIntegrator {
     private static final Logger logger = Logger.getLogger("LuaCutscenesDocumentationIntegrator");
 
-    public static void main(String[] args) throws IOException {
+    static void main(String[] args) throws IOException {
         // download Lua Cutscenes and go through its files
         logger.info("Downloading Lua Cutscenes...");
         try (ZipInputStream zip = new ZipInputStream(PrepareForRadioLNJ.getFullInputStreamWithRetry("https://maddie480.ovh/celeste/dl?id=LuaCutscenes&mirror=1"))) {

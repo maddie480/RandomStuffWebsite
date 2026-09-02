@@ -2,18 +2,21 @@ body {
     font-family: sans-serif;
     text-align: center;
 }
+
 .content {
     width: 40em;
     display: inline-block;
 }
+
 form {
     margin-bottom: 0.5em;
 }
+
 input[type="radio"] {
     margin-right: 1em;
 }
 
-@media(prefers-color-scheme: dark) {
+@media (prefers-color-scheme: dark) {
     body {
         background-color: black;
         color: #dedad6;

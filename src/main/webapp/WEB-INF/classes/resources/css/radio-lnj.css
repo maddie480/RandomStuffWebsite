@@ -19,6 +19,7 @@
     font-size: 42pt;
     margin-left: -11px;
 }
+
 #timer.windows {
     margin-top: -132px;
 }
@@ -26,10 +27,12 @@
 .header {
     margin-top: 20px;
 }
+
 #pre-title {
     font-size: 14pt;
     margin-top: 20px;
 }
+
 #title {
     font-size: 18pt;
 }

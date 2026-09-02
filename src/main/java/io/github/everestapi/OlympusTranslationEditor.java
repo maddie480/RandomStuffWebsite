@@ -9,7 +9,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class OlympusTranslationEditor {
-    public static void main(String[] args) throws IOException {
+    static void main(String[] args) throws IOException {
         if (args.length != 2) {
             System.err.println("2 parameters expected: <path to Olympus repo> <language to edit>");
             System.exit(1);

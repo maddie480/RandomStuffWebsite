@@ -1,5 +1,5 @@
 {
-    const refresh = function() {
+    const refresh = function () {
         if (document.getElementById('bundle').checked) {
             document.getElementById('twoclick').checked = false;
             document.getElementById('mirror').checked = false;

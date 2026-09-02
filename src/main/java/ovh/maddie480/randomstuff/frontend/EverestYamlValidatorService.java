@@ -187,13 +187,13 @@ public class EverestYamlValidatorService extends HttpServlet {
             if (metadatas != null) {
                 // load the mod database to check if dependencies exist there.
                 List<EverestModuleMetadata> database = ModDatabase.listLatestVersions(CelesteModSearchService.database).stream()
-                    .map(entry -> {
-                        EverestModuleMetadata metadata = new EverestModuleMetadata();
-                        metadata.Name = entry.file().modId;
-                        metadata.Version = entry.file().modVersion;
-                        return metadata;
-                    })
-                    .collect(Collectors.toCollection(ArrayList::new));
+                        .map(entry -> {
+                            EverestModuleMetadata metadata = new EverestModuleMetadata();
+                            metadata.Name = entry.file().modId;
+                            metadata.Version = entry.file().modVersion;
+                            return metadata;
+                        })
+                        .collect(Collectors.toCollection(ArrayList::new));
 
                 // add private mods that come from GitHub directly.
                 try (BufferedReader br = Files.newBufferedReader(Paths.get("/shared/celeste/everest-yamls-from-github.json"))) {

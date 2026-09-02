@@ -5,7 +5,7 @@ import java.nio.file.Path;
 import java.util.LinkedHashMap;
 
 public class DummyTranslationEditor {
-    public static void main(String[] args) throws IOException {
+    static void main(String[] args) throws IOException {
         new TranslationEditor() {
             @Override
             public LinkedHashMap<String, String> readLanguageEntries(Path root, String lang) {

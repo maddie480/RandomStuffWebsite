@@ -37,6 +37,7 @@ public class CacheAndCompressionFilter extends HttpFilter {
 
     private static final Object compressCacheLock = new Object();
     private static final Path cacheRoot;
+
     static {
         Path prodOne = Paths.get("/shared/temp/frontend-cache-compression-filter");
         Path devOne = Paths.get("/tmp");
@@ -193,8 +194,8 @@ public class CacheAndCompressionFilter extends HttpFilter {
     }
 
     private record DirectFileSendResponse(String path) implements CacheStream {
-            private static final Map<String, String> etagCache = new HashMap<>();
-            private static final Map<String, Long> sizeCache = new HashMap<>();
+        private static final Map<String, String> etagCache = new HashMap<>();
+        private static final Map<String, Long> sizeCache = new HashMap<>();
 
         @Override
         public int getStatus() {

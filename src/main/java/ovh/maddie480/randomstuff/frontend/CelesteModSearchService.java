@@ -122,7 +122,6 @@ public class CelesteModSearchService extends HttpServlet {
         }
         if ("/celeste/mod_ids_to_categories.json".equals(request.getRequestURI())) {
             handleModIdsToCategoriesList(response);
-            return;
         }
     }
 

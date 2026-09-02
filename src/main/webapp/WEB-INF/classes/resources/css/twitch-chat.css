@@ -19,11 +19,13 @@ body {
 .standby {
     margin-left: -100%;
 }
+
 .leadout {
     opacity: 0;
 }
+
 body > div {
-    transition: margin-left 0.5s cubic-bezier(.22, .61, .36,1), opacity 0.2s ease-in;
+    transition: margin-left 0.5s cubic-bezier(.22, .61, .36, 1), opacity 0.2s ease-in;
     width: calc(100% - 63px);
     padding: 5px;
     margin: 10px;
@@ -34,9 +36,11 @@ body > div {
     border-radius: 7px;
     padding: 2px 7px;
 }
+
 .author img {
     margin: 2px 2px 0 2px;
 }
+
 .author span {
     margin: 0 10px;
 }
@@ -57,18 +61,62 @@ body > div {
     max-height: 22px;
 }
 
-.color-0 { color: Blue; }
-.color-1 { color: Coral; }
-.color-2 { color: DodgerBlue; }
-.color-3 { color: SpringGreen; }
-.color-4 { color: YellowGreen; }
-.color-5 { color: Green; }
-.color-6 { color: OrangeRed; }
-.color-7 { color: Red; }
-.color-8 { color: GoldenRod; }
-.color-9 { color: HotPink; }
-.color-10 { color: CadetBlue; }
-.color-11 { color: SeaGreen; }
-.color-12 { color: Chocolate; }
-.color-13 { color: BlueViolet; }
-.color-14 { color: Firebrick; }
+.color-0 {
+    color: Blue;
+}
+
+.color-1 {
+    color: Coral;
+}
+
+.color-2 {
+    color: DodgerBlue;
+}
+
+.color-3 {
+    color: SpringGreen;
+}
+
+.color-4 {
+    color: YellowGreen;
+}
+
+.color-5 {
+    color: Green;
+}
+
+.color-6 {
+    color: OrangeRed;
+}
+
+.color-7 {
+    color: Red;
+}
+
+.color-8 {
+    color: GoldenRod;
+}
+
+.color-9 {
+    color: HotPink;
+}
+
+.color-10 {
+    color: CadetBlue;
+}
+
+.color-11 {
+    color: SeaGreen;
+}
+
+.color-12 {
+    color: Chocolate;
+}
+
+.color-13 {
+    color: BlueViolet;
+}
+
+.color-14 {
+    color: Firebrick;
+}

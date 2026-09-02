@@ -1,5 +1,5 @@
 {
-    const updateTheme = function() {
+    const updateTheme = function () {
         if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
             document.documentElement.setAttribute('data-bs-theme', 'dark');
             document.querySelectorAll('.btn-outline-dark').forEach(e => e.classList.replace('btn-outline-dark', 'btn-outline-light'));

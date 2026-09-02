@@ -8,15 +8,12 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ovh.maddie480.randomstuff.backend.celeste.moddatabase.model.DependencyRecord;
 import ovh.maddie480.randomstuff.backend.celeste.moddatabase.ModDatabase;
+import ovh.maddie480.randomstuff.backend.celeste.moddatabase.model.DependencyRecord;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -78,15 +75,15 @@ public class CelesteBundleDownloadService extends HttpServlet {
 
     private static void addResultsFrom(String modId, Map<String, String> result) {
         ModDatabase.ModLatestVersion mod = ModDatabase.listLatestVersions(CelesteModSearchService.database).stream()
-            .filter(mf -> mf.file().modId.equals(modId))
-            .findFirst().orElse(null);
+                .filter(mf -> mf.file().modId.equals(modId))
+                .findFirst().orElse(null);
 
         if (mod == null) {
             // bail out, we're checking a mod that does not exist in the database!
             return;
         }
 
-        result.put(modId,  "https://celestemodupdater.0x0a.de/banana-mirror/" + mod.file().mirrorName + ".zip");
+        result.put(modId, "https://celestemodupdater.0x0a.de/banana-mirror/" + mod.file().mirrorName + ".zip");
 
         for (DependencyRecord dependency : mod.file().dependencies) {
             String dependencyName = dependency.name;

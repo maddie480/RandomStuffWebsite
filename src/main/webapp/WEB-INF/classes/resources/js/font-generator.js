@@ -6,7 +6,7 @@ function onCustomFontSelect() {
     document.getElementById("fontFileName").required = 'required';
 }
 
-document.getElementById('font').addEventListener('change', function(e) {
+document.getElementById('font').addEventListener('change', function (e) {
     if (e.target.value === 'custom') {
         onCustomFontSelect();
     } else {

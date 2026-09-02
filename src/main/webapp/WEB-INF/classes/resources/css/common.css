@@ -6,14 +6,16 @@
     margin-bottom: 16px;
 }
 
-@media(max-width: 575px) {
+@media (max-width: 575px) {
     .container-fluid {
         display: block !important;
         text-align: center;
     }
+
     .navbar-nav {
         display: block;
     }
+
     .nav-item {
         display: inline-block;
     }
@@ -23,9 +25,11 @@
     background-color: var(--bs-info-bg-subtle);
     border-color: var(--bs-info-border-subtle);
 }
+
 .dropdown-header {
     color: var(--bs-body-color);
 }
+
 .navbar {
     background-color: #FFB8DD !important;
     background-image: url('/img/navbar-bg.svg');
@@ -35,6 +39,7 @@
     font-family: "Gontserrat";
     src: url('/fonts/Gontserrat-Light.ttf');
 }
+
 @font-face {
     font-family: "Hey August";
     src: url('/fonts/HeyAugust.otf');
@@ -46,6 +51,7 @@
     font-family: "Hey August", sans-serif;
     font-size: 30px;
 }
+
 .navbar-nav {
     font-family: "Gontserrat", sans-serif;
 }
@@ -57,6 +63,7 @@
     margin-top: -14px;
     margin-bottom: -5px;
 }
+
 .navbar-brand img.crabulous {
     background-color: #FFF4;
     padding: 2px;
@@ -85,31 +92,32 @@ a {
 }
 
 .btn-primary {
-  --bs-btn-bg: #CE217A;
-  --bs-btn-border-color: #CE217A;
-  --bs-btn-hover-bg: #A61E64;
-  --bs-btn-hover-border-color: #A61E64;
-  --bs-btn-active-bg: #A61E64;
-  --bs-btn-active-border-color: #A61E64;
-  --bs-btn-disabled-bg: #A61E64;
-  --bs-btn-disabled-border-color: #A61E64;
+    --bs-btn-bg: #CE217A;
+    --bs-btn-border-color: #CE217A;
+    --bs-btn-hover-bg: #A61E64;
+    --bs-btn-hover-border-color: #A61E64;
+    --bs-btn-active-bg: #A61E64;
+    --bs-btn-active-border-color: #A61E64;
+    --bs-btn-disabled-bg: #A61E64;
+    --bs-btn-disabled-border-color: #A61E64;
 }
 
 .btn-outline-primary {
-  --bs-btn-color: #CE217A;
-  --bs-btn-border-color: #CE217A;
-  --bs-btn-hover-bg: #A61E64;
-  --bs-btn-hover-border-color: #A61E64;
-  --bs-btn-active-bg: #A61E64;
-  --bs-btn-active-border-color: #A61E64;
-  --bs-btn-disabled-bg: #A61E64;
-  --bs-btn-disabled-border-color: #A61E64;
+    --bs-btn-color: #CE217A;
+    --bs-btn-border-color: #CE217A;
+    --bs-btn-hover-bg: #A61E64;
+    --bs-btn-hover-border-color: #A61E64;
+    --bs-btn-active-bg: #A61E64;
+    --bs-btn-active-border-color: #A61E64;
+    --bs-btn-disabled-bg: #A61E64;
+    --bs-btn-disabled-border-color: #A61E64;
 }
 
-@media(prefers-color-scheme: dark) {
+@media (prefers-color-scheme: dark) {
     .navbar .navbar-brand a {
         color: #FFC6E3;
     }
+
     .navbar {
         background-image: url('/img/navbar-bg-dark.svg');
         background-color: #77286E !important;

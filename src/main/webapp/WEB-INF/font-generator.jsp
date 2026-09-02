@@ -1,9 +1,9 @@
 <h1>Celeste Font Generator</h1>
 
-<% if((boolean) request.getAttribute("badrequest")) { %>
-    <div class="alert alert-warning">
-        Your request was invalid, please try again.
-    </div>
+<% if ((boolean) request.getAttribute("badrequest")) { %>
+<div class="alert alert-warning">
+    Your request was invalid, please try again.
+</div>
 <% } %>
 
 <p>
@@ -13,7 +13,8 @@
 </p>
 
 <p>
-    If characters are missing from the font, you will find a <code>missing-characters.txt</code> file in the generated zip.
+    If characters are missing from the font, you will find a <code>missing-characters.txt</code> file in the generated
+    zip.
 </p>
 
 <form method="POST" enctype="multipart/form-data">

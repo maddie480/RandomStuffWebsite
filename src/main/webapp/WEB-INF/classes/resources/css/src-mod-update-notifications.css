@@ -6,7 +6,7 @@ h1 {
     margin-top: 20px;
 }
 
-@media(max-width: 991px) {
+@media (max-width: 991px) {
     h1 {
         font-size: 1.8em;
     }

@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app xmlns="https://jakarta.ee/xml/ns/jakartaee" metadata-complete="false" xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_5_0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="5.0">
+<web-app xmlns="https://jakarta.ee/xml/ns/jakartaee" metadata-complete="false"
+         xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_5_0.xsd"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="5.0">
     <!-- Apparently, the one and only true way to define filter priority is through web.xml... so here it goes. -->
     <filter>
         <filter-name>UnhandledExceptionFilter</filter-name>

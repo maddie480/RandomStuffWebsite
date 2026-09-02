@@ -2,35 +2,42 @@
     text-align: center;
     margin-bottom: 20px;
 }
+
 pre {
     text-wrap: wrap;
 }
+
 th {
     vertical-align: baseline;
 }
+
 .hidden {
     display: none;
 }
 
-@media(max-width: 991px) {
+@media (max-width: 991px) {
     th {
         display: none;
     }
+
     th:before {
         content: "Language to compare to English";
     }
+
     th:last-child {
         display: block;
     }
+
     td {
         display: block;
         width: calc(100vw - 24px);
     }
+
     tr:not(:last-child) td:last-child, th:last-child {
         border-bottom: solid black 2px;
     }
 
-    @media(prefers-color-scheme: dark) {
+    @media (prefers-color-scheme: dark) {
         tr:not(:last-child) td:last-child, th:last-child {
             border-bottom: solid lightgray 2px;
         }

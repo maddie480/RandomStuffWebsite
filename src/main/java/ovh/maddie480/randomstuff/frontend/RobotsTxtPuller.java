@@ -8,7 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 public class RobotsTxtPuller {
-    public static void main(String[] args) throws IOException {
+    static void main(String[] args) throws IOException {
         String robots = "# Keep AI crawlers away from the asset drive,\n" +
                 "# as most artists would probably object to this.\n\n" +
                 (Jsoup.connect("https://robotstxt.com/ai").get()

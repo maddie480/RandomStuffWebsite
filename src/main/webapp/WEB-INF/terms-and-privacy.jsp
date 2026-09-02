@@ -5,7 +5,8 @@
 <p>
     These Discord bots are provided with hopes that they are useful, <b>without any warranty</b>.
     They might not be available at all times or taken down. Extended downtimes and incidents will be announced in
-    <a href="https://discord.gg/PdyfMaq9Vq" target="_blank">the support server</a>. So check there if you notice a bot is having issues,
+    <a href="https://discord.gg/PdyfMaq9Vq" target="_blank">the support server</a>. So check there if you notice a bot
+    is having issues,
     there might be more information about the situation; and feel free to report any bugs you encounter.
 </p>
 
@@ -33,7 +34,8 @@
 
 <p>
     When you set your timezone, the bot saves <b>your user ID, the server ID, and the name of your timezone</b>.
-    This information is deleted whenever you run <code>/remove-timezone</code>, or after 1 year if you do not use any commands and no one mentions you in <code>/time-for</code>.
+    This information is deleted whenever you run <code>/remove-timezone</code>, or after 1 year if you do not use any
+    commands and no one mentions you in <code>/time-for</code>.
 </p>
 
 <p>
@@ -45,11 +47,13 @@
 
 <p>
     When you grab a timezone role, the bot saves <b>your user ID, the server ID, and the name of your timezone</b>.
-    This information is deleted whenever you remove your timezone role, when the bot is removed from the server, or within a day after you leave the server.
+    This information is deleted whenever you remove your timezone role, when the bot is removed from the server, or
+    within a day after you leave the server.
 </p>
 
 <p>
-    When you use <code>/toggle-times</code> to display the time it is in timezone roles, the bot saves <b>your server ID</b> to keep track of this choice.
+    When you use <code>/toggle-times</code> to display the time it is in timezone roles, the bot saves <b>your server
+    ID</b> to keep track of this choice.
     It is removed if you use <code>/toggle-times</code> again, or if you remove the bot from your server.
 </p>
 
@@ -60,14 +64,18 @@
 </p>
 
 <p>
-    When using either of the <code>--setup</code> commands to setup a mod verification channel, the bot saves <b>the server ID and the channel ID</b>
-    of the channel where it takes place. <code>--setup-fixed-names</code> also saves <b>the assets and map folder names</b> you configured.
-    This information is deleted when you run <code>--remove-setup</code>, or within 7 days if the channel is deleted or the bot is kicked from the server.
+    When using either of the <code>--setup</code> commands to setup a mod verification channel, the bot saves <b>the
+    server ID and the channel ID</b>
+    of the channel where it takes place. <code>--setup-fixed-names</code> also saves <b>the assets and map folder
+    names</b> you configured.
+    This information is deleted when you run <code>--remove-setup</code>, or within 7 days if the channel is deleted or
+    the bot is kicked from the server.
 </p>
 
 <p>
     When verifying a mod, if everything is fine, the bot posts a small "install" embed after it. In this case,
-    <b>the message ID of your message and of the bot response to it</b> are saved. This allows the bot to delete the embed if you delete your message.
+    <b>the message ID of your message and of the bot response to it</b> are saved. This allows the bot to delete the
+    embed if you delete your message.
     This information is deleted when you delete your message, or after 6 months.
 </p>
 
@@ -86,7 +94,8 @@
 </p>
 
 <p>
-    When creating a command, the bot saves <b>the server ID, the command name, the command ID, the answer contents and whether the response should be public or not</b>.
+    When creating a command, the bot saves <b>the server ID, the command name, the command ID, the answer contents and
+    whether the response should be public or not</b>.
     This information is deleted whenever the command is deleted, or within a day after removing the bot from the server.
 </p>
 
@@ -94,7 +103,8 @@
 
 <p>
     This bot <b>does not store anything</b> from Discord.
-    The data it collects from GameBanana is a mirror of public information available there: it is deleted whenever it disappears from GameBanana, or is made private.
+    The data it collects from GameBanana is a mirror of public information available there: it is deleted whenever it
+    disappears from GameBanana, or is made private.
 </p>
 
 <p class="space"></p>

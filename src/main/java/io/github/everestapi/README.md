@@ -18,4 +18,5 @@ java io.github.everestapi.OlympusTranslationEditor <path_to_clone> <language>
 
 `language` being the name of the language in `lang.lua`, like `fr`.
 
-This is here because it powers the translation viewer on the website... which is, surely, a more user-friendly way to check the translations.
+This is here because it powers the translation viewer on the website... which is, surely, a more user-friendly way to
+check the translations.

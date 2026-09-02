@@ -14,7 +14,6 @@ import ovh.maddie480.randomstuff.backend.celeste.moddatabase.ModDatabase;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -157,6 +156,6 @@ public class SrcModUpdateNotificationService extends HttpServlet {
 
     private boolean doesModExist(String modName) throws IOException {
         return ModDatabase.listLatestVersions(CelesteModSearchService.database).stream()
-            .anyMatch(mf -> mf.file().modId.equals(modName));
+                .anyMatch(mf -> mf.file().modId.equals(modName));
     }
 }

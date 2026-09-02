@@ -11,7 +11,7 @@ audio {
     margin-bottom: -6px;
 }
 
-@media(max-width: 767px) {
+@media (max-width: 767px) {
     td:nth-child(1) {
         width: 230px;
     }
@@ -21,7 +21,7 @@ audio {
     }
 }
 
-@media(max-width: 575px) {
+@media (max-width: 575px) {
     audio {
         width: 100%;
         display: block;
@@ -40,7 +40,7 @@ audio {
     }
 }
 
-@media(min-width: 576px) {
+@media (min-width: 576px) {
     .track-name {
         display: none;
     }

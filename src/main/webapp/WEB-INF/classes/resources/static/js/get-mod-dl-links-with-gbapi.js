@@ -2,7 +2,7 @@ const inp = document.querySelector('input[type="text"]');
 const btn = document.querySelector('input[type="button"]');
 const sct = document.querySelector('select');
 
-if (! window.jQuery) {
+if (!window.jQuery) {
     log("jQuery has failed to load. Please make sure jquery-3.6.0.min.js is present.");
     btn.disabled = true;
 }
@@ -18,7 +18,7 @@ function getModType() {
 }
 
 function isModIDNotValid() {
-    if (! /^[0-9]{1,7}$/.test(getModID())) {
+    if (!/^[0-9]{1,7}$/.test(getModID())) {
         return true;
     }
 }
@@ -35,7 +35,7 @@ function main() {
 
     btn.disabled = true;
 
-    $.get( "https://gamebanana.com/apiv5/" + y + "/" + x + "?_csvProperties=_aFiles" , function(data) {
+    $.get("https://gamebanana.com/apiv5/" + y + "/" + x + "?_csvProperties=_aFiles", function (data) {
         if (data._aFiles) {
             for (let item of data._aFiles) {
                 log(item._sFile, item._sDownloadUrl);

@@ -4,9 +4,9 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import static ovh.maddie480.randomstuff.frontend.CelesteModSearchService.getCrabLevel;
-
 import java.io.IOException;
+
+import static ovh.maddie480.randomstuff.frontend.CelesteModSearchService.getCrabLevel;
 
 public class PageRenderer {
     public static void render(HttpServletRequest request, HttpServletResponse response, String pageId, String title, String description)

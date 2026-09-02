@@ -16,7 +16,8 @@
 <img class="darktheme" src="/img/timezone_dropdown_result_no_label_dark.png">
 
 <p class="space">
-    You can also give labels to the timezones to help people identify them, by using <code>label|timezone</code> instead of just the timezone name.
+    You can also give labels to the timezones to help people identify them, by using <code>label|timezone</code> instead
+    of just the timezone name.
     The command should look like this: <code>/timezone-dropdown [options: label1|timezone1,label2|timezone2]</code>
 </p>
 

@@ -38,7 +38,7 @@ body {
     --bs-body-bg: #F6FFE8;
 }
 
-@media(prefers-color-scheme: dark) {
+@media (prefers-color-scheme: dark) {
     body {
         --bs-body-color: #F5EBC1;
         --bs-body-bg: #0D2800;

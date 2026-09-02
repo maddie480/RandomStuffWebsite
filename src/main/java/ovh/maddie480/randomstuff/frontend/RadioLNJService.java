@@ -57,7 +57,7 @@ public class RadioLNJService extends HttpServlet {
             sortedPlaylist.sort(Comparator.comparing(item -> item.getString("trackName").toLowerCase(Locale.ROOT)));
 
             log.info("Loaded Radio LNJ playlist, {} elements, total duration {}, head of playlist is {} until {}",
-                elementCount, totalDuration, playlist.getFirst(), Instant.ofEpochMilli(nextItemStartsAt));
+                    elementCount, totalDuration, playlist.getFirst(), Instant.ofEpochMilli(nextItemStartsAt));
         } catch (Exception e) {
             log.warn("Warming up failed!", e);
         }

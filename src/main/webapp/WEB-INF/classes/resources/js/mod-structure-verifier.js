@@ -4,7 +4,7 @@ function onPathsCheckEnable() {
     document.getElementById("assetFolderName").required = 'required';
 }
 
-document.getElementById('checkPaths').addEventListener('change', function(e) {
+document.getElementById('checkPaths').addEventListener('change', function (e) {
     if (e.target.checked) {
         onPathsCheckEnable();
     } else {
@@ -22,8 +22,9 @@ if (document.getElementById('checkPaths').checked) {
 
 function slice(file, start, end) {
     var slice = file.mozSlice ? file.mozSlice :
-                file.webkitSlice ? file.webkitSlice :
-                file.slice ? file.slice : () => {};
+        file.webkitSlice ? file.webkitSlice :
+            file.slice ? file.slice : () => {
+            };
 
     return slice.bind(file)(start, end);
 }
@@ -36,14 +37,14 @@ function uploadChunk(progress, file, chunkId, chunkIndex, chunkSize, start, end)
     var percentGlobal = 100 * start / file.size;
     var percentFactor = (end - start) / file.size;
 
-    xhr.upload.addEventListener('progress', function(event) {
+    xhr.upload.addEventListener('progress', function (event) {
         // displaying the progress value as text percentage in the "submit" button
         var percentPart = (100 * event.loaded / event.total);
         var percent = Math.min(100, percentGlobal + percentPart * percentFactor);
         progress.value = 'Upload progress: ' + percent.toFixed(0) + '%';
     }, false);
 
-    xhr.addEventListener('readystatechange', function(event) {
+    xhr.addEventListener('readystatechange', function (event) {
         if (event.target.readyState == 0 || (event.target.readyState == 4 && event.target.status !== 200)) {
             // network error or non-200 status => request broke!
             progress.value = 'An error occurred. Click here to try again.';
@@ -88,7 +89,7 @@ function enhanceFormWithUploadProgress(form, progress) {
         return;
     }
 
-    form.addEventListener('submit', function(e) {
+    form.addEventListener('submit', function (e) {
         // prevent regular form posting
         e.preventDefault();
 
@@ -104,12 +105,12 @@ function enhanceFormWithUploadProgress(form, progress) {
             uploadChunk(progress, file, null, 0, chunkSize, 0, chunkSize);
         }
     });
-};
+}
 
 enhanceFormWithUploadProgress(document.getElementById('verify-form'), document.getElementById('submit-button'));
 
 // handle "Copy URL" button
-document.getElementById('copyUrl').addEventListener('click', function(e) {
+document.getElementById('copyUrl').addEventListener('click', function (e) {
     e.preventDefault();
 
     var url = 'https://maddie480.ovh/celeste/mod-structure-verifier';

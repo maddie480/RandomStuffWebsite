@@ -3,9 +3,9 @@ package ovh.maddie480.randomstuff.frontend.discord.bananabot;
 import net.dv8tion.jda.api.utils.MarkdownSanitizer;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import ovh.maddie480.randomstuff.frontend.CelesteModSearchService;
 import ovh.maddie480.randomstuff.backend.celeste.moddatabase.model.CategoryRecord;
 import ovh.maddie480.randomstuff.backend.celeste.moddatabase.model.ModRecord;
+import ovh.maddie480.randomstuff.frontend.CelesteModSearchService;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -18,9 +18,9 @@ import java.util.Locale;
 
 public class EmbedBuilder {
     public static void integrityCheck() {
-            for (ModRecord mod : CelesteModSearchService.database) {
-                buildEmbedFor(mod);
-            }
+        for (ModRecord mod : CelesteModSearchService.database) {
+            buildEmbedFor(mod);
+        }
     }
 
     /**

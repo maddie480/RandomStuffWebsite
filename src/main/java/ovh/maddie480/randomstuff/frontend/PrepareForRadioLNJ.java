@@ -26,7 +26,7 @@ public class PrepareForRadioLNJ {
     private static final Path targetDirectory = Paths.get("resources/music");
     private static int musicIndex = 0;
 
-    public static void main(String[] args) throws IOException, InterruptedException {
+    static void main(String[] args) throws IOException, InterruptedException {
         if (System.getenv("RADIO_LNJ_SOURCES") == null) return;
 
         Path cachedRadioLNJ = Paths.get("/tmp/old-target/random-stuff-website-1.0.0/WEB-INF/classes/resources/music");

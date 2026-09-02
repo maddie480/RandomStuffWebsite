@@ -13,7 +13,7 @@ h2 {
     margin-top: 30px;
 }
 
-@media(max-width: 450px) {
+@media (max-width: 450px) {
     h1 {
         font-size: 1.8em;
     }

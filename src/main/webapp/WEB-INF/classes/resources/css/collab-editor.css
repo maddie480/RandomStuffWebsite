@@ -7,7 +7,7 @@ input[type="submit"] {
     display: inline-block;
 }
 
-@media(min-width: 400px) {
+@media (min-width: 400px) {
     .open-to-content {
         display: inline-block;
     }

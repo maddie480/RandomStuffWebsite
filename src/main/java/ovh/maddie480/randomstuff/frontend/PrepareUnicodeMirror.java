@@ -14,7 +14,7 @@ import static ovh.maddie480.randomstuff.frontend.PrepareForRadioLNJ.copyRecursiv
 public class PrepareUnicodeMirror {
     private static final Path targetDirectory = Paths.get("resources/static/unicode-mirror");
 
-    public static void main(String[] args) throws IOException, InterruptedException {
+    static void main(String[] args) throws IOException, InterruptedException {
         Path cachedUnicodeMirror = Paths.get("/tmp/old-target/random-stuff-website-1.0.0/WEB-INF/classes/resources/static/unicode-mirror");
         if (Files.isDirectory(cachedUnicodeMirror)) {
             copyRecursive(cachedUnicodeMirror, targetDirectory);

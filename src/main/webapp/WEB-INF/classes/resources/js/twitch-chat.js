@@ -71,7 +71,10 @@
             currentMessageDOM.appendChild(element('div', {}, [
                 element('span', {className: 'author'}, [
                     ...message.badges.map(badge => element('img', {src: badge})),
-                    element('span', {className: 'color-' + (Math.abs(hashCode(message.author)) % 15), innerText: message.author})
+                    element('span', {
+                        className: 'color-' + (Math.abs(hashCode(message.author)) % 15),
+                        innerText: message.author
+                    })
                 ]),
                 element('div', {}, [
                     element('span', {className: 'message'}, splicedMessage)
@@ -84,7 +87,7 @@
             socket.send(message.ack);
         }
 
-        socket.onclose = function(event) {
+        socket.onclose = function (event) {
             console.log('Connection closed, wasClean =', event.wasClean);
             setTimeout(runSocket, 5000);
         };

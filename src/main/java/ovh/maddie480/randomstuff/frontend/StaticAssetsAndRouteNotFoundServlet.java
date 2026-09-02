@@ -31,8 +31,8 @@ public class StaticAssetsAndRouteNotFoundServlet extends HttpServlet {
     // XMLs sometimes don't show up properly in browsers (reportedly due to some extensions),
     // and users probably want to download them anyway, so force download with a Content-Disposition header
     public static final Map<String, String> PATHS_TO_FORCE_DOWNLOAD = ImmutableMap.of(
-        "/resources/foregroundtiles.xml", "ForegroundTiles.xml",
-        "/resources/celeste_dialogs.xml", "Celeste_Dialogs.xml"
+            "/resources/foregroundtiles.xml", "ForegroundTiles.xml",
+            "/resources/celeste_dialogs.xml", "Celeste_Dialogs.xml"
     );
 
     static {
@@ -139,7 +139,7 @@ public class StaticAssetsAndRouteNotFoundServlet extends HttpServlet {
 
                 if (PATHS_TO_FORCE_DOWNLOAD.containsKey(request.getRequestURI())) {
                     response.setHeader("Content-Disposition", "attachment; filename=\""
-                        + PATHS_TO_FORCE_DOWNLOAD.get(request.getRequestURI()) + '"');
+                            + PATHS_TO_FORCE_DOWNLOAD.get(request.getRequestURI()) + '"');
                 }
 
                 String resourcePath = "resources" + request.getRequestURI().replace("%20", " ");

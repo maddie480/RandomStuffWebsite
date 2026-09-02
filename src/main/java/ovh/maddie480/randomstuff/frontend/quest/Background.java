@@ -1,6 +1,5 @@
 package ovh.maddie480.randomstuff.frontend.quest;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;

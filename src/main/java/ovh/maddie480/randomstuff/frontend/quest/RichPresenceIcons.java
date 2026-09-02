@@ -1,6 +1,5 @@
 package ovh.maddie480.randomstuff.frontend.quest;
 
-import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;

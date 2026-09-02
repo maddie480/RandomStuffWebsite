@@ -10,8 +10,10 @@
 
 <p class="header">
     <a href="/radio-lnj/playlist" target="_blank">
-        <b><%= request.getAttribute("elementCount") %></b> éléments dans la playlist,
-        durée totale <b><%= request.getAttribute("totalDuration") %></b>
+        <b><%= request.getAttribute("elementCount") %>
+        </b> éléments dans la playlist,
+        durée totale <b><%= request.getAttribute("totalDuration") %>
+    </b>
     </a>
 </p>
 

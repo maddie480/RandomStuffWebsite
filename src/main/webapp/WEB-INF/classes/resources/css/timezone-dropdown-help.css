@@ -21,7 +21,7 @@ b {
     display: none;
 }
 
-@media(prefers-color-scheme: dark) {
+@media (prefers-color-scheme: dark) {
     .container .lighttheme {
         display: none;
     }
@@ -31,7 +31,7 @@ b {
     }
 }
 
-@media(max-width: 450px) {
+@media (max-width: 450px) {
     h1 {
         font-size: 1.8em;
     }

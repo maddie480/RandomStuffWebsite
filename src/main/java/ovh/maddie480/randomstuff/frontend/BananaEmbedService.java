@@ -1,4 +1,3 @@
-
 package ovh.maddie480.randomstuff.frontend;
 
 import jakarta.servlet.ServletException;
@@ -7,18 +6,13 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.json.JSONObject;
 import org.json.JSONTokener;
-import org.apache.commons.text.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedWriter;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -86,7 +80,7 @@ public class BananaEmbedService extends HttpServlet {
                  ByteArrayOutputStream os = new ByteArrayOutputStream()) {
 
                 IOUtils.copy(is, os);
-                return new String(os.toByteArray(), StandardCharsets.UTF_8);
+                return os.toString(StandardCharsets.UTF_8);
             }
         }
 
@@ -113,31 +107,31 @@ public class BananaEmbedService extends HttpServlet {
         }
 
         String html = "<!DOCTYPE html>\n"
-            + "<html lang=\"en\">\n"
-            + "<head>\n"
-            + "<title>" + StringEscapeUtils.escapeHtml4(profilePage.getString("_sName")) + "</title>\n"
-            + "<link rel=\"canonical\" href=\"" + profilePage.getString("_sProfileUrl") + "\"/>\n"
-            + "<meta property=\"og:url\" content=\"" + profilePage.getString("_sProfileUrl") + "\"/>\n"
-            + "<meta property=\"og:title\" content=\"" + StringEscapeUtils.escapeHtml4(profilePage.getString("_sName")) + "\"/>\n"
-            + (!profilePage.has("_sDescription") ? "" : "<meta property=\"og:description\" content=\"" + StringEscapeUtils.escapeHtml4(profilePage.getString("_sDescription")) + "\"/>\n")
-            + (imageUrl == null ? "" : "<meta property=\"og:image\" content=\"" + imageUrl + "\"/>\n")
-            + "<meta property=\"theme-color\" content=\"#FFE033\"/>\n"
-            + "<meta property=\"twitter:card\" content=\"summary_large_image\"/>\n"
-            + "<link rel=\"alternate\" type=\"application/json+oembed\" href=\"https://maddie480.ovh/celeste/banana-oembed/" + itemtype + "-" + itemid + ".json\" title=\"" + StringEscapeUtils.escapeHtml4(profilePage.getJSONObject("_aSubmitter").getString("_sName")) + "\"/>\n"
-            + "</head>\n"
-            + "<body>\n"
-            + "Hi! What are you doing here?\n"
-            + "</body>\n"
-            + "</html>";
+                + "<html lang=\"en\">\n"
+                + "<head>\n"
+                + "<title>" + StringEscapeUtils.escapeHtml4(profilePage.getString("_sName")) + "</title>\n"
+                + "<link rel=\"canonical\" href=\"" + profilePage.getString("_sProfileUrl") + "\"/>\n"
+                + "<meta property=\"og:url\" content=\"" + profilePage.getString("_sProfileUrl") + "\"/>\n"
+                + "<meta property=\"og:title\" content=\"" + StringEscapeUtils.escapeHtml4(profilePage.getString("_sName")) + "\"/>\n"
+                + (!profilePage.has("_sDescription") ? "" : "<meta property=\"og:description\" content=\"" + StringEscapeUtils.escapeHtml4(profilePage.getString("_sDescription")) + "\"/>\n")
+                + (imageUrl == null ? "" : "<meta property=\"og:image\" content=\"" + imageUrl + "\"/>\n")
+                + "<meta property=\"theme-color\" content=\"#FFE033\"/>\n"
+                + "<meta property=\"twitter:card\" content=\"summary_large_image\"/>\n"
+                + "<link rel=\"alternate\" type=\"application/json+oembed\" href=\"https://maddie480.ovh/celeste/banana-oembed/" + itemtype + "-" + itemid + ".json\" title=\"" + StringEscapeUtils.escapeHtml4(profilePage.getJSONObject("_aSubmitter").getString("_sName")) + "\"/>\n"
+                + "</head>\n"
+                + "<body>\n"
+                + "Hi! What are you doing here?\n"
+                + "</body>\n"
+                + "</html>";
 
         JSONObject oEmbed = new JSONObject();
         DecimalFormat thousandSeparated = new DecimalFormat("#,##0", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
         oEmbed.put("author_name", StringEscapeUtils.escapeHtml4(profilePage.getJSONObject("_aSubmitter").getString("_sName")));
         oEmbed.put("author_url", StringEscapeUtils.escapeHtml4(profilePage.getJSONObject("_aSubmitter").getString("_sProfileUrl")));
         oEmbed.put("provider_name", "GameBanana – " +
-            (!profilePage.has("_nDownloadCount") ? "" : "📥 " + thousandSeparated.format(profilePage.getInt("_nDownloadCount")) + " / ")
-            + "❤️ " + thousandSeparated.format(profilePage.getInt("_nLikeCount"))
-            + " / 👁️ " + thousandSeparated.format(profilePage.getInt("_nViewCount")));
+                (!profilePage.has("_nDownloadCount") ? "" : "📥 " + thousandSeparated.format(profilePage.getInt("_nDownloadCount")) + " / ")
+                + "❤️ " + thousandSeparated.format(profilePage.getInt("_nLikeCount"))
+                + " / 👁️ " + thousandSeparated.format(profilePage.getInt("_nViewCount")));
         oEmbed.put("version", "1.0");
         oEmbed.put("title", "Embed");
         oEmbed.put("type", "rich");
