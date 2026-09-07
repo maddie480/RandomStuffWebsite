@@ -49,6 +49,7 @@
             label="name"
             :options="[
               { id: 'latest', name: 'Creation date' },
+              { id: 'updated', name: 'Last updated' },
               { id: 'downloads', name: 'Downloads' },
               { id: 'views', name: 'Views' },
               { id: 'likes', name: 'Likes' },

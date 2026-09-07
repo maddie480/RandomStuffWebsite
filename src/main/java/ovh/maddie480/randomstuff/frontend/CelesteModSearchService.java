@@ -172,12 +172,12 @@ public class CelesteModSearchService extends HttpServlet {
         String categoryParam = request.getParameter("category");
         String subcategoryParam = request.getParameter("subcategory");
 
-        if (!Arrays.asList("latest", "likes", "views", "downloads").contains(sortParam)) {
+        if (!Arrays.asList("latest", "updated", "likes", "views", "downloads").contains(sortParam)) {
             // invalid sort!
             response.setHeader("Content-Type", "text/plain");
             log.warn("Bad request for mod list");
             response.setStatus(400);
-            response.getWriter().write("expected \"sort\" parameter with value \"latest\", \"likes\", \"views\" or \"downloads\"");
+            response.getWriter().write("expected \"sort\" parameter with value \"latest\", \"updated\", \"likes\", \"views\" or \"downloads\"");
         } else {
             // parse the page number: if page number is absent or invalid, assume 1
             int page = 1;
@@ -210,6 +210,7 @@ public class CelesteModSearchService extends HttpServlet {
                 case "likes" -> Comparator.<ModRecord>comparingInt(i -> -i.likes).thenComparing(i -> i.id);
                 case "downloads" -> Comparator.<ModRecord>comparingInt(i -> -i.downloads).thenComparing(i -> i.id);
                 case "latest" -> Comparator.<ModRecord>comparingLong(i -> -i.createdDate).thenComparing(i -> i.id);
+                case "updated" -> Comparator.<ModRecord>comparingLong(i -> -i.updatedDate).thenComparing(i -> i.id);
                 default -> null;
             };
 

@@ -86,7 +86,7 @@ This API allows to get a sorted list of most downloaded, liked or viewed Celeste
 If you want to retrieve the latest mod with no type filter, it is recommended to use [the real GameBanana API](https://api.gamebanana.com/docs/endpoints/Core/List/New) instead, for more up-to-date information.
 
 The URL is `https://maddie480.ovh/celeste/gamebanana-list?sort=[sort]&type=[type]&category=[category]&subcategory=[subcategory]&page=[page]` where:
-- `sort` is the info to sort on (**mandatory**). It can be `latest`, `likes`, `views` or `downloads`
+- `sort` is the info to sort on (**mandatory**). It can be `latest`, `updated`, `likes`, `views` or `downloads`
 - `type` (or `itemtype`) is the GameBanana type to filter on (optional and case-insensitive). For example `Map`, `Gamefile` or `Tool`
 - `category` is the GameBanana mod category ID to filter on (optional), this is returned by [the GameBanana categories list API](#gamebanana-categories-list-api). For example `6800`
 - `subcategory` is the GameBanana mod subcategory ID to filter on (optional), this is returned by [the GameBanana subcategories list API](#gamebanana-subcategories-list-api). For example `6801`
