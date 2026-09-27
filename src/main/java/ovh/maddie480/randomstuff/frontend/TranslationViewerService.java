@@ -39,12 +39,6 @@ public class TranslationViewerService extends HttpServlet {
     @Override
     public void init() {
         refresh();
-
-        try {
-            sendDiscordMessage("Frontend Service", ":arrow_up: :globe_with_meridians: The frontend just started.");
-        } catch (IOException e) {
-            log.warn("Sending startup notification failed!", e);
-        }
     }
 
     private record Repo(String orgName, String repoName, String branch, String dir,

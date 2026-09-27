@@ -496,6 +496,7 @@ public class CelesteModSearchService extends HttpServlet {
         refreshCategoriesLists();
         refreshHelperList();
         refreshModIDsToNamesMap();
+        CelesteDirectURLService.updateUrls();
     }
 
     private void refreshHelperList() {
