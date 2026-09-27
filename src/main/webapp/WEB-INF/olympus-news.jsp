@@ -38,7 +38,7 @@
 
                     <% if (news.shortDescription() != null) { %>
                     <span class="news-description">
-                    <%= escapeHtml4(news.shortDescription()) %>
+                            <%= escapeHtml4(news.shortDescription()) %>
                 </p>
                 </span>
                 <% } %>

@@ -27,8 +27,6 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static ovh.maddie480.randomstuff.frontend.UnhandledExceptionFilter.sendDiscordMessage;
-
 @WebServlet(name = "TranslationViewerService", loadOnStartup = 7, urlPatterns = {
         "/celeste/translation-viewer", "/celeste/translation-viewer-reload"})
 public class TranslationViewerService extends HttpServlet {
