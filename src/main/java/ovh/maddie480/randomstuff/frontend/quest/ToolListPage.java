@@ -17,7 +17,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-@WebServlet(name = "ToolListPage", urlPatterns = {"/quest/tools", "/quest/tools/*"}, loadOnStartup = 10)
+@WebServlet(name = "ToolListPage", loadOnStartup = 12, urlPatterns = {"/quest/tools", "/quest/tools/*"})
 public class ToolListPage extends HttpServlet {
     private static final Logger logger = LoggerFactory.getLogger(ToolListPage.class);
 

@@ -25,7 +25,7 @@ import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-@WebServlet(name = "AssetDriveService", loadOnStartup = 11, urlPatterns = {"/celeste/asset-drive/reload", "/celeste/asset-drive/list/decals",
+@WebServlet(name = "AssetDriveService", loadOnStartup = 1, urlPatterns = {"/celeste/asset-drive/reload", "/celeste/asset-drive/list/decals",
         "/celeste/asset-drive/list/stylegrounds", "/celeste/asset-drive/list/fgtilesets", "/celeste/asset-drive/list/bgtilesets",
         "/celeste/asset-drive/list/hires", "/celeste/asset-drive/list/misc", "/celeste/asset-drive/folders",
         "/celeste/asset-drive/last-updated", "/celeste/asset-drive/files/*", "/celeste/asset-drive/multi-download"})

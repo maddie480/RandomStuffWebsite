@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-@WebServlet(name = "GraphicsDumpBrowserService", urlPatterns = {"/celeste/graphics-dump-browser/*"}, loadOnStartup = 12)
+@WebServlet(name = "GraphicsDumpBrowserService", loadOnStartup = 4, urlPatterns = {"/celeste/graphics-dump-browser/*"})
 public class GraphicsDumpBrowserService extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(GraphicsDumpBrowserService.class);
 

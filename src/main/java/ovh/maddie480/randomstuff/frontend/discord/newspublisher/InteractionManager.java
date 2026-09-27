@@ -30,7 +30,7 @@ import java.util.*;
 /**
  * This is the API that makes the Olympus News manager run.
  */
-@WebServlet(name = "OlympusNewsManager", urlPatterns = {"/discord/olympus-news-manager"}, loadOnStartup = 7)
+@WebServlet(name = "OlympusNewsManager", loadOnStartup = 9, urlPatterns = {"/discord/olympus-news-manager"})
 public class InteractionManager extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(InteractionManager.class);
 

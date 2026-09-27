@@ -33,7 +33,7 @@ import java.util.stream.Stream;
 /**
  * This servlet provides the GameBanana search API, and other APIs that are used by Olympus or the Banana Mirror Browser.
  */
-@WebServlet(name = "CelesteModSearchService", loadOnStartup = 1, urlPatterns = {"/celeste/gamebanana-search",
+@WebServlet(name = "CelesteModSearchService", loadOnStartup = 2, urlPatterns = {"/celeste/gamebanana-search",
         "/celeste/gamebanana-search-reload", "/celeste/gamebanana-list", "/celeste/gamebanana-categories", "/celeste/gamebanana-info",
         "/celeste/random-map", "/celeste/gamebanana-featured", "/celeste/everest-versions", "/celeste/everest-versions-reload",
         "/celeste/olympus-versions", "/celeste/loenn-versions", "/celeste/helper-list", "/celeste/gamebanana-subcategories",

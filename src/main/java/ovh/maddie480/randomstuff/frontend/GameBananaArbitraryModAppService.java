@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 import static com.max480.randomstuff.gae.GameBananaArbitraryModAppService.ArbitraryModAppSettings;
 import static ovh.maddie480.randomstuff.frontend.ConnectionUtils.openStreamWithTimeout;
 
-@WebServlet(name = "GameBananaArbitraryModAppService", loadOnStartup = 6, urlPatterns = {"/gamebanana/arbitrary-mod-app",
+@WebServlet(name = "GameBananaArbitraryModAppService", loadOnStartup = 3, urlPatterns = {"/gamebanana/arbitrary-mod-app",
         "/gamebanana/arbitrary-mod-app-settings", "/gamebanana/arbitrary-mod-app-housekeep", "/gamebanana/arbitrary-mod-app-modlist"})
 public class GameBananaArbitraryModAppService extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(GameBananaArbitraryModAppService.class);

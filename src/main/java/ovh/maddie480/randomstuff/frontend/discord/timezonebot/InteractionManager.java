@@ -46,7 +46,7 @@ import static com.max480.randomstuff.gae.discord.timezonebot.InteractionManager.
 /**
  * This is the API that makes Timezone Bot run.
  */
-@WebServlet(name = "TimezoneBot", urlPatterns = {"/discord/timezone-bot"}, loadOnStartup = 5)
+@WebServlet(name = "TimezoneBot", loadOnStartup = 10, urlPatterns = {"/discord/timezone-bot"})
 public class InteractionManager extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(InteractionManager.class);
 

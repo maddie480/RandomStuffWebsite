@@ -18,7 +18,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-@WebServlet(name = "ModListPage", urlPatterns = {"/quest/mods/", "/quest/mods/*"}, loadOnStartup = 9)
+@WebServlet(name = "ModListPage", loadOnStartup = 11, urlPatterns = {"/quest/mods/", "/quest/mods/*"})
 public class ModListPage extends HttpServlet {
     private static final Logger logger = LoggerFactory.getLogger(ModListPage.class);
 

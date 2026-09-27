@@ -18,7 +18,7 @@ import java.text.DecimalFormat;
 import java.time.Instant;
 import java.util.*;
 
-@WebServlet(name = "RadioLNJService", urlPatterns = {"/radio-lnj", "/radio-lnj/playlist.json", "/radio-lnj/playlist.m3u", "/radio-lnj/playlist"}, loadOnStartup = 8)
+@WebServlet(name = "RadioLNJService", loadOnStartup = 6, urlPatterns = {"/radio-lnj", "/radio-lnj/playlist.json", "/radio-lnj/playlist.m3u", "/radio-lnj/playlist"})
 public class RadioLNJService extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(RadioLNJService.class);
 

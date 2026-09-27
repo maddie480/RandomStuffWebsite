@@ -32,7 +32,7 @@ import static ovh.maddie480.randomstuff.frontend.discord.customslashcommands.Cus
 /**
  * This is the API that makes Custom Slash Commands run.
  */
-@WebServlet(name = "CustomSlashCommandsBot", urlPatterns = {"/discord/custom-slash-commands"}, loadOnStartup = 4)
+@WebServlet(name = "CustomSlashCommandsBot", loadOnStartup = 8, urlPatterns = {"/discord/custom-slash-commands"})
 public class InteractionManager extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(InteractionManager.class);
     public static final String COMMAND_NAME_REGEX = "[a-z0-9_-]{1,32}";

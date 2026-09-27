@@ -1,5 +1,6 @@
 package ovh.maddie480.randomstuff.frontend;
 
+import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,60 +15,37 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 /**
- * This servlet caches and provides the everest_update.yaml Everest downloads to check for updates.
- * It also provides file_ids.yaml, that can be used to get all GameBanana file IDs that belong to Celeste mods.
+ * This servlet provides the everest_update.yaml Everest downloads to check for updates.
  */
-@WebServlet(name = "CelesteModUpdateService", loadOnStartup = 2, urlPatterns = {"/celeste/everest_update.yaml",
-        "/celeste/everest-update-reload", "/celeste/mod_search_database.yaml", "/celeste/mod_files_database.zip",
-        "/celeste/mod_dependency_graph.yaml"})
+@WebServlet(name = "CelesteModUpdateService", urlPatterns = {
+        "/celeste/everest_update.yaml", "/celeste/mod_search_database.yaml", "/celeste/mod_files_database.zip",
+        "/celeste/mod_dependency_graph.yaml", "/celeste/mod_database.yaml"})
 public class CelesteModUpdateService extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(CelesteModUpdateService.class);
 
-    private byte[] everestYaml;
-
     @Override
-    public void init() {
-        try {
-            log.debug("Reading everest_update.yaml from storage");
-            everestYaml = IOUtils.toByteArray(Files.newInputStream(Paths.get("/shared/celeste/updater/everest-update.yaml")));
-            CelesteDirectURLService.updateUrls();
-        } catch (Exception e) {
-            log.warn("Warming up failed!", e);
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        response.setHeader("Content-Type", request.getRequestURI().endsWith(".zip") ? "application/zip" : "text/yaml");
+        String target = switch (request.getRequestURI()) {
+            case "/celeste/everest_update.yaml" -> "/shared/celeste/updater/everest-update.yaml";
+            case "/celeste/mod_search_database.yaml" -> "/shared/celeste/updater/mod-search-database.yaml";
+            case "/celeste/mod_files_database.zip" -> "/shared/celeste/updater/mod-files-database.zip";
+            case "/celeste/mod_dependency_graph.yaml" -> "/shared/celeste/updater/mod-dependency-graph.yaml";
+            case "/celeste/mod_database.yaml" -> "/shared/celeste/mod-database.yaml";
+            default -> null;
+        };
+
+        if (target == null) {
+            // this should never happen, all URLs handled by the servlet are in the switch case above.
+            log.warn("Not found");
+            response.setStatus(404);
+            PageRenderer.render(request, response, "page-not-found", "Page Not Found",
+                    "Oops, this link seems invalid. Please try again!");
+            return;
         }
-    }
 
-    @Override
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        if (request.getRequestURI().equals("/celeste/everest-update-reload")
-                && ("key=" + SecretConstants.RELOAD_SHARED_SECRET).equals(request.getQueryString())) {
-            // trigger a reload of everest_update.yaml
-            everestYaml = IOUtils.toByteArray(Files.newInputStream(Paths.get("/shared/celeste/updater/everest-update.yaml")));
-            CelesteDirectURLService.updateUrls();
-        } else if (request.getRequestURI().equals("/celeste/everest_update.yaml")) {
-            // send the everest_update.yaml we have in cache
-            response.setHeader("Content-Type", "text/yaml");
-            IOUtils.write(everestYaml, response.getOutputStream());
-        } else if (request.getRequestURI().equals("/celeste/mod_search_database.yaml")) {
-            // send mod_search_database.yaml from storage
-            response.setHeader("Content-Type", "text/yaml");
-            try (InputStream is = Files.newInputStream(Paths.get("/shared/celeste/updater/mod-search-database.yaml"))) {
-                IOUtils.copy(is, response.getOutputStream());
-            }
-        } else if (request.getRequestURI().equals("/celeste/mod_files_database.zip")) {
-            // send mod_files_database.zip from storage
-            response.setHeader("Content-Type", "application/zip");
-            try (InputStream is = Files.newInputStream(Paths.get("/shared/celeste/updater/mod-files-database.zip"))) {
-                IOUtils.copy(is, response.getOutputStream());
-            }
-        } else if (request.getRequestURI().equals("/celeste/mod_dependency_graph.yaml")) {
-            // send mod_dependency_graph.yaml from storage
-            response.setHeader("Content-Type", "text/yaml");
-            try (InputStream is = Files.newInputStream(Paths.get("/shared/celeste/updater/mod-dependency-graph.yaml"))) {
-                IOUtils.copy(is, response.getOutputStream());
-            }
-        } else {
-            log.warn("Invalid key");
-            response.setStatus(403);
+        try (InputStream is = Files.newInputStream(Paths.get(target))) {
+            IOUtils.copy(is, response.getOutputStream());
         }
     }
 }
