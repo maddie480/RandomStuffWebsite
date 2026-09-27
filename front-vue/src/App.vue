@@ -231,14 +231,6 @@
                   >&#x1F3A7;&nbsp;&nbsp;Celeste FMOD Project</a
                 >
               </li>
-              <li>
-                <a
-                  class="dropdown-item"
-                  href="/static/unicode-mirror/emoji/charts/index.html"
-                  target="_blank"
-                  >&#x1F604;&nbsp;&nbsp;Unicode Emoji Charts</a
-                >
-              </li>
             </ul>
           </li>
         </ul>
