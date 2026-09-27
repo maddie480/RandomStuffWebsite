@@ -67,7 +67,7 @@ public class UnhandledExceptionFilter extends HttpFilter {
         }
     }
 
-    static void sendDiscordMessage(String author, String message) throws IOException {
+    public static void sendDiscordMessage(String author, String message) throws IOException {
         log.debug("Preparing to complain to my manager...");
 
         JSONObject o = new JSONObject();
