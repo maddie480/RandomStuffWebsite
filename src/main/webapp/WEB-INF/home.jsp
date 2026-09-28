@@ -244,18 +244,6 @@
         despite <i>absolutely nothing else</i> happening there. &#x1F61B;
     </div>
 
-    <h3>Mirrored Stuff</h3>
-
-    <div>
-        A mirror of <b><a href="/static/celeste-fmod-project.zip" target="_blank">the Celeste FMOD project</a></b> is
-        hosted on this website.
-        It used to be freely downloadable from FMOD's official website, but it got taken down for unknown reasons...
-        and the devs are probably going to publish it somewhere. In the meantime, here it is!
-        <br>
-        <i>Be sure to read the included license!</i> Using it for modding Celeste is fine, and it <i>is</i> used
-        to integrate custom music or sounds in Celeste maps.
-    </div>
-
     <h3>Some Stats (updated daily)</h3>
 
     <div>
