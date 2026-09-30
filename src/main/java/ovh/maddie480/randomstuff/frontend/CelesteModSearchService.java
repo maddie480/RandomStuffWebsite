@@ -19,7 +19,6 @@ import ovh.maddie480.randomstuff.backend.celeste.moddatabase.model.ModRecord;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -412,10 +411,7 @@ public class CelesteModSearchService extends HttpServlet {
 
     private static void handleOlympusAndLoennVersionsList(HttpServletResponse response, String first) throws IOException {
         response.setHeader("Content-Type", "application/json");
-
-        try (InputStream is = Files.newInputStream(Paths.get(first))) {
-            IOUtils.copy(is, response.getOutputStream());
-        }
+        CacheAndCompressionFilter.setUpForDirectFileSend(response, first);
     }
 
     private void handleModIdsToNamesList(HttpServletResponse response) throws IOException {

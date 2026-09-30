@@ -61,9 +61,7 @@ public class BananaEmbedService extends HttpServlet {
         match = oEmbedExtractor.matcher(request.getRequestURI());
         if (match.matches() && Files.isRegularFile(oEmbeds.resolve(match.group(1)))) {
             response.setContentType("application/json");
-            try (InputStream is = Files.newInputStream(oEmbeds.resolve(match.group(1)))) {
-                IOUtils.copy(is, response.getOutputStream());
-            }
+            CacheAndCompressionFilter.setUpForDirectFileSend(response, oEmbeds.resolve(match.group(1)));
             return;
         }
 

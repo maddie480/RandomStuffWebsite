@@ -22,6 +22,7 @@ import java.nio.file.attribute.FileTime;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.zip.GZIPOutputStream;
 
 public class CacheAndCompressionFilter extends HttpFilter {
@@ -116,7 +117,32 @@ public class CacheAndCompressionFilter extends HttpFilter {
         }
     }
 
-    static class CachingServletResponse extends HttpServletResponseWrapper implements CacheStream, Closeable {
+    public static void setUpForDirectFileSend(HttpServletResponse response, Path path) throws IOException {
+        directFileSend(response, r -> r.directFileToSend = path.toAbsolutePath().toString(), new DirectFileSendResponse(path));
+    }
+
+    public static void setUpForDirectFileSend(HttpServletResponse response, String path) throws IOException {
+        directFileSend(response, r -> r.directFileToSend = path, new DirectFileSendResponse(Paths.get(path)));
+    }
+
+    public static void setUpForDirectResourceSend(HttpServletResponse response, String path) throws IOException {
+        directFileSend(response, r -> r.directResourceToSend = path, new DirectResourceSendResponse(path));
+    }
+
+    private static void directFileSend(HttpServletResponse response,
+                                       Consumer<CachingServletResponse> setupCacheResponse,
+                                       CacheStream inputStreamGetter) throws IOException {
+
+        if (response instanceof CachingServletResponse cacheResp) {
+            setupCacheResponse.accept(cacheResp);
+            return;
+        }
+        try (InputStream is = inputStreamGetter.getInputStream()) {
+            IOUtils.copy(is, response.getOutputStream());
+        }
+    }
+
+    private static class CachingServletResponse extends HttpServletResponseWrapper implements CacheStream, Closeable {
         PrintWriter writer = null;
         ServletOutputStream outputStream = null;
 
@@ -124,7 +150,7 @@ public class CacheAndCompressionFilter extends HttpFilter {
         private final Path outputStreamTarget;
 
         private static final Object rollLock = new Object();
-        public String directResourceToSend = null;
+        private String directResourceToSend = null;
         public String directFileToSend = null;
 
         public CachingServletResponse(HttpServletResponse response) throws IOException {

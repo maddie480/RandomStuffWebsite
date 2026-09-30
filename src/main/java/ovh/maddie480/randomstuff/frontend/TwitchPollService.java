@@ -6,14 +6,11 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -34,12 +31,7 @@ public class TwitchPollService extends HttpServlet {
         if (request.getRequestURI().endsWith(".json")) {
             // literally send out the raw JSON file
             response.setContentType("application/json");
-
-            try (InputStream is = Files.newInputStream(pollFile);
-                 OutputStream os = response.getOutputStream()) {
-
-                IOUtils.copy(is, os);
-            }
+            CacheAndCompressionFilter.setUpForDirectFileSend(response, pollFile);
         } else {
             // display it as a page
             JSONObject pollInfo;

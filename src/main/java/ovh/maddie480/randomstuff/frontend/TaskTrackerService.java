@@ -127,9 +127,7 @@ public class TaskTrackerService extends HttpServlet {
                     // send the file from storage
                     response.setHeader("Content-Type", getContentType(fileName));
                     response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
-                    try (InputStream is = Files.newInputStream(Paths.get("/shared/temp/" + type + "/" + fileName))) {
-                        IOUtils.copy(is, response.getOutputStream());
-                    }
+                    CacheAndCompressionFilter.setUpForDirectFileSend(response, "/shared/temp/" + type + "/" + fileName);
                     return;
                 }
             }

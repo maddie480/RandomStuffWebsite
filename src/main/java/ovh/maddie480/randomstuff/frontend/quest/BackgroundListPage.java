@@ -5,10 +5,12 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.apache.commons.io.IOUtils;
+import ovh.maddie480.randomstuff.frontend.CacheAndCompressionFilter;
 import ovh.maddie480.randomstuff.frontend.PageRenderer;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.file.Files;
@@ -32,12 +34,7 @@ public class BackgroundListPage extends HttpServlet {
 
             if (Files.isRegularFile(source)) {
                 response.setContentType("image/png");
-
-                try (InputStream is = Files.newInputStream(source);
-                     OutputStream os = response.getOutputStream()) {
-
-                    IOUtils.copy(is, os);
-                }
+                CacheAndCompressionFilter.setUpForDirectFileSend(response, source);
             } else {
                 response.setStatus(404);
                 PageRenderer.render(request, response, "page-not-found", "Page Not Found",

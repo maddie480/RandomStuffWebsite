@@ -5,14 +5,10 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 /**
  * This servlet provides the everest_update.yaml Everest downloads to check for updates.
@@ -44,8 +40,6 @@ public class CelesteModUpdateService extends HttpServlet {
             return;
         }
 
-        try (InputStream is = Files.newInputStream(Paths.get(target))) {
-            IOUtils.copy(is, response.getOutputStream());
-        }
+        CacheAndCompressionFilter.setUpForDirectFileSend(response, target);
     }
 }

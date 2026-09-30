@@ -7,7 +7,6 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -17,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -42,14 +40,10 @@ public class CelesteModCatalogService extends HttpServlet {
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         if (request.getRequestURI().equals("/celeste/custom-entity-catalog.json")) {
             response.setHeader("Content-Type", "application/json");
-            try (InputStream is = Files.newInputStream(Paths.get("/shared/celeste/custom-entity-catalog.json"))) {
-                IOUtils.copy(is, response.getOutputStream());
-            }
+            CacheAndCompressionFilter.setUpForDirectFileSend(response, "/shared/celeste/custom-entity-catalog.json");
         } else if (request.getRequestURI().equals("/celeste/custom-entity-dictionary.csv")) {
             response.setHeader("Content-Type", "text/csv");
-            try (InputStream is = Files.newInputStream(Paths.get("/shared/celeste/custom-entity-dictionary.csv"))) {
-                IOUtils.copy(is, response.getOutputStream());
-            }
+            CacheAndCompressionFilter.setUpForDirectFileSend(response, "/shared/celeste/custom-entity-dictionary.csv");
         } else if (request.getRequestURI().equals("/celeste/custom-entity-catalog")) {
             Pair<List<QueriedModInfo>, ZonedDateTime> list = null;
 

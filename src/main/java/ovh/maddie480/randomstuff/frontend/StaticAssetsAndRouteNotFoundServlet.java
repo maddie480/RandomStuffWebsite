@@ -143,9 +143,8 @@ public class StaticAssetsAndRouteNotFoundServlet extends HttpServlet {
                 }
 
                 String resourcePath = "resources" + request.getRequestURI().replace("%20", " ");
-                if (start == 0 && end == size - 1 && response instanceof CacheAndCompressionFilter.CachingServletResponse cachingServletResponse) {
-                    // the CacheAndCompressionFilter can do this more efficiently.
-                    cachingServletResponse.directResourceToSend = resourcePath;
+                if (start == 0 && end == size - 1) {
+                    CacheAndCompressionFilter.setUpForDirectResourceSend(response, resourcePath);
                 } else {
                     try (InputStream is = StaticAssetsAndRouteNotFoundServlet.class.getClassLoader().getResourceAsStream(resourcePath)) {
                         IOUtils.copyLarge(is, response.getOutputStream(), start, end - start + 1);
