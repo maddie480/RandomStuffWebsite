@@ -124,6 +124,7 @@ public class CacheAndCompressionFilter extends HttpFilter {
         private final Path outputStreamTarget;
 
         private static final Object rollLock = new Object();
+        public String directResourceToSend = null;
         public String directFileToSend = null;
 
         public CachingServletResponse(HttpServletResponse response) throws IOException {
@@ -193,7 +194,32 @@ public class CacheAndCompressionFilter extends HttpFilter {
         }
     }
 
-    private record DirectFileSendResponse(String path) implements CacheStream {
+    private record DirectFileSendResponse(Path path) implements CacheStream {
+        @Override
+        public int getStatus() {
+            return 200;
+        }
+
+        @Override
+        public String getETag() throws IOException {
+            try (InputStream is = getInputStream()) {
+                return DigestUtils.sha512Hex(is);
+            }
+        }
+
+        @Override
+        public long getLength() throws IOException {
+            return Files.size(path);
+        }
+
+        @Override
+        public InputStream getInputStream() throws IOException {
+            return Files.newInputStream(path);
+        }
+    }
+
+    private record DirectResourceSendResponse(String path) implements CacheStream {
+        // contrary to files from the disk, resources don't change, so we can cache their data.
         private static final Map<String, String> etagCache = new HashMap<>();
         private static final Map<String, Long> sizeCache = new HashMap<>();
 
@@ -267,8 +293,11 @@ public class CacheAndCompressionFilter extends HttpFilter {
             }
 
             CacheStream content = placeholderResponse;
+            if (placeholderResponse.directResourceToSend != null) {
+                content = new DirectResourceSendResponse(placeholderResponse.directResourceToSend);
+            }
             if (placeholderResponse.directFileToSend != null) {
-                content = new DirectFileSendResponse(placeholderResponse.directFileToSend);
+                content = new DirectFileSendResponse(Paths.get(placeholderResponse.directFileToSend));
             }
 
             if (content.getStatus() != 200) {
