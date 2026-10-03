@@ -7,7 +7,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -36,7 +35,7 @@ import java.util.stream.Stream;
         "/celeste/gamebanana-search-reload", "/celeste/gamebanana-list", "/celeste/gamebanana-categories", "/celeste/gamebanana-info",
         "/celeste/random-map", "/celeste/gamebanana-featured", "/celeste/everest-versions", "/celeste/everest-versions-reload",
         "/celeste/olympus-versions", "/celeste/loenn-versions", "/celeste/helper-list", "/celeste/gamebanana-subcategories",
-        "/celeste/mod_ids_to_names.json", "/celeste/mod_ids_to_categories.json"})
+        "/celeste/mod_ids_to_names.json", "/celeste/mod_ids_to_categories.json", "/celeste/mod_ids_to_descriptions.json"})
 public class CelesteModSearchService extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(CelesteModSearchService.class);
 
@@ -46,6 +45,7 @@ public class CelesteModSearchService extends HttpServlet {
     private byte[] helperList;
     private byte[] modIdsToNames;
     private byte[] modIdsToCategories;
+    private byte[] modIdsToDescriptions;
     private byte[] precomputedCategoryList;
     private byte[] precomputedSubcategoryList;
 
@@ -121,6 +121,9 @@ public class CelesteModSearchService extends HttpServlet {
         }
         if ("/celeste/mod_ids_to_categories.json".equals(request.getRequestURI())) {
             handleModIdsToCategoriesList(response);
+        }
+        if ("/celeste/mod_ids_to_descriptions.json".equals(request.getRequestURI())) {
+            handleModIdsToDescriptionsList(response);
         }
     }
 
@@ -424,6 +427,11 @@ public class CelesteModSearchService extends HttpServlet {
         response.getOutputStream().write(modIdsToCategories);
     }
 
+    private void handleModIdsToDescriptionsList(HttpServletResponse response) throws IOException {
+        response.setHeader("Content-Type", "application/json");
+        response.getOutputStream().write(modIdsToDescriptions);
+    }
+
     private static String[] tokenize(String string) {
         string = StringUtils.stripAccents(string.toLowerCase(Locale.ROOT)) // "Pokémon" => "pokemon"
                 .replace("'", "") // "Maddie's Helping Hand" => "maddies helping hand"
@@ -537,60 +545,61 @@ public class CelesteModSearchService extends HttpServlet {
     }
 
     private void refreshModIDsToNamesMap() {
-        Set<String> idsSharingPageWithOtherIds = new HashSet<>();
-        {
-            Set<String> encounteredPages = new HashSet<>();
-            for (ModDatabase.ModLatestVersion record : ModDatabase.listLatestVersions(database)) {
-                String page = record.mod().id;
-                if (encounteredPages.contains(page)) {
-                    idsSharingPageWithOtherIds.add(record.file().modId);
-                } else {
-                    encounteredPages.add(page);
-                }
-            }
-            log.debug("Mod IDs found to be sharing pages with other mod IDs: {}", idsSharingPageWithOtherIds);
-        }
-
-        Map<String, Pair<String, String>> modIdsToNamesAndCategoriesMap = ModDatabase.listLatestVersions(database).stream()
-                .map(entry -> {
-                    String concat = "";
-                    if (idsSharingPageWithOtherIds.contains(entry.file().modId)) {
-                        // we want to remove version numbers because this might not be the one the user has installed.
-                        StringBuilder megaregex = new StringBuilder();
-                        for (int i = 1; i <= 7; i++) {
-                            for (int j = 0; j < i; j++) {
-                                megaregex.append('[').append("version".charAt(j)).append(Character.toUpperCase("version".charAt(j))).append(']');
-                            }
-                            if (i != 7) megaregex.append('|');
-                        }
-                        String matchFileWithoutVersions = entry.file().description.replaceAll("(" + megaregex + ")?\\.? ?([0-9]+.)*[0-9]+", "");
-                        matchFileWithoutVersions = matchFileWithoutVersions.replace("[]", "").replace("()", "");
-                        matchFileWithoutVersions = StringUtils.strip(matchFileWithoutVersions, " -/");
-                        log.debug("Matched file description for {} / file {}: {} -> {}", entry.file().modId, entry.file().id, entry.file().description, matchFileWithoutVersions);
-
-                        if (!matchFileWithoutVersions.isEmpty()) {
-                            concat = " ∙ " + matchFileWithoutVersions;
-                        }
+        { // names
+            Set<String> idsSharingPageWithOtherIds = new HashSet<>();
+            {
+                Set<String> encounteredPages = new HashSet<>();
+                for (ModDatabase.ModLatestVersion record : ModDatabase.listLatestVersions(database)) {
+                    String page = record.mod().id;
+                    if (encounteredPages.contains(page)) {
+                        idsSharingPageWithOtherIds.add(record.file().modId);
+                    } else {
+                        encounteredPages.add(page);
                     }
+                }
+                log.debug("Mod IDs found to be sharing pages with other mod IDs: {}", idsSharingPageWithOtherIds);
+            }
 
-                    CategoryRecord c = entry.mod().category;
-                    while (c.parent != null) c = c.parent;
-                    return Pair.of(entry.file().modId, Pair.of(entry.mod().name + concat, c.name));
-                })
-                .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
+            Map<String, String> modIdsToNamesMap = ModDatabase.listLatestVersions(database).stream()
+                    .collect(Collectors.toMap(e -> e.file().modId, entry -> {
+                        String concat = "";
+                        if (idsSharingPageWithOtherIds.contains(entry.file().modId)) {
+                            // we want to remove version numbers because this might not be the one the user has installed.
+                            StringBuilder megaregex = new StringBuilder();
+                            for (int i = 1; i <= 7; i++) {
+                                for (int j = 0; j < i; j++) {
+                                    megaregex.append('[').append("version".charAt(j)).append(Character.toUpperCase("version".charAt(j))).append(']');
+                                }
+                                if (i != 7) megaregex.append('|');
+                            }
+                            String matchFileWithoutVersions = entry.file().description.replaceAll("(" + megaregex + ")?\\.? ?([0-9]+.)*[0-9]+", "");
+                            matchFileWithoutVersions = matchFileWithoutVersions.replace("[]", "").replace("()", "");
+                            matchFileWithoutVersions = StringUtils.strip(matchFileWithoutVersions, " -/");
+                            log.debug("Matched file description for {} / file {}: {} -> {}", entry.file().modId, entry.file().id, entry.file().description, matchFileWithoutVersions);
 
-        {
-            Map<String, String> modIdsToNamesMap = modIdsToNamesAndCategoriesMap.entrySet().stream()
-                    .collect(Collectors.toMap(Map.Entry::getKey, k -> k.getValue().getLeft()));
+                            if (!matchFileWithoutVersions.isEmpty()) {
+                                concat = " ∙ " + matchFileWithoutVersions;
+                            }
+                        }
+                        return entry.mod().name + concat;
+                    }));
             modIdsToNames = new JSONObject(modIdsToNamesMap).toString().getBytes(StandardCharsets.UTF_8);
         }
-        {
-            Map<String, String> modIdsToCategoriesMap = modIdsToNamesAndCategoriesMap.entrySet().stream()
-                    .collect(Collectors.toMap(Map.Entry::getKey, k -> k.getValue().getRight()));
+        { // categories
+            Map<String, String> modIdsToCategoriesMap = ModDatabase.listLatestVersions(database).stream()
+                    .collect(Collectors.toMap(e -> e.file().modId, entry -> {
+                        CategoryRecord c = entry.mod().category;
+                        while (c.parent != null) c = c.parent;
+                        return c.name;
+                    }));
             modIdsToCategories = new JSONObject(modIdsToCategoriesMap).toString().getBytes(StandardCharsets.UTF_8);
         }
-
-        log.debug("Associated {} mod IDs with their names.", modIdsToNamesAndCategoriesMap.size());
+        { // descriptions
+            Map<String, String> modIdsToDescriptionsMap = ModDatabase.listLatestVersions(database).stream()
+                    .collect(Collectors.toMap(e -> e.file().modId, e -> e.mod().summary));
+            modIdsToDescriptions = new JSONObject(modIdsToDescriptionsMap).toString().getBytes(StandardCharsets.UTF_8);
+            log.debug("Associated {} mod IDs with their names.", modIdsToDescriptionsMap.size());
+        }
     }
 
     private void refreshEverestVersions() throws IOException {
