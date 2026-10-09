@@ -13,7 +13,7 @@
   "dependencies": {
     "axios": "^1.20.0",
     "downloadjs": "^1.4.7",
-    "js-yaml": "^5.4.2",
+    "js-yaml": "^5.4.3",
     "vue": "^3.5.43",
     "vue-multiselect": "^3.5.0",
     "vue-router": "^5.3.1",
