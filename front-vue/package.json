@@ -32,5 +32,10 @@
     "prettier": "^3.9.10",
     "sass": "^1.106.1",
     "vite": "^8.3.5"
+  },
+  "overrides": {
+    "eslint": {
+      "minimatch": "^11.0.1"
+    }
   }
 }
