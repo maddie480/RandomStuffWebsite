@@ -14,6 +14,8 @@ import org.json.JSONTokener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ovh.maddie480.randomstuff.backend.celeste.moddatabase.ModDatabase;
+import ovh.maddie480.randomstuff.backend.celeste.moddatabase.model.EverestYamlDependencyRecord;
+import ovh.maddie480.randomstuff.backend.celeste.moddatabase.model.EverestYamlEntryRecord;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -37,28 +39,44 @@ public class EverestYamlValidatorService extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(EverestYamlValidatorService.class);
     private final SecureRandom random = new SecureRandom();
 
-    // these are the fields in Everest's EverestModuleMetadata that are most commonly used in everest.yaml.
-    public static class EverestModuleMetadata {
-        public String Name;
-        public String Version;
-        public String LatestVersion;
-        public List<EverestModuleMetadata> Dependencies;
-        public List<EverestModuleMetadata> OptionalDependencies;
+    // EverestYamlEntryRecord but it contains EverestYamlDependencyScanRecords
+    private static class EverestYamlEntryScanRecord extends EverestYamlEntryRecord {
+        public List<EverestYamlDependencyScanRecord> Dependencies;
+        public List<EverestYamlDependencyScanRecord> OptionalDependencies;
+
+        public EverestYamlEntryScanRecord(EverestYamlEntryRecord source) {
+            Name = source.Name;
+            Version = source.Version;
+            // we don't care about DLL
+            Dependencies = source.Dependencies.stream().map(EverestYamlDependencyScanRecord::new).toList();
+            OptionalDependencies = source.OptionalDependencies.stream().map(EverestYamlDependencyScanRecord::new).toList();
+        }
 
         public Map<String, Object> toMap() {
-            Map<String, Object> result = new HashMap<>();
-            result.put("Name", Name);
-            result.put("Version", Version);
-            result.put("LatestVersion", LatestVersion);
+            return ImmutableMap.of(
+                    "Name", Name,
+                    "Version", Version,
+                    "Dependencies", Dependencies.stream().map(EverestYamlDependencyScanRecord::toMap).toList(),
+                    "OptionalDependencies", OptionalDependencies.stream().map(EverestYamlDependencyScanRecord::toMap).toList()
+            );
+        }
+    }
 
-            if (Dependencies != null) {
-                result.put("Dependencies", Dependencies.stream().map(EverestModuleMetadata::toMap).collect(Collectors.toList()));
-            }
-            if (OptionalDependencies != null) {
-                result.put("OptionalDependencies", OptionalDependencies.stream().map(EverestModuleMetadata::toMap).collect(Collectors.toList()));
-            }
+    // EverestYamlDependencyRecord but it has a LatestVersion field
+    private static class EverestYamlDependencyScanRecord extends EverestYamlDependencyRecord {
+        public String LatestVersion;
 
-            return result;
+        public EverestYamlDependencyScanRecord(EverestYamlDependencyRecord source) {
+            Name = source.Name;
+            Version = source.Version;
+        }
+
+        public Map<String, String> toMap() {
+            return ImmutableMap.of(
+                    "Name", Name,
+                    "Version", Version,
+                    "LatestVersion", LatestVersion
+            );
         }
     }
 
@@ -171,38 +189,26 @@ public class EverestYamlValidatorService extends HttpServlet {
             String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
 
             // try parsing given everest.yaml as YAML, and catch any exception that could happen.
-            List<EverestModuleMetadata> metadatas = null;
+            List<EverestYamlEntryScanRecord> metadatas = null;
             try (InputStream is = filePart.getInputStream()) {
-                List<Map<String, Object>> metadatasUnparsed = YamlUtil.loadNoFloats(is);
-
-                if (metadatasUnparsed == null || metadatasUnparsed.isEmpty()) {
-                    throw new Exception("The everest.yaml file is empty.");
-                }
-
-                metadatas = recursiveCast(metadatasUnparsed, true);
+                List<EverestYamlEntryRecord> metadatasNotScan = YamlUtil.loadEverestYaml(is);
+                checkMissingInformation(metadatasNotScan);
+                metadatas = metadatasNotScan.stream().map(EverestYamlEntryScanRecord::new).toList();
             } catch (Exception e) {
                 attributes.put("parseError", e.getMessage());
             }
 
             if (metadatas != null) {
                 // load the mod database to check if dependencies exist there.
-                List<EverestModuleMetadata> database = ModDatabase.listLatestVersions(CelesteModSearchService.database).stream()
-                        .map(entry -> {
-                            EverestModuleMetadata metadata = new EverestModuleMetadata();
-                            metadata.Name = entry.file().modId;
-                            metadata.Version = entry.file().modVersion;
-                            return metadata;
-                        })
+                List<EverestYamlDependencyRecord> database = ModDatabase.listLatestVersions(CelesteModSearchService.database).stream()
+                        .map(entry -> new EverestYamlDependencyRecord(entry.file().modId, entry.file().modVersion))
                         .collect(Collectors.toCollection(ArrayList::new));
 
                 // add private mods that come from GitHub directly.
                 try (BufferedReader br = Files.newBufferedReader(Paths.get("/shared/celeste/everest-yamls-from-github.json"))) {
                     JSONObject modsFromGitHub = new JSONObject(new JSONTokener(br));
                     for (String key : modsFromGitHub.keySet()) {
-                        EverestModuleMetadata metadata = new EverestModuleMetadata();
-                        metadata.Name = key;
-                        metadata.Version = modsFromGitHub.getString(key);
-                        database.add(metadata);
+                        database.add(new EverestYamlDependencyRecord(key, modsFromGitHub.getString(key)));
                     }
                 }
 
@@ -212,28 +218,14 @@ public class EverestYamlValidatorService extends HttpServlet {
                 }
 
                 // add entries that don't come from the database: Celeste, Everest, and things declared by the yaml itself.
-                {
-                    EverestModuleMetadata metadata = new EverestModuleMetadata();
-                    metadata.Name = "Celeste";
-                    metadata.Version = "1.4.0.0";
-                    database.add(metadata);
-                }
-                {
-                    EverestModuleMetadata metadata = new EverestModuleMetadata();
-                    metadata.Name = "Everest";
-                    metadata.Version = "1." + latestEverestStable + ".0";
-                    database.add(metadata);
-                }
-                {
-                    EverestModuleMetadata metadata = new EverestModuleMetadata();
-                    metadata.Name = "EverestCore";
-                    metadata.Version = "1." + latestEverestStable + ".0";
-                    database.add(metadata);
-                }
-                for (EverestModuleMetadata mod : metadatas) {
+                database.add(new EverestYamlDependencyRecord("Celeste", "1.4.0.0"));
+                database.add(new EverestYamlDependencyRecord("Everest", "1." + latestEverestStable + ".0"));
+                database.add(new EverestYamlDependencyRecord("EverestCore", "1." + latestEverestStable + ".0"));
+
+                for (EverestYamlEntryScanRecord mod : metadatas) {
                     try {
                         new Version(mod.Version);
-                        database.add(mod);
+                        database.add(new EverestYamlDependencyRecord(mod));
                     } catch (IllegalArgumentException e) {
                         // skip! we don't want mods with an invalid Version in our database.
                     }
@@ -246,7 +238,7 @@ public class EverestYamlValidatorService extends HttpServlet {
                     problems.add("Your file is named \"" + fileName + "\", so it won't be recognized as an everest.yaml file. Rename it.");
                 }
 
-                for (EverestModuleMetadata mod : metadatas) {
+                for (EverestYamlEntryScanRecord mod : metadatas) {
                     // check for characters forbidden in file names.
                     if (mod.Name.contains("/") || mod.Name.contains("\\") || mod.Name.contains("*") || mod.Name.contains("?") || mod.Name.contains(":")
                             || mod.Name.contains("\"") || mod.Name.contains("<") || mod.Name.contains(">") || mod.Name.contains("|")) {
@@ -271,11 +263,11 @@ public class EverestYamlValidatorService extends HttpServlet {
                     }
 
                     // let's check every dependency, optional or not!
-                    ArrayList<EverestModuleMetadata> join = new ArrayList<>(mod.Dependencies);
+                    ArrayList<EverestYamlDependencyScanRecord> join = new ArrayList<>(mod.Dependencies);
                     join.addAll(mod.OptionalDependencies);
-                    for (EverestModuleMetadata dependency : join) {
+                    for (EverestYamlDependencyScanRecord dependency : join) {
                         // look for the dependency in the mod database.
-                        EverestModuleMetadata databaseDependency = database.stream()
+                        EverestYamlDependencyRecord databaseDependency = database.stream()
                                 .filter(entry -> entry.Name.equals(dependency.Name)).findFirst().orElse(null);
 
                         if (databaseDependency == null) {
@@ -319,21 +311,21 @@ public class EverestYamlValidatorService extends HttpServlet {
                     attributes.put("validationErrors", problems);
                 } else {
                     if ("json".equals(outputFormat)) {
-                        attributes.put("modInfo", metadatas.stream().map(EverestModuleMetadata::toMap).collect(Collectors.toList()));
+                        attributes.put("modInfo", metadatas.stream().map(EverestYamlEntryScanRecord::toMap).collect(Collectors.toList()));
                     } else {
                         attributes.put("modInfo", metadatas);
                     }
 
                     // check if all mods are in their latest versions...
                     boolean allDependenciesAreUpToDate = true;
-                    for (EverestModuleMetadata metadata : metadatas) {
-                        for (EverestModuleMetadata dependency : metadata.Dependencies) {
+                    for (EverestYamlEntryScanRecord metadata : metadatas) {
+                        for (EverestYamlDependencyScanRecord dependency : metadata.Dependencies) {
                             if (!dependency.Version.equals(dependency.LatestVersion)) {
                                 allDependenciesAreUpToDate = false;
                                 break;
                             }
                         }
-                        for (EverestModuleMetadata dependency : metadata.OptionalDependencies) {
+                        for (EverestYamlDependencyScanRecord dependency : metadata.OptionalDependencies) {
                             if (!dependency.Version.equals(dependency.LatestVersion)) {
                                 allDependenciesAreUpToDate = false;
                                 break;
@@ -399,6 +391,29 @@ public class EverestYamlValidatorService extends HttpServlet {
                 "Check if your everest.yaml is valid by sending it on this page.", request.getAttribute("latestVersionsYaml") != null);
     }
 
+    private static void checkMissingInformation(List<? extends EverestYamlDependencyRecord> input) {
+        for (EverestYamlDependencyRecord metadata : input) {
+            if (metadata.Name == null) {
+                throw new IllegalArgumentException("One of the entries has no Name");
+            }
+            if (metadata.Version == null) {
+                throw new IllegalArgumentException("No Version is specified for " + metadata.Name);
+            }
+            if (metadata instanceof EverestYamlEntryRecord entry) {
+                try {
+                    checkMissingInformation(entry.Dependencies);
+                } catch (Exception e) {
+                    throw new IllegalArgumentException("Cannot parse Dependencies for " + metadata.Name + ": " + e.getMessage());
+                }
+                try {
+                    checkMissingInformation(entry.OptionalDependencies);
+                } catch (Exception e) {
+                    throw new IllegalArgumentException("Cannot parse OptionalDependencies for " + metadata.Name + ": " + e.getMessage());
+                }
+            }
+        }
+    }
+
     private void addNonce(HttpServletRequest request, HttpServletResponse response) {
         byte[] nonceBytes = new byte[128];
         random.nextBytes(nonceBytes);
@@ -411,58 +426,5 @@ public class EverestYamlValidatorService extends HttpServlet {
                 "style-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; " +
                 "frame-ancestors 'none'; " +
                 "object-src 'none';");
-    }
-
-    /**
-     * Converts a raw List of Maps to a list of EverestModuleMetadata objects recursively
-     * (the Dependencies and OptionalDependencies will be converted as well).
-     */
-    private static List<EverestModuleMetadata> recursiveCast(List<Map<String, Object>> list, boolean parseDependencies) {
-        List<EverestModuleMetadata> castedList = new ArrayList<>(list.size());
-        for (Map<String, Object> object : list) {
-            EverestModuleMetadata metadata = new EverestModuleMetadata();
-
-            // parse Name
-            if (!object.containsKey("Name")) {
-                throw new IllegalArgumentException("One of the entries has no Name");
-            }
-            try {
-                metadata.Name = object.get("Name").toString();
-            } catch (Exception e) {
-                throw new IllegalArgumentException("Cannot parse Name: " + e.getMessage());
-            }
-
-            // parse Version
-            if (!object.containsKey("Version")) {
-                throw new IllegalArgumentException("No Version is specified for " + metadata.Name);
-            }
-            try {
-                metadata.Version = object.get("Version").toString();
-            } catch (Exception e) {
-                throw new IllegalArgumentException("Cannot parse Version for " + metadata.Name + ": " + e.getMessage());
-            }
-
-            // parse Dependencies recursively
-            if (object.containsKey("Dependencies") && parseDependencies) {
-                try {
-                    metadata.Dependencies = recursiveCast((List<Map<String, Object>>) object.get("Dependencies"), false);
-                } catch (Exception e) {
-                    throw new IllegalArgumentException("Cannot parse Dependencies for " + metadata.Name + ": " + e.getMessage());
-                }
-            }
-
-            // parse OptionalDependencies recursively
-            if (object.containsKey("OptionalDependencies") && parseDependencies) {
-                try {
-                    metadata.OptionalDependencies = recursiveCast((List<Map<String, Object>>) object.get("OptionalDependencies"), false);
-                } catch (Exception e) {
-                    throw new IllegalArgumentException("Cannot parse OptionalDependencies for " + metadata.Name + ": " + e.getMessage());
-                }
-            }
-
-            castedList.add(metadata);
-        }
-
-        return castedList;
     }
 }
