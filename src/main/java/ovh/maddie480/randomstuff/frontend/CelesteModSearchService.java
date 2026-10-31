@@ -700,23 +700,6 @@ public class CelesteModSearchService extends HttpServlet {
             recurseItem = newRecurseItem;
         }
 
-        // jank GameBanana-dependent mapping I need to get rid of
-        CategoryRecord category = m.category, subcategory = m.category;
-        while (category.parent != null && !category.parent.id.endsWith("/Root")) {
-            category = category.parent;
-        }
-
-        contents.putAll(ImmutableMap.of(
-                "GameBananaType", "Obsolete",
-                "CategoryId", category.id,
-                "CategoryName", category.name
-        ));
-        if (!category.equals(subcategory)) {
-            contents.putAll(ImmutableMap.of(
-                    "SubcategoryId", subcategory.id,
-                    "SubcategoryName", subcategory.name
-            ));
-        }
         return contents;
     }
 }
