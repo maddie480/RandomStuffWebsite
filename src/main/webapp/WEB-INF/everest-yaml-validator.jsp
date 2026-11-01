@@ -48,23 +48,23 @@ Want to know if your everest.yaml is valid? Send it here, and this service will 
     </ul>
 </div>
 <% } else if (request.getAttribute("modInfo") != null) { %>
-<% List<EverestYamlValidatorService.EverestModuleMetadata> modsInfo = (List<EverestYamlValidatorService.EverestModuleMetadata>) request.getAttribute("modInfo"); %>
+<% List<EverestYamlValidatorService.EverestYamlEntryScanRecord> modsInfo = (List<EverestYamlValidatorService.EverestYamlEntryScanRecord>) request.getAttribute("modInfo"); %>
 <div class="alert alert-success">
     <b>Your everest.yaml file seems valid!</b>
 
-    <% for (EverestYamlValidatorService.EverestModuleMetadata modInfo : modsInfo) { %>
+    <% for (EverestYamlValidatorService.EverestYamlEntryScanRecord modInfo : modsInfo) { %>
     <%= modsInfo.size() == 1 ? "Your mod is called" : "It contains a mod called" %>
     <b><%= escapeHtml4(modInfo.Name) %>
     </b> version <%= escapeHtml4(modInfo.Version) %> and depends on:
     <ul>
-        <% for (EverestYamlValidatorService.EverestModuleMetadata dependency : modInfo.Dependencies) { %>
+        <% for (EverestYamlValidatorService.EverestYamlDependencyScanRecord dependency : modInfo.Dependencies) { %>
         <li>
             <b><%= escapeHtml4(dependency.Name) %>
             </b> version <%= escapeHtml4(dependency.Version) %>
             <i>(latest version is <%= escapeHtml4(dependency.LatestVersion) %>)</i>
         </li>
         <% } %>
-        <% for (EverestYamlValidatorService.EverestModuleMetadata dependency : modInfo.OptionalDependencies) { %>
+        <% for (EverestYamlValidatorService.EverestYamlDependencyScanRecord dependency : modInfo.OptionalDependencies) { %>
         <li>
             <i>Optional:</i> <b><%= escapeHtml4(dependency.Name) %>
         </b> version <%= escapeHtml4(dependency.Version) %>

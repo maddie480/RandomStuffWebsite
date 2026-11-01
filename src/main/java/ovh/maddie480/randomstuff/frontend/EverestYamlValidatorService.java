@@ -40,7 +40,7 @@ public class EverestYamlValidatorService extends HttpServlet {
     private final SecureRandom random = new SecureRandom();
 
     // EverestYamlEntryRecord but it contains EverestYamlDependencyScanRecords
-    private static class EverestYamlEntryScanRecord extends EverestYamlEntryRecord {
+    public static class EverestYamlEntryScanRecord extends EverestYamlEntryRecord {
         public List<EverestYamlDependencyScanRecord> Dependencies;
         public List<EverestYamlDependencyScanRecord> OptionalDependencies;
 
@@ -63,7 +63,7 @@ public class EverestYamlValidatorService extends HttpServlet {
     }
 
     // EverestYamlDependencyRecord but it has a LatestVersion field
-    private static class EverestYamlDependencyScanRecord extends EverestYamlDependencyRecord {
+    public static class EverestYamlDependencyScanRecord extends EverestYamlDependencyRecord {
         public String LatestVersion;
 
         public EverestYamlDependencyScanRecord(EverestYamlDependencyRecord source) {
