@@ -9,12 +9,9 @@ import java.nio.file.Paths;
 
 public class RobotsTxtPuller {
     static void main(String[] args) throws IOException {
-        String robots = "# Keep AI crawlers away from the asset drive,\n" +
-                "# as most artists would probably object to this.\n\n" +
-                (Jsoup.connect("https://robotstxt.com/ai").get()
-                        .select("pre.enable-copy").first().text() + "\n")
-                        .replace("/\n", "/celeste/asset-drive\n")
-                        .replace("‑" /* non-breaking hyphen */, "-" /* regular hyphen */);
+        String robots = Jsoup.connect("https://robotstxt.com/ai").get()
+            .select("pre.enable-copy").first().text() + "\n")
+            .replace("‑" /* non-breaking hyphen */, "-" /* regular hyphen */);
 
         if (!robots.contains("Disallow: ")) {
             throw new IOException("robots.txt doesn't look right:\n" + robots);
