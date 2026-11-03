@@ -54,7 +54,7 @@ public class AIGatewayFilter extends HttpFilter {
             res.setStatus(403);
             res.setContentType("text/plain");
             res.getWriter().write("Stop it.\n");
-            log.info("AI agents ruining everything yet again, episode {} ({})",
+            log.warn("AI agents ruining everything yet again, episode {} ({})",
                     counter.incrementAndGet(), req.getHeader("User-Agent"));
         }
     }
