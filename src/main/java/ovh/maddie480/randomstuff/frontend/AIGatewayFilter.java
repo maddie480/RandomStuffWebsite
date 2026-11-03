@@ -65,8 +65,8 @@ public class AIGatewayFilter extends HttpFilter {
         String userAgent = request.getHeader("User-Agent");
         if (userAgent == null) return true;
 
-        // catch "SlopMachine", "SlopMachine (+https://example.com)", or "SlopMachine/1.0 ..."
+        // try to avoid the Scunthorpe Problem though
         return userAgents.stream()
-                .noneMatch(u -> userAgent.matches("^" + u + "([ /]|$).*"));
+                .noneMatch(u -> userAgent.matches(".*([^A-Za-z-_]|^)" + u + "([^A-Za-z-_]|$).*"));
     }
 }
