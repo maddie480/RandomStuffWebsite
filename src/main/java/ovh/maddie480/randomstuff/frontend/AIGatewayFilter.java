@@ -34,7 +34,7 @@ public class AIGatewayFilter extends HttpFilter {
 
             String s;
             while ((s = br.readLine()) != null) {
-                if (s.startsWith("User-Agent: ")) {
+                if (s.startsWith("User-Agent: ") && !s.equals("User-Agent: *")) {
                     result.add(s.substring("User-Agent: ".length()));
                 }
             }
@@ -66,8 +66,7 @@ public class AIGatewayFilter extends HttpFilter {
         if (userAgent == null) return true;
 
         // try to avoid the Scunthorpe Problem though
-        // return userAgents.stream()
-        //        .noneMatch(u -> userAgent.matches(".*([^A-Za-z-_]|^)" + u + "([^A-Za-z-_]|$).*"));
-        return true;
+        return userAgents.stream()
+               .noneMatch(u -> userAgent.matches(".*([^A-Za-z-_]|^)" + u + "([^A-Za-z-_]|$).*"));
     }
 }
