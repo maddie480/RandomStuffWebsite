@@ -67,6 +67,6 @@ public class AIGatewayFilter extends HttpFilter {
 
         // try to avoid the Scunthorpe Problem though
         return userAgents.stream()
-               .noneMatch(u -> userAgent.matches(".*([^A-Za-z-_]|^)" + u + "([^A-Za-z-_]|$).*"));
+                .noneMatch(u -> userAgent.matches(".*([^A-Za-z-_]|^)" + u + "([^A-Za-z-_]|$).*"));
     }
 }

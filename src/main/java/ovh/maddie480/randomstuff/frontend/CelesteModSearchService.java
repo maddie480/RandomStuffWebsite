@@ -684,6 +684,18 @@ public class CelesteModSearchService extends HttpServlet {
                         "IsLatestVersion", f.isLeader
                 ))
                 .collect(Collectors.toCollection(ArrayList::new)));
+        contents.put("ContentWarnings", Arrays.stream(m.contentWarnings)
+                .map(w -> ImmutableMap.of(
+                        "Name", w.name,
+                        "Severity", w.severity
+                ))
+                .toList());
+        contents.put("AIWarnings", Arrays.stream(m.aiWarnings)
+                .map(w -> ImmutableMap.of(
+                        "Name", w.name + " (" + w.severityLabel + ")",
+                        "Severity", w.severity
+                ))
+                .toList());
 
         Map<String, Object> recurseItem = new TreeMap<>();
         contents.put("Category", recurseItem);
