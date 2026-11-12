@@ -22,7 +22,7 @@
       </div>
       <div class="secondary">{{ mod.Author }}</div>
       <table>
-        <tr style="mod-screenshot-and-meta">
+        <tr class="mod-screenshot-and-meta">
           <td>
             <div class="screenshot">
               <img :src="mod.MirroredScreenshots[0]" />
@@ -59,6 +59,18 @@
         :title="'Featured - Tier ' + mod.FeaturedTier"
       />
       <div class="actions">
+        <img
+          v-if="mod.ContentWarnings.length > 0"
+          src="/img/warning.png"
+          :class="getContentWarningSeverityStyle(mod.ContentWarnings)"
+          :title="getContentWarnings(mod.ContentWarnings, 'Content Warnings:')"
+        />
+        <img
+          v-if="mod.AIWarnings.length > 0"
+          src="/img/aiwarning.png"
+          :class="getContentWarningSeverityStyle(mod.AIWarnings)"
+          :title="getContentWarnings(mod.AIWarnings, 'AI was used for:')"
+        />
         <button class="btn btn-secondary" @click="openDescription">
           Description
         </button>
@@ -213,6 +225,19 @@ export default {
     },
     closeDownloads() {
       this.downloadsShown = false;
+    },
+    getContentWarningSeverityStyle(warnings) {
+      return (
+        "content-warning-severity-" +
+        warnings.map((w) => w.Severity).reduce((a, b) => Math.max(a, b))
+      );
+    },
+    getContentWarnings(warnings, introductoryText) {
+      return (
+        introductoryText +
+        "\n" +
+        warnings.map((w) => w.Name).reduce((a, b) => a + "\n" + b)
+      );
     },
     getPictureFor(featuredTier) {
       switch (featuredTier) {
@@ -385,6 +410,17 @@ export default {
   position: absolute;
   bottom: 14px;
   left: 14px;
+}
+
+// content warning icon colors
+.content-warning-severity-1 {
+  filter: url("/img/cw-filter.svg#f1");
+}
+.content-warning-severity-2 {
+  filter: url("/img/cw-filter.svg#f2");
+}
+.content-warning-severity-3 {
+  filter: url("/img/cw-filter.svg#f3");
 }
 
 // description and download buttons

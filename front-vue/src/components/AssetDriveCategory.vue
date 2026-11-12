@@ -192,7 +192,7 @@ export default {
             continue;
           }
 
-          const prefix = item.name.substr(
+          const prefix = item.name.substring(
             0,
             item.name.length - numberedSuffixRegex[0].length,
           );
