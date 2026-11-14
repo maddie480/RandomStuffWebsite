@@ -59,16 +59,17 @@
         :title="'Featured - Tier ' + mod.FeaturedTier"
       />
       <div class="actions">
-        <img
+        <div
           v-if="mod.ContentWarnings.length > 0"
-          src="/img/warning.png"
-          :class="getContentWarningSeverityStyle(mod.ContentWarnings)"
+          :class="
+            getContentWarningSeverityStyle(mod.ContentWarnings) + ' for-content'
+          "
           :title="getContentWarnings(mod.ContentWarnings, 'Content Warnings:')"
         />
-        <img
+        <div
           v-if="mod.AIWarnings.length > 0"
           src="/img/aiwarning.png"
-          :class="getContentWarningSeverityStyle(mod.AIWarnings)"
+          :class="getContentWarningSeverityStyle(mod.AIWarnings) + ' for-ai'"
           :title="getContentWarnings(mod.AIWarnings, 'AI was used for:')"
         />
         <button class="btn btn-secondary" @click="openDescription">
@@ -228,7 +229,7 @@ export default {
     },
     getContentWarningSeverityStyle(warnings) {
       return (
-        "content-warning-severity-" +
+        "content-warning severity-" +
         warnings.map((w) => w.Severity).reduce((a, b) => Math.max(a, b))
       );
     },
@@ -413,14 +414,28 @@ export default {
 }
 
 // content warning icon colors
-.content-warning-severity-1 {
-  filter: url("/img/cw-filter.svg#f1");
-}
-.content-warning-severity-2 {
-  filter: url("/img/cw-filter.svg#f2");
-}
-.content-warning-severity-3 {
-  filter: url("/img/cw-filter.svg#f3");
+.content-warning {
+  width: 32px;
+  height: 32px;
+  display: inline-block;
+  vertical-align: middle;
+
+  &.for-ai {
+    mask: url("/img/aiwarning.png");
+  }
+  &.for-content {
+    mask: url("/img/warning.png");
+  }
+
+  &.severity-1 {
+    background: rgb(102, 179, 230);
+  }
+  &.severity-2 {
+    background: rgb(204, 179, 76);
+  }
+  &.severity-3 {
+    background: rgb(204, 127, 127);
+  }
 }
 
 // description and download buttons
