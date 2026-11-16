@@ -14,8 +14,7 @@
     </div>
     <div v-if="lastUpdate !== null" class="intro">
       The list is updated <b>once a day</b> from Google Drive. The last update
-      happened on <b>{{ lastUpdate }}</b
-      >.
+      happened on <b>{{ lastUpdate }}</b>.
     </div>
 
     <div class="alert alert-info">
