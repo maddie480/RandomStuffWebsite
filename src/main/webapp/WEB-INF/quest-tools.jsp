@@ -3,15 +3,15 @@
 
 <%@page session="false" %>
 
-<script src="https://code.jquery.com/jquery-4.0.0.min.js"
-        integrity="sha256-OaVG6prZf4v69dPg6PhVattBXkcOWQB62pdZ3ORyrao=" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-4.1.0.min.js"
+        integrity="sha256-hjRvPkFLO1JGZFMXGrzdpG6TlsHDyjp4PQeqLWRcMzk=" crossorigin="anonymous"></script>
 
-<h1>Liste des outils et logiciels de la communaut�</h1>
+<h1>Liste des outils et logiciels de la communauté</h1>
 
 <% if ((boolean) request.getAttribute("error")) { %>
 <div class="alert alert-danger">Une erreur est survenue lors du
     chargement de la page.
-    Veuillez r�essayer dans quelques minutes, ou contacter Maddie si l'erreur persiste.
+    Veuillez réessayer dans quelques minutes, ou contacter Maddie si l'erreur persiste.
 </div>
 <% } else { %>
 <% for (Tool tool : (List<Tool>) request.getAttribute("tools")) { %>
@@ -41,7 +41,7 @@
                     <% } %>
 
                     <div class="mt-3">
-                        <a href="<%= escapeHtml4(tool.downloadUrl) %>" target="_blank" class="btn btn-success">T�l�charger</a>
+                        <a href="<%= escapeHtml4(tool.downloadUrl) %>" target="_blank" class="btn btn-success">Télécharger</a>
                         <% if (tool.moreInfoUrl != null && !tool.moreInfoUrl.isEmpty() && tool.moreInfoUrl.startsWith("http")) { %>
                         <a href="<%= escapeHtml4(tool.moreInfoUrl) %>" class="btn btn-link" target="_blank">Plus
                             d'infos</a>
